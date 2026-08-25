@@ -1,0 +1,1115 @@
+.harmonyFretboard {
+  --hf-bass: #ff9c4b;
+  --hf-root: var(--lime);
+  --hf-guide: #f2f4ec;
+  --hf-chord: var(--blue);
+  --hf-written: var(--violet);
+  --hf-voice: #ffd35f;
+  --hf-colour: #ff79c8;
+  --hf-available: #68c6a4;
+  --hf-context: #a88a62;
+  --hf-approach: var(--red);
+  --hf-outside: #4a4f46;
+}
+.headerContextLock {
+  display: inline-block;
+  margin: 0 8px;
+  padding: 9px 11px;
+  border: 1px solid #3a4035;
+  color: #7c8377;
+  font: 6px var(--mono);
+  letter-spacing: 0.08em;
+}
+.harmonyFretboard button,
+.harmonyFretboard input,
+.harmonyFretboard select {
+  border-radius: 0;
+}
+.hfIntro {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: 30px;
+  align-items: end;
+  margin: 2vh 0 34px;
+}
+.hfIntro > div > span,
+.hfBuilder header span,
+.hfCurrent > article > span,
+.hfModes > header span,
+.hfNeckSection > header span,
+.hfNoteTutor article > span,
+.hfVoiceLeading > header span {
+  font: 7px var(--mono);
+  letter-spacing: 0.14em;
+  color: var(--lime);
+}
+.hfIntro h1 {
+  font-size: clamp(50px, 6vw, 84px);
+  line-height: 0.88;
+  letter-spacing: -0.06em;
+  margin: 21px 0;
+}
+.hfIntro p {
+  max-width: 850px;
+  color: #979d91;
+  line-height: 1.75;
+  margin: 0;
+}
+.hfIntro > aside {
+  display: grid;
+  align-content: center;
+  min-height: 190px;
+  border: 1px solid #4a533d;
+  background:
+    radial-gradient(circle at 80% 20%, #333d1f, transparent 35%), #141711;
+  padding: 26px;
+}
+.hfIntro aside small,
+.hfIntro aside span,
+.hfIntro aside em {
+  font: 6px var(--mono);
+}
+.hfIntro aside small {
+  color: #747b70;
+  letter-spacing: 0.1em;
+}
+.hfIntro aside b {
+  font: clamp(34px, 4vw, 58px)/1 var(--mono);
+  margin: 22px 0 10px;
+  color: var(--lime);
+}
+.hfIntro aside span {
+  color: #d7dbd2;
+}
+.hfIntro aside em {
+  justify-self: start;
+  margin-top: 22px;
+  padding: 7px 9px;
+  background: var(--lime);
+  color: #111;
+  font-style: normal;
+}
+.hfBuilder,
+.hfChordDecode,
+.hfAutoFollow,
+.hfModes > div > article,
+.hfNoteTutor,
+.hfVoiceLeading {
+  border: 1px solid var(--line);
+  background: #11130f;
+}
+.hfBuilder {
+  margin-bottom: 18px;
+}
+.hfBuilder > header,
+.hfModes > header,
+.hfNeckSection > header,
+.hfVoiceLeading > header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 35px;
+  align-items: end;
+  padding: 27px 30px;
+  border-bottom: 1px solid var(--line);
+}
+.hfBuilder header h2,
+.hfModes header h2,
+.hfVoiceLeading header h2 {
+  font-size: clamp(27px, 3vw, 42px);
+  line-height: 1.05;
+  margin: 10px 0 0;
+}
+.hfBuilder header p,
+.hfModes header p,
+.hfNeckSection > header p,
+.hfVoiceLeading header p {
+  font-size: 9px;
+  line-height: 1.75;
+  color: #898f83;
+  margin: 0;
+}
+.hfBuilderControls {
+  display: grid;
+  grid-template-columns: 1.35fr 0.55fr 0.7fr 0.8fr;
+}
+.hfBuilderControls label {
+  padding: 20px 22px;
+  border-right: 1px solid var(--line);
+}
+.hfBuilderControls label:last-child {
+  border-right: 0;
+}
+.hfBuilderControls span,
+.hfCustomInput span,
+.hfMapControls span {
+  display: block;
+  font: 6px var(--mono);
+  letter-spacing: 0.1em;
+  color: #737a6f;
+  margin-bottom: 10px;
+}
+.hfBuilderControls select,
+.hfCustomInput input {
+  width: 100%;
+  border: 1px solid #3b4137;
+  background: #171a14;
+  color: #e5e8df;
+  padding: 13px;
+  font: 9px var(--mono);
+}
+.hfCustomInput {
+  display: grid;
+  grid-template-columns: 1fr 230px;
+  border-top: 1px solid var(--line);
+}
+.hfCustomInput label {
+  padding: 20px 22px;
+}
+.hfCustomInput button {
+  border: 0;
+  border-left: 1px solid #68773a;
+  background: var(--lime);
+  color: #10120e;
+  font: 700 8px var(--mono);
+}
+.hfInputHelp,
+.hfError {
+  margin: 0;
+  padding: 12px 22px;
+  border-top: 1px solid var(--line);
+  font: 6px/1.7 var(--mono);
+  color: #747b70;
+}
+.hfError {
+  color: var(--red);
+  background: #1c1412;
+}
+.hfChordRail {
+  display: flex;
+  overflow-x: auto;
+  border-top: 1px solid var(--line);
+}
+.hfChordRail button {
+  position: relative;
+  flex: 1;
+  min-width: 150px;
+  min-height: 125px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: #0f110d;
+  color: #8b9185;
+  text-align: left;
+  padding: 17px;
+}
+.hfChordRail button:last-child {
+  border-right: 0;
+}
+.hfChordRail button small,
+.hfChordRail button b,
+.hfChordRail button span {
+  display: block;
+}
+.hfChordRail button small {
+  font: 6px var(--mono);
+  color: #62695f;
+}
+.hfChordRail button b {
+  font: 20px var(--mono);
+  margin: 27px 0 6px;
+  color: #c7ccc2;
+}
+.hfChordRail button span {
+  font: 6px var(--mono);
+}
+.hfChordRail button.next {
+  background: #171a14;
+}
+.hfChordRail button.next small {
+  color: var(--violet);
+}
+.hfChordRail button.active {
+  background: #202917;
+  color: #111;
+  box-shadow: inset 0 4px var(--lime);
+}
+.hfChordRail button.active small,
+.hfChordRail button.active span {
+  color: #9db84b;
+}
+.hfChordRail button.active b {
+  color: var(--lime);
+}
+.hfCurrent {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 18px;
+  margin-bottom: 52px;
+}
+.hfChordDecode,
+.hfAutoFollow {
+  padding: 28px 30px;
+}
+.hfChordDecode > div {
+  display: flex;
+  align-items: end;
+  gap: 20px;
+  margin: 25px 0 12px;
+}
+.hfChordDecode > div > b {
+  font: clamp(38px, 5vw, 68px)/0.9 var(--mono);
+  color: var(--lime);
+}
+.hfChordDecode > div > small {
+  font: 7px var(--mono);
+  color: var(--violet);
+}
+.hfChordDecode > p {
+  max-width: 780px;
+  font-size: 10px;
+  line-height: 1.7;
+  color: #979d91;
+}
+.hfChordDecode dl,
+.hfNoteTutor dl {
+  margin: 25px 0 0;
+  border-top: 1px solid var(--line);
+}
+.hfChordDecode dl > div,
+.hfNoteTutor dl > div {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line);
+}
+.hfChordDecode dt,
+.hfNoteTutor dt {
+  font: 6px var(--mono);
+  color: #6e756a;
+}
+.hfChordDecode dd,
+.hfNoteTutor dd {
+  margin: 0;
+  font: 8px var(--mono);
+  color: #d2d7cd;
+}
+.hfChordPreview {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px 15px;
+  border: 1px solid #525b48;
+  background: #171b14;
+  color: var(--lime);
+  font: 7px var(--mono);
+}
+.hfChordPreview:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+.hfAutoFollow {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #171a14, #10120e);
+}
+.hfAutoFollow h3 {
+  font-size: 25px;
+  line-height: 1.15;
+  margin: 25px 0;
+}
+.hfTimingControls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--line);
+}
+.hfTimingControls label {
+  padding: 13px;
+  font: 6px var(--mono);
+  color: #747b70;
+}
+.hfTimingControls label + label {
+  border-left: 1px solid var(--line);
+}
+.hfTimingControls input,
+.hfTimingControls select {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  border: 0;
+  background: transparent;
+  color: white;
+  font: 17px var(--mono);
+}
+.hfTimingControls input:disabled,
+.hfTimingControls select:disabled {
+  opacity: 0.45;
+}
+.hfBandStyle {
+  display: grid;
+  grid-template-columns: 104px 1fr;
+  align-items: center;
+  gap: 5px 12px;
+  margin-top: 11px;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  color: #747b70;
+  font: 6px var(--mono);
+}
+.hfBandStyle select {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #edf2e7;
+  font: 11px var(--mono);
+}
+.hfBandStyle small {
+  grid-column: 1/-1;
+  color: #737b6e;
+  font: 6px/1.5 var(--mono);
+}
+.hfBandStyle select:disabled {
+  opacity: 0.45;
+}
+.hfBandMixer {
+  margin-top: 11px;
+  border: 1px solid var(--line);
+  background: #0d100c;
+}
+.hfBandMixer > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 11px;
+  border-bottom: 1px solid var(--line);
+  font: 5px/1.4 var(--mono);
+  color: #767e71;
+}
+.hfBandMixer > header b {
+  color: var(--lime);
+  text-align: right;
+}
+.hfBandMixer > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.hfBandMixer button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 35px;
+  padding: 8px 10px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: #6f766b;
+  text-align: left;
+  font: 6px var(--mono);
+}
+.hfBandMixer button:nth-child(2n) {
+  border-right: 0;
+}
+.hfBandMixer button:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+.hfBandMixer button i {
+  color: #52594e;
+  font-style: normal;
+}
+.hfBandMixer button.active {
+  background: #172012;
+  color: #d6ddcf;
+}
+.hfBandMixer button.active i {
+  color: var(--lime);
+}
+.hfBandMixer button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+.hfHarmonyLevel {
+  display: grid;
+  grid-template-columns: auto 1fr 38px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  font: 6px var(--mono);
+  color: #747b70;
+}
+.hfHarmonyLevel input {
+  width: 100%;
+  accent-color: var(--lime);
+}
+.hfHarmonyLevel b {
+  color: #c7ccc2;
+  text-align: right;
+}
+.hfSounding {
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  background: #0c0f0b;
+}
+.hfSounding small,
+.hfSounding b,
+.hfSounding span {
+  display: block;
+}
+.hfSounding small {
+  color: var(--violet);
+  font: 6px var(--mono);
+}
+.hfSounding b {
+  margin: 8px 0 6px;
+  color: #dce2d5;
+  font: 8px/1.6 var(--mono);
+}
+.hfSounding span {
+  color: #747b70;
+  font: 6px/1.55 var(--mono);
+}
+.hfAutoFollow > button {
+  width: 100%;
+  margin-top: 14px;
+  border: 1px solid var(--lime);
+  background: var(--lime);
+  color: #10120e;
+  padding: 15px;
+  font: 7px var(--mono);
+}
+.hfAutoFollow > button.stop {
+  border-color: var(--red);
+  background: var(--red);
+}
+.hfAutoFollow > p {
+  font: 7px/1.5 var(--mono);
+  color: #747b70;
+}
+.hfHeadphoneNote {
+  display: block;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  color: #646b60;
+  font: 5px/1.5 var(--mono);
+}
+.hfAutoPulse {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  width: 100%;
+  background: var(--lime);
+  transform-origin: left;
+  animation: hfProgress linear infinite;
+}
+@keyframes hfProgress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.hfModes {
+  margin-bottom: 18px;
+}
+.hfModes > div {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.hfModes > div > article {
+  position: relative;
+  min-height: 335px;
+}
+.hfModes > div > article.active {
+  border-color: var(--lime);
+  background: #182012;
+}
+.hfModeSelect {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: #dce0d7;
+  text-align: left;
+  padding: 23px 22px 58px;
+}
+.hfModeSelect small,
+.hfModeSelect b,
+.hfModeSelect strong,
+.hfModeSelect code,
+.hfModeSelect em {
+  display: block;
+}
+.hfModeSelect small {
+  font: 6px var(--mono);
+  color: #6f766a;
+}
+.hfModeSelect b {
+  min-height: 52px;
+  font-size: 18px;
+  line-height: 1.2;
+  margin: 28px 0 0;
+}
+.hfModeSelect strong {
+  position: absolute;
+  right: 20px;
+  top: 17px;
+  font: 25px var(--mono);
+  color: #434a3f;
+}
+.hfModes article.active strong {
+  color: var(--lime);
+}
+.hfModeSelect code {
+  margin: 18px 0;
+  padding: 9px;
+  background: #0d0f0c;
+  font: 6px/1.5 var(--mono);
+  color: var(--violet);
+}
+.hfModeSelect p {
+  font-size: 9px;
+  line-height: 1.65;
+  color: #90968a;
+}
+.hfModeSelect em {
+  font: 6px/1.6 var(--mono);
+  font-style: normal;
+  color: #777e72;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.hfHear {
+  position: absolute;
+  left: 22px;
+  bottom: 17px;
+  border: 0;
+  background: transparent;
+  color: var(--lime);
+  font: 7px var(--mono);
+}
+.hfMapControls {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  border: 1px solid var(--line);
+  background: #10120e;
+  padding: 14px 16px;
+}
+.hfMapControls > div {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.hfMapControls span {
+  margin: 0 8px 0 0;
+}
+.hfMapControls button {
+  border: 1px solid #353b31;
+  background: transparent;
+  color: #757c70;
+  padding: 8px 10px;
+  font: 6px var(--mono);
+}
+.hfMapControls button.active {
+  border-color: var(--lime);
+  background: var(--lime);
+  color: #111;
+}
+.hfNeckSection {
+  border: 1px solid var(--line);
+  border-top: 0;
+  background: #181b15;
+}
+.hfNeckSection > header h2 {
+  font: clamp(27px, 4vw, 49px)/1 var(--mono);
+  margin: 12px 0 0;
+}
+.hfLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 13px 23px;
+  border-bottom: 1px solid var(--line);
+  background: #0f110d;
+}
+.hfLegend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 5px var(--mono);
+  color: #747b70;
+}
+.hfLegend i,
+.hfRoleBadge > i {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--role);
+}
+.role-bass {
+  --role: var(--hf-bass);
+}
+.role-root {
+  --role: var(--hf-root);
+}
+.role-guide {
+  --role: var(--hf-guide);
+}
+.role-chord {
+  --role: var(--hf-chord);
+}
+.role-specified {
+  --role: var(--hf-written);
+}
+.role-voice {
+  --role: var(--hf-voice);
+}
+.role-colour {
+  --role: var(--hf-colour);
+}
+.role-available {
+  --role: var(--hf-available);
+}
+.role-context {
+  --role: var(--hf-context);
+}
+.role-approach {
+  --role: var(--hf-approach);
+}
+.role-outside {
+  --role: var(--hf-outside);
+}
+.hfBoardWrap {
+  overflow-x: auto;
+  padding: 19px;
+}
+.hfBoard {
+  min-width: 1280px;
+  direction: ltr;
+}
+.hfFretNumbers,
+.hfString {
+  display: grid;
+  grid-template-columns: 44px repeat(21, 1fr);
+}
+.hfFretNumbers {
+  height: 27px;
+}
+.hfFretNumbers > b,
+.hfFretNumbers > span {
+  display: grid;
+  place-items: center;
+  font: 5px var(--mono);
+  color: #6f766b;
+}
+.hfFretNumbers > span.marked {
+  color: var(--lime);
+}
+.hfString {
+  position: relative;
+  height: 65px;
+  background: linear-gradient(transparent 49%, #969c91 50%, transparent 52%);
+}
+.hfString:before {
+  content: "";
+  position: absolute;
+  left: 44px;
+  right: 0;
+  inset-block: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent calc(4.762% - 1px),
+    #4d5349 calc(4.762% - 1px),
+    #4d5349 4.762%
+  );
+  pointer-events: none;
+}
+.hfString > b {
+  display: grid;
+  place-items: center;
+  z-index: 1;
+  font: 10px var(--mono);
+  color: var(--lime);
+}
+.hfString button {
+  align-self: center;
+  justify-self: center;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 39px;
+  height: 39px;
+  padding: 0;
+  border: 2px solid var(--role);
+  border-radius: 50%;
+  background: #12140f;
+  color: var(--role);
+  transition:
+    opacity 0.15s,
+    transform 0.15s,
+    background 0.15s;
+}
+.hfString button.visible:not(.role-outside) {
+  background: color-mix(in srgb, var(--role) 16%, #12140f);
+}
+.hfString button.hidden {
+  opacity: 0.08;
+}
+.hfString button.role-outside.visible {
+  opacity: 0.28;
+}
+.hfString button:hover,
+.hfString button.picked {
+  opacity: 1;
+  transform: scale(1.18);
+  box-shadow:
+    0 0 0 3px #181b15,
+    0 0 0 4px var(--role);
+}
+.hfString button > b {
+  max-width: 35px;
+  overflow: hidden;
+  font: 5px/1 var(--mono);
+  white-space: nowrap;
+}
+.hfString button > small {
+  font: 5px/1 var(--mono);
+  margin-top: 2px;
+}
+.hfString button > i {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--role);
+  top: 3px;
+  right: 3px;
+}
+.hfNeckSection.blind .hfString button {
+  background: #141612;
+  color: transparent;
+  border-color: #4a5046;
+  box-shadow: none;
+}
+.hfNeckSection.blind .hfString button > i {
+  display: none;
+}
+.hfNeckSection.blind .hfString button.picked {
+  border-color: var(--lime);
+}
+.hfNoteTutor {
+  display: grid;
+  grid-template-columns: 115px 1fr 1fr 220px;
+  gap: 26px;
+  align-items: center;
+  padding: 27px 30px;
+  border-top: 0;
+}
+.hfRoleBadge {
+  min-height: 95px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--role);
+  color: var(--role);
+  padding: 12px;
+}
+.hfRoleBadge > i {
+  width: 17px;
+  height: 17px;
+}
+.hfRoleBadge span {
+  font: 6px var(--mono);
+  text-align: center;
+}
+.hfNoteTutor article > h2 {
+  font-size: 35px;
+  margin: 10px 0 4px;
+}
+.hfNoteTutor h2 small {
+  font: 9px var(--mono);
+  color: #858c80;
+}
+.hfNoteTutor article > h3 {
+  font-size: 14px;
+  color: var(--lime);
+  margin: 7px 0;
+}
+.hfNoteTutor article > p {
+  font-size: 9px;
+  line-height: 1.75;
+  color: #93998d;
+  margin: 8px 0;
+}
+.hfNoteTutor dl {
+  margin-top: 13px;
+}
+.hfNoteTutor dl > div {
+  grid-template-columns: 90px 1fr;
+  padding: 8px 0;
+}
+.hfNoteTutor > button {
+  border: 1px solid var(--lime);
+  background: var(--lime);
+  color: #111;
+  padding: 17px 14px;
+  font: 7px/1.5 var(--mono);
+}
+.hfVoiceLeading {
+  margin-top: 48px;
+}
+.hfVoiceGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.hfVoiceGrid button {
+  min-height: 180px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: transparent;
+  color: #d5d9d0;
+  text-align: left;
+  padding: 23px;
+}
+.hfVoiceGrid button:last-child {
+  border-right: 0;
+}
+.hfVoiceGrid button:hover {
+  background: #192012;
+}
+.hfVoiceGrid small,
+.hfVoiceGrid b,
+.hfVoiceGrid span {
+  display: block;
+}
+.hfVoiceGrid small {
+  font: 6px var(--mono);
+  color: #747b70;
+}
+.hfVoiceGrid b {
+  font: 22px var(--mono);
+  margin: 35px 0 11px;
+}
+.hfVoiceGrid b i {
+  font-style: normal;
+  color: var(--lime);
+  margin: 0 8px;
+}
+.hfVoiceGrid span {
+  font: 6px/1.5 var(--mono);
+  color: var(--violet);
+}
+.hfVoiceLeading > footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 220px;
+  border-top: 1px solid var(--line);
+}
+.hfVoiceLeading > footer > div {
+  padding: 19px 23px;
+  border-right: 1px solid var(--line);
+}
+.hfVoiceLeading footer span,
+.hfVoiceLeading footer b {
+  display: block;
+}
+.hfVoiceLeading footer span {
+  font: 6px var(--mono);
+  color: #6f766b;
+}
+.hfVoiceLeading footer b {
+  font: 9px var(--mono);
+  margin-top: 9px;
+}
+.hfVoiceLeading footer button {
+  border: 0;
+  background: var(--lime);
+  font: 7px var(--mono);
+}
+.hfArabic {
+  text-align: right;
+}
+.hfArabic .hfChordRail button,
+.hfArabic .hfModeSelect,
+.hfArabic .hfVoiceGrid button {
+  text-align: right;
+}
+.hfArabic .hfBuilderControls label {
+  border-right: 0;
+  border-left: 1px solid var(--line);
+}
+.hfArabic .hfBuilderControls label:last-child {
+  border-left: 0;
+}
+.hfArabic .hfCustomInput button {
+  border-left: 0;
+  border-right: 1px solid #68773a;
+}
+.hfArabic .hfTimingControls label + label {
+  border-left: 0;
+  border-right: 1px solid var(--line);
+}
+.hfArabic .hfBandMixer > header b,
+.hfArabic .hfHarmonyLevel b {
+  text-align: left;
+}
+.hfArabic .hfBandMixer button {
+  border-right: 0;
+  border-left: 1px solid var(--line);
+  text-align: right;
+}
+.hfArabic .hfBandMixer button:nth-child(2n) {
+  border-left: 0;
+}
+.hfArabic .hfModeSelect strong {
+  right: auto;
+  left: 20px;
+}
+.hfArabic .hfHear {
+  left: auto;
+  right: 22px;
+}
+.hfArabic .hfMapControls span {
+  margin: 0 0 0 8px;
+}
+.hfArabic .hfVoiceGrid button {
+  border-right: 0;
+  border-left: 1px solid var(--line);
+}
+.hfArabic .hfVoiceGrid button:last-child {
+  border-left: 0;
+}
+.hfArabic .hfVoiceLeading > footer > div {
+  border-right: 0;
+  border-left: 1px solid var(--line);
+}
+@media (max-width: 1100px) {
+  .hfIntro,
+  .hfCurrent {
+    grid-template-columns: 1fr;
+  }
+  .hfBuilderControls {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .hfBuilderControls label:first-child {
+    grid-column: 1/-1;
+    border-bottom: 1px solid var(--line);
+  }
+  .hfModes > div {
+    grid-template-columns: 1fr 1fr;
+  }
+  .hfMapControls {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .hfNoteTutor {
+    grid-template-columns: 90px 1fr 1fr;
+  }
+  .hfNoteTutor > button {
+    grid-column: 1/-1;
+  }
+  .hfVoiceGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .hfVoiceGrid button:nth-child(2) {
+    border-right: 0;
+  }
+  .hfVoiceGrid button:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+}
+@media (max-width: 680px) {
+  .hfBuilder > header,
+  .hfModes > header,
+  .hfNeckSection > header,
+  .hfVoiceLeading > header {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 22px 18px;
+  }
+  .hfIntro {
+    margin-top: 0;
+  }
+  .hfIntro h1 {
+    font-size: 52px;
+  }
+  .hfIntro > aside {
+    min-height: 160px;
+  }
+  .hfBuilderControls {
+    grid-template-columns: 1fr;
+  }
+  .hfBuilderControls label,
+  .hfBuilderControls label:first-child {
+    grid-column: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .hfCustomInput {
+    grid-template-columns: 1fr;
+  }
+  .hfCustomInput button {
+    min-height: 54px;
+    border-left: 0;
+    border-top: 1px solid #68773a;
+  }
+  .hfModes > div {
+    grid-template-columns: 1fr;
+  }
+  .hfModes > div > article {
+    min-height: 300px;
+  }
+  .hfMapControls > div {
+    flex-wrap: wrap;
+  }
+  .hfMapControls span {
+    width: 100%;
+  }
+  .hfNoteTutor {
+    grid-template-columns: 1fr;
+    padding: 22px 18px;
+  }
+  .hfRoleBadge {
+    min-height: 70px;
+  }
+  .hfVoiceGrid {
+    grid-template-columns: 1fr;
+  }
+  .hfVoiceGrid button,
+  .hfVoiceGrid button:nth-child(2) {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .hfVoiceLeading > footer {
+    grid-template-columns: 1fr;
+  }
+  .hfVoiceLeading > footer > div {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .hfVoiceLeading footer button {
+    min-height: 55px;
+  }
+  .hfChordDecode,
+  .hfAutoFollow {
+    padding: 24px 19px;
+  }
+  .hfChordDecode dl > div {
+    grid-template-columns: 90px 1fr;
+  }
+  .hfArabic .hfBuilderControls label,
+  .hfArabic .hfBuilderControls label:first-child {
+    border-left: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .hfArabic .hfVoiceGrid button {
+    border-left: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .hfArabic .hfVoiceLeading > footer > div {
+    border-left: 0;
+    border-bottom: 1px solid var(--line);
+  }
+}

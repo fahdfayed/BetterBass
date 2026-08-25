@@ -1,0 +1,202 @@
+"use client";
+import {useCallback,useEffect,useMemo,useRef,useState} from "react";
+import {useEgyptianArabic} from "./EgyptianArabicToggle";
+import {NOTE_ROLES,PITCH_NAMES,PROGRESSION_PRESETS,buildChordVoicing,classifyNote,commonTones,intervalLabel,parseChord,parseProgression,recommendScales,spellChordNote,voiceLeadingPaths,type ChordFamily,type ParsedChord} from "./harmony-fretboard-data";
+
+type Props={
+ homeMode:number;displayMode:string;fog:number;selectedPc:number|null;
+ onSetRoot:(root:number)=>void;onSetMode:(mode:number)=>void;onSetChord:(chord:string)=>void;
+ onDisplayMode:(mode:string)=>void;onFog:(level:number)=>void;onSelectPc:(pc:number|null)=>void;
+ onAudition:(notes:number[],hold?:number,droneRoot?:number)=>void;
+};
+const STRINGS=[{name:"G",open:7},{name:"D",open:2},{name:"A",open:9},{name:"E",open:4}],FRETS=Array.from({length:21},(_,i)=>i),mod=(n:number)=>((n%12)+12)%12;
+type NeckRange="low"|"middle"|"high"|"full";
+const HOME_FIELDS=[["Ionian / major","أيونيان / ميجور"],["Dorian","دوريان"],["Phrygian","فريجيان"],["Lydian","ليديان"],["Mixolydian","ميكسوليديان"],["Aeolian / minor","أيوليان / ماينور"],["Locrian","لوكريان"]];
+const FAMILY_NAMES:Record<ChordFamily,[string,string]>={major:["MAJOR","ميجور"],minor:["MINOR","ماينور"],"minor-major":["MINOR–MAJOR","ماينور–ميجور"],dominant:["DOMINANT","دومينانت"],suspended:["SUSPENDED","ساس / معلّق"],"half-diminished":["HALF-DIMINISHED","نص ديمينشد"],diminished:["DIMINISHED","ديمينشد"],augmented:["AUGMENTED","أوجمنتد"]};
+type BandStyleId="pocket"|"funk"|"grunge"|"neo"|"fusion"|"psychedelic";
+type BandMix={drums:boolean;keys:boolean;guitar:boolean;cue:boolean};
+type BandStyle={id:BandStyleId;name:[string,string];feel:[string,string];kick:number[];snare:number[];hat:number[];openHat:number[];keys:number[];guitar:number[];swing:number;keyGate:number;guitarGate:number;bright:boolean};
+const BAND_STYLES:BandStyle[]=[
+ {id:"pocket",name:["Deep pocket","جروف تقيل"],feel:["Clear backbeat, breathing keys and small offbeat answers.","باك بيت واضح وكيز بتتنفس وردود صغيرة أوف بيت."],kick:[0,6,8,11],snare:[4,12],hat:[0,2,4,6,8,10,12,14],openHat:[14],keys:[0,10],guitar:[6,14],swing:0,keyGate:3.4,guitarGate:1.1,bright:false},
+ {id:"funk",name:["Syncopated funk","فانك سينكوب"],feel:["Sixteenth-note grid, short chanks and an active kick pocket.","شبكة ستاشر وشانكات قصيرة وكيك نشيط في الجروف."],kick:[0,3,6,10,14],snare:[4,12],hat:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],openHat:[7,15],keys:[0,9],guitar:[2,6,9,11,14],swing:.08,keyGate:1.8,guitarGate:.55,bright:true},
+ {id:"grunge",name:["Grunge / rock","جرنج / روك"],feel:["Heavy backbeat, eighth-note drive and wide sustained harmony.","باك بيت تقيل ودفع تمنات وهارموني واسع متطوّل."],kick:[0,7,8,10],snare:[4,12],hat:[0,2,4,6,8,10,12,14],openHat:[14],keys:[0],guitar:[0,4,8,12],swing:0,keyGate:14.4,guitarGate:2.5,bright:true},
+ {id:"neo",name:["Neo-soul","نيو سول"],feel:["Laid-back pocket, soft syncopation and spacious upper voicings.","جروف متأخر وناعم وسينكوب خفيف وتوزيعات عالية واسعة."],kick:[0,7,10],snare:[4,12],hat:[0,2,4,6,8,10,12,14],openHat:[15],keys:[0,10],guitar:[3,7,11,15],swing:.18,keyGate:4.8,guitarGate:1.25,bright:false},
+ {id:"fusion",name:["Fusion","فيوجن"],feel:["Dense subdivision, displaced accents and precise harmonic stabs.","تقسيم كثيف وأكسنتات متحركة وضربات هارموني دقيقة."],kick:[0,3,7,10,14],snare:[4,11,12],hat:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],openHat:[6,14],keys:[0,7,12],guitar:[2,5,9,13],swing:.05,keyGate:1.6,guitarGate:.8,bright:true},
+ {id:"psychedelic",name:["Psychedelic","سايكيديليك"],feel:["Open drums, long colour beds and delayed rhythm answers.","درامز مفتوحة وفرشة لون طويلة وردود إيقاعية متأخرة."],kick:[0,8,11],snare:[4,12],hat:[0,2,4,6,8,10,12,14],openHat:[6,14],keys:[0,8],guitar:[5,11,15],swing:.1,keyGate:7.2,guitarGate:2.2,bright:false},
+];
+const PRESET_BAND_STYLE:Record<string,BandStyleId>={dorian:"pocket","major-251":"neo","minor-251":"neo","neo-soul":"neo","altered-turn":"fusion",fusion:"fusion",slash:"psychedelic",diminished:"fusion",augmented:"psychedelic",chromatic:"psychedelic"};
+type HarmonyAudioEngine={ctx:AudioContext;output:GainNode;current:GainNode|null;previousUpper:number[];noise:AudioBuffer};
+const midiHz=(midi:number)=>440*Math.pow(2,(midi-69)/12);
+
+function schedulePadVoice(ctx:AudioContext,midi:number,when:number,duration:number,volume:number,out:AudioNode){
+ const fundamental=ctx.createOscillator(),air=ctx.createOscillator(),gain=ctx.createGain(),airGain=ctx.createGain(),frequency=midiHz(midi);
+ fundamental.type="triangle";fundamental.frequency.setValueAtTime(frequency,when);fundamental.detune.setValueAtTime((midi%2?1:-1)*2.5,when);
+ air.type="sine";air.frequency.setValueAtTime(frequency*2,when);
+ gain.gain.setValueAtTime(.0001,when);gain.gain.exponentialRampToValueAtTime(volume,when+.035);gain.gain.exponentialRampToValueAtTime(volume*.62,when+Math.min(.65,duration*.35));gain.gain.exponentialRampToValueAtTime(.0001,when+duration);
+ airGain.gain.setValueAtTime(.0001,when);airGain.gain.exponentialRampToValueAtTime(volume*.16,when+.018);airGain.gain.exponentialRampToValueAtTime(.0001,when+Math.min(duration,.9));
+ fundamental.connect(gain).connect(out);air.connect(airGain).connect(out);fundamental.start(when);air.start(when);fundamental.stop(when+duration+.04);air.stop(when+duration+.04);
+}
+function scheduleBassCue(ctx:AudioContext,midi:number,when:number,duration:number,out:AudioNode){
+ const oscillator=ctx.createOscillator(),gain=ctx.createGain();oscillator.type="sine";oscillator.frequency.setValueAtTime(midiHz(midi),when);gain.gain.setValueAtTime(.0001,when);gain.gain.exponentialRampToValueAtTime(.075,when+.012);gain.gain.exponentialRampToValueAtTime(.026,when+Math.min(.24,duration*.3));gain.gain.exponentialRampToValueAtTime(.0001,when+duration);oscillator.connect(gain).connect(out);oscillator.start(when);oscillator.stop(when+duration+.04);
+}
+function scheduleCountClick(ctx:AudioContext,when:number,accent:boolean,out:AudioNode){
+ const oscillator=ctx.createOscillator(),gain=ctx.createGain();oscillator.type="square";oscillator.frequency.setValueAtTime(accent?1320:920,when);gain.gain.setValueAtTime(.0001,when);gain.gain.exponentialRampToValueAtTime(accent ? .085 : .052,when+.002);gain.gain.exponentialRampToValueAtTime(.0001,when+.055);oscillator.connect(gain).connect(out);oscillator.start(when);oscillator.stop(when+.065);
+}
+function createNoiseBuffer(ctx:AudioContext){
+ const buffer=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;return buffer;
+}
+function scheduleKick(ctx:AudioContext,when:number,velocity:number,out:AudioNode){
+ const oscillator=ctx.createOscillator(),gain=ctx.createGain();oscillator.type="sine";oscillator.frequency.setValueAtTime(138,when);oscillator.frequency.exponentialRampToValueAtTime(48,when+.12);gain.gain.setValueAtTime(.0001,when);gain.gain.exponentialRampToValueAtTime(.19*velocity,when+.004);gain.gain.exponentialRampToValueAtTime(.0001,when+.19);oscillator.connect(gain).connect(out);oscillator.start(when);oscillator.stop(when+.21);
+}
+function scheduleSnare(ctx:AudioContext,noise:AudioBuffer,when:number,velocity:number,out:AudioNode){
+ const source=ctx.createBufferSource(),filterNode=ctx.createBiquadFilter(),noiseGain=ctx.createGain(),body=ctx.createOscillator(),bodyGain=ctx.createGain();source.buffer=noise;filterNode.type="bandpass";filterNode.frequency.value=1850;filterNode.Q.value=.7;noiseGain.gain.setValueAtTime(.12*velocity,when);noiseGain.gain.exponentialRampToValueAtTime(.0001,when+.14);source.connect(filterNode).connect(noiseGain).connect(out);body.type="triangle";body.frequency.value=178;bodyGain.gain.setValueAtTime(.055*velocity,when);bodyGain.gain.exponentialRampToValueAtTime(.0001,when+.095);body.connect(bodyGain).connect(out);source.start(when);source.stop(when+.15);body.start(when);body.stop(when+.11);
+}
+function scheduleHat(ctx:AudioContext,noise:AudioBuffer,when:number,velocity:number,open:boolean,out:AudioNode){
+ const source=ctx.createBufferSource(),filterNode=ctx.createBiquadFilter(),gain=ctx.createGain(),duration=open ? .24 : .055;source.buffer=noise;filterNode.type="highpass";filterNode.frequency.value=open?5700:6900;gain.gain.setValueAtTime((open ? .047 : .028)*velocity,when);gain.gain.exponentialRampToValueAtTime(.0001,when+duration);source.connect(filterNode).connect(gain).connect(out);source.start(when);source.stop(when+duration+.01);
+}
+function scheduleGuitarVoice(ctx:AudioContext,midi:number,when:number,duration:number,volume:number,bright:boolean,out:AudioNode){
+ const oscillator=ctx.createOscillator(),gain=ctx.createGain(),filterNode=ctx.createBiquadFilter();oscillator.type=bright?"sawtooth":"triangle";oscillator.frequency.value=midiHz(midi);filterNode.type="bandpass";filterNode.frequency.value=bright?1850:1280;filterNode.Q.value=.72;gain.gain.setValueAtTime(.0001,when);gain.gain.exponentialRampToValueAtTime(volume,when+.004);gain.gain.exponentialRampToValueAtTime(volume*.32,when+Math.min(.075,duration*.3));gain.gain.exponentialRampToValueAtTime(.0001,when+duration);oscillator.connect(filterNode).connect(gain).connect(out);oscillator.start(when);oscillator.stop(when+duration+.025);
+}
+function swungStepTime(step:number,sixteenth:number,swing:number,barIndex:number){
+ const delayed=step%4===2?sixteenth*swing*2:0,humanize=((step*7+barIndex*3)%5-2)*.0013;return step*sixteenth+delayed+humanize;
+}
+
+function nearestTarget(pc:number,chord:ParsedChord){
+ const targets=[chord.bass,chord.root,...chord.pcs],distance=(target:number)=>Math.min(mod(target-pc),mod(pc-target));
+ return targets.reduce((best,target)=>distance(target)<distance(best)?target:best,targets[0]);
+}
+function familyJob(family:ChordFamily,arabic:boolean){
+ const jobs:Record<ChordFamily,[string,string]>={
+  major:["Stable major colour. The progression decides whether Ionian or Lydian is more truthful.","لون ميجور ثابت. البروجرشن هو اللي يحدد أيونيان ولا ليديان أصدق."],
+  minor:["Minor quality. Natural 6, ♭6 and ♭2 separate Dorian, Aeolian and Phrygian.","نوع ماينور. ٦ الطبيعية و♭٦ و♭٢ بيفرّقوا دوريان وأيوليان وفريجيان."],
+  "minor-major":["Tonic minor with major-7 gravity; hear melodic or harmonic minor as a complete sound.","تونك ماينور بجاذبية سابعة كبيرة؛ اسمع الميلوديك أو الهارمونيك ماينور كصوت كامل."],
+  dominant:["Directional tension. Alterations only make sense through their destination.","توتّر موجه. التحويلات ملهاش معنى من غير نغمة الوصول."],
+  suspended:["The 3rd is withheld. Preserve the suspension until its resolution is actually requested.","التالتة متشالة. حافظ على التعليق لحد ما القفلة تتطلبها فعلاً."],
+  "half-diminished":["Unstable minor quality with ♭5; often prepares a minor-key dominant.","نوع ماينور غير ثابت بـ♭٥؛ غالباً بيحضّر دومينانت في مفتاح ماينور."],
+  diminished:["Symmetrical connector. Any chord tone can redirect the harmony by semitone.","وصلة متماثلة. أي نغمة كورد تقدر تغيّر اتجاه الهارموني بنص تون."],
+  augmented:["Major colour without a perfect 5; whole-tone or Lydian-augmented logic can organize it.","لون ميجور من غير خامسة طبيعية؛ منطق الهول تون أو ليديان أوجمنتد ينظمه."],
+ };
+ return jobs[family][arabic?1:0];
+}
+
+export default function HarmonyFretboard({homeMode,displayMode,fog,selectedPc,onSetRoot,onSetMode,onSetChord,onDisplayMode,onFog,onSelectPc,onAudition}:Props){
+ const arabic=useEgyptianArabic(),tx=(en:string,ar:string)=>arabic?ar:en,initial=PROGRESSION_PRESETS[0];
+ const [presetId,setPresetId]=useState(initial.id),[draft,setDraft]=useState(initial.chords.join(" | ")),[applied,setApplied]=useState(initial.chords.join(" | ")),[centre,setCentre]=useState(initial.center),[lens,setLens]=useState<string>(initial.lens),[active,setActive]=useState(0),[choice,setChoice]=useState<{key:string;scale:string}|null>(null),[applyError,setApplyError]=useState(""),[autoFollow,setAutoFollow]=useState(false),[countIn,setCountIn]=useState(false),[tempo,setTempo]=useState(80),[barsPerChord,setBarsPerChord]=useState(2),[harmonyLevel,setHarmonyLevel]=useState(46),[bandStyle,setBandStyle]=useState<BandStyleId>("pocket"),[bandMix,setBandMix]=useState<BandMix>({drums:true,keys:true,guitar:true,cue:true});
+ const [neckRange,setNeckRange]=useState<NeckRange>("low");
+ const parsed=useMemo(()=>parseProgression(applied),[applied]),chords=parsed.chords,current=chords[Math.min(active,Math.max(0,chords.length-1))]||parseChord("Cmaj9"),next=chords.length>1?chords[(active+1)%chords.length]:current,currentKey=`${active}:${current.symbol}:${applied}`;
+ const recommendations=useMemo(()=>recommendScales(current,next,centre,homeMode,lens),[current,next,centre,homeMode,lens]),selectedRecommendation=recommendations.find(x=>choice?.key===currentKey&&x.scale.id===choice.scale)||recommendations[0],selectedScale=selectedRecommendation.scale,paths=useMemo(()=>voiceLeadingPaths(current,next),[current,next]),shared=useMemo(()=>commonTones(current,next),[current,next]);
+ const actualDisplay=displayMode==="interval"?"degree":displayMode==="function"||displayMode==="heat"?"priority":displayMode,filter=Math.min(4,fog),visibleFrets=neckRange==="low"?FRETS.slice(0,13):neckRange==="middle"?FRETS.slice(5,16):neckRange==="high"?FRETS.slice(10):FRETS;
+ const selected=selectedPc??current.bass,selectedRole=classifyNote(selected,current,selectedScale,next),selectedIv=mod(selected-current.root),selectedDestination=nearestTarget(selected,next),durationMs=Math.round(60000/tempo*4*barsPerChord),selectedBandStyle=BAND_STYLES.find(style=>style.id===bandStyle)||BAND_STYLES[0];
+ const harmonyAudio=useRef<HarmonyAudioEngine|null>(null),countInTimer=useRef<number|null>(null),harmonyLevelRef=useRef(harmonyLevel),bandStyleRef=useRef<BandStyleId>(bandStyle),bandMixRef=useRef<BandMix>(bandMix);
+
+ const releaseCurrentChord=useCallback(()=>{
+  const engine=harmonyAudio.current;if(!engine?.current||engine.ctx.state==="closed")return;const now=engine.ctx.currentTime,gain=engine.current.gain;gain.cancelScheduledValues(now);gain.setValueAtTime(Math.max(.0001,gain.value),now);gain.exponentialRampToValueAtTime(.0001,now+.07);engine.current=null;
+ },[]);
+ const ensureHarmonyAudio=useCallback(async()=>{
+  let engine=harmonyAudio.current;
+  if(!engine||engine.ctx.state==="closed"){
+   const ctx=new AudioContext(),output=ctx.createGain(),filterNode=ctx.createBiquadFilter(),compressor=ctx.createDynamicsCompressor();
+   output.gain.value=harmonyLevelRef.current/100*.56;filterNode.type="lowpass";filterNode.frequency.value=9000;filterNode.Q.value=.3;compressor.threshold.value=-22;compressor.knee.value=18;compressor.ratio.value=3;compressor.attack.value=.012;compressor.release.value=.24;output.connect(filterNode).connect(compressor).connect(ctx.destination);engine={ctx,output,current:null,previousUpper:[],noise:createNoiseBuffer(ctx)};harmonyAudio.current=engine;
+  }
+  if(engine.ctx.state==="suspended")await engine.ctx.resume();
+  return engine;
+ },[]);
+ const playChordAudio=useCallback(async(chord:ParsedChord,bars:number,bpm:number,withBand=false)=>{
+  const engine=await ensureHarmonyAudio();releaseCurrentChord();const {ctx}=engine,group=ctx.createGain(),when=ctx.currentTime+.025,barSeconds=60/bpm*4,sixteenth=barSeconds/16,voicing=buildChordVoicing(chord,engine.previousUpper),voiceVolume=Math.min(.046,.105/Math.sqrt(Math.max(1,voicing.upperMidi.length))),style=BAND_STYLES.find(item=>item.id===bandStyleRef.current)||BAND_STYLES[0],mix=bandMixRef.current;
+  group.gain.setValueAtTime(1,when);group.connect(engine.output);
+  if(!withBand){
+   scheduleBassCue(ctx,voicing.bassMidi,when,Math.min(1.05,barSeconds*.42),group);voicing.upperMidi.forEach((midi,index)=>schedulePadVoice(ctx,midi,when+index*.007,Math.max(.65,barSeconds*.92),voiceVolume,group));
+  }else for(let barIndex=0;barIndex<bars;barIndex++){
+   const barStart=when+barIndex*barSeconds,stepWhen=(step:number)=>barStart+swungStepTime(step,sixteenth,style.swing,barIndex);
+   if(mix.drums){style.kick.forEach(step=>scheduleKick(ctx,stepWhen(step),step===0?1:.78,group));style.snare.forEach(step=>scheduleSnare(ctx,engine.noise,stepWhen(step),step===4||step===12?1:.58,group));style.hat.forEach(step=>{if(!style.openHat.includes(step))scheduleHat(ctx,engine.noise,stepWhen(step),step%4===0?1:.68,false,group)});style.openHat.forEach(step=>scheduleHat(ctx,engine.noise,stepWhen(step),.86,true,group))}
+   if(mix.keys)style.keys.forEach(step=>{const start=stepWhen(step),duration=Math.max(.12,Math.min(sixteenth*style.keyGate,barStart+barSeconds-start-.025));voicing.upperMidi.forEach((midi,index)=>schedulePadVoice(ctx,midi,start+index*.006,duration,voiceVolume*.82,group))});
+   if(mix.guitar){const guitarNotes=voicing.upperMidi.slice(-Math.min(4,voicing.upperMidi.length)),guitarVolume=Math.min(.034,.072/Math.sqrt(Math.max(1,guitarNotes.length)));style.guitar.forEach((step,hitIndex)=>{const start=stepWhen(step),duration=Math.max(.07,Math.min(sixteenth*style.guitarGate,barStart+barSeconds-start-.02));guitarNotes.forEach((midi,index)=>scheduleGuitarVoice(ctx,midi,start+index*.009,duration,guitarVolume*(hitIndex%2 ? .82 : 1),style.bright,group))})}
+   if(mix.cue&&barIndex===0)scheduleBassCue(ctx,voicing.bassMidi+12,barStart,Math.min(.38,barSeconds*.18),group);
+  }
+  engine.current=group;engine.previousUpper=voicing.upperMidi;
+ },[ensureHarmonyAudio,releaseCurrentChord]);
+ const stopPlayback=useCallback(()=>{
+  if(countInTimer.current!==null){window.clearTimeout(countInTimer.current);countInTimer.current=null}setCountIn(false);setAutoFollow(false);releaseCurrentChord();
+ },[releaseCurrentChord]);
+ const toggleProgression=async()=>{
+  if(autoFollow||countIn){stopPlayback();return}
+  const engine=await ensureHarmonyAudio();releaseCurrentChord();setActive(0);setChoice(null);onSelectPc(chords[0]?.bass??current.bass);onSetChord(chords[0]?.symbol??current.symbol);const group=engine.ctx.createGain(),beatSeconds=60/tempo,start=engine.ctx.currentTime+.045;group.gain.value=1;group.connect(engine.output);engine.current=group;for(let beatIndex=0;beatIndex<4;beatIndex++)scheduleCountClick(engine.ctx,start+beatIndex*beatSeconds,beatIndex===0,group);setCountIn(true);countInTimer.current=window.setTimeout(()=>{countInTimer.current=null;setCountIn(false);setAutoFollow(true)},Math.round(beatSeconds*4*1000)+55);
+ };
+
+ const activate=(index:number)=>{
+  const chord=chords[index];if(!chord)return;setActive(index);setChoice(null);onSelectPc(chord.bass);onSetChord(chord.symbol);if(!autoFollow&&!countIn)void playChordAudio(chord,1,tempo);
+ };
+ const applyPreset=(id:string)=>{
+  const preset=PROGRESSION_PRESETS.find(x=>x.id===id);if(!preset)return;stopPlayback();const text=preset.chords.join(" | ");setPresetId(id);setDraft(text);setApplied(text);setCentre(preset.center);setLens(preset.lens);setBandStyle(PRESET_BAND_STYLE[id]||"pocket");setActive(0);setChoice(null);setApplyError("");onSelectPc(null);onSetRoot(preset.center);onSetMode(preset.homeMode);onSetChord(preset.chords[0]);
+ };
+ const applyCustom=()=>{
+  const result=parseProgression(draft),fatal=result.chords.some(x=>x.rootName==="?");
+  if(!result.chords.length||fatal){setApplyError(tx("Enter at least one readable chord. Separate chords with | — for example Dm9 | G13 | Cmaj9.","اكتب كورد واحد مقروء على الأقل. افصل الكوردات بـ | — مثال Dm9 | G13 | Cmaj9."));return}
+  stopPlayback();setApplied(draft);setPresetId("custom");setActive(0);setChoice(null);setApplyError(result.errors.length?tx("The progression loaded, but check the highlighted symbol warning.","البروجرشن اتحمّل، بس راجع تحذير رمز الكورد."):"");onSelectPc(null);onSetRoot(centre);onSetChord(result.chords[0].symbol);
+ };
+ useEffect(()=>{harmonyLevelRef.current=harmonyLevel;const engine=harmonyAudio.current;if(engine&&engine.ctx.state!=="closed")engine.output.gain.setTargetAtTime(harmonyLevel/100*.56,engine.ctx.currentTime,.025)},[harmonyLevel]);
+ useEffect(()=>{bandStyleRef.current=bandStyle},[bandStyle]);
+ useEffect(()=>{bandMixRef.current=bandMix},[bandMix]);
+ useEffect(()=>{if(autoFollow)void playChordAudio(current,barsPerChord,tempo,true)},[autoFollow,current,barsPerChord,tempo,playChordAudio]);
+ useEffect(()=>{
+  if(!autoFollow||!chords.length)return;
+  const timer=window.setTimeout(()=>{const index=(active+1)%chords.length,chord=chords[index];if(index===active)void playChordAudio(chord,barsPerChord,tempo,true);else{setActive(index);setChoice(null)}onSelectPc(chord.bass);onSetChord(chord.symbol)},durationMs);
+  return()=>window.clearTimeout(timer);
+ },[autoFollow,active,chords,durationMs,barsPerChord,tempo,onSelectPc,onSetChord,playChordAudio]);
+ useEffect(()=>()=>{if(countInTimer.current!==null)window.clearTimeout(countInTimer.current);const engine=harmonyAudio.current;if(engine&&engine.ctx.state!=="closed")void engine.ctx.close();harmonyAudio.current=null},[]);
+
+ const chordFormula=current.intervals.map(iv=>intervalLabel(iv,current)),chordNotes=current.intervals.map(iv=>spellChordNote(current,iv)),selectedName=current.intervals.includes(selectedIv)?spellChordNote(current,selectedIv):PITCH_NAMES[selected],selectedDestinationName=next.intervals.includes(mod(selectedDestination-next.root))?spellChordNote(next,selectedDestination-next.root):PITCH_NAMES[selectedDestination],viewLabels:[[string,string,string],[string,string,string],[string,string,string],[string,string,string]]=[
+  ["priority","PRIORITY","الأهمية"],["degree","DEGREE","الدرجة"],["note","NOTE","النغمة"],["voice","TO NEXT","للي بعده"],
+ ],filterLabels:[[number,string,string],[number,string,string],[number,string,string],[number,string,string],[number,string,string]]=[
+  [0,"ALL 12","كل الـ١٢"],[1,"MODE","المود"],[2,"RECOMMENDED","المقترح"],[3,"ESSENTIALS","الأساس"],[4,"BLIND TEST","اختبار أعمى"],
+ ],rangeLabels:[[NeckRange,string,string],[NeckRange,string,string],[NeckRange,string,string],[NeckRange,string,string]]=[
+  ["low","LOW · 0–12","واطي · ٠–١٢"],["middle","MIDDLE · 5–15","وسط · ٥–١٥"],["high","HIGH · 10–20","عالي · ١٠–٢٠"],["full","FULL · 0–20","كامل · ٠–٢٠"],
+ ];
+ const cellText=(pc:number,role:ReturnType<typeof classifyNote>)=>actualDisplay==="note"?PITCH_NAMES[pc]:actualDisplay==="degree"?intervalLabel(pc-current.root,current):actualDisplay==="voice"?`→${PITCH_NAMES[nearestTarget(pc,next)]}`:tx(role.short.en,role.short.ar);
+ const visible=(role:ReturnType<typeof classifyNote>)=>filter===0||filter===1&&!["approach","outside"].includes(role.id)||filter===2&&role.rank<=6||filter===3&&role.rank<=3||filter===4;
+
+ return <div data-no-translate className={`osScreen harmonyFretboard ${arabic?"hfArabic":""}`} dir={arabic?"rtl":"ltr"}>
+  <section className="hfIntro"><div><span>{tx("HARMONY-AWARE FRETBOARD","فريت بورد فاهم الهارموني")}</span><h1>{tx("See what matters now.","شوف المهم دلوقتي.")}</h1><p>{tx("Choose a progression, move through its chords and watch every fret change job. The map ranks bass note, root, guide tones, written tensions, modal colour, voice-leading targets and controlled outside routes—it does not pretend one scale is the only answer.","اختار بروجرشن واتحرك بين كورداته وشوف وظيفة كل فريت بتتغيّر. الخريطة بترتب نغمة الباص والقرار والجايد تونز والتوتّرات المكتوبة ولون المود وأهداف حركة الأصوات وطرق الخروج المتحكم فيها—من غير ما تدّعي إن فيه سلم واحد بس صح.")}</p></div><aside><small>{tx("CURRENT DECISION","القرار الحالي")}</small><b dir="ltr">{current.symbol}</b><span>{PITCH_NAMES[current.root]} {arabic?selectedScale.ar:selectedScale.name}</span><em>{selectedRecommendation.score}% {tx("FIT","مطابقة")}</em></aside></section>
+
+  <section className="hfBuilder">
+   <header><div><span>{tx("01 · CHOOSE THE HARMONIC STORY","٠١ · اختار قصة الهارموني")}</span><h2>{tx("Progression first. Scale second.","البروجرشن الأول. السلم بعده.")}</h2></div><p>{tx("The same G7 can ask for Mixolydian, Lydian dominant, diminished or altered language depending on its spelling and destination.","نفس G7 ممكن يطلب ميكسوليديان أو ليديان دومينانت أو ديمينشد أو ألترد حسب كتابته ورايح فين.")}</p></header>
+   <div className="hfBuilderControls">
+    <label><span>{tx("PROGRESSION LIBRARY","مكتبة البروجرشن")}</span><select value={presetId} onChange={e=>e.target.value!=="custom"&&applyPreset(e.target.value)}><option value="custom">{tx("Custom progression","بروجرشن خاص")}</option>{PROGRESSION_PRESETS.map(p=><option value={p.id} key={p.id}>{tx(p.name.en,p.name.ar)}</option>)}</select></label>
+    <label><span>{tx("TONAL CENTRE","مركز الهارموني")}</span><select value={centre} onChange={e=>{const value=+e.target.value;setCentre(value);onSetRoot(value)}}>{PITCH_NAMES.map((note,i)=><option value={i} key={note}>{note}</option>)}</select></label>
+    <label><span>{tx("HOME FIELD","المجال الأساسي")}</span><select value={homeMode} onChange={e=>onSetMode(+e.target.value)}>{HOME_FIELDS.map(([en,ar],i)=><option value={i} key={en}>{tx(en,ar)}</option>)}</select></label>
+    <label><span>{tx("DECISION LENS","طريقة التفكير")}</span><select value={lens} onChange={e=>setLens(e.target.value)}><option value="functional">{tx("Functional / directional","وظيفي / موجه")}</option><option value="modal">{tx("Modal / one centre","مقامي / مركز واحد")}</option><option value="modern">{tx("Modern / colour-first","حديث / اللون الأول")}</option></select></label>
+   </div>
+   <div className="hfCustomInput"><label><span>{tx("EDIT OR PASTE CHORD SYMBOLS","عدّل أو الصق رموز الكوردات")}</span><input dir="ltr" value={draft} onChange={e=>{setDraft(e.target.value);setPresetId("custom")}} onKeyDown={e=>e.key==="Enter"&&applyCustom()} aria-label="Chord progression"/></label><button type="button" onClick={applyCustom}>{tx("ANALYZE PROGRESSION →","حلّل البروجرشن ←")}</button></div>
+   <p className="hfInputHelp">{tx("Understands: maj9 · m11 · mMaj9 · 13sus4 · 7alt · 13♭9 · m7♭5 · dim7 · maj7♯5 · slash bass. Literal extension rule: 13 includes 7, 9, 11 and 13; C(13) adds only 13. Separate up to 12 chords with |.","بيفهم: maj9 · m11 · mMaj9 · 13sus4 · 7alt · 13♭9 · m7♭5 · dim7 · maj7♯5 · سلاش باص. قاعدة الإضافات: 13 من غير أقواس فيها 7 و9 و11 و13؛ أما C(13) فتضيف 13 بس. افصل لحد ١٢ كورد بعلامة |.")}</p>
+   {(applyError||current.error)&&<p className="hfError">{applyError||tx("The main chord structure loaded, but review this symbol’s spelling.","التركيبة الأساسية اتحمّلت، بس راجع كتابة رمز الكورد.")}</p>}
+   <nav className="hfChordRail" aria-label={tx("Chord progression","البروجرشن")}>{chords.map((chord,i)=><button type="button" onClick={()=>activate(i)} className={active===i?"active":i===(active+1)%chords.length?"next":""} key={`${chord.symbol}-${i}`}><small>{active===i?tx("NOW","دلوقتي"):i===(active+1)%chords.length?tx("NEXT","الجاي"):`${i+1}`}</small><b dir="ltr">{chord.symbol}</b><span>{PITCH_NAMES[chord.bass]} {tx("in bass","في الباص")}</span></button>)}</nav>
+  </section>
+
+  <section className="hfCurrent">
+   <article className="hfChordDecode"><span>{tx("02 · DECODE THE CURRENT CHORD","٠٢ · فك الكورد الحالي")}</span><div><b dir="ltr">{current.symbol}</b><small>{tx(FAMILY_NAMES[current.family][0],FAMILY_NAMES[current.family][1])}</small></div><p>{familyJob(current.family,arabic)}</p><dl><div><dt>{tx("FORMULA","التركيبة")}</dt><dd dir="ltr">{chordFormula.join(" · ")}</dd></div><div><dt>{tx("NOTES","النغمات")}</dt><dd dir="ltr">{chordNotes.join(" · ")}</dd></div><div><dt>{tx("BASS ORDER","أمر الباص")}</dt><dd>{current.bass===current.root?tx(`${PITCH_NAMES[current.root]} · ROOT POSITION`,`${PITCH_NAMES[current.root]} · وضع القرار`):tx(`${PITCH_NAMES[current.bass]} · SLASH BASS (upper root ${PITCH_NAMES[current.root]})`,`${PITCH_NAMES[current.bass]} · سلاش باص (القرار العلوي ${PITCH_NAMES[current.root]})`)}</dd></div></dl><button type="button" className="hfChordPreview" disabled={autoFollow||countIn} onClick={()=>void playChordAudio(current,1,tempo)}>▶ {tx("HEAR THIS COMPLETE CHORD","اسمع الكورد كامل")}</button></article>
+   <article className="hfAutoFollow"><span>{tx("HANDS-FREE BASS BACKING BAND","فرقة باكينج للباص من غير إيدين")}</span><h3>{countIn?tx("Four beats. Get your hands ready.","أربع عدّات. جهّز إيديك."):autoFollow?tx("The band is playing. You are the bassist.","الفرقة شغّالة. إنت عازف الباص."):tx("One Start. A complete band behind you.","ضغطة واحدة. فرقة كاملة وراك.")}</h3><div className="hfTimingControls"><label>{tx("TEMPO","السرعة")}<input type="number" min="35" max="220" disabled={autoFollow||countIn} value={tempo} onChange={e=>setTempo(Math.max(35,Math.min(220,+e.target.value||80)))}/></label><label>{tx("BARS / CHORD","موازير / كورد")}<select disabled={autoFollow||countIn} value={barsPerChord} onChange={e=>setBarsPerChord(+e.target.value)}><option value="1">1</option><option value="2">2</option><option value="4">4</option></select></label></div><label className="hfBandStyle"><span>{tx("BAND FEEL","إحساس الفرقة")}</span><select disabled={autoFollow||countIn} value={bandStyle} onChange={e=>setBandStyle(e.target.value as BandStyleId)}>{BAND_STYLES.map(style=><option value={style.id} key={style.id}>{tx(style.name[0],style.name[1])}</option>)}</select><small>{tx(selectedBandStyle.feel[0],selectedBandStyle.feel[1])}</small></label><div className="hfBandMixer"><header><span>{tx("BAND MIXER","ميكسر الفرقة")}</span><b>{tx("NO BASSLINE — THAT IS YOUR PART","مفيش خط باص — ده دورك إنت")}</b></header><div>{(["drums","keys","guitar","cue"] as const).map((track,index)=>{const labels=[["DRUMS","درامز"],["KEYS / CHORDS","كيز / كوردات"],["RHYTHM GUITAR","جيتار ريذم"],["CHANGE CUE","إشارة التغيير"]][index];return <button type="button" disabled={autoFollow||countIn} aria-pressed={bandMix[track]} className={bandMix[track]?"active":""} onClick={()=>setBandMix(value=>({...value,[track]:!value[track]}))} key={track}><i>{bandMix[track]?"●":"○"}</i><span>{tx(labels[0],labels[1])}</span></button>})}</div></div><label className="hfHarmonyLevel"><span>{tx("BAND VOLUME","صوت الفرقة")}</span><input type="range" min="0" max="100" value={harmonyLevel} onChange={e=>setHarmonyLevel(+e.target.value)}/><b>{harmonyLevel}%</b></label><div className="hfSounding"><small>{tx(`${selectedBandStyle.name[0].toUpperCase()} · FULL VOICING NOW`,`${selectedBandStyle.name[1]} · التوزيع الكامل دلوقتي`)}</small><b dir="ltr">{current.symbol} · {chordNotes.join(" · ")}</b><span>{tx(`Drums hold the grid; keys state all ${current.intervals.length} written tones; rhythm guitar supplies movement. The optional change cue names ${current.bassName}, but never plays a bassline.`,`الدرامز ماسكة التقسيم؛ الكيز بتقول كل نغمات الكورد المكتوبة وعددها ${current.intervals.length}؛ وجيتار الريذم بيعمل الحركة. إشارة التغيير الاختيارية بتقول ${current.bassName} بس عمرها ما تعزف خط باص.`)}</span></div><button type="button" className={autoFollow||countIn?"stop":""} onClick={()=>void toggleProgression()}>{countIn?tx("■ CANCEL COUNT-IN","■ الغي العدّ"):autoFollow?tx("■ STOP FULL BAND","■ وقف الفرقة"):tx("▶ PLAY FULL BAND BACKING TRACK","▶ شغّل باكينج تراك الفرقة")}</button><p>{countIn?tx(`Then the band enters together on ${chords[0]?.symbol||current.symbol}.`,`وبعدها الفرقة تدخل مع بعض على ${chords[0]?.symbol||current.symbol}.`):tx(`Next change: ${next.symbol} after ${barsPerChord} bar${barsPerChord===1?"":"s"}. Click any chord above to jump without stopping.`,`التغيير الجاي: ${next.symbol} بعد ${barsPerChord} ${barsPerChord===1?"مازورة":"موازير"}. دوس على أي كورد فوق عشان تنط له من غير ما توقف.`)}</p><small className="hfHeadphoneNote">{tx("HEADPHONES / AUDIO INTERFACE RECOMMENDED FOR CLEAN PITCH DETECTION","يفضّل هيدفون أو كارت صوت عشان التقاط النغمة يفضل نضيف")}</small>{(autoFollow||countIn)&&<i className="hfAutoPulse" style={{animationDuration:`${countIn?Math.round(60000/tempo*4):durationMs}ms`}}/>}</article>
+  </section>
+
+  <section className="hfModes">
+   <header><div><span>{tx("03 · RANKED CHORD-SCALE OPTIONS","٠٣ · اختيارات سلالم مرتبة")}</span><h2>{tx("Several can be correct. Their jobs are different.","أكتر من اختيار ممكن يبقى صح. شغلهم مختلف.")}</h2></div><p>{tx("Percentages rank literal chord fit, tonal-centre overlap and connection into the next chord. They are guidance—not a law that replaces your ear.","النسب بترتب مطابقة الكورد ومشاركة مركز الهارموني والوصول للكورد الجاي. دي إرشادات—مش قانون يلغي ودنك.")}</p></header>
+   <div>{recommendations.map((recommendation,i)=>{const chosen=recommendation.scale.id===selectedScale.id;return <article className={chosen?"active":""} key={recommendation.scale.id}><button className="hfModeSelect" type="button" onClick={()=>setChoice({key:currentKey,scale:recommendation.scale.id})}><small>{i===0?tx("BEST STARTING POINT","أحسن بداية"):i===1?tx("CONTEXT OPTION","اختيار سياق"):tx("ALTERNATIVE COLOUR","لون بديل")}</small><b>{PITCH_NAMES[current.root]} {arabic?recommendation.scale.ar:recommendation.scale.name}</b><strong>{recommendation.score}%</strong><code dir="ltr">{recommendation.scale.formula}</code><p>{tx(recommendation.reason.en,recommendation.reason.ar)} {tx(recommendation.scale.use.en,recommendation.scale.use.ar)}</p><em>{tx("WATCH · ","خلي بالك · ")}{tx(recommendation.scale.watch.en,recommendation.scale.watch.ar)}</em></button><button type="button" className="hfHear" onClick={()=>onAudition([...recommendation.scale.intervals.map(iv=>mod(current.root+iv)),current.root],.22,current.root)}>▶ {tx("HEAR","اسمع")}</button></article>})}</div>
+  </section>
+
+  <section className="hfMapControls"><div><span>{tx("LABELS","الكتابة")}</span>{viewLabels.map(([value,en,ar])=><button type="button" aria-pressed={actualDisplay===value} className={actualDisplay===value?"active":""} onClick={()=>onDisplayMode(value)} key={value}>{tx(en,ar)}</button>)}</div><div><span>{tx("SHOW","اعرض")}</span>{filterLabels.map(([value,en,ar])=><button type="button" aria-pressed={filter===value} className={filter===value?"active":""} onClick={()=>onFog(value)} key={value}>{tx(en,ar)}</button>)}</div><div><span>{tx("NECK AREA","منطقة الرقبة")}</span>{rangeLabels.map(([value,en,ar])=><button type="button" aria-pressed={neckRange===value} className={neckRange===value?"active":""} onClick={()=>setNeckRange(value)} key={value}>{tx(en,ar)}</button>)}</div></section>
+
+  <section className={`hfNeckSection ${filter===4?"blind":""}`}>
+   <header><div><span>{tx("04 · THE NECK RE-RANKED FOR THIS MOMENT","٠٤ · ترتيب الرقبة للحظة دي")}</span><h2 dir="ltr">{current.symbol} → {next.symbol}</h2></div><p>{tx("Low register: bass/root/5. Middle register: guide tones and voice leading. Upper register: written tensions and modal colour. The same pitch class can have a different practical weight in each register.","المنطقة الواطية: الباص/القرار/الخامسة. الوسطى: الجايد تونز وحركة الأصوات. العالية: التوتّرات المكتوبة ولون المود. نفس النغمة ممكن يبقى وزنها العملي مختلف حسب المنطقة.")}</p></header>
+   <div className="hfLegend">{(["bass","root","guide","chord","specified","voice","colour","available","context","approach","outside"] as const).map(id=><span className={`role-${id}`} key={id}><i/>{tx(NOTE_ROLES[id].short.en,NOTE_ROLES[id].short.ar)}</span>)}</div>
+   <div className="hfBoardWrap"><div className="hfBoard" style={{minWidth:`${Math.max(780,visibleFrets.length*72+70)}px`}}><div className="hfFretNumbers" style={{gridTemplateColumns:`58px repeat(${visibleFrets.length}, minmax(64px, 1fr))`}}><b>{tx("STRING","وتر")}</b>{visibleFrets.map(f=><span className={[3,5,7,9,12,15,17,19].includes(f)?"marked":""} key={f}>{f}<i/></span>)}</div>{STRINGS.map((string,stringIndex)=><div className={`hfString string-${stringIndex}`} style={{gridTemplateColumns:`58px repeat(${visibleFrets.length}, minmax(64px, 1fr))`}} key={string.name}><b>{string.name}<small>{tx("STRING","وتر")}</small></b>{visibleFrets.map(fret=>{const pc=mod(string.open+fret),role=classifyNote(pc,current,selectedScale,next),show=visible(role),picked=selected===pc,destination=selectedDestination===pc;return <button type="button" aria-pressed={picked} aria-label={tx(`${string.name} string fret ${fret}: ${PITCH_NAMES[pc]}, ${role.label.en}`,`وتر ${string.name} فريت ${fret}: ${PITCH_NAMES[pc]}، ${role.label.ar}`)} onClick={()=>onSelectPc(pc)} className={`role-${role.id} ${show?"visible":"hidden"} ${picked?"picked":""} ${destination?"destination":""}`} key={fret}><i/><b dir="ltr">{filter===4?"?":cellText(pc,role)}</b><small dir="ltr">{filter===4?"":PITCH_NAMES[pc]}</small></button>})}</div>)}</div></div>
+  </section>
+
+  <section className="hfNoteTutor">
+   <div className={`hfRoleBadge role-${selectedRole.id}`}><i/><span>{tx(selectedRole.short.en,selectedRole.short.ar)}</span></div>
+   <article><span>{tx("SELECTED NOTE","النغمة المختارة")}</span><h2>{selectedName} <small dir="ltr">{intervalLabel(selectedIv,current)} {tx("over","فوق")} {current.symbol}</small></h2><h3>{tx(selectedRole.label.en,selectedRole.label.ar)}</h3><p>{tx(selectedRole.why.en,selectedRole.why.ar)}</p></article>
+   <article><span>{tx("BASS DECISION","قرار الباص")}</span><p>{tx(selectedRole.advice.en,selectedRole.advice.ar)}</p><dl><div><dt>{tx("NEXT TARGET","الهدف الجاي")}</dt><dd>{selectedDestinationName} · {intervalLabel(selectedDestination-next.root,next)} / {next.symbol}</dd></div><div><dt>{tx("MOVEMENT","الحركة")}</dt><dd>{Math.min(mod(selectedDestination-selected),mod(selected-selectedDestination))===0?tx("COMMON TONE","نغمة مشتركة"):Math.min(mod(selectedDestination-selected),mod(selected-selectedDestination))===1?tx("SEMITONE PULL","جذب نص تون"):tx("DIRECTED STEP / LEAP","خطوة / نقلة موجهة")}</dd></div></dl></article>
+   <button type="button" onClick={()=>onAudition([current.root,selected,selectedDestination],.42,current.root)}>▶ {tx("HEAR: HOME → NOTE → NEXT TARGET","اسمع: البيت ← النغمة ← الهدف الجاي")}</button>
+  </section>
+
+   <section className="hfVoiceLeading"><header><div><span>{tx("05 · DO NOT STOP AT THE SCALE","٠٥ · ما تقفش عند السلم")}</span><h2>{tx("Make the next chord inevitable.","خلّي الكورد الجاي حتمي.")}</h2></div><p>{tx("These are the smallest useful routes between bass notes, roots, 3rds and 7ths. Choose one before adding chromatic decoration.","دي أصغر طرق مفيدة بين نغمات الباص والقرارات والتالتات والسوابع. اختار واحدة قبل الزينة الكروماتيك.")}</p></header><div className="hfVoiceGrid">{paths.map((path,i)=><button type="button" onClick={()=>onAudition([path.from,path.to],.55,current.root)} key={`${path.from}-${path.to}-${i}`}><small>{i===0?tx("SHORTEST ROUTE","أقصر طريق"):tx("VOICE OPTION","اختيار صوت")}</small><b dir="ltr">{current.intervals.includes(mod(path.from-current.root))?spellChordNote(current,path.from-current.root):PITCH_NAMES[path.from]} <i>{path.distance===0?"=":path.distance>0?`+${path.distance}`:path.distance}</i> {next.intervals.includes(mod(path.to-next.root))?spellChordNote(next,path.to-next.root):PITCH_NAMES[path.to]}</b><span dir="ltr">{path.fromDegree} / {current.symbol} → {path.toDegree} / {next.symbol}</span></button>)}</div><footer><div><span>{tx("COMMON TONES","نغمات مشتركة")}</span><b>{shared.length?shared.map(pc=>PITCH_NAMES[pc]).join(" · "):tx("NONE — movement must be audible","مفيش — الحركة لازم تتسمع")}</b></div><div><span>{tx("PRIMARY BASS LANDING","نزول الباص الأساسي")}</span><b dir="ltr">{next.bassName} · {next.bass===next.root?tx("ROOT","قرار"):tx("SLASH ORDER","أمر سلاش")}</b></div><button type="button" onClick={()=>onAudition(paths.flatMap(path=>[path.from,path.to]),.32,current.root)}>▶ {tx("HEAR ALL ROUTES","اسمع كل الطرق")}</button></footer></section>
+ </div>;
+}
