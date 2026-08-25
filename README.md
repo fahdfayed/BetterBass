@@ -38,7 +38,7 @@ The production server serves the built React client and the API from the same po
 
 ## Deploy to Vercel
 
-This repository includes the root `server.mjs` entrypoint Vercel expects. Vercel runs the Express API as a Node function and serves the Vite client from its CDN. The checked-in `vercel.json` runs the standard `npm run build` command, so deployment does not depend on dashboard command overrides.
+This repository includes the root `server.mjs` entrypoint Vercel expects. Vercel runs the Express API as a Node function, serves the Vite assets from `public/`, and lets Express return the SPA for `/` and client-side routes. The checked-in `vercel.json` runs the standard `npm run build` command and includes the generated client with the function, so deployment does not depend on dashboard command overrides.
 
 1. Import the repository into Vercel.
 2. Keep **Root Directory** at the repository root. If the repository contains an outer `outside-in-bass-node` folder, select that folder as the Root Directory instead.

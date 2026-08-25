@@ -46,6 +46,10 @@ test("Vercel root entrypoint exports the API without starting a listener",async(
  const source=await readFile(new URL("../server.mjs",import.meta.url),"utf8");assert.match(source,/import express from ["']express["']/);
  const {default:app}=await import("../server.mjs");assert.equal(typeof app,"function");
  const server=createServer(app);await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));const address=server.address();
- try{const health=await fetch(`http://127.0.0.1:${address.port}/api/v1/health`).then(response=>response.json());assert.equal(health.ok,true);assert.equal(health.runtime,"node-express")}
+ try{
+  const base=`http://127.0.0.1:${address.port}`;
+  const health=await fetch(`${base}/api/v1/health`).then(response=>response.json());assert.equal(health.ok,true);assert.equal(health.runtime,"node-express");
+  const home=await fetch(base);assert.equal(home.status,200);assert.match(await home.text(),/<div id="root"><\/div>/);
+ }
  finally{await new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve()))}
 });
