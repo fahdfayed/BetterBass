@@ -33,6 +33,7 @@ import "./styles/shell.css";
 import "./styles/home.css";
 import "./styles/game.css";
 import "./styles/lesson.css";
+import "./styles/lesson-content.css";
 import "./styles/legacy-bridge.css";
 
 // Marks that scripting is available, so motion.css can hide reveal targets. If
