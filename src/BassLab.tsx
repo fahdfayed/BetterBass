@@ -3,6 +3,7 @@ import {fadeAndClose,startAudioClock,type AudioClock} from "./audio-clock";
 import AppShell from "./components/AppShell";
 import Home from "./views/Home";
 import WorldMap from "./views/WorldMap";
+import CourseLibrary from "./views/CourseLibrary";
 import LessonWorkspace from "./views/LessonWorkspace";
 import LessonTools,{WORKSPACE_LABELS} from "./views/LessonTools";
 import {territoryStates} from "./game/progression";
@@ -367,7 +368,13 @@ export default function BassLab(){
   </>}
  />}
 
- {view==="roadmap"&&<div className="osScreen courseRoadmap"><header><span>28-LESSON CURRICULUM</span><h1>The route from scales<br/>to free improvisation.</h1><p>Lessons unlock in order because later freedom depends on earlier hearing. You can revisit anything already passed.</p></header>{COURSE_UNITS.map(u=>{const lessons=COURSE_LESSONS.slice(u.range[0],u.range[1]+1);return <section key={u.n} className={course.unit===u.n?"active":""}><header><i>{String(u.n).padStart(2,"0")}</i><div><small>UNIT {u.n} · WEEKS {u.weeks}</small><h2>{u.title}</h2><p>{u.subtitle}</p></div><span>{Math.max(0,Math.min(lessons.length,courseCompleted-u.range[0]))}/{lessons.length}</span></header><div>{lessons.map((l,j)=>{const idx=u.range[0]+j,state=idx<courseCompleted?"passed":idx===courseCompleted?"current":"locked";return <button className={state} disabled={state==="locked"} onClick={()=>openCourseLesson(idx)} key={l.title}><i>{state==="passed"?"✓":state==="locked"?"·":idx+1}</i><div><small>{l.tag} · {l.duration} MIN</small><b>{l.title}</b><p>{l.outcome}</p></div><span>{state.toUpperCase()}</span></button>})}</div></section>})}</div>}
+ {view==="roadmap"&&<CourseLibrary
+  lessons={COURSE_LESSONS.map((lesson,index)=>({index,unit:lesson.unit,title:lesson.title,tag:lesson.tag,duration:lesson.duration,outcome:lesson.outcome}))}
+  units={COURSE_UNITS}
+  completed={courseCompleted}
+  current={courseIndex}
+  onOpen={openCourseLesson}
+ />}
 
  {view==="practice"&&<Suspense fallback={<ToolLoading/>}><BeastPractice currentLesson={course.title} courseTools={course.tools} toolMeta={toolMeta} onOpenTool={openCourseTool}/></Suspense>} 
 
