@@ -26,7 +26,7 @@ export type IconName=
 export const NAV:NavGroup[]=[
  {label:"Learn",items:[
   {view:"course",label:"Home",blurb:"Your next step and today's route",icon:"home",keywords:["dashboard","start","overview"]},
-  {view:"map",label:"The map",blurb:"Six territories, your rank and every badge",icon:"map",keywords:["map","territory","rank","xp","level","badges","achievements","progress","streak","game"]},
+  {view:"map",label:"The map",blurb:"Six territories and the route through them",icon:"map",keywords:["map","territory","territories","route","units","unlock","overview"]},
   {view:"roadmap",label:"Full course",blurb:"All 28 lessons across six units",icon:"course",keywords:["curriculum","lessons","syllabus","map"],children:[
    {view:"courseLesson",label:"Current lesson",blurb:"The lesson you are working through",icon:"course",keywords:["continue","resume"]},
   ]},
