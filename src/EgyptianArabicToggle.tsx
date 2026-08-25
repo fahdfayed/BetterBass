@@ -17,7 +17,7 @@ export default function EgyptianArabicToggle(){
  useEffect(()=>{
   let cancelled=false,observer:MutationObserver|null=null;
   const run=async()=>{
-   const root=document.querySelector<HTMLElement>(".courseOs");if(!root)return;
+   const root=document.querySelector<HTMLElement>("[data-translate-root],.courseOs");if(!root)return;
    root.classList.toggle("egyptian-arabic",arabic);document.documentElement.lang=arabic?"ar-EG":"en";document.documentElement.dir=arabic?"rtl":"ltr";
    const translate=arabic?(await import("./egyptian-translator")).toEgyptianArabic:(value:string)=>value;
    if(cancelled)return;

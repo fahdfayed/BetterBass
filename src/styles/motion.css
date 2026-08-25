@@ -1,0 +1,85 @@
+/**
+ * Motion primitives.
+ *
+ * Two rules hold everything together:
+ *   1. Only transform and opacity are animated, so nothing triggers layout.
+ *   2. Entrances are staggered by depth, not by index, so a long list does not
+ *      turn into a slow queue the reader has to wait out.
+ */
+
+/* ---- entrance --------------------------------------------------------- */
+
+@keyframes riseIn{
+ from{opacity:0;transform:translate3d(0,14px,0)}
+ to{opacity:1;transform:translate3d(0,0,0)}
+}
+@keyframes fadeIn{
+ from{opacity:0}
+ to{opacity:1}
+}
+@keyframes scaleIn{
+ from{opacity:0;transform:scale(.96)}
+ to{opacity:1;transform:scale(1)}
+}
+
+.rise{animation:riseIn var(--dur-reveal) var(--ease-out) both}
+.fade{animation:fadeIn var(--dur-slow) var(--ease) both}
+.pop{animation:scaleIn var(--dur-slow) var(--ease-spring) both}
+
+/* Depth steps for staggering a section's children. */
+.d1{animation-delay:60ms}
+.d2{animation-delay:120ms}
+.d3{animation-delay:180ms}
+.d4{animation-delay:240ms}
+.d5{animation-delay:300ms}
+.d6{animation-delay:360ms}
+
+/* ---- scroll reveal ---------------------------------------------------- */
+
+/* Progressively enhanced: without JS or IntersectionObserver support the
+   content is simply visible, never stuck at opacity 0. */
+.reveal{opacity:1}
+.js .reveal{opacity:0;transform:translate3d(0,20px,0);transition:opacity var(--dur-reveal) var(--ease-out),transform var(--dur-reveal) var(--ease-out)}
+.js .reveal.seen{opacity:1;transform:translate3d(0,0,0)}
+
+/* ---- route transition ------------------------------------------------- */
+
+@keyframes viewIn{
+ from{opacity:0;transform:translate3d(0,10px,0)}
+ to{opacity:1;transform:translate3d(0,0,0)}
+}
+.viewEnter{animation:viewIn var(--dur-slow) var(--ease-out) both}
+
+/* ---- ambient ---------------------------------------------------------- */
+
+@keyframes pulseGlow{
+ 0%,100%{opacity:.5}
+ 50%{opacity:1}
+}
+@keyframes shimmer{
+ from{transform:translateX(-100%)}
+ to{transform:translateX(100%)}
+}
+@keyframes spinSlow{
+ to{transform:rotate(360deg)}
+}
+
+.pulse{animation:pulseGlow 2.4s var(--ease) infinite}
+
+/* A light sweep across a surface, used on primary actions. Clipped by the host,
+   which must set its own overflow:hidden and position. */
+.sheen::after{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.14) 50%,transparent 80%);
+ transform:translateX(-100%);
+ pointer-events:none;
+}
+.sheen:hover::after{animation:shimmer 900ms var(--ease)}
+
+@media (prefers-reduced-motion:reduce){
+ .js .reveal{opacity:1;transform:none}
+ .sheen:hover::after{animation:none}
+ .pulse{animation:none}
+}

@@ -1,5 +1,7 @@
 import {lazy,Suspense,useEffect,useMemo,useRef,useState} from "react";
 import {fadeAndClose,startAudioClock,type AudioClock} from "./audio-clock";
+import AppShell from "./components/AppShell";
+import {goToView,navigate,pathForView,useRoute} from "./router";
 import {autoCorrelate,centsToNote,labelFor,midiHz,NOTE_NAMES,PITCH_MAX_HZ,PITCH_MIN_HZ,PITCH_RMS_GATE,tensionFor,type Harmony} from "./pitch";
 import {COURSE_LESSONS,COURSE_UNITS} from "./course-data";
 import {LESSON_DETAILS} from "./course-details";
@@ -67,9 +69,14 @@ const numberArray=(value:unknown,length:number,fallback:number[])=>Array.isArray
 const clampIndex=(value:unknown,low:number,high:number)=>{const n=typeof value==="number"&&Number.isFinite(value)?Math.round(value):low;return Math.min(high,Math.max(low,n))};
 
 export default function Home(){
- const [view,setView]=useState("course"),[root,setRoot]=useState(9),[mode,setMode]=useState(1),[chord,setChord]=useState("Am7"),[fbView,setFbView]=useState("priority"),[fog,setFog]=useState(2),[picked,setPicked]=useState<number|null>(null),[listening,setListening]=useState(false),[pitch,setPitch]=useState<{n:string,oct:number,cents:number,hz:number}|null>(null),[history,setHistory]=useState<number[]>([]),[level,setLevel]=useState(1),[outsideBeat,setOutsideBeat]=useState(0),[rescue,setRescue]=useState(1),[lastRescue,setLastRescue]=useState(""),[weights,setWeights]=useState([60,55,45,70,80,75,62]),[plan,setPlan]=useState(sessions),[freedom,setFreedom]=useState([72,89,94,86,63]),[events,setEvents]=useState<NoteEvent[]>([]),[bpm,setBpm]=useState(80),[calibrated,setCalibrated]=useState(false),[noise,setNoise]=useState(0),[audioError,setAudioError]=useState(""),[exercise,setExercise]=useState(0),[recording,setRecording]=useState(false),[playing,setPlaying]=useState(false),[style,setStyle]=useState("Psychedelic"),[meter,setMeter]=useState(4),[clickMode,setClickMode]=useState("2 & 4"),[density,setDensity]=useState(2),[bar,setBar]=useState(1),[beat,setBeat]=useState(1),[weather,setWeather]=useState("Stable"),[progression,setProgression]=useState([0,0,5,0]),[diagStep,setDiagStep]=useState(0),[diag,setDiag]=useState([0,0,0,0,0]),[adaptiveReady,setAdaptiveReady]=useState(false),[keyMatrix,setKeyMatrix]=useState([78,42,69,45,75,57,41,81,44,86,48,71]),[antiHabit,setAntiHabit]=useState(false),[reviewDays,setReviewDays]=useState([3,11,18,7,22]);
+ const [root,setRoot]=useState(9),[mode,setMode]=useState(1),[chord,setChord]=useState("Am7"),[fbView,setFbView]=useState("priority"),[fog,setFog]=useState(2),[picked,setPicked]=useState<number|null>(null),[listening,setListening]=useState(false),[pitch,setPitch]=useState<{n:string,oct:number,cents:number,hz:number}|null>(null),[history,setHistory]=useState<number[]>([]),[level,setLevel]=useState(1),[outsideBeat,setOutsideBeat]=useState(0),[rescue,setRescue]=useState(1),[lastRescue,setLastRescue]=useState(""),[weights,setWeights]=useState([60,55,45,70,80,75,62]),[plan,setPlan]=useState(sessions),[freedom,setFreedom]=useState([72,89,94,86,63]),[events,setEvents]=useState<NoteEvent[]>([]),[bpm,setBpm]=useState(80),[calibrated,setCalibrated]=useState(false),[noise,setNoise]=useState(0),[audioError,setAudioError]=useState(""),[exercise,setExercise]=useState(0),[recording,setRecording]=useState(false),[playing,setPlaying]=useState(false),[style,setStyle]=useState("Psychedelic"),[meter,setMeter]=useState(4),[clickMode,setClickMode]=useState("2 & 4"),[density,setDensity]=useState(2),[bar,setBar]=useState(1),[beat,setBeat]=useState(1),[weather,setWeather]=useState("Stable"),[progression,setProgression]=useState([0,0,5,0]),[diagStep,setDiagStep]=useState(0),[diag,setDiag]=useState([0,0,0,0,0]),[adaptiveReady,setAdaptiveReady]=useState(false),[keyMatrix,setKeyMatrix]=useState([78,42,69,45,75,57,41,81,44,86,48,71]),[antiHabit,setAntiHabit]=useState(false),[reviewDays,setReviewDays]=useState([3,11,18,7,22]);
  const [lessonIdx,setLessonIdx]=useState(0),[lessonStage,setLessonStage]=useState(0),[lessonProgress,setLessonProgress]=useState<number[]>([0,0,0,0,0,0]),[labMode,setLabMode]=useState("motif"),[mutation,setMutation]=useState("ORIGINAL"),[slip,setSlip]=useState(1),[slipLength,setSlipLength]=useState(1),[targetTone,setTargetTone]=useState(0),[tensionBudget,setTensionBudget]=useState(10),[curve,setCurve]=useState([0,1,1,2,3,4,2,0]),[labFeedback,setLabFeedback]=useState(""),[harmonyQuiz,setHarmonyQuiz]=useState(0);
  const [courseIndex,setCourseIndex]=useState(0),[courseStep,setCourseStep]=useState(0),[courseCompleted,setCourseCompleted]=useState(0),[showToolkit,setShowToolkit]=useState(false),[practiceTempo,setPracticeTempo]=useState(60),[juryScores,setJuryScores]=useState([70,70,70,70,70]);
+ const route=useRoute(),view=route.view;
+ // Navigating by view id keeps every existing call site working while the URL
+ // becomes the single source of truth for which screen is open.
+ const setView=(next:string)=>next==="courseLesson"?navigate(pathForView("courseLesson",{lesson:courseIndex+1})):goToView(next);
+ useEffect(()=>{if(route.view!=="courseLesson")return;const lesson=Number.parseInt(route.params.lesson??"",10);if(Number.isFinite(lesson))setCourseIndex(clampIndex(lesson-1,0,COURSE_LESSONS.length-1))},[route.view,route.params.lesson]);
  const egyptian=useEgyptianArabic();
  const audio=useRef<{ctx:AudioContext,stream:MediaStream,raf:number}|null>(null),eventRef=useRef<{midi:number,start:number,amp:number}|null>(null),eventsRef=useRef<NoteEvent[]>([]),recordRef=useRef(false),runtimeRef=useRef<{ctx:AudioContext,clock:AudioClock,master:GainNode}|null>(null),auditionRef=useRef<AudioContext|null>(null); const ri=root, scale=useMemo(()=>MODES[mode].s.map(x=>(x+ri)%12),[mode,ri]), color=(ri+MODES[mode].s[MODES[mode].c])%12, chordTones=useMemo(()=>[0,3,7,10].map(x=>(x+ri)%12),[ri]);
  // The microphone loop and the backing band both outlive the render that starts
@@ -183,15 +190,24 @@ export default function Home(){
   {id:"reference",icon:"library",tag:"UNDERSTAND",title:"Theory reference",desc:"Look up the exact concept you need without leaving the lesson or starting another course."},
   {id:"adaptive",icon:"progress",tag:"PLAN",title:"Adaptive training plan",desc:"Turn your weakest key, skill and overdue review into one focused practice route."},
  ];
- return <main className="os courseOs"><EgyptianArabicToggle/>
- <aside className="appSidebar">
-  <button className="osBrand" onClick={()=>setView("course")} aria-label="Open Bass Lab home"><b><span>O</span><i>I</i></b><span><strong>Outside In</strong><small>Bass learning studio</small></span></button>
-  <nav aria-label="Main navigation">{NAV_GROUPS.map(group=><section className="navGroup" key={group.label}><span>{group.label}</span>{group.items.map(item=>{const active=(NAV_ACTIVE[item.id]||[]).includes(view);return <button key={item.id} className={active?"active":""} aria-current={active?"page":undefined} onClick={()=>setView(item.id)}><UiIcon name={item.icon}/><span>{item.label}</span></button>})}</section>)}</nav>
-  <section className="sidebarCourse"><div><span>COURSE PROGRESS</span><b>{coursePct}%</b></div><i><em style={{width:`${coursePct}%`}}/></i><p>Lesson {courseIndex+1} of {COURSE_LESSONS.length}</p><strong>{course.title}</strong><button onClick={()=>setView("courseLesson")}>Continue lesson <span>→</span></button></section>
-  <div className="device"><i className={listening?"online":""}/><span>{listening?"Bass input active":"Bass input off"}<small>{pitch?`${pitch.n}${pitch.oct} · ${Math.round(pitch.hz)} Hz`:"Connect only when a tool asks"}</small></span></div>
- </aside>
- <section className="osMain">
-  <header className="appTopbar"><div className="location"><span>{pageMeta.eyebrow}</span><b>{pageMeta.title}</b><em>{["course","courseLesson","roadmap","courseProgress"].includes(view)?`Lesson ${courseIndex+1} · ${course.title}`:`${N[root]} ${MODES[mode].n}`}</em></div><div className="topbarActions">{showHarmonicControls&&view!=="fret"&&<div className="harmonicContext"><label>KEY<select aria-label="Key centre" value={root} onChange={e=>{setRoot(+e.target.value);setChord(`${N[+e.target.value]}m7`)}}>{N.map((n,i)=><option value={i} key={n}>{n}</option>)}</select></label><label>SOUND<select aria-label="Home mode" value={mode} onChange={e=>setMode(+e.target.value)}>{MODES.map((m,i)=><option value={i} key={m.n}>{m.n}</option>)}</select></label></div>}{view==="fret"&&<span className="headerContextLock">{egyptian?"اختيارات البروجرشن تحت":"Progression controls are in the tool"}</span>}<VoiceControl/><button className={`connectButton ${listening?"recording":""}`} onClick={startAudio}><i/>{listening?"Disconnect bass":"Connect bass"}</button></div></header>
+  const headerActions=<>
+  {showHarmonicControls&&view!=="fret"&&<div className="headerSelects">
+   <label><span className="eyebrow">Key</span><select aria-label="Key centre" value={root} onChange={e=>{setRoot(+e.target.value);setChord(`${N[+e.target.value]}m7`)}}>{N.map((n,i)=><option value={i} key={n}>{n}</option>)}</select></label>
+   <label><span className="eyebrow">Sound</span><select aria-label="Home mode" value={mode} onChange={e=>setMode(+e.target.value)}>{MODES.map((m,i)=><option value={i} key={m.n}>{m.n}</option>)}</select></label>
+  </div>}
+  {view==="fret"&&<span className="chip">{egyptian?"اختيارات البروجرشن تحت":"Controls are in the tool"}</span>}
+  <VoiceControl/>
+  <button className={`btn ${listening?"":"primary"} sheen`} onClick={startAudio}>
+   <i className={`inputDot ${listening?"live":""}`}/>{listening?"Disconnect":"Connect bass"}
+  </button>
+ </>;
+
+ return <AppShell
+  course={{percent:coursePct,index:courseIndex,total:COURSE_LESSONS.length,title:course.title}}
+  input={{listening,detail:pitch?`${pitch.n}${pitch.oct} · ${Math.round(pitch.hz)} Hz`:"Connect only when a tool asks"}}
+  actions={headerActions}
+ >
+ <EgyptianArabicToggle/>
 
  {view==="today"&&<div className="osScreen"><div className="todayHero"><div><span className="k">TUESDAY · ADAPTIVE SESSION 12</span><h1>TODAY’S<br/><em>SESSION</em></h1><p>Built from your weak modes, neglected keys, register bias and tension-control history—not from a fixed lesson order.</p><button className="mega" onClick={()=>{setView("live");startAudio()}}>START PRACTICE <b>→</b></button></div><div className="weakness"><span>PRIMARY BOTTLENECK</span><h2>Dorian → Mixolydian recognition</h2><div><b>67%</b><i><em style={{width:"67%"}}/></i></div><ul><li><span>Fretboard recall</span><b>Strong below 9 / weak above 12</b></li><li><span>Chromatic groove</span><b className="warn">Needs work</b></li><li><span>Outside-note control</span><b>67%</b></li><li><span>Practice debt</span><b>Phrygian · E♭ · 5/4</b></li></ul></div></div><div className="sessionStrip">{plan.map((x,i)=><article key={x.t}><span>{String(i+1).padStart(2,'0')}</span><div><small>{x.tag} · {x.m} MIN</small><b>{x.t}</b><p>{x.d}</p></div><button>↗</button></article>)}</div><div className="freedomMini"><div><span>FREEDOM SCORE</span><h3>Tension-aware player</h3><p>Next threshold: free improviser</p></div>{["HEAR","SEE","KNOW","PLAY","CREATE"].map((x,i)=><div key={x}><b>{freedom[i]}</b><span>{x}</span><i><em style={{height:`${freedom[i]}%`}}/></i></div>)}</div></div>}
 
@@ -341,5 +357,5 @@ export default function Home(){
 
  {view==="reference"&&<Suspense fallback={<ToolLoading/>}><TheoryReference root={root} onSetMode={setMode} onAudition={audition}/></Suspense>}
 
- </section></main>
+ </AppShell>
 }
