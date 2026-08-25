@@ -94,89 +94,7 @@ button:not(:disabled):active{transform:translateY(1px)}
 .courseOs .osScreen select{border-radius:9px}
 .toolLoading{display:flex;align-items:center;justify-content:center;gap:12px;min-height:55vh;color:#a8afb9;font-size:13px}
 .toolLoading i{width:20px;height:20px;border:2px solid #39414c;border-top-color:var(--lime);border-radius:50%;animation:toolSpin .7s linear infinite}
-@keyframes toolSpin{to{transform:rotate(360deg)}}
-
-/* Home: one next step, then optional depth */
-.homeDashboard{display:flex;flex-direction:column;gap:22px}
-.homeWelcome{display:flex;justify-content:space-between;align-items:end;padding:8px 0 14px}
-.homeWelcome>div:first-child{max-width:760px}
-.homeWelcome>div>span,.homeLessonRoute>header span,.homeQuickAccess>header span,.homePathPreview>header span,.toolLibraryPage>header span{color:var(--lime);font:700 10px/1 var(--mono);letter-spacing:.13em}
-.homeWelcome h1{margin:13px 0 8px;font-size:clamp(39px,5vw,70px);line-height:1;letter-spacing:-.055em}
-.homeWelcome p{max-width:680px;margin:0;color:var(--muted);font-size:16px!important}
-.homeOverall{width:180px;flex:0 0 180px;padding:17px;border:1px solid var(--line);border-radius:15px;background:var(--panel)}
-.homeOverall>b{display:block;color:var(--lime);font:700 29px/1 var(--mono)}
-.homeOverall>span{display:block;margin:7px 0 13px;color:#868e9a;font:700 9px var(--mono);letter-spacing:.08em}
-.homeOverall>i{display:block;height:5px;border-radius:99px;background:#303640;overflow:hidden}
-.homeOverall>i>em{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--blue),var(--lime))}
-.homeFocusGrid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);gap:18px}
-.homeLessonCard,.handsFreeHome{min-width:0;border:1px solid var(--line);border-radius:var(--radius-xl);box-shadow:var(--shadow);overflow:hidden}
-.homeLessonCard{position:relative;padding:clamp(28px,4vw,52px);background:radial-gradient(circle at 88% 18%,rgba(117,214,210,.15),transparent 30%),linear-gradient(145deg,#20252d,#171a22)}
-.homeLessonCard:before{content:"";position:absolute;left:0;top:0;width:100%;height:4px;background:linear-gradient(90deg,var(--blue),var(--lime))}
-.homeCardLabel{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}
-.homeCardLabel>span{color:var(--lime);font:700 10px var(--mono);letter-spacing:.13em}
-.homeCardLabel>b{padding:7px 10px;border-radius:99px;background:#2a3038;color:#b9c0ca;font-size:11px}
-.homeLessonCard>small{color:#858d99;font:650 11px var(--mono);letter-spacing:.05em}
-.homeLessonCard h2{max-width:800px;margin:14px 0 11px;font-size:clamp(34px,4.4vw,61px);line-height:1.02}
-.homeLessonCard>p{max-width:780px;margin:0;color:#bbc0c8;font-size:15px!important}
-.lessonStageLine{display:flex;gap:7px;margin:30px 0 27px;overflow-x:auto;padding-bottom:4px}
-.lessonStageLine>span{display:flex;align-items:center;gap:7px;min-width:max-content;padding:8px 10px;border:1px solid #363c47;border-radius:9px;color:#767e8b;font:700 9px var(--mono)}
-.lessonStageLine>span i{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#292e37;font-style:normal}
-.lessonStageLine>span.active{border-color:rgba(185,238,120,.42);background:rgba(185,238,120,.08);color:var(--lime)}
-.lessonStageLine>span.done{color:#a5d1cb}
-.homeLessonCard .primaryAction,.handsFreeHome>button{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:50px;padding:13px 16px;border:0;border-radius:12px;background:var(--lime);color:#11140e;font-size:14px;font-weight:850}
-.homeLessonCard .primaryAction:hover,.handsFreeHome>button:hover{background:#ccfa96;transform:translateY(-1px)}
-.handsFreeHome{padding:31px;background:radial-gradient(circle at 90% 5%,rgba(184,166,255,.18),transparent 32%),#191c25}
-.soundOrb{position:relative;display:grid;place-items:center;width:62px;height:62px;margin-bottom:29px;border-radius:50%;background:var(--violet);color:#17141f}
-.soundOrb .navIcon{width:30px;height:30px}
-.soundOrb .navIcon svg{width:28px;height:28px;stroke-width:2}
-.soundOrb>i{position:absolute;width:78px;height:78px;border:1px solid rgba(184,166,255,.22);border-radius:50%}
-.soundOrb>i:nth-of-type(2){width:92px;height:92px;opacity:.58}
-.soundOrb>i:nth-of-type(3){width:108px;height:108px;opacity:.25}
-.handsFreeHome>span{color:var(--violet);font:700 10px var(--mono);letter-spacing:.12em}
-.handsFreeHome h2{margin:13px 0 10px;font-size:29px;line-height:1.08}
-.handsFreeHome>p{color:#aeb4bf}
-.handsFreeHome ul{list-style:none;padding:0;margin:20px 0 25px}
-.handsFreeHome li{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid #303541;color:#c5c9d0;font-size:12px}
-.handsFreeHome li i{color:var(--lime);font-style:normal}
-
-.homeLessonRoute,.homeQuickAccess,.homePathPreview{border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--panel);overflow:hidden}
-.homeLessonRoute>header,.homePathPreview>header{display:flex;align-items:end;justify-content:space-between;padding:25px 28px;border-bottom:1px solid var(--line)}
-.homeLessonRoute h2,.homeQuickAccess h2,.homePathPreview h2{margin:7px 0 0;font-size:27px}
-.homeLessonRoute>header>button,.homePathPreview>header>button{padding:9px 12px;border:1px solid #424957;border-radius:9px;background:#20242d;color:#c9cdd3;font-size:11px}
-.homeLessonRoute>div{display:grid;grid-template-columns:repeat(4,1fr)}
-.homeLessonRoute article{position:relative;min-height:205px;padding:23px;border-right:1px solid var(--line);background:#171a22}
-.homeLessonRoute article:last-child{border-right:0}
-.homeLessonRoute article.current{background:linear-gradient(145deg,rgba(185,238,120,.11),rgba(185,238,120,.02));box-shadow:inset 0 3px var(--lime)}
-.homeLessonRoute article>div{display:flex;align-items:center;gap:9px}
-.homeLessonRoute article>div i{color:#717987;font:700 15px var(--mono);font-style:normal}
-.homeLessonRoute article>div span{color:var(--lime);font:700 10px var(--mono)}
-.homeLessonRoute article>div b{margin-left:auto;color:#8f96a2;font-size:10px}
-.homeLessonRoute article p{margin:26px 0 18px;color:#a9aeb8}
-.homeLessonRoute article>small{color:#646c79;font:700 9px var(--mono);letter-spacing:.1em}
-.homeLessonRoute article.current>small{color:var(--lime)}
-
-.homeQuickAccess{padding:26px 28px}
-.homeQuickAccess>header{margin-bottom:20px}
-.homeQuickAccess>div{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.homeQuickAccess button{display:grid;grid-template-columns:42px 1fr auto;gap:13px;align-items:center;min-height:77px;padding:14px 16px;border:1px solid #343a46;border-radius:13px;background:#1b1f28;color:#e8eae6;text-align:left}
-.homeQuickAccess button:hover{border-color:#596372;background:#222731;transform:translateY(-1px)}
-.homeQuickAccess button>.navIcon{width:42px;height:42px;border-radius:11px;background:#292f38;color:var(--blue)}
-.homeQuickAccess button>.navIcon svg{width:22px}
-.homeQuickAccess button>span b,.homeQuickAccess button>span small{display:block}
-.homeQuickAccess button>span b{font-size:14px}
-.homeQuickAccess button>span small{margin-top:3px;color:#838b97;font-size:11px}
-.homeQuickAccess button>i{color:#7f8794;font-style:normal}
-
-.homePathPreview>div{display:grid;grid-template-columns:repeat(6,1fr)}
-.homePathPreview>div>button{display:flex;flex-direction:column;min-height:125px;padding:17px;border:0;border-right:1px solid var(--line);background:#171a22;color:#818896;text-align:left}
-.homePathPreview>div>button:last-child{border-right:0}
-.homePathPreview>div>button:hover:not(:disabled){background:#1f242d;color:#fff}
-.homePathPreview>div>button.active{background:rgba(185,238,120,.09);color:#fff;box-shadow:inset 0 3px var(--lime)}
-.homePathPreview>div>button>i{display:grid;place-items:center;width:27px;height:27px;border-radius:8px;background:#292e38;color:var(--lime);font:700 11px var(--mono);font-style:normal}
-.homePathPreview>div>button>span{display:block;margin:15px 0 8px}
-.homePathPreview>div>button small{display:block;color:#707886;font:700 8px var(--mono)}
-.homePathPreview>div>button b{display:block;margin-top:4px;font-size:12px;line-height:1.25}
-.homePathPreview>div>button em{margin-top:auto;color:#737b88;font:700 9px var(--mono);font-style:normal}
+@keyframes toolSpin{to{transform:rotate(360deg)}}/* Home: one next step{display:flex;flex-direction:column;gap:22px}.toolLibraryPage>header span{color:var(--lime);font:700 10px/1 var(--mono);letter-spacing:.13em}
 
 /* Tool library */
 .toolLibraryPage{display:flex;flex-direction:column;gap:22px}
@@ -372,16 +290,6 @@ button:not(:disabled):active{transform:translateY(1px)}
 @media(max-width:1180px){
  .courseOs.os{grid-template-columns:244px minmax(0,1fr)}
  .courseOs>.appSidebar{width:244px;padding-inline:13px}
- .homeFocusGrid{grid-template-columns:1fr}
- .handsFreeHome{display:grid;grid-template-columns:90px 1fr;column-gap:24px}
- .handsFreeHome .soundOrb{grid-row:1/6}
- .handsFreeHome>span,.handsFreeHome h2,.handsFreeHome>p,.handsFreeHome ul,.handsFreeHome>button{grid-column:2}
- .homeLessonRoute>div{grid-template-columns:1fr 1fr}
- .homeLessonRoute article:nth-child(2){border-right:0}
- .homeLessonRoute article:nth-child(-n+2){border-bottom:1px solid var(--line)}
- .homePathPreview>div{grid-template-columns:repeat(3,1fr)}
- .homePathPreview>div>button:nth-child(3){border-right:0}
- .homePathPreview>div>button:nth-child(-n+3){border-bottom:1px solid var(--line)}
  .toolLibraryGrid{grid-template-columns:1fr 1fr}
  .slapPath{grid-template-columns:repeat(3,1fr)}
  .hfMapControls{grid-template-columns:1fr}
@@ -411,8 +319,6 @@ button:not(:disabled):active{transform:translateY(1px)}
  .beastSections,.coachTabs,.slapTabs{top:132px}
  .screenIntro{grid-template-columns:1fr;gap:12px}
  .screenIntro p{max-width:800px}
- .homeWelcome{align-items:flex-start}
- .homeQuickAccess>div{grid-template-columns:1fr}
  .runtimeGrid,.adaptiveOverview,.adaptGrid{grid-template-columns:1fr}
  .hfIntro,.hfCurrent{grid-template-columns:1fr}
  .hfBuilderControls{grid-template-columns:1fr 1fr}
@@ -438,31 +344,6 @@ button:not(:disabled):active{transform:translateY(1px)}
  .voiceControl .voiceToggle{padding:8px}
  .voiceControl .voiceToggle span,.voiceControl .voiceTest{display:none}
  .courseOs .osScreen{padding:22px 14px 90px}
- .homeDashboard{gap:14px}
- .homeWelcome{display:block;padding-top:0}
- .homeWelcome h1{font-size:40px}
- .homeWelcome p{font-size:14px!important}
- .homeOverall{width:100%;margin-top:18px}
- .homeLessonCard,.handsFreeHome{border-radius:17px}
- .homeLessonCard{padding:25px 20px}
- .homeLessonCard h2{font-size:36px}
- .homeCardLabel{margin-bottom:24px}
- .lessonStageLine{margin-block:22px}
- .handsFreeHome{display:block;padding:25px 20px}
- .handsFreeHome .soundOrb{width:54px;height:54px;margin-bottom:25px}
- .homeLessonRoute>header,.homePathPreview>header{align-items:flex-start;gap:14px;padding:21px 18px}
- .homeLessonRoute>header>button{display:none}
- .homeLessonRoute>div{grid-template-columns:1fr}
- .homeLessonRoute article,.homeLessonRoute article:nth-child(2){min-height:0;border-right:0;border-bottom:1px solid var(--line)}
- .homeLessonRoute article:last-child{border-bottom:0}
- .homeQuickAccess{padding:22px 17px}
- .homeQuickAccess button{grid-template-columns:38px 1fr auto;padding:12px}
- .homePathPreview>header{display:block}
- .homePathPreview>header>button{margin-top:13px}
- .homePathPreview>div{grid-template-columns:1fr 1fr}
- .homePathPreview>div>button,.homePathPreview>div>button:nth-child(3){border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
- .homePathPreview>div>button:nth-child(2n){border-right:0}
- .homePathPreview>div>button:nth-last-child(-n+2){border-bottom:0}
  .toolLibraryPage>header{display:block}
  .toolLibraryPage>header h1{font-size:42px}
  .toolLibraryPage>header>button{width:100%;margin-top:20px}

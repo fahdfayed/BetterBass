@@ -12,8 +12,8 @@
     "vercel-build": "vite build",
     "start": "node server/index.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "node --test tests/api.test.mjs",
-    "check": "tsc --noEmit && vite build && node --test tests/api.test.mjs"
+    "test": "node --test tests/api.test.mjs tests/store.test.mjs tests/pitch.test.mjs tests/progression.test.mjs",
+    "check": "tsc --noEmit && vite build && node --test tests/api.test.mjs tests/store.test.mjs tests/pitch.test.mjs tests/progression.test.mjs"
   },
   "dependencies": {
     "express": "5.2.1",

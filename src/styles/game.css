@@ -1,0 +1,168 @@
+/** Game layer: rank HUD, territory map, missions and badges. */
+
+/* ---- map header --------------------------------------------------------- */
+
+.mapHead{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s-6);flex-wrap:wrap}
+.mapHead h1{max-width:14ch}
+.mapHead h1:focus{outline:none}
+.hudStats{display:flex;gap:var(--s-3);flex-wrap:wrap}
+.hudStat{
+ display:flex;flex-direction:column;gap:2px;align-items:flex-start;
+ min-width:5.5rem;
+ padding:var(--s-3) var(--s-4);
+ border:1px solid var(--line);
+ border-radius:var(--r-md);
+ background:var(--surface-1);
+}
+.hudStat b{font-size:var(--step-2);font-weight:680;letter-spacing:-.03em;line-height:1}
+.hudStat b i{font-style:normal;font-size:var(--step-0);color:var(--text-faint)}
+
+/* ---- the map board ------------------------------------------------------ */
+
+.mapBoard{
+ position:relative;
+ aspect-ratio:16/9;
+ min-height:26rem;
+ padding:0;
+ overflow:hidden;
+ background:
+  radial-gradient(80% 60% at 20% 90%,color-mix(in oklab,var(--unit-1) 14%,transparent),transparent 70%),
+  radial-gradient(70% 60% at 85% 20%,color-mix(in oklab,var(--unit-4) 12%,transparent),transparent 70%),
+  var(--surface-1);
+}
+/* Faint grid, so the plane reads as terrain rather than empty space. */
+.mapBoard::before{
+ content:"";
+ position:absolute;
+ inset:0;
+ background-image:
+  linear-gradient(var(--line) 1px,transparent 1px),
+  linear-gradient(90deg,var(--line) 1px,transparent 1px);
+ background-size:3.5rem 3.5rem;
+ opacity:.5;
+ mask-image:radial-gradient(80% 80% at 50% 50%,#000 40%,transparent 100%);
+}
+
+.mapCanvas{position:absolute;inset:0;width:100%;height:100%}
+.mapLink{
+ fill:none;
+ stroke-width:.6;
+ vector-effect:non-scaling-stroke;
+ stroke-linecap:round;
+}
+.mapLink.open{stroke:color-mix(in oklab,var(--violet) 55%,transparent);stroke-dasharray:none}
+.mapLink.locked{stroke:var(--line-strong);stroke-dasharray:3 4}
+
+.mapNodes{list-style:none;margin:0;padding:0;position:absolute;inset:0}
+.mapNode{position:absolute;transform:translate(-50%,-50%)}
+.mapNode>button{
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ gap:var(--s-2);
+ padding:var(--s-2);
+ border-radius:var(--r-md);
+ transition:transform var(--dur) var(--ease-spring);
+}
+.mapNode>button:hover{transform:translateY(-3px)}
+
+.nodeRing{
+ display:grid;
+ place-items:center;
+ width:3.4rem;height:3.4rem;
+ border-radius:var(--r-full);
+ border:2px solid var(--line-strong);
+ background:var(--surface-solid);
+ transition:border-color var(--dur) var(--ease),box-shadow var(--dur) var(--ease),background var(--dur) var(--ease);
+}
+.nodeCore{font-weight:800;font-size:var(--step-1);color:var(--text-faint)}
+
+.mapNode.open .nodeRing,.mapNode.current .nodeRing,.mapNode.complete .nodeRing{
+ border-color:var(--accent);
+ background:color-mix(in oklab,var(--accent) 18%,var(--surface-solid));
+ box-shadow:0 0 0 6px color-mix(in oklab,var(--accent) 10%,transparent);
+}
+.mapNode.open .nodeCore,.mapNode.current .nodeCore,.mapNode.complete .nodeCore{color:var(--accent)}
+.mapNode.complete .nodeCore{color:var(--ok)}
+.mapNode.complete .nodeRing{border-color:var(--ok);background:color-mix(in oklab,var(--ok) 16%,var(--surface-solid))}
+.mapNode.locked{opacity:.5}
+.mapNode.locked .nodeCore{font-size:var(--step-0)}
+.mapNode.selected .nodeRing{box-shadow:0 0 0 4px color-mix(in oklab,var(--accent) 40%,transparent),0 0 28px -4px var(--accent)}
+
+/* The territory being worked on breathes, so the eye finds it immediately. */
+.mapNode.current .nodeRing{animation:nodePulse 2.6s var(--ease) infinite}
+@keyframes nodePulse{
+ 0%,100%{box-shadow:0 0 0 6px color-mix(in oklab,var(--accent) 10%,transparent)}
+ 50%{box-shadow:0 0 0 12px color-mix(in oklab,var(--accent) 4%,transparent),0 0 30px -6px var(--accent)}
+}
+@media (prefers-reduced-motion:reduce){.mapNode.current .nodeRing{animation:none}}
+
+.nodeLabel{display:flex;flex-direction:column;align-items:center;text-align:center;max-width:9.5rem}
+.nodeLabel b{font-size:var(--step--1);font-weight:620;line-height:1.25}
+.nodeLabel small{font-size:.68rem;color:var(--text-faint);font-variant-numeric:tabular-nums}
+
+/* ---- territory panel ---------------------------------------------------- */
+
+.territoryPanel{padding:var(--s-6);display:flex;flex-direction:column;gap:var(--s-5)}
+.territoryPanel>header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s-5);flex-wrap:wrap}
+.territoryPanel h2{font-size:var(--step-2)}
+.territoryScore{min-width:9rem;display:flex;flex-direction:column;gap:var(--s-2)}
+.territoryScore b{font-size:var(--step-3);font-weight:680;line-height:1;letter-spacing:-.03em}
+.territoryScore b i{font-style:normal;font-size:var(--step-0);color:var(--text-faint)}
+
+.missionList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s-2)}
+.mission>button{
+ display:flex;
+ align-items:center;
+ gap:var(--s-4);
+ width:100%;
+ padding:.7rem var(--s-4);
+ border:1px solid var(--line);
+ border-radius:var(--r-md);
+ background:var(--surface-1);
+ text-align:left;
+ transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease),transform var(--dur-fast) var(--ease-out);
+}
+.mission>button:hover:not(:disabled){background:var(--surface-2);border-color:var(--line-strong);transform:translateX(3px)}
+.mission>button:disabled{cursor:not-allowed;opacity:.45}
+.missionMark{
+ display:grid;
+ place-items:center;
+ width:1.75rem;height:1.75rem;
+ flex:none;
+ border-radius:var(--r-full);
+ background:var(--surface-3);
+ font-style:normal;
+ font-size:var(--step--1);
+ font-weight:700;
+ color:var(--text-faint);
+}
+.mission.passed .missionMark{background:color-mix(in oklab,var(--ok) 20%,transparent);color:var(--ok)}
+.mission.current .missionMark{background:var(--accent);color:var(--accent-ink)}
+.mission.current>button{border-color:color-mix(in oklab,var(--accent) 45%,transparent);background:color-mix(in oklab,var(--accent) 8%,var(--surface-1))}
+.missionName{flex:1;min-width:0;font-size:var(--step-0)}
+.missionState{font-size:var(--step--1);color:var(--text-faint);white-space:nowrap}
+.mission.passed .missionState{color:var(--ok)}
+
+.lockNote{
+ padding:var(--s-5);
+ border:1px dashed var(--line-strong);
+ border-radius:var(--r-md);
+ text-align:center;
+ color:var(--text-muted);
+}
+
+/* ---- responsive --------------------------------------------------------- */
+
+@media (max-width:56rem){
+ /* The plotted map depends on width to stay legible; below this it becomes a
+    plain ordered list, which is also what a screen reader has all along. */
+ .mapBoard{aspect-ratio:auto;min-height:0;padding:var(--s-4);background:var(--surface-1)}
+ .mapBoard::before,.mapCanvas{display:none}
+ .mapNodes{position:static;display:flex;flex-direction:column;gap:var(--s-2)}
+ .mapNode{position:static;transform:none}
+ .mapNode>button{flex-direction:row;width:100%;gap:var(--s-4);padding:var(--s-3)}
+ .nodeRing{width:2.6rem;height:2.6rem}
+ .nodeLabel{align-items:flex-start;text-align:left;max-width:none}
+ .territoryPanel{padding:var(--s-5)}
+}

@@ -318,12 +318,12 @@ export default function PerformanceCoach({root,modeName,courseTitle,courseComple
  useEffect(()=>{callbacksRef.current={onStopRecording,onSetRoot}},[onStopRecording,onSetRoot]);
  useEffect(()=>{
   if(!timerRunning||!timerBlock)return;
-  const timer=window.setInterval(()=>setTimerSeconds(value=>{
-   if(value<=1){setTimerRunning(false);return 0}
-   return value-1;
-  }),1000);
+  const timer=window.setInterval(()=>setTimerSeconds(value=>Math.max(0,value-1)),1000);
   return()=>window.clearInterval(timer);
  },[timerRunning,timerBlock]);
+ // Stopping the clock is a side effect, so it cannot live inside the updater:
+ // React re-runs updaters (twice under StrictMode) to check that they are pure.
+ useEffect(()=>{if(timerRunning&&timerSeconds===0)setTimerRunning(false)},[timerRunning,timerSeconds]);
 
  const take=events.length?events:external.lastTake;
  const takeMetrics=useMemo(()=>{

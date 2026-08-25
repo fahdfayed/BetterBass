@@ -1,6 +1,7 @@
 "use client";
 
 import {useEffect,useMemo,useRef,useState} from "react";
+import {startAudioClock,type AudioClock} from "./audio-clock";
 import {speakCoach,stopCoachSpeech} from "./speech";
 
 type LivePitch={n:string;oct:number;cents:number;hz:number}|null;
@@ -137,11 +138,11 @@ export default function MaqamLab({livePitch,listening,onToggleListening}:Props){
  const [backingStep,setBackingStep]=useState(0);
  const [backingBar,setBackingBar]=useState(1);
  const [backingPrompt,setBackingPrompt]=useState("ESTABLISH THE LOWER JINS");
- const runStartRef=useRef(0);
+ const runStartRef=useRef(0),spokenStepRef=useRef(-1);
  const runnerTimerRef=useRef<number|null>(null);
  const correctionRef=useRef({status:"",count:0,lastSpoken:0});
  const scoreRef=useRef({hits:0,total:0});
- const backingRef=useRef<{ctx:AudioContext;timer:number;master:GainNode;osc:OscillatorNode[]} | null>(null);
+ const backingRef=useRef<{ctx:AudioContext;clock:AudioClock;master:GainNode;osc:OscillatorNode[]} | null>(null);
  const backingSettingsRef=useRef({tempo,droneVolume,drumVolume,iqa,formBars});
 
  const maqam=useMemo(()=>MAQAMAT.find(x=>x.id===maqamId)??MAQAMAT[0],[maqamId]);
@@ -154,7 +155,7 @@ export default function MaqamLab({livePitch,listening,onToggleListening}:Props){
  useEffect(()=>{backingSettingsRef.current={tempo,droneVolume,drumVolume,iqa,formBars}},[tempo,droneVolume,drumVolume,iqa,formBars]);
  useEffect(()=>()=>{
   if(runnerTimerRef.current)window.clearInterval(runnerTimerRef.current);
-  if(backingRef.current){window.clearTimeout(backingRef.current.timer);backingRef.current.osc.forEach(x=>{try{x.stop()}catch{}});backingRef.current.ctx.close()}
+  if(backingRef.current){backingRef.current.clock.stop();backingRef.current.osc.forEach(x=>{try{x.stop()}catch{}});void backingRef.current.ctx.close()}
   stopCoachSpeech();
  },[]);
 
@@ -222,7 +223,7 @@ export default function MaqamLab({livePitch,listening,onToggleListening}:Props){
  };
 
  const startRunner=async()=>{
-  setRunResult("");setElapsed(0);setRunStep(0);scoreRef.current={hits:0,total:0};correctionRef.current={status:"",count:0,lastSpoken:0};
+  setRunResult("");setElapsed(0);setRunStep(0);spokenStepRef.current=0;scoreRef.current={hits:0,total:0};correctionRef.current={status:"",count:0,lastSpoken:0};
   if(!listening){const connected=await onToggleListening();if(!connected){setRunResult("MICROPHONE REQUIRED · Select your bass/audio-interface input, then start again.");return}}
   runStartRef.current=performance.now();setRunning(true);
   speak(`${exercise.title}. ${exercise.steps[0].instruction}`);
@@ -230,16 +231,19 @@ export default function MaqamLab({livePitch,listening,onToggleListening}:Props){
    const sec=(performance.now()-runStartRef.current)/1000;
    setElapsed(sec);
    const nextStep=exercise.steps.reduce((found,step,i)=>sec>=step.at?i:found,0);
-   setRunStep(old=>{
-    if(nextStep!==old){speak(`${exercise.steps[nextStep].label}. ${exercise.steps[nextStep].instruction}`);return nextStep}
-    return old;
-   });
+   // Speaking from inside the updater made the coach talk over itself: React
+   // re-runs updaters to check they are pure, twice under StrictMode.
+   if(nextStep!==spokenStepRef.current){
+    spokenStepRef.current=nextStep;
+    speak(`${exercise.steps[nextStep].label}. ${exercise.steps[nextStep].instruction}`);
+    setRunStep(nextStep);
+   }
    if(sec>=exercise.minutes*60){stopRunner(true)}
   },250);
  };
 
- const playPercussion=(ctx:AudioContext,dest:AudioNode,kind:string,volume:number)=>{
-  const now=ctx.currentTime+.01;
+ const playPercussion=(ctx:AudioContext,dest:AudioNode,kind:string,volume:number,when?:number)=>{
+  const now=when??ctx.currentTime+.01;
   if(kind==="D"){
    const osc=ctx.createOscillator(),g=ctx.createGain();osc.type="sine";osc.frequency.setValueAtTime(120,now);osc.frequency.exponentialRampToValueAtTime(62,now+.14);g.gain.setValueAtTime(volume,now);g.gain.exponentialRampToValueAtTime(.001,now+.22);osc.connect(g);g.connect(dest);osc.start(now);osc.stop(now+.24);
   }else if(kind==="T"){
@@ -250,7 +254,7 @@ export default function MaqamLab({livePitch,listening,onToggleListening}:Props){
 
  const stopBacking=()=>{
   const r=backingRef.current;if(!r)return;
-  window.clearTimeout(r.timer);r.osc.forEach(x=>{try{x.stop()}catch{}});r.ctx.close();backingRef.current=null;setBacking(false);setBackingStep(0);setBackingBar(1);
+  r.clock.stop();r.osc.forEach(x=>{try{x.stop()}catch{}});void r.ctx.close();backingRef.current=null;setBacking(false);setBackingStep(0);setBackingBar(1);
  };
 
  const startBacking=()=>{
@@ -262,20 +266,31 @@ export default function MaqamLab({livePitch,listening,onToggleListening}:Props){
    {ratio:1.5,type:"triangle" as OscillatorType,level:.055},
    {ratio:2,type:"sine" as OscillatorType,level:.035},
   ].forEach(x=>{const osc=ctx.createOscillator(),g=ctx.createGain();osc.type=x.type;osc.frequency.value=midiFrequency(baseMidi,maqam.rootOffset??0)*x.ratio;g.gain.value=x.level*droneVolume/50;osc.connect(g);g.connect(master);osc.start();oscillators.push(osc)});
-  const runtime={ctx,timer:0,master,osc:oscillators};backingRef.current=runtime;setBacking(true);
-  let step=-1,bar=1;
-  const prompts=["ESTABLISH THE LOWER JINS","LEAN ON THE GHAMMAZ","REVEAL THE UPPER JINS","DESCEND AND PROVE HOME"];
-  const tick=()=>{
-   if(backingRef.current!==runtime)return;
-   const settings=backingSettingsRef.current,pattern=IQAA[settings.iqa].pattern;step=(step+1)%pattern.length;
-   if(step===0&&!(bar===1&&backingStep===0)){bar=bar%settings.formBars+1;setBackingBar(bar);const section=Math.floor((bar-1)/Math.max(1,settings.formBars/4))%4;setBackingPrompt(prompts[section])}
-   setBackingStep(step);playPercussion(ctx,master,pattern[step],settings.drumVolume/100*.42);
-   if(step===Math.floor(pattern.length/2)){
-    const tone=maqam.cents[Math.min(maqam.ghammaz,maqam.cents.length-1)],o=ctx.createOscillator(),g=ctx.createGain(),now=ctx.currentTime+.01;o.type="triangle";o.frequency.value=midiFrequency(baseMidi,tone+(maqam.rootOffset??0));g.gain.setValueAtTime(.06*settings.droneVolume/50,now);g.gain.exponentialRampToValueAtTime(.001,now+.24);o.connect(g);g.connect(master);o.start(now);o.stop(now+.26);
-   }
-   runtime.timer=window.setTimeout(tick,60000/settings.tempo/2);
-  };
-  tick();
+   const runtime={ctx,clock:{stop(){}} as AudioClock,master,osc:oscillators};backingRef.current=runtime;setBacking(true);
+   const prompts=["ESTABLISH THE LOWER JINS","LEAN ON THE GHAMMAZ","REVEAL THE UPPER JINS","DESCEND AND PROVE HOME"];
+   // Each pattern step is half a beat, so the clock runs at twice the tempo. It
+   // queues percussion against the audio clock rather than firing a chained
+   // setTimeout, which accumulated the callback’s own latency on every step.
+   const patternStep=(index:number)=>{const pattern=IQAA[backingSettingsRef.current.iqa].pattern;return {pattern,at:index%pattern.length}};
+   const schedule=(index:number,when:number)=>{
+    const settings=backingSettingsRef.current,{pattern,at}=patternStep(index);
+    playPercussion(ctx,master,pattern[at],settings.drumVolume/100*.42,when);
+    if(at===Math.floor(pattern.length/2)){
+     const tone=maqam.cents[Math.min(maqam.ghammaz,maqam.cents.length-1)],o=ctx.createOscillator(),g=ctx.createGain();
+     o.type="triangle";o.frequency.value=midiFrequency(baseMidi,tone+(maqam.rootOffset??0));
+     g.gain.setValueAtTime(.06*settings.droneVolume/50,when);g.gain.exponentialRampToValueAtTime(.001,when+.24);
+     o.connect(g);g.connect(master);o.start(when);o.stop(when+.26);
+    }
+   };
+   const display=(index:number)=>{
+    const settings=backingSettingsRef.current,{pattern,at}=patternStep(index);
+    setBackingStep(at);
+    if(at!==0)return;
+    const bar=Math.floor(index/pattern.length)%settings.formBars+1;
+    setBackingBar(bar);
+    setBackingPrompt(prompts[Math.floor((bar-1)/Math.max(1,settings.formBars/4))%4]);
+   };
+   runtime.clock=startAudioClock(ctx,()=>backingSettingsRef.current.tempo*2,{schedule,display});
  };
 
  const zones:Record<string,[number,number]>= {low:[0,5],middle:[5,10],upper:[9,15],full:[0,15]};

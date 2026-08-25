@@ -1,0 +1,71 @@
+/**
+ * The ambient aurora field.
+ *
+ * Three blurred colour bodies drifting behind everything. Every frame of this is
+ * driven by `transform` and `opacity` only, so it composites on the GPU and
+ * never touches the main thread — which matters here, because the pitch
+ * detector already runs work on every animation frame while the mic is live.
+ *
+ * No JS, no canvas, no requestAnimationFrame.
+ */
+
+.auroraField{
+ position:fixed;
+ inset:0;
+ z-index:0;
+ overflow:hidden;
+ pointer-events:none;
+ background:var(--bg);
+ contain:strict;
+}
+
+.auroraField::after{
+ /* Fine grain over the gradients. Without it the large soft areas band badly
+    on 8-bit panels. */
+ content:"";
+ position:absolute;
+ inset:-50%;
+ opacity:.16;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+
+.auroraBody{
+ position:absolute;
+ width:min(90vw,60rem);
+ aspect-ratio:1;
+ border-radius:50%;
+ filter:blur(90px);
+ opacity:.5;
+ will-change:transform;
+ transform:translate3d(0,0,0);
+}
+
+.auroraBody.a{background:radial-gradient(circle at 50% 50%,var(--violet),transparent 68%);top:-24%;left:-14%;animation:auroraDriftA 34s ease-in-out infinite alternate}
+.auroraBody.b{background:radial-gradient(circle at 50% 50%,var(--cyan),transparent 68%);top:18%;right:-22%;opacity:.36;animation:auroraDriftB 43s ease-in-out infinite alternate}
+.auroraBody.c{background:radial-gradient(circle at 50% 50%,var(--pink),transparent 68%);bottom:-30%;left:26%;opacity:.28;animation:auroraDriftC 52s ease-in-out infinite alternate}
+
+@keyframes auroraDriftA{
+ from{transform:translate3d(0,0,0) scale(1)}
+ to{transform:translate3d(14vw,10vh,0) scale(1.22)}
+}
+@keyframes auroraDriftB{
+ from{transform:translate3d(0,0,0) scale(1.1)}
+ to{transform:translate3d(-16vw,16vh,0) scale(.88)}
+}
+@keyframes auroraDriftC{
+ from{transform:translate3d(0,0,0) scale(.95)}
+ to{transform:translate3d(10vw,-14vh,0) scale(1.25)}
+}
+
+/* A vignette keeps text contrast stable wherever the bodies happen to drift. */
+.auroraVeil{
+ position:absolute;
+ inset:0;
+ background:
+  radial-gradient(120% 80% at 50% 0%,transparent 30%,var(--bg-deep) 100%),
+  linear-gradient(180deg,rgba(8,6,15,.35) 0%,rgba(8,6,15,.72) 60%,var(--bg-deep) 100%);
+}
+
+@media (prefers-reduced-motion:reduce){
+ .auroraBody{animation:none}
+}

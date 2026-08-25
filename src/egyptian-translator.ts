@@ -941,13 +941,18 @@ function preserveWhitespace(original:string,translated:string){
  return `${lead}${translated}${trail}`;
 }
 
+// Longest phrase first, so "outside note" is never half-replaced by "note".
+// Sorted once at module load: this runs for every text node on every DOM
+// mutation, and Array.prototype.sort rewrites the shared array in place.
+const SNIPPETS_BY_LENGTH=[...SNIPPETS].sort((a,b)=>b[0].length-a[0].length);
+
 export function toEgyptianArabic(input:string){
  const body=input.trim();
  if(!body||/[\u0600-\u06ff]/.test(body)&&!/[A-Za-z]{3}/.test(body))return input;
  const exact=DETAIL_EXACT[body]??EXACT[body];if(exact)return preserveWhitespace(input,exact);
  if(/^(?:[A-G](?:♯|♭)?\d?|[1-8](?:↓|\*)?|[+−-]?\d+¢|[HWSPALoy-]+)(?:\s*[·/→|,+-]\s*(?:[A-G](?:♯|♭)?\d?|[1-8](?:↓|\*)?|[+−-]?\d+¢|[HWSPALoy-]+))*$/i.test(body))return input;
  let translated=translateTemplates(body);
- for(const [english,arabic] of SNIPPETS.sort((a,b)=>b[0].length-a[0].length))translated=translated.replaceAll(english,arabic);
+ for(const [english,arabic] of SNIPPETS_BY_LENGTH)translated=translated.replaceAll(english,arabic);
  translated=translated.replace(/\bAND\b/g,"و").replace(/\bWITH\b/g,"مع").replace(/\bWITHOUT\b/g,"من غير").replace(/\bTHE\b/g,"").replace(/\bOF\b/g,"من").replace(/\bTO\b/g,"إلى");
  return preserveWhitespace(input,translated);
 }
