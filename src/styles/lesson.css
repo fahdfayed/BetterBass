@@ -1,191 +1,158 @@
 /**
  * The lesson workspace.
  *
- * Instruction on the left, the instrument on the right, a stage rail above and
- * the pass criterion pinned to the bottom — so the task, the tool and the
- * standard are all on screen at once.
+ * Instruction on the left, the instrument on the right, split by a single
+ * hairline rather than two boxes. The stage rail sits above and the pass
+ * criterion below, so the task, the tool and the standard are all on screen.
  */
 
-.lessonShell{display:flex;flex-direction:column;gap:var(--s-4);min-height:0}
+.lessonShell{display:flex;flex-direction:column;gap:var(--s6);min-height:0}
 
 /* ---- mission bar -------------------------------------------------------- */
 
-.missionBar{
- display:flex;
- align-items:center;
- gap:var(--s-4);
- padding:var(--s-4) var(--s-5);
- border:1px solid var(--line);
- border-radius:var(--r-lg);
- background:var(--surface-1);
- backdrop-filter:blur(20px);
-}
-.missionId{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.missionId h1{font-size:var(--step-2);letter-spacing:-.025em}
+.missionBar{display:flex;align-items:center;gap:var(--s5);padding-bottom:var(--s4)}
+.missionId{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--s1)}
+.missionId .label{order:-1}
+.missionId h1{font-size:var(--t-h2);letter-spacing:-.03em}
 .missionId h1:focus{outline:none}
-.missionBar>.btn{flex:none;width:2.5rem;padding:.55rem;font-size:var(--step-1)}
-.missionBar>.btn:disabled{opacity:.3;cursor:not-allowed}
+.missionBar>button:not(.action-primary){
+ flex:none;
+ width:2rem;height:2rem;
+ display:grid;place-items:center;
+ border-radius:var(--r-control);
+ color:var(--ink-3);
+ font-size:var(--t-lead);
+ transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
+}
+.missionBar>button:not(.action-primary):hover:not(:disabled){color:var(--ink);background:var(--wash)}
+.missionBar>button:disabled{opacity:.22;cursor:not-allowed}
 
 /* ---- stage rail --------------------------------------------------------- */
 
-.stageTabs{
- display:grid;
- grid-template-columns:repeat(6,minmax(0,1fr));
- gap:var(--s-2);
-}
+/* Six steps along one line. The active one is marked by weight and a rule
+   beneath it, not by a filled tab. */
+.stageTabs{display:flex;gap:var(--s6);border-bottom:1px solid var(--rule);overflow-x:auto;scrollbar-width:none}
+.stageTabs::-webkit-scrollbar{display:none}
 .stageTab{
+ position:relative;
  display:flex;
  align-items:center;
- justify-content:center;
- gap:var(--s-2);
- padding:.6rem var(--s-3);
- border:1px solid var(--line);
- border-radius:var(--r-md);
- background:var(--surface-1);
- color:var(--text-faint);
- font-size:var(--step--1);
- font-weight:560;
- letter-spacing:.04em;
- transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease);
+ gap:var(--s2);
+ padding:0 0 var(--s3);
+ white-space:nowrap;
+ color:var(--ink-4);
+ font-size:var(--t-small);
+ transition:color var(--t-base) var(--ease);
 }
-.stageTab:hover{color:var(--text);border-color:var(--line-strong)}
-.stageTab i{
- display:grid;
- place-items:center;
- width:1.3rem;height:1.3rem;
- flex:none;
- border-radius:var(--r-full);
- background:var(--surface-3);
- font-style:normal;
- font-size:.7rem;
- font-weight:700;
+.stageTab:hover{color:var(--ink-2)}
+.stageTab i{font-style:normal;font-size:var(--t-micro);font-variant-numeric:tabular-nums}
+.stageTab.done{color:var(--ink-3)}
+.stageTab.done i{color:var(--done)}
+.stageTab.active{color:var(--ink)}
+/* The underline slides in rather than blinking on. */
+.stageTab.active::after{
+ content:"";
+ position:absolute;
+ left:0;bottom:-1px;
+ width:100%;height:1px;
+ background:var(--accent);
+ transform-origin:left;
+ animation:tabMark var(--t-base) var(--ease-out) both;
 }
-.stageTab.done{color:var(--text-muted);border-color:color-mix(in oklab,var(--ok) 28%,transparent)}
-.stageTab.done i{background:color-mix(in oklab,var(--ok) 22%,transparent);color:var(--ok)}
-.stageTab.active{
- color:var(--text);
- border-color:color-mix(in oklab,var(--accent) 55%,transparent);
- background:color-mix(in oklab,var(--accent) 12%,var(--surface-1));
-}
-.stageTab.active i{background:var(--accent);color:var(--accent-ink)}
+@keyframes tabMark{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 
 /* ---- the split ---------------------------------------------------------- */
 
-.lessonSplit{
- display:grid;
- grid-template-columns:minmax(0,1fr) minmax(0,1fr);
- gap:var(--s-4);
- align-items:start;
-}
-.lessonRead,.lessonDo{
- border:1px solid var(--line);
- border-radius:var(--r-lg);
- background:var(--surface-1);
- backdrop-filter:blur(20px);
-}
-.lessonRead{padding:var(--s-6);display:flex;flex-direction:column;gap:var(--s-5)}
-.stageIntro{display:flex;flex-direction:column;gap:var(--s-2);padding-bottom:var(--s-4);border-bottom:1px solid var(--line)}
-.stageIntro h2{font-size:var(--step-2)}
+.lessonSplit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s7);align-items:start}
+.lessonRead{display:flex;flex-direction:column;gap:var(--s5);min-width:0}
+.stageIntro{display:flex;flex-direction:column;gap:var(--s2)}
+.stageIntro h2{font-size:var(--t-h3)}
 
-/* The instrument pane sticks while the instruction scrolls past it. */
+/* One hairline separates the two halves — no panels. */
 .lessonDo{
  position:sticky;
- top:calc(var(--header-h) + var(--s-4));
+ top:calc(var(--header) + var(--s5));
  display:flex;
  flex-direction:column;
- max-height:calc(100dvh - var(--header-h) - var(--s-7));
+ min-width:0;
+ max-height:calc(100dvh - var(--header) - var(--s8));
+ padding-left:var(--s7);
+ border-left:1px solid var(--rule);
  overflow:hidden;
 }
-.doHead{
- display:flex;
- align-items:baseline;
- justify-content:space-between;
- gap:var(--s-3);
- padding:var(--s-4) var(--s-5);
- border-bottom:1px solid var(--line);
-}
-.doHead b{font-size:var(--step-0);font-weight:620}
-.doBody{padding:var(--s-5);overflow-y:auto;overscroll-behavior:contain;flex:1}
+.doHead{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3);padding-bottom:var(--s4)}
+.doHead b{font-size:var(--t-small);font-weight:500;color:var(--ink-2)}
+.doBody{overflow-y:auto;overscroll-behavior:contain;flex:1;scrollbar-width:thin}
 
 /* ---- check bar ---------------------------------------------------------- */
 
 .checkBar{
  position:sticky;
- bottom:var(--s-4);
+ bottom:0;
  z-index:5;
  display:flex;
  align-items:center;
  justify-content:space-between;
- gap:var(--s-5);
+ gap:var(--s6);
  flex-wrap:wrap;
- padding:var(--s-4) var(--s-5);
- border:1px solid color-mix(in oklab,var(--accent) 30%,var(--line));
- border-radius:var(--r-lg);
- background:rgba(16,13,26,.92);
- backdrop-filter:blur(24px) saturate(1.3);
- box-shadow:var(--shadow-3);
+ padding:var(--s5) 0;
+ border-top:1px solid var(--rule);
+ background:color-mix(in oklab,var(--bg) 88%,transparent);
+ backdrop-filter:blur(16px);
 }
-.checkCriteria{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
-.checkCriteria b{font-size:var(--step-0);font-weight:560;color:var(--text-muted)}
-.checkAction{display:flex;align-items:center;gap:var(--s-4)}
-.checkBlocked{font-size:var(--step--1);color:var(--warn)}
+.checkCriteria{display:flex;flex-direction:column;gap:var(--s1);min-width:0;flex:1}
+.checkCriteria b{font-size:var(--t-small);font-weight:400;color:var(--ink-2)}
+.checkAction{display:flex;align-items:center;gap:var(--s5)}
+.checkBlocked{font-size:var(--t-small);color:var(--warn)}
 
 /* ---- ear pad ------------------------------------------------------------ */
 
-.earPad{display:flex;flex-direction:column;gap:var(--s-4)}
-.earGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(4.5rem,1fr));gap:var(--s-2)}
+.earPad{display:flex;flex-direction:column;gap:var(--s5)}
+.earPad p{font-size:var(--t-small)}
+.earGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(4rem,1fr));gap:1px;background:var(--rule)}
 .earKey{
  display:flex;
  flex-direction:column;
  align-items:center;
  gap:2px;
- padding:var(--s-3) var(--s-2);
- border:1px solid var(--line);
- border-radius:var(--r-md);
- background:var(--surface-2);
- transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease),transform var(--dur-fast) var(--ease-out);
+ padding:var(--s4) var(--s2);
+ background:var(--bg);
+ transition:background var(--t-base) var(--ease),color var(--t-base) var(--ease);
 }
-.earKey:hover{background:var(--surface-3);border-color:color-mix(in oklab,var(--accent) 45%,transparent)}
-.earKey:active{transform:scale(.96)}
-.earKey b{font-size:var(--step-1);font-weight:660}
-.earKey small{font-size:.68rem;color:var(--text-faint)}
+.earKey:hover{background:var(--wash);color:var(--accent)}
+.earKey:active{transform:scale(.97)}
+.earKey b{font-size:var(--t-lead);font-weight:400;font-family:var(--font-mono)}
+.earKey small{font-size:var(--t-micro);color:var(--ink-4)}
 
 /* ---- transport ---------------------------------------------------------- */
 
-.transport{display:flex;flex-direction:column;gap:var(--s-4)}
-.transportRow{display:flex;align-items:center;gap:var(--s-4)}
-.transportRow .btn{flex:1}
-.barBeat,.takeCount{
- display:flex;
- align-items:baseline;
- gap:2px;
- padding:.45rem .8rem;
- border:1px solid var(--line);
- border-radius:var(--r-md);
- background:var(--surface-2);
-}
-.barBeat b{font-size:var(--step-1);font-weight:680}
-.barBeat span{color:var(--text-faint)}
-.takeCount{flex-direction:column;align-items:center;gap:0}
-.takeCount b{font-size:var(--step-1);font-weight:680;line-height:1.1}
-.takeCount small{font-size:.62rem;color:var(--text-faint);letter-spacing:.06em;text-transform:uppercase}
-.tempoControl{display:flex;flex-direction:column;gap:var(--s-2)}
+.transport{display:flex;flex-direction:column;gap:var(--s5)}
+.transport p{font-size:var(--t-small)}
+.transportRow{display:flex;align-items:center;gap:var(--s5)}
+.transportRow>button{flex:1;justify-content:center}
+.barBeat,.takeCount{display:flex;align-items:baseline;gap:2px;flex:none;font-family:var(--font-mono)}
+.barBeat b,.takeCount b{font-size:var(--t-h3);font-weight:300;letter-spacing:-.03em}
+.barBeat span{color:var(--ink-4)}
+.takeCount{flex-direction:column;align-items:flex-end;gap:0}
+.takeCount small{font-size:var(--t-micro);color:var(--ink-4);letter-spacing:var(--track-label);text-transform:uppercase}
+.tempoControl{display:flex;flex-direction:column;gap:var(--s3)}
 .tempoControl input{width:100%;accent-color:var(--accent)}
 
 /* ---- responsive --------------------------------------------------------- */
 
 @media (max-width:68rem){
- .lessonSplit{grid-template-columns:minmax(0,1fr)}
- /* Stacked, the instrument must not pin itself over the instruction. */
- .lessonDo{position:static;max-height:none}
- .doBody{max-height:32rem}
+ .lessonSplit{grid-template-columns:minmax(0,1fr);gap:var(--s6)}
+ .lessonDo{
+  position:static;
+  max-height:none;
+  padding-left:0;
+  padding-top:var(--s6);
+  border-left:0;
+  border-top:1px solid var(--rule);
+ }
+ .doBody{max-height:30rem}
 }
 @media (max-width:52rem){
- .stageTabs{grid-template-columns:repeat(3,minmax(0,1fr))}
- .stageTab span{display:none}
- .stageTab{padding:.55rem}
- .stageTab::after{content:attr(data-short);font-size:var(--step--1)}
- .lessonRead{padding:var(--s-5)}
- .checkBar{flex-direction:column;align-items:stretch}
- .checkAction .btn{width:100%}
+ .stageTabs{gap:var(--s5)}
+ .missionId h1{font-size:var(--t-h3)}
 }

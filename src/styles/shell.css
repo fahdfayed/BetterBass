@@ -55,7 +55,7 @@
  border-radius:var(--r-control);
  background:var(--accent);
  color:var(--accent-ink);
- font-size:.6rem;
+ font-size:var(--t-micro);
  font-weight:800;
  letter-spacing:-.02em;
 }
@@ -91,7 +91,7 @@
 .railFind kbd{
  margin-left:auto;
  font-family:var(--font-mono);
- font-size:.6rem;
+ font-size:var(--t-micro);
  color:var(--ink-4);
 }
 
