@@ -31,6 +31,7 @@ import "./styles/aurora.css";
 import "./styles/motion.css";
 import "./styles/shell.css";
 import "./styles/home.css";
+import "./styles/game.css";
 import "./styles/legacy-bridge.css";
 
 // Marks that scripting is available, so motion.css can hide reveal targets. If

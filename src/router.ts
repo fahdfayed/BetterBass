@@ -19,6 +19,7 @@ type Pattern={path:string;view:string};
 // Order matters: static segments are matched before dynamic ones.
 const ROUTES:Pattern[]=[
  {path:"/",view:"course"},
+ {path:"/map",view:"map"},
  {path:"/course",view:"roadmap"},
  {path:"/course/:lesson",view:"courseLesson"},
  {path:"/practice",view:"practice"},

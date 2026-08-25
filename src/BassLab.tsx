@@ -2,12 +2,16 @@ import {lazy,Suspense,useEffect,useMemo,useRef,useState} from "react";
 import {fadeAndClose,startAudioClock,type AudioClock} from "./audio-clock";
 import AppShell from "./components/AppShell";
 import Home from "./views/Home";
+import WorldMap from "./views/WorldMap";
+import RankHud from "./components/RankHud";
+import {progressionFor} from "./game/progression";
+import {readStoredGameState} from "./game/state";
 import {goToView,navigate,pathForView,useRoute} from "./router";
 import {autoCorrelate,centsToNote,labelFor,midiHz,NOTE_NAMES,PITCH_MAX_HZ,PITCH_MIN_HZ,PITCH_RMS_GATE,tensionFor,type Harmony} from "./pitch";
 import {COURSE_LESSONS,COURSE_UNITS} from "./course-data";
 import {LESSON_DETAILS} from "./course-details";
 import EgyptianArabicToggle,{useEgyptianArabic} from "./EgyptianArabicToggle";
-import {saveLearningState} from "./learning-storage";
+import {LEARNING_STATE_EVENT,saveLearningState} from "./learning-storage";
 import VoiceControl from "./VoiceControl";
 
 const BeastPractice=lazy(()=>import("./BeastPractice"));
@@ -73,11 +77,19 @@ export default function BassLab(){
  const [root,setRoot]=useState(9),[mode,setMode]=useState(1),[chord,setChord]=useState("Am7"),[fbView,setFbView]=useState("priority"),[fog,setFog]=useState(2),[picked,setPicked]=useState<number|null>(null),[listening,setListening]=useState(false),[pitch,setPitch]=useState<{n:string,oct:number,cents:number,hz:number}|null>(null),[history,setHistory]=useState<number[]>([]),[level,setLevel]=useState(1),[outsideBeat,setOutsideBeat]=useState(0),[rescue,setRescue]=useState(1),[lastRescue,setLastRescue]=useState(""),[weights,setWeights]=useState([60,55,45,70,80,75,62]),[plan,setPlan]=useState(sessions),[freedom,setFreedom]=useState([72,89,94,86,63]),[events,setEvents]=useState<NoteEvent[]>([]),[bpm,setBpm]=useState(80),[calibrated,setCalibrated]=useState(false),[noise,setNoise]=useState(0),[audioError,setAudioError]=useState(""),[exercise,setExercise]=useState(0),[recording,setRecording]=useState(false),[playing,setPlaying]=useState(false),[style,setStyle]=useState("Psychedelic"),[meter,setMeter]=useState(4),[clickMode,setClickMode]=useState("2 & 4"),[density,setDensity]=useState(2),[bar,setBar]=useState(1),[beat,setBeat]=useState(1),[weather,setWeather]=useState("Stable"),[progression,setProgression]=useState([0,0,5,0]),[diagStep,setDiagStep]=useState(0),[diag,setDiag]=useState([0,0,0,0,0]),[adaptiveReady,setAdaptiveReady]=useState(false),[keyMatrix,setKeyMatrix]=useState([78,42,69,45,75,57,41,81,44,86,48,71]),[antiHabit,setAntiHabit]=useState(false),[reviewDays,setReviewDays]=useState([3,11,18,7,22]);
  const [lessonIdx,setLessonIdx]=useState(0),[lessonStage,setLessonStage]=useState(0),[lessonProgress,setLessonProgress]=useState<number[]>([0,0,0,0,0,0]),[labMode,setLabMode]=useState("motif"),[mutation,setMutation]=useState("ORIGINAL"),[slip,setSlip]=useState(1),[slipLength,setSlipLength]=useState(1),[targetTone,setTargetTone]=useState(0),[tensionBudget,setTensionBudget]=useState(10),[curve,setCurve]=useState([0,1,1,2,3,4,2,0]),[labFeedback,setLabFeedback]=useState(""),[harmonyQuiz,setHarmonyQuiz]=useState(0);
  const [courseIndex,setCourseIndex]=useState(0),[courseStep,setCourseStep]=useState(0),[courseCompleted,setCourseCompleted]=useState(0),[showToolkit,setShowToolkit]=useState(false),[practiceTempo,setPracticeTempo]=useState(60),[juryScores,setJuryScores]=useState([70,70,70,70,70]);
+ const [storedGame,setStoredGame]=useState(readStoredGameState);
+ // The map reads state written by other screens, so refresh whenever any of
+ // them saves rather than re-parsing localStorage on every render.
+ useEffect(()=>{const refresh=()=>setStoredGame(readStoredGameState());window.addEventListener(LEARNING_STATE_EVENT,refresh);return()=>window.removeEventListener(LEARNING_STATE_EVENT,refresh)},[]);
  const route=useRoute(),view=route.view;
  // Navigating by view id keeps every existing call site working while the URL
  // becomes the single source of truth for which screen is open.
  const setView=(next:string)=>next==="courseLesson"?navigate(pathForView("courseLesson",{lesson:courseIndex+1})):goToView(next);
  useEffect(()=>{if(route.view!=="courseLesson")return;const lesson=Number.parseInt(route.params.lesson??"",10);if(Number.isFinite(lesson))setCourseIndex(clampIndex(lesson-1,0,COURSE_LESSONS.length-1))},[route.view,route.params.lesson]);
+ const game=useMemo(()=>progressionFor({
+  lessonsCompleted:courseCompleted,totalLessons:COURSE_LESSONS.length,
+  juryScores,freedom,keyMatrix,...storedGame,
+ },courseIndex),[courseCompleted,juryScores,freedom,keyMatrix,storedGame,courseIndex]);
  const egyptian=useEgyptianArabic();
  const audio=useRef<{ctx:AudioContext,stream:MediaStream,raf:number}|null>(null),eventRef=useRef<{midi:number,start:number,amp:number}|null>(null),eventsRef=useRef<NoteEvent[]>([]),recordRef=useRef(false),runtimeRef=useRef<{ctx:AudioContext,clock:AudioClock,master:GainNode}|null>(null),auditionRef=useRef<AudioContext|null>(null); const ri=root, scale=useMemo(()=>MODES[mode].s.map(x=>(x+ri)%12),[mode,ri]), color=(ri+MODES[mode].s[MODES[mode].c])%12, chordTones=useMemo(()=>[0,3,7,10].map(x=>(x+ri)%12),[ri]);
  // The microphone loop and the backing band both outlive the render that starts
@@ -197,6 +209,7 @@ export default function BassLab(){
    <label><span className="eyebrow">Sound</span><select aria-label="Home mode" value={mode} onChange={e=>setMode(+e.target.value)}>{MODES.map((m,i)=><option value={i} key={m.n}>{m.n}</option>)}</select></label>
   </div>}
   {view==="fret"&&<span className="chip">{egyptian?"اختيارات البروجرشن تحت":"Controls are in the tool"}</span>}
+  <RankHud rank={game.rank} streak={game.streak}/>
   <VoiceControl/>
   <button className={`btn ${listening?"":"primary"} sheen`} onClick={startAudio}>
    <i className={`inputDot ${listening?"live":""}`}/>{listening?"Disconnect":"Connect bass"}
@@ -261,6 +274,13 @@ export default function BassLab(){
   {labMode==="tension"&&<div className="tensionLab"><article className="labBrief"><span>05 · TENSION CURVE DESIGNER</span><h2>Draw the story before you play it.</h2><p>Click each bar to set harmonic intensity. Then record a take and compare the planned architecture with detected tension events.</p><label className="budgetControl">TENSION BUDGET <b>{tensionBudget} POINTS</b><input type="range" min="4" max="40" value={tensionBudget} onChange={e=>setTensionBudget(+e.target.value)}/></label></article><div className="curveDesigner">{curve.map((v,i)=><button key={i} onClick={()=>setCurve(curve.map((x,j)=>j===i?(x+1)%5:x))}><span>BAR {i+1}</span><i><em style={{height:`${18+v*18}%`}}/></i><b>{["HOME","COLOUR","TENSION","OUTSIDE","CLIMAX"][v]}</b></button>)}</div><div className="budgetReadout"><div><small>PLANNED PEAK</small><b>{Math.max(...curve)===4?"CLIMAX":"CONTROLLED"}</b></div><div><small>TAKE COST</small><b className={actualTension>tensionBudget?"over":""}>{actualTension} / {tensionBudget}</b></div><div><small>EVENTS CAPTURED</small><b>{events.length}</b></div><button className="labPrimary" onClick={recording?endTake:beginTake}>{recording?"■ END & SCORE":"● RECORD TENSION ARC"}</button></div><p className="tensionLegend">HOME 0 · COLOUR 1 · MILD TENSION 2 · OUTSIDE 4. Budget is not a value judgment—it trains deliberate density.</p></div>}
   {labMode==="diagnose"&&<div className="diagnosisLab"><article><span>06 · SHOULD I THINK MODALLY?</span><h2>{harmonyCases[harmonyQuiz].p}</h2><p>Diagnose the harmonic situation before improvising. The right mental model changes what counts as home, movement and resolution.</p><div><button onClick={()=>setLabFeedback(harmonyCases[harmonyQuiz].a==="MODAL"?`CORRECT — ${harmonyCases[harmonyQuiz].why}`:`NOT THIS TIME — ${harmonyCases[harmonyQuiz].why}`)}>MODAL</button><button onClick={()=>setLabFeedback(harmonyCases[harmonyQuiz].a==="FUNCTIONAL"?`CORRECT — ${harmonyCases[harmonyQuiz].why}`:`NOT THIS TIME — ${harmonyCases[harmonyQuiz].why}`)}>FUNCTIONAL</button><button onClick={()=>setLabFeedback(harmonyCases[harmonyQuiz].a==="HYBRID"?`CORRECT — ${harmonyCases[harmonyQuiz].why}`:`NOT THIS TIME — ${harmonyCases[harmonyQuiz].why}`)}>HYBRID</button></div>{labFeedback&&<p className={labFeedback.startsWith("CORRECT")?"correct":""}>{labFeedback}</p>}<button className="nextCase" onClick={()=>{setHarmonyQuiz((harmonyQuiz+1)%harmonyCases.length);setLabFeedback("")}}>NEXT HARMONIC SITUATION →</button></article><aside><span>DECISION LENS</span><div><b>STATIC</b><p>Develop mode, colour, rhythm and motif over one centre.</p></div><div><b>DIRECTIONAL</b><p>Track guide tones, dominant pull and nearest destinations.</p></div><div><b>MIXED</b><p>Preserve a larger home while honoring temporary chord gravity.</p></div></aside></div>}
  </div>}
+
+ {view==="map"&&<WorldMap
+  progression={game}
+  lessonTitles={COURSE_LESSONS.map(lesson=>lesson.title)}
+  currentLesson={courseIndex}
+  onOpenLesson={openCourseLesson}
+ />}
 
  {view==="course"&&<Home
   percent={coursePct}

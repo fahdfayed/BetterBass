@@ -21,11 +21,12 @@ export type NavGroup={label:string;items:Destination[]};
 
 export type IconName=
  |"home"|"course"|"practice"|"coach"|"maqam"|"slap"|"labs"|"progress"
- |"fretboard"|"band"|"analyze"|"outside"|"theory"|"games"|"search"|"menu";
+ |"fretboard"|"band"|"analyze"|"outside"|"theory"|"games"|"search"|"menu"|"map";
 
 export const NAV:NavGroup[]=[
  {label:"Learn",items:[
   {view:"course",label:"Home",blurb:"Your next step and today's route",icon:"home",keywords:["dashboard","start","overview"]},
+  {view:"map",label:"The map",blurb:"Six territories, your rank and every badge",icon:"map",keywords:["map","territory","rank","xp","level","badges","achievements","progress","streak","game"]},
   {view:"roadmap",label:"Full course",blurb:"All 28 lessons across six units",icon:"course",keywords:["curriculum","lessons","syllabus","map"],children:[
    {view:"courseLesson",label:"Current lesson",blurb:"The lesson you are working through",icon:"course",keywords:["continue","resume"]},
   ]},
