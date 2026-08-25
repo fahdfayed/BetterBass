@@ -101,7 +101,7 @@
 .navLink[aria-current="page"]::before{
  content:"";
  position:absolute;
- left:-var(--s-4);
+ left:calc(var(--s-4) * -1);
  inset-block:.4rem;
  width:2px;
  border-radius:var(--r-full);

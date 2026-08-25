@@ -36,11 +36,17 @@
 
 /* ---- scroll reveal ---------------------------------------------------- */
 
-/* Progressively enhanced: without JS or IntersectionObserver support the
-   content is simply visible, never stuck at opacity 0. */
+/* Nothing is hidden by this stylesheet alone. useReveal adds `revealArmed` only
+   to elements it has successfully begun observing, and carries a timeout that
+   reveals everything if the observer never delivers. A decorative entrance must
+   never be able to leave content permanently invisible. */
 .reveal{opacity:1}
-.js .reveal{opacity:0;transform:translate3d(0,20px,0);transition:opacity var(--dur-reveal) var(--ease-out),transform var(--dur-reveal) var(--ease-out)}
-.js .reveal.seen{opacity:1;transform:translate3d(0,0,0)}
+.reveal.revealArmed{
+ opacity:0;
+ transform:translate3d(0,20px,0);
+ transition:opacity var(--dur-reveal) var(--ease-out),transform var(--dur-reveal) var(--ease-out);
+}
+.reveal.revealArmed.seen{opacity:1;transform:translate3d(0,0,0)}
 
 /* ---- route transition ------------------------------------------------- */
 
@@ -79,7 +85,7 @@
 .sheen:hover::after{animation:shimmer 900ms var(--ease)}
 
 @media (prefers-reduced-motion:reduce){
- .js .reveal{opacity:1;transform:none}
+ .reveal.revealArmed{opacity:1;transform:none}
  .sheen:hover::after{animation:none}
  .pulse{animation:none}
 }
