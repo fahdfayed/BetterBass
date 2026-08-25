@@ -1,4 +1,5 @@
 import {useSyncExternalStore} from "react";
+import {flushSync} from "react-dom";
 
 /**
  * Minimal History-API router.
@@ -73,12 +74,32 @@ export function currentRoute():Route{
  return matchPath(window.location.pathname)??FALLBACK;
 }
 
+const reduceMotion=()=>typeof window!=="undefined"&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+type ViewTransitionDocument=Document&{startViewTransition?:(update:()=>void)=>unknown};
+
+/**
+ * Run a route change inside a View Transition where the browser supports one.
+ *
+ * React renders asynchronously, so the DOM update has to be flushed *inside* the
+ * callback — otherwise the browser snapshots the old page twice and the
+ * transition animates nothing. Falls back to a plain update when the API is
+ * missing or the reader asked for reduced motion.
+ */
+function withTransition(update:()=>void){
+ const start=(document as ViewTransitionDocument).startViewTransition;
+ if(!start||reduceMotion()){update();return}
+ start.call(document,()=>{flushSync(update)});
+}
+
 export function navigate(path:string,{replace=false}={}){
  if(typeof window==="undefined")return;
  if(path===window.location.pathname+window.location.search)return;
- if(replace)window.history.replaceState({},"",path);
- else window.history.pushState({},"",path);
- window.dispatchEvent(new Event(ROUTE_EVENT));
+ withTransition(()=>{
+  if(replace)window.history.replaceState({},"",path);
+  else window.history.pushState({},"",path);
+  window.dispatchEvent(new Event(ROUTE_EVENT));
+ });
 }
 
 /** Navigate by view id, keeping call sites free of URL strings. */
@@ -94,9 +115,12 @@ const readSnapshot=()=>{
 };
 
 const subscribe=(onChange:()=>void)=>{
- window.addEventListener("popstate",onChange);
+ // Back and forward deserve the same transition as a click. The ROUTE_EVENT
+ // listener must not wrap again — navigate() already opened one around it.
+ const onPop=()=>withTransition(onChange);
+ window.addEventListener("popstate",onPop);
  window.addEventListener(ROUTE_EVENT,onChange);
- return()=>{window.removeEventListener("popstate",onChange);window.removeEventListener(ROUTE_EVENT,onChange)};
+ return()=>{window.removeEventListener("popstate",onPop);window.removeEventListener(ROUTE_EVENT,onChange)};
 };
 
 export function useRoute():Route{

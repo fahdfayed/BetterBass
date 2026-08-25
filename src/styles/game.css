@@ -166,3 +166,35 @@
  .nodeLabel{align-items:flex-start;text-align:left;max-width:none}
  .territoryPanel{padding:var(--s-5)}
 }
+
+/* ---- map motion --------------------------------------------------------- */
+
+/* pathLength={1} normalises every curve, so one dash pair draws any of them
+   without measuring anything in JS. */
+.mapLink{
+ stroke-dasharray:1;
+ stroke-dashoffset:1;
+ animation:drawRoute 900ms var(--ease-out) both;
+}
+@keyframes drawRoute{to{stroke-dashoffset:0}}
+
+/* Nodes arrive along the route, so the eye is led from the start to where it
+   is currently standing rather than having six things appear at once. */
+.mapNode{animation:nodeArrive 520ms var(--ease-spring) both}
+@keyframes nodeArrive{
+ from{opacity:0;transform:translate(-50%,-50%) scale(.4)}
+ to{opacity:1;transform:translate(-50%,-50%) scale(1)}
+}
+
+/* The selected territory's panel slides in from the side it was picked on. */
+.territoryPanel{animation:panelIn 380ms var(--ease-out) both}
+@keyframes panelIn{
+ from{opacity:0;transform:translate3d(0,16px,0)}
+ to{opacity:1;transform:translate3d(0,0,0)}
+}
+
+@media (prefers-reduced-motion:reduce){
+ .mapLink{stroke-dashoffset:0;animation:none}
+ .mapNode,.territoryPanel{animation:none}
+ .mapNode{opacity:1}
+}

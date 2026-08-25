@@ -66,7 +66,7 @@ export default function LessonWorkspace({
    </nav>
 
    <div className="lessonSplit">
-    <section className="lessonRead" aria-label="Instruction">
+    <section className="lessonRead stageSwap" key={stageIndex} aria-label="Instruction">
      <div className="stageIntro">
       <span className="eyebrow">{stageNames[stageIndex]}</span>
       <h2>{guide.title}</h2>

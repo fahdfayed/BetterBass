@@ -107,7 +107,7 @@ export default function Home({percent,completed,lesson,stage,flow,units,onOpenLe
      </div>
      <button className="btn ghost" onClick={onOpenLesson}>Open lesson <span className="arrow">→</span></button>
     </header>
-    <ol className="flowTrack">
+    <ol className="flowTrack stagger">
      {flow.map((block,index)=>{
       const state=index===flowPosition?"current":index<flowPosition?"done":"later";
       return (
@@ -134,7 +134,7 @@ export default function Home({percent,completed,lesson,stage,flow,units,onOpenLe
       <h2>Go straight to the work you need.</h2>
      </div>
     </header>
-    <div className="quickGrid">
+    <div className="quickGrid stagger">
      {QUICK.map(item=>(
       <button key={item.view} className="card interactive lit quickTile" onClick={()=>goToView(item.view)}>
        <Icon name={item.icon}/>
@@ -155,7 +155,7 @@ export default function Home({percent,completed,lesson,stage,flow,units,onOpenLe
       See all {lesson.total} lessons <span className="arrow">→</span>
      </button>
     </header>
-    <div className="unitGrid">
+    <div className="unitGrid stagger">
      {units.map(unit=>{
       const total=unit.range[1]-unit.range[0]+1;
       const done=Math.max(0,Math.min(total,completed-unit.range[0]));

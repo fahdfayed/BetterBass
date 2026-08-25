@@ -29,6 +29,7 @@ import "./redesign.css";
 import "./styles/base.css";
 import "./styles/aurora.css";
 import "./styles/motion.css";
+import "./styles/transitions.css";
 import "./styles/shell.css";
 import "./styles/home.css";
 import "./styles/game.css";
