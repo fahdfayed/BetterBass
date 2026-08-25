@@ -6,10 +6,10 @@ import {join} from "node:path";
 import test from "node:test";
 import {createBassLabApp} from "../server/app.mjs";
 
-async function fixture(){
+async function fixture(options={}){
  const root=await mkdtemp(join(tmpdir(),"basslab-node-")),client=join(root,"client");await mkdir(client);await writeFile(join(client,"index.html"),"<!doctype html><title>Bass Lab</title><div id=\"root\"></div>");
- const app=await createBassLabApp({dataFile:join(root,"learners.json"),clientDir:client}),server=createServer(app);await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));const address=server.address(),base=`http://127.0.0.1:${address.port}`;
- return {base,close:async()=>{await new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve()));await rm(root,{recursive:true,force:true})}};
+ const app=await createBassLabApp({dataFile:join(root,"learners.json"),clientDir:client,...options}),server=createServer(app);await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));const address=server.address(),base=`http://127.0.0.1:${address.port}`;
+ return {base,app,root,close:async()=>{await new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve()));await rm(root,{recursive:true,force:true})}};
 }
 
 test("Node API persists learner state and analyzes practice sessions",async()=>{
@@ -52,4 +52,62 @@ test("Vercel root entrypoint exports the API without starting a listener",async(
   const home=await fetch(base);assert.equal(home.status,200);assert.match(await home.text(),/<div id="root"><\/div>/);
  }
  finally{await new Promise((resolve,reject)=>server.close(error=>error?reject(error):resolve()))}
+});
+
+test("reserved learner identifiers cannot reach Object.prototype",async()=>{
+ const running=await fixture();
+ try{
+  for(const reserved of ["__proto__","constructor","prototype"]){
+   const response=await fetch(`${running.base}/api/v1/state/${reserved}`,{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({records:{"basslab-course":"POLLUTED"}})});
+   assert.equal(response.status,400,`${reserved} must be rejected`);
+   assert.equal(await fetch(`${running.base}/api/v1/state/${reserved}`).then(r=>r.status),400);
+   assert.equal(await fetch(`${running.base}/api/v1/sessions/${reserved}`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({sessionId:"take_test_002",events:[]})}).then(r=>r.status),400);
+  }
+  assert.equal({}.records,undefined,"Object.prototype.records must stay undefined");
+  assert.equal({}.updatedAt,undefined,"Object.prototype.updatedAt must stay undefined");
+  assert.equal([].records,undefined);
+  const victim=await fetch(`${running.base}/api/v1/state/victimLearner99`).then(response=>response.json());
+  assert.deepEqual(victim.records,{});
+ }finally{await running.close()}
+});
+
+test("a failed write does not poison later reads",async()=>{
+ const running=await fixture();
+ try{
+  const learner="learner_test_002",store=running.app.locals.store,healthyPath=store.filePath;
+  await fetch(`${running.base}/api/v1/state/${learner}`,{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({records:{"basslab-course":"before"}})});
+  store.filePath="\u0000:/unwritable/learners.json";
+  assert.equal((await fetch(`${running.base}/api/v1/state/${learner}`,{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({records:{"basslab-course":"during"}})})).status,500);
+  store.filePath=healthyPath;
+  const after=await fetch(`${running.base}/api/v1/state/${learner}`);assert.equal(after.status,200);
+  assert.equal((await after.json()).records["basslab-course"],"during");
+  assert.equal((await fetch(`${running.base}/api/v1/sessions/${learner}`)).status,200);
+  const recovered=await fetch(`${running.base}/api/v1/state/${learner}`,{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({records:{"basslab-course":"after"}})});
+  assert.equal(recovered.status,200);
+ }finally{await running.close()}
+});
+
+test("a corrupt data file fails at startup instead of on first request",async()=>{
+ const root=await mkdtemp(join(tmpdir(),"basslab-corrupt-")),dataFile=join(root,"learners.json");
+ try{
+  await writeFile(dataFile,"{ this is not json");
+  await assert.rejects(createBassLabApp({dataFile,serveClient:false}));
+  await writeFile(dataFile,JSON.stringify({schemaVersion:9,learners:{}}));
+  await assert.rejects(createBassLabApp({dataFile,serveClient:false}),/schema/);
+  await writeFile(dataFile,JSON.stringify({schemaVersion:1,learners:{"__proto__":{records:{"basslab-course":"POLLUTED"},sessions:[]},goodLearner1:{records:{},sessions:[]}}}));
+  const app=await createBassLabApp({dataFile,serveClient:false});
+  assert.equal({}.records,undefined,"a hand-edited file must not pollute Object.prototype either");
+  assert.deepEqual(Object.keys(app.locals.store.data.learners),["goodLearner1"]);
+ }finally{await rm(root,{recursive:true,force:true})}
+});
+
+test("the API rate limits write floods",async()=>{
+ const running=await fixture({rateLimit:{windowMs:60_000,readLimit:1000,writeLimit:5}});
+ try{
+  const learner="learner_test_003",send=()=>fetch(`${running.base}/api/v1/state/${learner}`,{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({records:{"basslab-course":"x"}})});
+  for(let attempt=0;attempt<5;attempt++)assert.equal((await send()).status,200);
+  const blocked=await send();assert.equal(blocked.status,429);
+  assert.ok(blocked.headers.get("retry-after"));
+  assert.equal((await fetch(`${running.base}/api/v1/health`)).status,200,"reads keep their own budget");
+ }finally{await running.close()}
 });

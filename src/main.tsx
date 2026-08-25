@@ -1,6 +1,7 @@
 import {StrictMode} from "react";
 import {createRoot} from "react-dom/client";
 import BassLab from "./BassLab";
+import ErrorBoundary from "./ErrorBoundary";
 import NodeRuntimeShell from "./NodeRuntimeShell";
 import "./globals.css";
 import "./engine.css";
@@ -23,6 +24,6 @@ if(!root)throw new Error("Bass Lab root element is missing.");
 
 createRoot(root).render(
  <StrictMode>
-  <NodeRuntimeShell><BassLab/></NodeRuntimeShell>
+  <ErrorBoundary><NodeRuntimeShell><BassLab/></NodeRuntimeShell></ErrorBoundary>
  </StrictMode>,
 );

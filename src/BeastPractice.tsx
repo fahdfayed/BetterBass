@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 "use client";
 import {useEffect,useRef,useState} from "react";
+import {fadeAndClose,startAudioClock,type AudioClock} from "./audio-clock";
 import {BEAST_DAYS,COLLECTIONS,COMMON_CONFUSIONS,ERROR_CODES,FINAL_TESTS,MAINTENANCE,MILLPAD,PHASES,REPAIR_PROTOCOL,TEMPO_RUNGS,THEORY_CHAPTERS} from "./beast-data";
 import {PASSAGES} from "./beast-passages";
 import {saveLearningState} from "./learning-storage";
@@ -62,15 +63,20 @@ function synthNotes(notes:number[],keyPc:number){const ctx=new AudioContext(),no
 
 export default function BeastPractice({currentLesson,courseTools,toolMeta,onOpenTool}:Props){
  const [track,setTrack]=useState<"lesson"|"beast">("beast"),[section,setSection]=useState("session"),[day,setDay]=useState(1),[completedDays,setCompletedDays]=useState<number[]>([]),[completedBlocks,setCompletedBlocks]=useState<number[]>([]),[activeBlock,setActiveBlock]=useState(0),[secondsLeft,setSecondsLeft]=useState(180),[timerRunning,setTimerRunning]=useState(false),[tempoRung,setTempoRung]=useState(1),[cleanReps,setCleanReps]=useState(0),[clicking,setClicking]=useState(false),[drone,setDrone]=useState(false),[keyIndex,setKeyIndex]=useState(0),[stringCount,setStringCount]=useState(4),[direction,setDirection]=useState<"up"|"down">("up"),[promptKind,setPromptKind]=useState("naming"),[prompt,setPrompt]=useState<Prompt>(()=>createPrompt("naming",0,4)),[showAnswer,setShowAnswer]=useState(false),[score,setScore]=useState([0,0]),[selectedTheory,setSelectedTheory]=useState(0),[atlasView,setAtlasView]=useState("notes"),[selectedRow,setSelectedRow]=useState("P"),[routeCovered,setRouteCovered]=useState(true),[passageId,setPassageId]=useState("E1"),[passageFilter,setPassageFilter]=useState("All"),[variant,setVariant]=useState(0),[errorCounts,setErrorCounts]=useState<Record<string,number>>({}),[repairStep,setRepairStep]=useState(0),[confusion,setConfusion]=useState(0),[collectionIndex,setCollectionIndex]=useState(0),[instrumentTab,setInstrumentTab]=useState(4),[testResults,setTestResults]=useState<boolean[]>(Array(8).fill(false)),[selfReveal,setSelfReveal]=useState<number[]>([]),[bodyChecks,setBodyChecks]=useState<boolean[]>(Array(6).fill(false)),[logData,setLogData]=useState({rung:"1",clean:"0",naming:"",firstNote:"",body:"Relaxed",worst:"",tomorrow:""}),[savedLogs,setSavedLogs]=useState<Record<string,typeof logData>>({});
- const clickRef=useRef<{ctx:AudioContext,timer:number}|null>(null),droneRef=useRef<{ctx:AudioContext,osc:OscillatorNode,gain:GainNode}|null>(null);
+ const clickRef=useRef<{ctx:AudioContext,clock:AudioClock}|null>(null),droneRef=useRef<{ctx:AudioContext,osc:OscillatorNode,gain:GainNode}|null>(null);
+ const tempoRungRef=useRef(TEMPO_RUNGS[0].bpm);
  const currentDay=BEAST_DAYS[day-1],phase=PHASES[currentDay.phase-1],block=currentDay.blocks[activeBlock]||currentDay.blocks[0],rung=TEMPO_RUNGS[tempoRung-1],key=KEYS[keyIndex],tuning=TUNINGS[stringCount],row=makeRow(keyIndex,selectedRow,stringCount,direction),passage=PASSAGES.find(x=>x.id===passageId)||PASSAGES[0],collection=COLLECTIONS[collectionIndex],collectionTable=collectionRows(collection.intervals),finalScore=testResults.filter(Boolean).length;
  const blockGuide=BLOCK_GUIDES[block.tool];
 
  useEffect(()=>{try{const raw=localStorage.getItem("basslab-beast");if(raw){const p=JSON.parse(raw);setDay(p.day||1);setCompletedDays(p.completedDays||[]);setTempoRung(p.tempoRung||1);setErrorCounts(p.errorCounts||{});setSavedLogs(p.logs||{})}}catch{}},[]);
  useEffect(()=>{setCompletedBlocks([]);setActiveBlock(0);setSecondsLeft(currentDay.blocks[0].minutes*60);setTimerRunning(false)},[day]);
  useEffect(()=>{setSecondsLeft(block.minutes*60);setTimerRunning(false)},[activeBlock,block.minutes]);
- useEffect(()=>{if(!timerRunning)return;const id=window.setInterval(()=>setSecondsLeft(s=>{if(s<=1){setTimerRunning(false);return 0}return s-1}),1000);return()=>clearInterval(id)},[timerRunning]);
- useEffect(()=>()=>{if(clickRef.current){clearInterval(clickRef.current.timer);clickRef.current.ctx.close()}if(droneRef.current)droneRef.current.ctx.close()},[]);
+ useEffect(()=>{if(!timerRunning)return;const id=window.setInterval(()=>setSecondsLeft(s=>Math.max(0,s-1)),1000);return()=>clearInterval(id)},[timerRunning]);
+ // Stopping the clock is a side effect, so it cannot live inside the updater:
+ // React re-runs updaters (twice under StrictMode) to check that they are pure.
+ useEffect(()=>{if(timerRunning&&secondsLeft===0)setTimerRunning(false)},[timerRunning,secondsLeft]);
+ useEffect(()=>{tempoRungRef.current=rung.bpm},[rung.bpm]);
+ useEffect(()=>()=>{if(clickRef.current){clickRef.current.clock.stop();void clickRef.current.ctx.close()}if(droneRef.current)void droneRef.current.ctx.close()},[]);
 
  const persist=(patch:Record<string,unknown>={})=>{const base={day,completedDays,tempoRung,errorCounts,logs:savedLogs,...patch};saveLearningState("basslab-beast",JSON.stringify(base))};
  const selectDay=(n:number)=>{if(n>Math.max(1,Math.max(0,...completedDays)+1))return;setDay(n);persist({day:n})};
@@ -82,8 +88,19 @@ export default function BeastPractice({currentLesson,courseTools,toolMeta,onOpen
  const scorePrompt=(ok:boolean)=>{setScore(([a,b])=>[a+(ok?1:0),b+1]);newPrompt()};
  const logError=(code:string)=>{const next={...errorCounts,[code]:(errorCounts[code]||0)+1};setErrorCounts(next);setRepairStep(0);setSection("repair");persist({errorCounts:next})};
  const saveLog=()=>{const next={...savedLogs,[String(day)]:logData};setSavedLogs(next);persist({logs:next})};
- const toggleClick=()=>{if(clickRef.current){clearInterval(clickRef.current.timer);clickRef.current.ctx.close();clickRef.current=null;setClicking(false);return}const ctx=new AudioContext(),hit=()=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type="square";o.frequency.value=1100;g.gain.setValueAtTime(.12,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.045);o.connect(g).connect(ctx.destination);o.start();o.stop(ctx.currentTime+.05)};hit();const timer=window.setInterval(hit,60000/rung.bpm);clickRef.current={ctx,timer};setClicking(true)};
- const toggleDrone=()=>{if(droneRef.current){droneRef.current.gain.gain.exponentialRampToValueAtTime(.0001,droneRef.current.ctx.currentTime+.08);setTimeout(()=>droneRef.current?.ctx.close(),100);droneRef.current=null;setDrone(false);return}const ctx=new AudioContext(),osc=ctx.createOscillator(),gain=ctx.createGain(),midi=36+key.pc+(key.pc<4?12:0);osc.type="sine";osc.frequency.value=440*Math.pow(2,(midi-69)/12);gain.gain.value=.055;osc.connect(gain).connect(ctx.destination);osc.start();droneRef.current={ctx,osc,gain};setDrone(true)};
+ const toggleClick=()=>{
+  if(clickRef.current){const {ctx,clock}=clickRef.current;clickRef.current=null;clock.stop();void ctx.close();setClicking(false);return}
+  const ctx=new AudioContext();
+  const hit=(_beat:number,when:number)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type="square";o.frequency.value=1100;g.gain.setValueAtTime(.12,when);g.gain.exponentialRampToValueAtTime(.0001,when+.045);o.connect(g).connect(ctx.destination);o.start(when);o.stop(when+.05)};
+  // Tempo comes from the ref on every beat, so climbing the tempo ladder while
+  // the click runs changes the click instead of waiting for a stop and restart.
+  const clock=startAudioClock(ctx,()=>tempoRungRef.current,{schedule:hit});
+  clickRef.current={ctx,clock};setClicking(true);
+ };
+ // The fade-out must hold its own reference to the context. Reading it back out
+ // of the ref inside the timeout found null — the ref is cleared on this tick —
+ // so every drone that was switched off stayed open until the tab was closed.
+ const toggleDrone=()=>{if(droneRef.current){const {ctx,gain}=droneRef.current;droneRef.current=null;fadeAndClose(ctx,gain,.08);setDrone(false);return}const ctx=new AudioContext(),osc=ctx.createOscillator(),gain=ctx.createGain(),midi=36+key.pc+(key.pc<4?12:0);osc.type="sine";osc.frequency.value=440*Math.pow(2,(midi-69)/12);gain.gain.value=.055;osc.connect(gain).connect(ctx.destination);osc.start();droneRef.current={ctx,osc,gain};setDrone(true)};
  const hearRow=()=>{const pcs=row.flatMap(r=>r.notes.map(n=>key.notes.indexOf(n))).filter(x=>x>=0).map(d=>mod(key.pc+MAJOR[d]));synthNotes(pcs,key.pc)};
  const fmt=(s:number)=>`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
 

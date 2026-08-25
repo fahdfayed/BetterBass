@@ -56,7 +56,13 @@ Vercel functions do not provide durable local-disk storage. Course progress stil
 npm run check
 ```
 
-This checks the TypeScript source, builds the client and tests the Node API, learner-state persistence, take analysis and SPA routing.
+This checks the TypeScript source, builds the client and runs the test suite:
+
+- **API and persistence** — learner state, session capture, SPA routing, the rate limiter, recovery from a failed write, and startup against a corrupt data file.
+- **Take analysis** — timing, tension and resolution scoring, including empty and malformed takes.
+- **Pitch detection** — every open string from a five-string low B up to the high register, at both 44.1 kHz and 48 kHz.
+
+The pitch and theory helpers live in `src/pitch.ts`, deliberately free of React and the DOM so the tests can run them directly under Node.
 
 ## Voice coach
 
@@ -71,6 +77,10 @@ The header contains a global **Voice on/off** switch and a **Test** button. Spok
 | `BASSLAB_DATA_FILE` | `.data/learners.json` | Learner progress and session file |
 | `BASSLAB_CLIENT_DIR` | `dist/client` | Built React client directory |
 | `TRUST_PROXY` | unset | Set to `1` behind one trusted reverse proxy |
+
+Copy `.env.example` to `.env` for a starting point.
+
+The API is anonymous by design, so it applies a per-client rate limit — 240 reads and 40 writes per minute — to keep a scripted client from filling the data file. Behind a reverse proxy, set `TRUST_PROXY=1` so the limit counts real client addresses rather than the proxy's.
 
 ## Project structure
 

@@ -10,7 +10,10 @@ const serverLanguageSnapshot=()=>false;
 export function useEgyptianArabic(){return useSyncExternalStore(subscribeLanguage,languageSnapshot,serverLanguageSnapshot)}
 
 export default function EgyptianArabicToggle(){
- const arabic=useEgyptianArabic(),originalsRef=useRef(new Map<Text,string>()),expectedRef=useRef(new Map<Text,string>());
+ // WeakMap, not Map: these are keyed by the DOM text nodes React creates and
+ // discards on every re-render. A strong map pins every node the page has ever
+ // rendered, which with the metronome running grows for as long as the tab lives.
+ const arabic=useEgyptianArabic(),originalsRef=useRef(new WeakMap<Text,string>()),expectedRef=useRef(new WeakMap<Text,string>());
  useEffect(()=>{
   let cancelled=false,observer:MutationObserver|null=null;
   const run=async()=>{

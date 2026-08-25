@@ -11,10 +11,15 @@ export const ALLOWED_STATE_KEYS=new Set([
  "slaplab-passes",
 ]);
 
-const EMPTY=()=>({schemaVersion:1,learners:{}});
+// Learner ids index a plain object, so any name that resolves to an inherited
+// member of Object.prototype must be refused: writing to learners["__proto__"]
+// would otherwise mutate Object.prototype for the whole process.
+export const RESERVED_LEARNER_IDS=new Set(["__proto__","constructor","prototype"]);
+
+const EMPTY=()=>({schemaVersion:1,learners:Object.create(null)});
 const now=()=>new Date().toISOString();
 
-export function validateLearnerId(value){return typeof value==="string"&&/^[A-Za-z0-9_-]{8,100}$/.test(value)}
+export function validateLearnerId(value){return typeof value==="string"&&/^[A-Za-z0-9_-]{8,100}$/.test(value)&&!RESERVED_LEARNER_IDS.has(value)}
 export function validateRecords(records){
  if(!records||typeof records!=="object"||Array.isArray(records))return "records must be an object";
  let total=0;
@@ -52,11 +57,13 @@ export function analyzePracticeTake(input){
 }
 
 export class JsonLearnerStore{
- constructor(filePath){this.filePath=filePath;this.data=EMPTY();this.queue=Promise.resolve();this.ready=this.#load()}
- async #load(){try{const parsed=JSON.parse(await readFile(this.filePath,"utf8"));if(parsed?.schemaVersion===1&&parsed.learners&&typeof parsed.learners==="object")this.data=parsed;else throw new Error("Unsupported Bass Lab data schema") }catch(error){if(error?.code!=="ENOENT")throw error}}
+ constructor(filePath){this.filePath=filePath;this.data=EMPTY();this.queue=Promise.resolve();this.ready=this.#load();this.ready.catch(()=>{})}
+ async #load(){try{const parsed=JSON.parse(await readFile(this.filePath,"utf8"));if(!parsed||parsed.schemaVersion!==1||!parsed.learners||typeof parsed.learners!=="object")throw new Error("Unsupported Bass Lab data schema");const learners=Object.create(null);for(const [id,record] of Object.entries(parsed.learners))if(validateLearnerId(id))learners[id]=record;this.data={schemaVersion:1,learners}}catch(error){if(error?.code!=="ENOENT")throw error}}
  async #save(){await mkdir(dirname(this.filePath),{recursive:true});const temporary=`${this.filePath}.${process.pid}.${Date.now()}.tmp`;await writeFile(temporary,`${JSON.stringify(this.data,null,2)}\n`,{mode:0o600});await rename(temporary,this.filePath)}
  async #read(){await this.ready;await this.queue;return this.data}
- async #mutate(change){await this.ready;const run=this.queue.catch(()=>{}).then(async()=>{const result=change(this.data);await this.#save();return result});this.queue=run.then(()=>undefined);return run}
+ // this.queue only ever tracks completion, never failure: a rejected queue would
+ // be re-thrown into every later read and would surface as an unhandled rejection.
+ async #mutate(change){await this.ready;const run=this.queue.then(async()=>{const result=change(this.data);await this.#save();return result});this.queue=run.then(()=>undefined,()=>undefined);return run}
  async getState(learnerId){const data=await this.#read(),learner=data.learners[learnerId];return {learnerId,records:structuredClone(learner?.records??{}),updatedAt:learner?.updatedAt??null}}
  async putState(learnerId,records){return this.#mutate(data=>{const stamp=now(),existing=data.learners[learnerId]??{createdAt:stamp,records:{},sessions:[]};existing.records={...existing.records,...records};existing.updatedAt=stamp;data.learners[learnerId]=existing;return {learnerId,records:structuredClone(existing.records),updatedAt:stamp}})}
  async appendSession(learnerId,session){return this.#mutate(data=>{const stamp=now(),existing=data.learners[learnerId]??{createdAt:stamp,records:{},sessions:[]},sessionId=String(session.sessionId),found=existing.sessions.find(item=>item.sessionId===sessionId);if(found)return {session:structuredClone(found),created:false};const saved={sessionId,source:session.source??"browser",createdAt:stamp,context:session.context??{},analysis:analyzePracticeTake(session.events)};existing.sessions=[saved,...existing.sessions].slice(0,250);existing.updatedAt=stamp;data.learners[learnerId]=existing;return {session:structuredClone(saved),created:true}})}

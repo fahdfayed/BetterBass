@@ -7,10 +7,29 @@ import {JsonLearnerStore,validateLearnerId,validateRecords} from "./store.mjs";
 const projectRoot=fileURLToPath(new URL("..",import.meta.url));
 const fail=(res,status,message)=>res.status(status).json({ok:false,error:message});
 
-export async function createBassLabApp({dataFile=resolve(projectRoot,".data/learners.json"),clientDir=resolve(projectRoot,"dist/client"),dev=false,trustProxy=false,serveClient=true,expressApp}={}){
+// Fixed-window counter per client address. The API is deliberately anonymous, so
+// this is the only thing standing between a scripted client and unbounded writes.
+function createRateLimiter({windowMs=60_000,readLimit=240,writeLimit=40}={}){
+ const buckets=new Map();
+ return (req,res,next)=>{
+  const stamp=Date.now(),key=req.ip??"unknown",limit=req.method==="GET"||req.method==="HEAD"?readLimit:writeLimit;
+  if(buckets.size>10_000)for(const [id,bucket] of buckets)if(bucket.expires<=stamp)buckets.delete(id);
+  let bucket=buckets.get(key);
+  if(!bucket||bucket.expires<=stamp){bucket={expires:stamp+windowMs,reads:0,writes:0};buckets.set(key,bucket)}
+  const used=limit===readLimit?++bucket.reads:++bucket.writes;
+  if(used>limit){res.setHeader("Retry-After",Math.ceil((bucket.expires-stamp)/1000));return fail(res,429,"Too many requests")}
+  return next();
+ };
+}
+
+export async function createBassLabApp({dataFile=resolve(projectRoot,".data/learners.json"),clientDir=resolve(projectRoot,"dist/client"),dev=false,trustProxy=false,serveClient=true,rateLimit={},expressApp}={}){
  const app=expressApp??express(),store=new JsonLearnerStore(dataFile);
+ // Surface a corrupt or unreadable data file as a startup failure instead of an
+ // asynchronous crash on the first request that happens to touch the store.
+ await store.ready;
  app.disable("x-powered-by");if(trustProxy)app.set("trust proxy",1);
  app.use((req,res,next)=>{res.set({"X-Content-Type-Options":"nosniff","Referrer-Policy":"strict-origin-when-cross-origin","Permissions-Policy":"microphone=(self), camera=(), geolocation=()"});next()});
+ app.use("/api",createRateLimiter(rateLimit));
  app.use(express.json({limit:"3mb",type:["application/json","application/*+json"]}));
 
  app.get("/api/v1/health",(req,res)=>res.json({ok:true,service:"outside-in-bass-lab",runtime:"node-express",apiVersion:1,time:new Date().toISOString()}));

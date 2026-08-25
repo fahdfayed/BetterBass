@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 import {useEffect,useMemo,useRef,useState} from "react";
+import {startAudioClock,type AudioClock} from "./audio-clock";
 import {saveLearningState} from "./learning-storage";
 import {speakCoach,stopCoachSpeech} from "./speech";
 
@@ -62,7 +63,9 @@ function say(text:string){void speakCoach(text,{interrupt:true,rate:.94})}
 
 export default function SlapLab({livePitch,listening,onToggleListening,events}:Props){
  const [level,setLevel]=useState(0),[drillId,setDrillId]=useState("rebound"),[tab,setTab]=useState("path"),[bpm,setBpm]=useState(56),[routine,setRoutine]=useState<10|25|45|90>(25),[buildMode,setBuildMode]=useState<"time"|"manual">("time"),[activeBlocks,setActiveBlocks]=useState<string[]>(()=>ROUTINES[25].map(x=>x.t)),[customMinutes,setCustomMinutes]=useState<Record<string,number>>(()=>Object.fromEntries(ROUTINES[25].map(x=>[x.t,x.m]))),[running,setRunning]=useState(false),[elapsed,setElapsed]=useState(0),[step,setStep]=useState(0),[muteBars,setMuteBars]=useState(true),[clicking,setClicking]=useState(false),[passes,setPasses]=useState<Record<string,string[]>>(()=>{if(typeof window==="undefined")return {};try{return JSON.parse(localStorage.getItem("slaplab-passes")||"{}")}catch{return {}}}),[feedback,setFeedback]=useState("READY — connect your bass, then start once."),[pattern,setPattern]=useState(0),[eventBase,setEventBase]=useState(0);
- const timer=useRef<number|null>(null),clickRef=useRef<{ctx:AudioContext;id:number;beat:number}|null>(null);
+ const timer=useRef<number|null>(null),clickRef=useRef<{ctx:AudioContext;clock:AudioClock}|null>(null);
+ const clickSettingsRef=useRef({bpm,muteBars});
+ useEffect(()=>{clickSettingsRef.current={bpm,muteBars}},[bpm,muteBars]);
  const drill=useMemo(()=>DRILLS.find(x=>x.id===drillId)??DRILLS[0],[drillId]);
  const guide=DRILL_GUIDANCE[drill.id],flowIndex=Math.max(0,SLAP_FLOW.findIndex(x=>x.id===tab)),flowStep=SLAP_FLOW[flowIndex],nextFlow=SLAP_FLOW[flowIndex+1];
  const sourceBlocks=ROUTINES[routine];
@@ -71,8 +74,23 @@ export default function SlapLab({livePitch,listening,onToggleListening,events}:P
  const total=blocks.reduce((a,x)=>a+x.m*60,0),remaining=Math.max(0,total-elapsed),current=blocks[Math.min(step,blocks.length-1)];
  const recent=events.slice(eventBase),avgOffset=recent.length?Math.round(recent.reduce((a,e)=>a+Math.abs(e.offset),0)/recent.length):0,avgAmp=recent.length?recent.reduce((a,e)=>a+e.amp,0)/recent.length:0;
 
- const startClick=()=>{if(clickRef.current){clearInterval(clickRef.current.id);clickRef.current.ctx.close();clickRef.current=null;setClicking(false);return}const ctx=new AudioContext(),state={ctx,id:0,beat:0};const tick=()=>{state.beat++;const bar=Math.floor((state.beat-1)/4)+1,muted=muteBars&&bar%4===0;if(!muted){const o=ctx.createOscillator(),g=ctx.createGain(),now=ctx.currentTime;o.frequency.value=(state.beat-1)%4===0?1100:650;g.gain.setValueAtTime(.14,now);g.gain.exponentialRampToValueAtTime(.001,now+.045);o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+.05)}setPattern((state.beat-1)%16)};tick();state.id=window.setInterval(tick,60000/bpm);clickRef.current=state;setClicking(true)};
- const stopClick=()=>{if(clickRef.current){clearInterval(clickRef.current.id);clickRef.current.ctx.close();clickRef.current=null;setClicking(false)}};
+ const startClick=()=>{
+  if(clickRef.current){stopClick();return}
+  const ctx=new AudioContext();
+  // Tempo and bar muting are read per beat, so raising the tempo or toggling
+  // "drop a bar" mid-drill takes effect immediately rather than at the next stop.
+  const schedule=(beat:number,when:number)=>{
+   const bar=Math.floor(beat/4)+1;
+   if(clickSettingsRef.current.muteBars&&bar%4===0)return;
+   const o=ctx.createOscillator(),g=ctx.createGain();
+   o.frequency.value=beat%4===0?1100:650;
+   g.gain.setValueAtTime(.14,when);g.gain.exponentialRampToValueAtTime(.001,when+.045);
+   o.connect(g);g.connect(ctx.destination);o.start(when);o.stop(when+.05);
+  };
+  const clock=startAudioClock(ctx,()=>clickSettingsRef.current.bpm,{schedule,display:beat=>setPattern(beat%16)});
+  clickRef.current={ctx,clock};setClicking(true);
+ };
+ const stopClick=()=>{if(clickRef.current){const {ctx,clock}=clickRef.current;clickRef.current=null;clock.stop();void ctx.close();setClicking(false)}};
  const finish=(done=false)=>{if(timer.current){clearInterval(timer.current);timer.current=null}setRunning(false);stopClick();stopCoachSpeech();setFeedback(done?`ROUTINE COMPLETE · ${recent.length} attacks heard · average timing ${avgOffset||"—"} ms`:`PAUSED AT ${fmt(elapsed)} · your place is saved`);if(done)say("Routine complete. Put the bass down and note one musical win.")};
  const begin=async()=>{if(!listening){const ok=await onToggleListening();if(!ok)return}setEventBase(events.length);setElapsed(0);setStep(0);setRunning(true);setFeedback("LISTENING · play only after the spoken count-in");say(`Hands on the bass. ${Math.round(total/60)} minute routine. ${blocks[0].t}. ${blocks[0].d}. Four, three, two, one.`);timer.current=window.setInterval(()=>setElapsed(x=>x+1),1000);if(!clickRef.current)startClick()};
  const logPass=()=>{const key=drill.id,date=new Date().toISOString().slice(0,10),days=Array.from(new Set([...(passes[key]||[]),date])).slice(-3),next={...passes,[key]:days};setPasses(next);saveLearningState("slaplab-passes",JSON.stringify(next));setFeedback(days.length>=3?"TEMPO GATE OPEN · raise only 4–6 BPM":"PASS SAVED · repeat on a different day before increasing tempo")};
@@ -81,7 +99,7 @@ export default function SlapLab({livePitch,listening,onToggleListening,events}:P
  const toggleBlock=(name:string)=>{if(running)return;setActiveBlocks(current=>current.includes(name)?current.length===1?current:current.filter(x=>x!==name):[...current,name]);setElapsed(0);setStep(0)};
  const changeMinutes=(name:string,delta:number)=>{if(running)return;setCustomMinutes(current=>({...current,[name]:Math.max(1,Math.min(30,(current[name]??1)+delta))}));setElapsed(0);setStep(0)};
 
- useEffect(()=>()=>{if(timer.current)clearInterval(timer.current);if(clickRef.current){clearInterval(clickRef.current.id);clickRef.current.ctx.close()}stopCoachSpeech()},[]);
+ useEffect(()=>()=>{if(timer.current)clearInterval(timer.current);if(clickRef.current){clickRef.current.clock.stop();void clickRef.current.ctx.close()}stopCoachSpeech()},[]);
  useEffect(()=>{if(!running)return;const next=bounds.findIndex(x=>elapsed<x),s=next<0?blocks.length-1:next;if(s!==step){setStep(s);say(`${blocks[s].t}. ${blocks[s].d}`)}if(elapsed>=total)finish(true)},[elapsed,running,bounds,step,blocks,total]);
  useEffect(()=>{if(!running||!recent.length)return;const last=recent[recent.length-1],off=Math.abs(last.offset);setFeedback(off<=45?`LOCKED · ${last.n}${last.oct} · ${off} ms from grid`:off<=90?`CLOSE · ${off} ms · keep the motion small`:`TIME FIRST · ${off} ms · drop 4 BPM and preserve the groove`)},[events,running]);
 
