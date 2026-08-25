@@ -1,5 +1,4 @@
 import {useEffect,useState,type ReactNode} from "react";
-import AuroraField from "./AuroraField";
 import CommandPalette from "./CommandPalette";
 import Icon from "./Icon";
 import {breadcrumbFor,NAV,sectionFor} from "../nav";
@@ -7,87 +6,78 @@ import {goToView,navigate,pathForView,useRoute} from "../router";
 import {useReveal} from "../useReveal";
 
 type Props={
- /** Course state for the sidebar summary. */
  course:{percent:number;index:number;total:number;title:string};
- /** Live input state for the sidebar footer. */
  input:{listening:boolean;detail:string};
- /** Global controls that belong in the header (voice, language, connect). */
  actions:ReactNode;
  children:ReactNode;
 };
 
-/** Each unit gets its own accent, so position in the course reads as colour. */
-const unitAccent=(index:number,total:number)=>{
- const unit=Math.min(6,Math.max(1,Math.ceil(((index+1)/Math.max(1,total))*6)));
- return {"--accent":`var(--unit-${unit})`,"--accent-2":`var(--unit-${Math.min(6,unit+1)})`} as React.CSSProperties;
-};
-
 export default function AppShell({course,input,actions,children}:Props){
  const route=useRoute();
- const [menuOpen,setMenuOpen]=useState(false);
- const [paletteOpen,setPaletteOpen]=useState(false);
+ const [open,setOpen]=useState(false);
+ const [palette,setPalette]=useState(false);
  const section=sectionFor(route.view);
  const {trail,here}=breadcrumbFor(route.view);
 
  useReveal(route.path);
 
- // Cmd/Ctrl-K anywhere, except while typing into a field.
  useEffect(()=>{
   const onKey=(event:KeyboardEvent)=>{
    const target=event.target as HTMLElement|null;
    const typing=target&&(target.tagName==="INPUT"||target.tagName==="TEXTAREA"||target.isContentEditable);
-   if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==="k"){event.preventDefault();setPaletteOpen(open=>!open)}
-   else if(event.key==="/"&&!typing&&!paletteOpen){event.preventDefault();setPaletteOpen(true)}
+   if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==="k"){event.preventDefault();setPalette(value=>!value)}
+   else if(event.key==="/"&&!typing&&!palette){event.preventDefault();setPalette(true)}
   };
   window.addEventListener("keydown",onKey);
   return()=>window.removeEventListener("keydown",onKey);
- },[paletteOpen]);
+ },[palette]);
 
- // Close the mobile drawer on navigation; leaving it open hides the new page.
- useEffect(()=>{setMenuOpen(false)},[route.path]);
+ useEffect(()=>{setOpen(false)},[route.path]);
 
- // Send focus to the page heading on navigation so screen readers and keyboard
- // users land on the new content instead of staying in the sidebar.
+ // Focus the new page's heading on navigation, so keyboard and screen-reader
+ // users land on the content rather than staying in the rail.
  useEffect(()=>{
-  const heading=document.querySelector<HTMLElement>("[data-page-heading]");
-  heading?.focus({preventScroll:true});
+  document.querySelector<HTMLElement>("[data-page-heading]")?.focus({preventScroll:true});
   window.scrollTo({top:0,behavior:"instant" as ScrollBehavior});
  },[route.path]);
 
  return (
   <>
-   <AuroraField/>
-   <div className="shell courseOs" data-translate-root style={unitAccent(course.index,course.total)}>
-    <a className="visuallyHidden" href="#main">Skip to content</a>
+   <div className="shell" data-translate-root>
+    <a className="sr" href="#main">Skip to content</a>
 
-    <aside className={`sideNav ${menuOpen?"open":""}`}>
-     <button className="brand" onClick={()=>goToView("course")}>
-      <span className="brandMark">OI</span>
-      <span className="brandText"><strong>Outside In</strong><small>Bass learning studio</small></span>
-     </button>
+    <nav className={`rail ${open?"open":""}`} aria-label="Main">
+     <div className="railTop">
+      <button className="mark" onClick={()=>goToView("course")} aria-label="Bass Lab home">
+       <span className="markGlyph" aria-hidden="true">OI</span>
+       <span className="markWord railLabel">Outside In</span>
+      </button>
+      <button className="railFind" onClick={()=>setPalette(true)}>
+       <Icon name="search"/>
+       <span className="railLabel">Search</span>
+       <kbd className="railLabel" data-no-translate>⌘K</kbd>
+      </button>
+     </div>
 
-     <button className="navSearch" onClick={()=>setPaletteOpen(true)}>
-      <Icon name="search"/><span>Jump to…</span><kbd data-no-translate>⌘K</kbd>
-     </button>
-
-     <div className="navGroups">
+     <div className="railNav">
       {NAV.map(group=>(
-       <section className="navGroup" key={group.label}>
-        <span className="eyebrow">{group.label}</span>
+       <div className="railGroup" key={group.label}>
+        <span className="railGroupName">{group.label}</span>
         {group.items.map(item=>{
-         const isSection=section?.view===item.view;
+         const active=section?.view===item.view;
          return (
           <div key={item.view}>
            <button
-            className="navLink"
+            className="railLink"
             aria-current={route.view===item.view?"page":undefined}
             onClick={()=>goToView(item.view)}
            >
-            <Icon name={item.icon}/><span>{item.label}</span>
+            <Icon name={item.icon}/>
+            <span className="railLabel">{item.label}</span>
            </button>
            {item.children&&(
-            <div className={`navSub ${isSection?"open":""}`}>
-             <div className="navSubInner">
+            <div className={`railSub ${active?"on":""}`}>
+             <div className="railSubInner">
               {item.children.map(child=>(
                <button
                 key={child.view}
@@ -105,59 +95,43 @@ export default function AppShell({course,input,actions,children}:Props){
           </div>
          );
         })}
-       </section>
+       </div>
       ))}
      </div>
 
-     <div className="sideFoot">
-      <section className="card" style={{padding:"var(--s-4)"}}>
-       <div className="row" style={{justifyContent:"space-between",marginBottom:"var(--s-2)"}}>
-        <span className="eyebrow">Progress</span>
-        <b className="mono" style={{fontSize:"var(--step-0)"}}>{course.percent}%</b>
-       </div>
-       <div className="meter"><span style={{width:`${course.percent}%`}}/></div>
-       <p className="muted" style={{fontSize:"var(--step--1)",marginTop:"var(--s-3)"}}>
-        Lesson {course.index+1} of {course.total}
-       </p>
-       <strong style={{fontSize:"var(--step-0)",display:"block",marginBottom:"var(--s-3)"}}>{course.title}</strong>
-       <button className="btn primary sheen" style={{width:"100%"}} onClick={()=>navigate(pathForView("courseLesson",{lesson:course.index+1}))}>
-        Continue <span className="arrow">→</span>
-       </button>
-      </section>
-
-      <div className="inputState">
-       <i className={`inputDot ${input.listening?"live":""}`}/>
-       <span>{input.listening?"Bass input active":"Bass input off"}<small>{input.detail}</small></span>
+     <div className="railFoot">
+      <div className="meter" aria-hidden="true"><span style={{width:`${course.percent}%`}}/></div>
+      <div className="railState">
+       <span className={`railDot ${input.listening?"live":""}`}/>
+       <span className="railLabel">{input.listening?input.detail:"Input off"}</span>
       </div>
      </div>
-    </aside>
+    </nav>
 
-    {menuOpen&&<div className="paletteScrim" style={{zIndex:50,paddingTop:0}} onMouseDown={()=>setMenuOpen(false)} role="presentation"/>}
+    {open&&<div className="palScrim" style={{zIndex:30,paddingTop:0}} onMouseDown={()=>setOpen(false)} role="presentation"/>}
 
-    <div className="stack" style={{minWidth:0}}>
-     <header className="topBar">
-      <button className="btn ghost navToggle" onClick={()=>setMenuOpen(open=>!open)} aria-label="Toggle navigation" aria-expanded={menuOpen}>
+    <div className="stack">
+     <header className="head">
+      <button className="action-quiet railToggle" onClick={()=>setOpen(value=>!value)} aria-label="Navigation" aria-expanded={open}>
        <Icon name="menu"/>
       </button>
-      <nav className="crumbs" aria-label="Breadcrumb">
+      <nav className="where" aria-label="Breadcrumb">
        {trail.map(step=>(
-        <span key={step.path} className="row" style={{gap:"var(--s-2)"}}>
+        <span key={step.path} className="where" style={{gap:"var(--s3)"}}>
          <button onClick={()=>navigate(step.path)}>{step.label}</button>
          <span className="sep">/</span>
         </span>
        ))}
-       <span className="here">{here}</span>
+       <span className="now">{here}</span>
       </nav>
-      <div className="topActions">{actions}</div>
+      <div className="headActions">{actions}</div>
      </header>
 
-     <main className="page viewEnter" id="main" key={route.path}>
-      {children}
-     </main>
+     <main className="page" id="main" key={route.path}>{children}</main>
     </div>
    </div>
 
-   <CommandPalette open={paletteOpen} onClose={()=>setPaletteOpen(false)}/>
+   <CommandPalette open={palette} onClose={()=>setPalette(false)}/>
   </>
  );
 }

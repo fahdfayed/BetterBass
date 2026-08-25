@@ -27,7 +27,6 @@ import "./redesign.css";
 
 // The new system loads last so it wins wherever the two overlap.
 import "./styles/base.css";
-import "./styles/aurora.css";
 import "./styles/motion.css";
 import "./styles/transitions.css";
 import "./styles/shell.css";
@@ -37,6 +36,10 @@ import "./styles/lesson.css";
 import "./styles/lesson-content.css";
 import "./styles/library.css";
 import "./styles/legacy-bridge.css";
+
+// Last of all: repoints the legacy custom properties at the new language.
+// Custom properties cascade on definition, so this must win.
+import "./styles/legacy-tokens.css";
 
 // Marks that scripting is available, so motion.css can hide reveal targets. If
 // this never runs the content stays visible rather than invisible.

@@ -1,255 +1,302 @@
-/** App shell: sidebar, header, page frame and the command palette. */
+/**
+ * App shell.
+ *
+ * The navigation rests as a column of icons roughly four characters wide. On
+ * hover or keyboard focus it widens and the labels fade in, overlaying the page
+ * rather than pushing it — so reaching any of two dozen destinations costs one
+ * gesture and, at rest, almost no screen.
+ *
+ * The header carries only where you are and the two global controls. Everything
+ * else is summoned with the palette.
+ */
 
 .shell{
  position:relative;
  z-index:1;
  min-height:100dvh;
- display:grid;
- grid-template-columns:var(--sidebar-w) minmax(0,1fr);
+ padding-left:var(--rail);
 }
 
-/* ---- sidebar ----------------------------------------------------------- */
+/* ---- rail ---------------------------------------------------------------- */
 
-.sideNav{
- position:sticky;
- top:0;
- height:100dvh;
+.rail{
+ position:fixed;
+ inset:0 auto 0 0;
+ z-index:40;
+ width:var(--rail);
  display:flex;
  flex-direction:column;
- gap:var(--s-5);
- padding:var(--s-5) var(--s-4);
- border-right:1px solid var(--line);
- background:linear-gradient(180deg,rgba(10,8,18,.72),rgba(6,5,12,.86));
- backdrop-filter:blur(24px) saturate(1.2);
- overflow-y:auto;
- overscroll-behavior:contain;
+ gap:var(--s6);
+ padding:var(--s5) 0;
+ background:var(--bg);
+ border-right:1px solid var(--rule);
+ overflow:hidden;
+ transition:width var(--t-slow) var(--ease-out),background var(--t-base) var(--ease);
+}
+.rail:hover,.rail:focus-within,.rail.open{
+ width:var(--rail-open);
+ background:var(--bg-lift);
 }
 
-.brand{
+.railTop{display:flex;flex-direction:column;gap:var(--s3);padding:0 1.1rem}
+
+.mark{
  display:flex;
  align-items:center;
- gap:var(--s-3);
- padding:var(--s-2);
- border-radius:var(--r-md);
- text-align:left;
- transition:background var(--dur) var(--ease);
-}
-.brand:hover{background:var(--surface-1)}
-.brandMark{
- display:grid;
- place-items:center;
- width:2.25rem;
+ gap:var(--s3);
  height:2.25rem;
  flex:none;
- border-radius:var(--r-sm);
- background:linear-gradient(135deg,var(--violet),var(--cyan));
- color:var(--accent-ink);
- font-weight:800;
- font-size:var(--step--1);
- letter-spacing:-.04em;
- box-shadow:0 4px 18px -4px var(--violet);
 }
-.brandText{display:flex;flex-direction:column;line-height:1.25}
-.brandText strong{font-size:var(--step-0);font-weight:640}
-.brandText small{font-size:var(--step--1);color:var(--text-faint)}
+.markGlyph{
+ width:1.6rem;height:1.6rem;
+ flex:none;
+ display:grid;
+ place-items:center;
+ border-radius:var(--r-control);
+ background:var(--accent);
+ color:var(--accent-ink);
+ font-size:.6rem;
+ font-weight:800;
+ letter-spacing:-.02em;
+}
+.markWord{
+ font-size:var(--t-small);
+ font-weight:560;
+ white-space:nowrap;
+}
 
-.navSearch{
+/* Labels exist at all times for screen readers; they only become visible as the
+   rail opens, so the collapsed state stays pure iconography. */
+.railLabel{
+ white-space:nowrap;
+ opacity:0;
+ transform:translateX(-4px);
+ transition:opacity var(--t-base) var(--ease),transform var(--t-base) var(--ease-out);
+}
+.rail:hover .railLabel,
+.rail:focus-within .railLabel,
+.rail.open .railLabel{opacity:1;transform:translateX(0)}
+
+.railFind{
  display:flex;
  align-items:center;
- gap:var(--s-2);
- width:100%;
- padding:.55rem .7rem;
- border:1px solid var(--line);
- border-radius:var(--r-md);
- background:var(--surface-1);
- color:var(--text-faint);
- font-size:var(--step--1);
- transition:border-color var(--dur) var(--ease),background var(--dur) var(--ease);
+ gap:var(--s3);
+ height:2.25rem;
+ color:var(--ink-3);
+ font-size:var(--t-small);
+ transition:color var(--t-base) var(--ease);
 }
-.navSearch:hover{border-color:var(--line-strong);background:var(--surface-2);color:var(--text-muted)}
-.navSearch kbd{
+.railFind:hover{color:var(--ink)}
+.railFind svg{width:1.05rem;height:1.05rem;flex:none;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.railFind kbd{
  margin-left:auto;
- padding:.1rem .35rem;
- border:1px solid var(--line);
- border-radius:.3rem;
- background:var(--surface-2);
  font-family:var(--font-mono);
- font-size:.65rem;
+ font-size:.6rem;
+ color:var(--ink-4);
 }
 
-.navGroups{display:flex;flex-direction:column;gap:var(--s-5)}
-.navGroup{display:flex;flex-direction:column;gap:var(--s-1)}
-.navGroup>.eyebrow{padding:0 var(--s-2) var(--s-1)}
+.railNav{
+ flex:1;
+ display:flex;
+ flex-direction:column;
+ gap:var(--s5);
+ padding:0 .75rem;
+ overflow-y:auto;
+ overscroll-behavior:contain;
+ scrollbar-width:none;
+}
+.railNav::-webkit-scrollbar{display:none}
 
-.navLink{
+.railGroup{display:flex;flex-direction:column;gap:1px}
+/* The group name only makes sense once labels are visible. */
+.railGroupName{
+ padding:0 .35rem var(--s2);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ color:var(--ink-4);
+ white-space:nowrap;
+ opacity:0;
+ height:0;
+ overflow:hidden;
+ transition:opacity var(--t-base) var(--ease),height var(--t-base) var(--ease);
+}
+.rail:hover .railGroupName,
+.rail:focus-within .railGroupName,
+.rail.open .railGroupName{opacity:1;height:1.35rem}
+
+.railLink{
  position:relative;
  display:flex;
  align-items:center;
- gap:var(--s-3);
- padding:.55rem var(--s-2);
- border-radius:var(--r-md);
- color:var(--text-muted);
- font-size:var(--step-0);
- font-weight:520;
- text-align:left;
- transition:color var(--dur) var(--ease),background var(--dur) var(--ease);
+ gap:var(--s3);
+ height:2.35rem;
+ padding:0 .35rem;
+ border-radius:var(--r-control);
+ color:var(--ink-3);
+ font-size:var(--t-small);
+ transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
 }
-.navLink:hover{color:var(--text);background:var(--surface-1)}
-.navLink[aria-current="page"]{color:var(--text);background:var(--surface-2)}
-
-/* The active marker slides between items rather than blinking on and off. */
-.navLink[aria-current="page"]::before{
- content:"";
- position:absolute;
- left:calc(var(--s-4) * -1);
- inset-block:.4rem;
- width:2px;
- border-radius:var(--r-full);
- background:linear-gradient(180deg,var(--accent),var(--accent-2));
- box-shadow:0 0 12px var(--accent);
+.railLink:hover{color:var(--ink);background:var(--wash)}
+.railLink[aria-current="page"]{color:var(--ink)}
+.railLink svg{
+ width:1.15rem;height:1.15rem;
+ flex:none;
+ stroke:currentColor;fill:none;
+ stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;
+ transition:stroke var(--t-base) var(--ease);
 }
-.navLink svg{width:1.05rem;height:1.05rem;flex:none;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.railLink[aria-current="page"] svg{stroke:var(--accent)}
 
-/* Sub-destinations, revealed only under the active section. */
-.navSub{
+/* Sub-destinations are hidden until their section is active AND the rail is
+   open — so depth exists without ever being visible at rest. */
+.railSub{
  display:grid;
  grid-template-rows:0fr;
- transition:grid-template-rows var(--dur-slow) var(--ease-out);
+ transition:grid-template-rows var(--t-slow) var(--ease-out);
 }
-.navSub.open{grid-template-rows:1fr}
-.navSubInner{overflow:hidden;display:flex;flex-direction:column;gap:1px;padding-left:2.1rem}
-.navSub a,.navSub button{
- padding:.35rem var(--s-2);
- border-radius:var(--r-sm);
- color:var(--text-faint);
- font-size:var(--step--1);
+.rail:hover .railSub.on,
+.rail:focus-within .railSub.on,
+.rail.open .railSub.on{grid-template-rows:1fr}
+.railSubInner{overflow:hidden;display:flex;flex-direction:column;padding-left:2.1rem}
+.railSub button{
+ height:1.9rem;
  text-align:left;
- transition:color var(--dur) var(--ease),background var(--dur) var(--ease);
+ white-space:nowrap;
+ color:var(--ink-4);
+ font-size:var(--t-micro);
+ letter-spacing:.02em;
+ transition:color var(--t-base) var(--ease);
 }
-.navSub a:hover,.navSub button:hover{color:var(--text);background:var(--surface-1)}
-.navSub [aria-current="page"]{color:var(--accent)}
+.railSub button:hover{color:var(--ink-2)}
+.railSub [aria-current="page"]{color:var(--accent)}
 
-.sideFoot{margin-top:auto;display:flex;flex-direction:column;gap:var(--s-3)}
+.railFoot{padding:0 1.1rem;display:flex;flex-direction:column;gap:var(--s3)}
 
-.inputState{
- display:flex;
- align-items:center;
- gap:var(--s-3);
- padding:var(--s-3);
- border:1px solid var(--line);
- border-radius:var(--r-md);
- background:var(--surface-1);
+.railState{display:flex;align-items:center;gap:var(--s3);height:1.6rem;color:var(--ink-4);font-size:var(--t-micro);white-space:nowrap}
+.railDot{
+ width:.4rem;height:.4rem;flex:none;
+ border-radius:var(--r-pill);
+ background:var(--ink-4);
+ transition:background var(--t-base) var(--ease),box-shadow var(--t-base) var(--ease);
 }
-.inputDot{
- width:.5rem;height:.5rem;flex:none;
- border-radius:var(--r-full);
- background:var(--text-faint);
- transition:background var(--dur) var(--ease),box-shadow var(--dur) var(--ease);
-}
-.inputDot.live{background:var(--ok);box-shadow:0 0 0 3px color-mix(in oklab,var(--ok) 22%,transparent)}
-.inputState span{display:flex;flex-direction:column;font-size:var(--step--1);line-height:1.35}
-.inputState small{color:var(--text-faint)}
+.railDot.live{background:var(--done);box-shadow:0 0 0 3px rgba(74,222,128,.16)}
 
-/* ---- header ------------------------------------------------------------ */
+/* ---- header -------------------------------------------------------------- */
 
-.topBar{
+.head{
  position:sticky;
  top:0;
  z-index:20;
  display:flex;
  align-items:center;
- gap:var(--s-4);
- height:var(--header-h);
- padding:0 var(--s-6);
- border-bottom:1px solid var(--line);
- background:rgba(8,6,15,.66);
- backdrop-filter:blur(24px) saturate(1.3);
+ gap:var(--s5);
+ height:var(--header);
+ padding:0 var(--s7);
+ background:color-mix(in oklab,var(--bg) 82%,transparent);
+ backdrop-filter:blur(16px);
 }
-.crumbs{display:flex;align-items:center;gap:var(--s-2);min-width:0;font-size:var(--step--1)}
-.crumbs .sep{color:var(--text-faint);opacity:.5}
-.crumbs .here{font-weight:600;font-size:var(--step-0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.crumbs button{color:var(--text-faint);transition:color var(--dur) var(--ease)}
-.crumbs button:hover{color:var(--text)}
-.topActions{margin-left:auto;display:flex;align-items:center;gap:var(--s-2)}
+.where{display:flex;align-items:center;gap:var(--s3);min-width:0;font-size:var(--t-small)}
+.where .sep{color:var(--ink-4)}
+.where button{color:var(--ink-4);transition:color var(--t-base) var(--ease)}
+.where button:hover{color:var(--ink-2)}
+.where .now{color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.headActions{margin-left:auto;display:flex;align-items:center;gap:var(--s5)}
 
-/* ---- page frame -------------------------------------------------------- */
+/* ---- page ---------------------------------------------------------------- */
 
 .page{
  width:100%;
- max-width:var(--content-max);
+ max-width:var(--measure);
  margin-inline:auto;
- padding:var(--s-7) var(--s-6) var(--s-9);
+ padding:var(--s8) var(--s7) var(--s10);
  display:flex;
  flex-direction:column;
- gap:var(--s-7);
+ gap:var(--s8);
 }
 
-/* ---- command palette --------------------------------------------------- */
+/* ---- palette ------------------------------------------------------------- */
 
-.paletteScrim{
+.palScrim{
  position:fixed;
  inset:0;
  z-index:100;
  display:grid;
  place-items:start center;
- padding-top:12vh;
- background:rgba(4,3,9,.68);
- backdrop-filter:blur(8px);
- animation:fadeIn var(--dur) var(--ease) both;
+ padding-top:14vh;
+ background:rgba(4,4,6,.7);
+ backdrop-filter:blur(10px);
+ animation:palFade var(--t-base) var(--ease) both;
 }
-.palette{
- width:min(92vw,36rem);
- max-height:60vh;
+@keyframes palFade{from{opacity:0}to{opacity:1}}
+
+.pal{
+ width:min(92vw,34rem);
+ max-height:58vh;
  display:flex;
  flex-direction:column;
  overflow:hidden;
- border:1px solid var(--line-strong);
- border-radius:var(--r-lg);
- background:rgba(16,13,26,.96);
- box-shadow:var(--shadow-3),0 0 60px -20px var(--violet);
- animation:scaleIn var(--dur-slow) var(--ease-out) both;
+ background:var(--bg-lift);
+ border:1px solid var(--rule-strong);
+ border-radius:.875rem;
+ animation:palRise var(--t-slow) var(--ease-out) both;
 }
-.paletteInput{
- width:100%;
- padding:var(--s-4) var(--s-5);
- border:0;
- border-bottom:1px solid var(--line);
- background:transparent;
- font-size:var(--step-1);
+@keyframes palRise{
+ from{opacity:0;transform:translateY(-8px) scale(.985)}
+ to{opacity:1;transform:none}
+}
+
+.palInput{
+ padding:var(--s5) var(--s6);
+ border-bottom:1px solid var(--rule);
+ font-size:var(--t-lead);
  outline:none;
 }
-.paletteInput::placeholder{color:var(--text-faint)}
-.paletteList{list-style:none;padding:var(--s-2);margin:0;overflow-y:auto}
-.paletteItem{
+.palInput::placeholder{color:var(--ink-4)}
+.palList{list-style:none;padding:var(--s2) var(--s3) var(--s3);margin:0;overflow-y:auto}
+.palItem{
  display:flex;
  align-items:center;
- gap:var(--s-3);
+ gap:var(--s4);
  width:100%;
- padding:.6rem var(--s-3);
- border-radius:var(--r-md);
- color:var(--text-muted);
- text-align:left;
- transition:background var(--dur-fast) var(--ease),color var(--dur-fast) var(--ease);
+ padding:.6rem var(--s3);
+ border-radius:var(--r-control);
+ color:var(--ink-3);
+ font-size:var(--t-small);
+ transition:background var(--t-fast) var(--ease),color var(--t-fast) var(--ease);
 }
-.paletteItem[data-active="true"]{background:var(--surface-2);color:var(--text)}
-.paletteItem .where{margin-left:auto;font-size:var(--step--1);color:var(--text-faint)}
-.paletteEmpty{padding:var(--s-5);text-align:center;color:var(--text-faint);font-size:var(--step-0)}
+.palItem svg{width:1rem;height:1rem;flex:none;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.palItem[data-active="true"]{background:var(--wash);color:var(--ink)}
+.palItem .palWhere{margin-left:auto;font-size:var(--t-micro);color:var(--ink-4)}
+.palEmpty{padding:var(--s6);text-align:center;color:var(--ink-4);font-size:var(--t-small)}
 
-/* ---- responsive -------------------------------------------------------- */
+/* ---- responsive ---------------------------------------------------------- */
 
 @media (max-width:60rem){
- .shell{grid-template-columns:minmax(0,1fr)}
- .sideNav{
-  position:fixed;
-  z-index:60;
-  width:var(--sidebar-w);
+ .shell{padding-left:0}
+ .rail{
+  width:var(--rail-open);
   transform:translateX(-100%);
-  transition:transform var(--dur-slow) var(--ease-out);
+  transition:transform var(--t-slow) var(--ease-out);
  }
- .sideNav.open{transform:translateX(0)}
- .page{padding:var(--s-5) var(--s-4) var(--s-8)}
- .topBar{padding:0 var(--s-4)}
+ .rail.open{transform:translateX(0)}
+ .rail .railLabel,.rail .railGroupName{opacity:1;transform:none;height:auto}
+ .page{padding:var(--s6) var(--s5) var(--s9)}
+ .head{padding:0 var(--s5)}
 }
 @media (min-width:60.01rem){
- .navToggle{display:none}
+ .railToggle{display:none}
 }
+
+/* Header key/mode selects, in the new vocabulary. */
+.head-selects{display:flex;align-items:center;gap:var(--s5)}
+.head-selects label{display:flex;align-items:center;gap:var(--s2)}
+.head-selects select{
+ color:var(--ink-2);
+ font-size:var(--t-small);
+ cursor:pointer;
+ transition:color var(--t-base) var(--ease);
+}
+.head-selects select:hover{color:var(--ink)}
+.head-selects option{background:var(--bg-lift)}
+@media (max-width:68rem){.head-selects{display:none}}

@@ -14,17 +14,15 @@
 
 /* ---- what persists across a navigation ---------------------------------- */
 
-.sideNav{view-transition-name:app-sidebar}
-.topBar{view-transition-name:app-topbar}
-.auroraField{view-transition-name:app-aurora}
+.rail{view-transition-name:app-rail}
+.head{view-transition-name:app-head}
 
 /* Persistent chrome is not animated at all; it simply carries over. */
-::view-transition-old(app-sidebar),
-::view-transition-new(app-sidebar),
-::view-transition-old(app-topbar),
-::view-transition-new(app-topbar),
-::view-transition-old(app-aurora),
-::view-transition-new(app-aurora){
+::view-transition-old(app-rail),
+::view-transition-new(app-rail),
+::view-transition-old(app-head),
+::view-transition-new(app-head),
+::view-transition-new(app-head){
  animation:none;
  mix-blend-mode:normal;
 }
@@ -59,7 +57,7 @@
  * Children of a .stagger container fan in on arrival. Depth is capped at ten so
  * a twenty-eight row list never makes the reader wait for the last item.
  */
-.stagger>*{animation:staggerIn var(--dur-reveal) var(--ease-out) both}
+.stagger>*{animation:staggerIn var(--t-slow) var(--ease-out) both}
 .stagger>*:nth-child(1){animation-delay:20ms}
 .stagger>*:nth-child(2){animation-delay:50ms}
 .stagger>*:nth-child(3){animation-delay:80ms}
