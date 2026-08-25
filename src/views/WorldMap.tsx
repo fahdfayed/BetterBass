@@ -1,8 +1,8 @@
 import {useState} from "react";
-import type {Badge,Progression,TerritoryState} from "../game/progression";
+import type {TerritoryState} from "../game/progression";
 
 type Props={
- progression:Progression;
+ territories:TerritoryState[];
  lessonTitles:string[];
  currentLesson:number;
  onOpenLesson:(index:number)=>void;
@@ -14,12 +14,10 @@ function link(from:TerritoryState,to:TerritoryState){
  return `M ${from.x} ${from.y} C ${midX} ${from.y}, ${midX} ${to.y}, ${to.x} ${to.y}`;
 }
 
-const TIER_LABEL:Record<Badge["tier"],string>={bronze:"Bronze",silver:"Silver",gold:"Gold"};
-
-export default function WorldMap({progression,lessonTitles,currentLesson,onOpenLesson}:Props){
- const {territories,rank,badges,badgesEarned,streak,keysMastered,xp}=progression;
+export default function WorldMap({territories,lessonTitles,currentLesson,onOpenLesson}:Props){
  const [open,setOpen]=useState<number|null>(()=>territories.find(t=>t.current)?.id??1);
  const selected=territories.find(t=>t.id===open)??null;
+ const passed=territories.reduce((sum,t)=>sum+t.done,0);
 
  return (
   <>
@@ -30,16 +28,13 @@ export default function WorldMap({progression,lessonTitles,currentLesson,onOpenL
       Six <span className="gradientText">territories</span>.
      </h1>
      <p className="lede">
-      Each one opens when the ground before it is proven. Nothing here is
-      unlocked by time spent — only by juries passed.
+      Each one opens when the ground before it is proven. Pick a territory to see
+      its lessons, then open any that is ready.
      </p>
     </div>
-
     <div className="hudStats">
-     <div className="hudStat"><b className="mono">{xp.toLocaleString()}</b><span className="eyebrow">XP</span></div>
-     <div className="hudStat"><b className="mono">{streak}</b><span className="eyebrow">Day streak</span></div>
-     <div className="hudStat"><b className="mono">{keysMastered}<i>/12</i></b><span className="eyebrow">Keys</span></div>
-     <div className="hudStat"><b className="mono">{badgesEarned}<i>/{badges.length}</i></b><span className="eyebrow">Badges</span></div>
+     <div className="hudStat"><b className="mono">{passed}<i>/{lessonTitles.length}</i></b><span className="eyebrow">Lessons passed</span></div>
+     <div className="hudStat"><b className="mono">{territories.filter(t=>t.unlocked).length}<i>/6</i></b><span className="eyebrow">Territories open</span></div>
     </div>
    </header>
 
@@ -47,13 +42,7 @@ export default function WorldMap({progression,lessonTitles,currentLesson,onOpenL
     <svg className="mapCanvas" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
      {territories.slice(0,-1).map((from,index)=>{
       const to=territories[index+1];
-      return (
-       <path
-        key={from.id}
-        className={`mapLink ${to.unlocked?"open":"locked"}`}
-        d={link(from,to)}
-       />
-      );
+      return <path key={from.id} className={`mapLink ${to.unlocked?"open":"locked"}`} d={link(from,to)}/>;
      })}
     </svg>
 
@@ -98,7 +87,7 @@ export default function WorldMap({progression,lessonTitles,currentLesson,onOpenL
        <p className="muted">{selected.subtitle}</p>
       </div>
       <div className="territoryScore">
-       <b className="mono">{selected.percent}<i>%</i></b>
+       <b className="mono">{selected.done}<i>/{selected.total}</i></b>
        <div className="meter"><span style={{width:`${selected.percent}%`}}/></div>
       </div>
      </header>
@@ -107,16 +96,16 @@ export default function WorldMap({progression,lessonTitles,currentLesson,onOpenL
       ? <ol className="missionList">
          {Array.from({length:selected.total},(_,offset)=>{
           const index=selected.range[0]+offset;
-          const passed=offset<selected.done;
+          const isPassed=offset<selected.done;
           const isCurrent=index===currentLesson;
-          const reachable=passed||index<=selected.range[0]+selected.done;
+          const reachable=isPassed||index<=selected.range[0]+selected.done;
           return (
-           <li key={index} className={`mission ${passed?"passed":""} ${isCurrent?"current":""} ${reachable?"":"locked"}`}>
+           <li key={index} className={`mission ${isPassed?"passed":""} ${isCurrent?"current":""} ${reachable?"":"locked"}`}>
             <button onClick={()=>{if(reachable)onOpenLesson(index)}} disabled={!reachable}>
-             <i className="missionMark" aria-hidden="true">{passed?"✓":isCurrent?"▶":offset+1}</i>
+             <i className="missionMark" aria-hidden="true">{isPassed?"✓":isCurrent?"▶":offset+1}</i>
              <span className="missionName">{lessonTitles[index]??`Lesson ${index+1}`}</span>
              <span className="missionState">
-              {passed?"Passed":isCurrent?"In progress":reachable?"Ready":"Locked"}
+              {isPassed?"Passed":isCurrent?"In progress":reachable?"Ready":"Locked"}
              </span>
             </button>
            </li>
@@ -128,30 +117,6 @@ export default function WorldMap({progression,lessonTitles,currentLesson,onOpenL
         </p>}
     </section>
    )}
-
-   <section className="homeSection reveal">
-    <header className="sectionHead">
-     <div>
-      <span className="eyebrow">Achievements</span>
-      <h2>{badgesEarned} of {badges.length} earned.</h2>
-     </div>
-     <span className="chip">Rank {rank.level} · {rank.title}</span>
-    </header>
-    <ul className="badgeGrid">
-     {badges.map(item=>(
-      <li key={item.id} className={`card badgeCard ${item.tier} ${item.earned?"earned":""}`}>
-       <div className="badgeMedal" aria-hidden="true">{item.earned?"★":"☆"}</div>
-       <b>{item.name}</b>
-       <small>{item.description}</small>
-       <div className="meter"><span style={{width:`${item.percent}%`}}/></div>
-       <span className="badgeFoot">
-        <em>{TIER_LABEL[item.tier]}</em>
-        <span className="mono">{item.detail}</span>
-       </span>
-      </li>
-     ))}
-    </ul>
-   </section>
   </>
  );
 }

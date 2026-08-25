@@ -3,9 +3,9 @@ import {fadeAndClose,startAudioClock,type AudioClock} from "./audio-clock";
 import AppShell from "./components/AppShell";
 import Home from "./views/Home";
 import WorldMap from "./views/WorldMap";
-import RankHud from "./components/RankHud";
-import {progressionFor} from "./game/progression";
-import {readStoredGameState} from "./game/state";
+import LessonWorkspace from "./views/LessonWorkspace";
+import LessonTools,{WORKSPACE_LABELS} from "./views/LessonTools";
+import {territoryStates} from "./game/progression";
 import {goToView,navigate,pathForView,useRoute} from "./router";
 import {autoCorrelate,centsToNote,labelFor,midiHz,NOTE_NAMES,PITCH_MAX_HZ,PITCH_MIN_HZ,PITCH_RMS_GATE,tensionFor,type Harmony} from "./pitch";
 import {COURSE_LESSONS,COURSE_UNITS} from "./course-data";
@@ -77,19 +77,12 @@ export default function BassLab(){
  const [root,setRoot]=useState(9),[mode,setMode]=useState(1),[chord,setChord]=useState("Am7"),[fbView,setFbView]=useState("priority"),[fog,setFog]=useState(2),[picked,setPicked]=useState<number|null>(null),[listening,setListening]=useState(false),[pitch,setPitch]=useState<{n:string,oct:number,cents:number,hz:number}|null>(null),[history,setHistory]=useState<number[]>([]),[level,setLevel]=useState(1),[outsideBeat,setOutsideBeat]=useState(0),[rescue,setRescue]=useState(1),[lastRescue,setLastRescue]=useState(""),[weights,setWeights]=useState([60,55,45,70,80,75,62]),[plan,setPlan]=useState(sessions),[freedom,setFreedom]=useState([72,89,94,86,63]),[events,setEvents]=useState<NoteEvent[]>([]),[bpm,setBpm]=useState(80),[calibrated,setCalibrated]=useState(false),[noise,setNoise]=useState(0),[audioError,setAudioError]=useState(""),[exercise,setExercise]=useState(0),[recording,setRecording]=useState(false),[playing,setPlaying]=useState(false),[style,setStyle]=useState("Psychedelic"),[meter,setMeter]=useState(4),[clickMode,setClickMode]=useState("2 & 4"),[density,setDensity]=useState(2),[bar,setBar]=useState(1),[beat,setBeat]=useState(1),[weather,setWeather]=useState("Stable"),[progression,setProgression]=useState([0,0,5,0]),[diagStep,setDiagStep]=useState(0),[diag,setDiag]=useState([0,0,0,0,0]),[adaptiveReady,setAdaptiveReady]=useState(false),[keyMatrix,setKeyMatrix]=useState([78,42,69,45,75,57,41,81,44,86,48,71]),[antiHabit,setAntiHabit]=useState(false),[reviewDays,setReviewDays]=useState([3,11,18,7,22]);
  const [lessonIdx,setLessonIdx]=useState(0),[lessonStage,setLessonStage]=useState(0),[lessonProgress,setLessonProgress]=useState<number[]>([0,0,0,0,0,0]),[labMode,setLabMode]=useState("motif"),[mutation,setMutation]=useState("ORIGINAL"),[slip,setSlip]=useState(1),[slipLength,setSlipLength]=useState(1),[targetTone,setTargetTone]=useState(0),[tensionBudget,setTensionBudget]=useState(10),[curve,setCurve]=useState([0,1,1,2,3,4,2,0]),[labFeedback,setLabFeedback]=useState(""),[harmonyQuiz,setHarmonyQuiz]=useState(0);
  const [courseIndex,setCourseIndex]=useState(0),[courseStep,setCourseStep]=useState(0),[courseCompleted,setCourseCompleted]=useState(0),[showToolkit,setShowToolkit]=useState(false),[practiceTempo,setPracticeTempo]=useState(60),[juryScores,setJuryScores]=useState([70,70,70,70,70]);
- const [storedGame,setStoredGame]=useState(readStoredGameState);
- // The map reads state written by other screens, so refresh whenever any of
- // them saves rather than re-parsing localStorage on every render.
- useEffect(()=>{const refresh=()=>setStoredGame(readStoredGameState());window.addEventListener(LEARNING_STATE_EVENT,refresh);return()=>window.removeEventListener(LEARNING_STATE_EVENT,refresh)},[]);
  const route=useRoute(),view=route.view;
  // Navigating by view id keeps every existing call site working while the URL
  // becomes the single source of truth for which screen is open.
  const setView=(next:string)=>next==="courseLesson"?navigate(pathForView("courseLesson",{lesson:courseIndex+1})):goToView(next);
  useEffect(()=>{if(route.view!=="courseLesson")return;const lesson=Number.parseInt(route.params.lesson??"",10);if(Number.isFinite(lesson))setCourseIndex(clampIndex(lesson-1,0,COURSE_LESSONS.length-1))},[route.view,route.params.lesson]);
- const game=useMemo(()=>progressionFor({
-  lessonsCompleted:courseCompleted,totalLessons:COURSE_LESSONS.length,
-  juryScores,freedom,keyMatrix,...storedGame,
- },courseIndex),[courseCompleted,juryScores,freedom,keyMatrix,storedGame,courseIndex]);
+ const territories=useMemo(()=>territoryStates(courseCompleted,courseIndex),[courseCompleted,courseIndex]);
  const egyptian=useEgyptianArabic();
  const audio=useRef<{ctx:AudioContext,stream:MediaStream,raf:number}|null>(null),eventRef=useRef<{midi:number,start:number,amp:number}|null>(null),eventsRef=useRef<NoteEvent[]>([]),recordRef=useRef(false),runtimeRef=useRef<{ctx:AudioContext,clock:AudioClock,master:GainNode}|null>(null),auditionRef=useRef<AudioContext|null>(null); const ri=root, scale=useMemo(()=>MODES[mode].s.map(x=>(x+ri)%12),[mode,ri]), color=(ri+MODES[mode].s[MODES[mode].c])%12, chordTones=useMemo(()=>[0,3,7,10].map(x=>(x+ri)%12),[ri]);
  // The microphone loop and the backing band both outlive the render that starts
@@ -209,7 +202,6 @@ export default function BassLab(){
    <label><span className="eyebrow">Sound</span><select aria-label="Home mode" value={mode} onChange={e=>setMode(+e.target.value)}>{MODES.map((m,i)=><option value={i} key={m.n}>{m.n}</option>)}</select></label>
   </div>}
   {view==="fret"&&<span className="chip">{egyptian?"اختيارات البروجرشن تحت":"Controls are in the tool"}</span>}
-  <RankHud rank={game.rank} streak={game.streak}/>
   <VoiceControl/>
   <button className={`btn ${listening?"":"primary"} sheen`} onClick={startAudio}>
    <i className={`inputDot ${listening?"live":""}`}/>{listening?"Disconnect":"Connect bass"}
@@ -276,7 +268,7 @@ export default function BassLab(){
  </div>}
 
  {view==="map"&&<WorldMap
-  progression={game}
+  territories={territories}
   lessonTitles={COURSE_LESSONS.map(lesson=>lesson.title)}
   currentLesson={courseIndex}
   onOpenLesson={openCourseLesson}
@@ -295,11 +287,29 @@ export default function BassLab(){
 
  {view==="tools"&&<div className="osScreen toolLibraryPage"><header><div><span>TOOL LIBRARY</span><h1>Find the right tool.<br/>Get back to playing.</h1><p>These are the same focused labs already inside the course, now organized by what you need to do.</p></div><button onClick={()=>setView("courseLesson")}>Return to current lesson <span>→</span></button></header><section className="toolLibraryGrid">{toolCards.map(tool=><button onClick={()=>setView(tool.id)} key={tool.id}><UiIcon name={tool.icon}/><span>{tool.tag}</span><h2>{tool.title}</h2><p>{tool.desc}</p><b>Open tool <i>→</i></b></button>)}</section><aside className="libraryHint"><UiIcon name="course"/><div><b>Not sure what to choose?</b><p>Return to the current lesson. It opens the correct tool at the moment you need it.</p></div><button onClick={()=>setView("courseLesson")}>Continue lesson</button></aside></div>}
 
- {view==="courseLesson"&&<div className="osScreen structuredLesson">
-  <header className="courseLessonHead"><div><span>UNIT {course.unit} · {courseUnit.title}</span><small>LESSON {courseIndex+1} OF {COURSE_LESSONS.length} · {course.duration} MIN</small><h1>{course.title}</h1><p>{course.outcome}</p></div><div><b>{Math.round(courseStep/5*100)}%</b><span>LESSON PROGRESS</span></div></header>
-  <nav className="courseStepRail">{courseSteps.map((x,i)=><button className={courseStep===i?"active":i<courseStep?"done":""} onClick={()=>setCourseStep(i)} key={x}><i>{i<courseStep?"✓":i+1}</i><span>{x}</span></button>)}</nav>
-  <aside className="lessonNowCard"><div><small>STEP {courseStep+1} OF 6</small><h2>{courseStageGuides[courseStep].title}</h2><p>{courseStageGuides[courseStep].body}</p></div><div><small>YOU ARE READY TO MOVE ON WHEN</small><p>{courseStageGuides[courseStep].finish}</p></div></aside>
-  <section className="courseLessonBody">
+ {view==="courseLesson"&&<LessonWorkspace
+  lesson={{index:courseIndex,total:COURSE_LESSONS.length,title:course.title,unit:course.unit,outcome:course.outcome,duration:course.duration}}
+  stageIndex={courseStep}
+  stageNames={courseSteps}
+  stageReached={courseStep}
+  guide={courseStageGuides[courseStep]}
+  onStage={setCourseStep}
+  onAdvance={advanceCourse}
+  advanceLabel={courseStep===5?(juryPassed?"Pass lesson":"Score to pass"):"Complete stage"}
+  canAdvance={!(courseStep===5&&!juryPassed)}
+  blockedReason={courseStep===5&&!juryPassed?`Jury average ${juryAverage} · needs 80+ with every area 70+`:undefined}
+  onPrevLesson={()=>openCourseLesson(courseIndex-1)}
+  onNextLesson={()=>openCourseLesson(courseIndex+1)}
+  hasPrev={courseIndex>0}
+  hasNext={courseIndex+1<=courseCompleted&&courseIndex+1<COURSE_LESSONS.length}
+  workspaceLabel={WORKSPACE_LABELS[courseStep]}
+  workspace={<LessonTools stage={courseStep} bridge={{
+   root,mode,fbView,fog,picked,setRoot,setMode,setChord,setFbView,setFog,setPicked,audition,
+   playing,startRuntime,bpm,setBpm,bar,beat,
+   recording,beginTake:()=>void beginTake(),endTake,eventCount:events.length,listening,
+   intervals:course.intervals,character:course.character,noteName:(pc:number)=>N[pc],
+  }}/>}
+  instruction={<>
    {courseStep===0&&<div className="learnStage">
     <section className="prerequisiteCheck"><header><span>00 · BEFORE YOU BEGIN</span><h2>Check the foundation.</h2><p>These are retrieval checks, not reading questions. Attempt each on the bass or with your voice before revealing more material.</p></header><div>{courseDetail.selfCheck.map((x,i)=><label key={x}><input type="checkbox"/><i>{String(i+1).padStart(2,"0")}</i><span>{x}</span></label>)}</div></section>
     <article className="courseTheory"><span>01 · CORE THEORY</span><h2>{course.outcome}</h2>{course.concept.map((p,i)=><p key={i}>{p}</p>)}</article>
@@ -356,9 +366,8 @@ export default function BassLab(){
     <section className={`juryResult ${juryPassed?"passed":"needsWork"}`}><div><small>{juryPassed?"JURY STATUS · PASS":"JURY STATUS · RETAKE"}</small><b>{juryAverage}</b><span>AVERAGE · LOWEST {juryMinimum}</span></div><article><h3>{juryPassed?"Lesson standard reached.":`${weakJury} is the current bottleneck.`}</h3><p>{juryPassed?"Complete the transfer proof in the second key, then continue. Mastery will still require future review and musical use.":weakJury==="HEAR"?"Return to the four-level ear ladder. Sing before every verification and retake without visual labels.":weakJury==="KNOW"?"Teach the concept aloud using root, function, contrast and one failure example before replaying.":weakJury==="SEE"?"Use the string-by-string map, then repeat with a blank neck in two registers.":weakJury==="PLAY"?"Reduce 10 BPM, separate rhythm from pitch, and earn three consecutive clean passes.":"Use a four-pitch limit, repeat one motif and record a new take that is not a scale run."}</p></article></section>
     <div className="juryThreshold"><b>PASS STANDARD</b><strong>80 / 100</strong><p>Average ≥80, every axis ≥70, plus one second-key transfer. A checkbox alone is not evidence.</p></div><button className="coursePrimary" onClick={()=>openCourseTool("engine")}>RECORD / REVIEW FINAL TAKE</button>
    </div>}
-  </section>
-  <footer className="courseLessonFooter"><button disabled={courseStep===0} onClick={()=>setCourseStep(Math.max(0,courseStep-1))}>← PREVIOUS STAGE</button><span>{courseSteps[courseStep]} · {courseStep+1}/6</span><button disabled={courseStep===5&&!juryPassed} onClick={advanceCourse}>{courseStep===5?(juryPassed?"PASS LESSON & CONTINUE":`SCORE ${juryAverage}/80 TO PASS`):"COMPLETE STAGE"} →</button></footer>
- </div>}
+  </>}
+ />}
 
  {view==="roadmap"&&<div className="osScreen courseRoadmap"><header><span>28-LESSON CURRICULUM</span><h1>The route from scales<br/>to free improvisation.</h1><p>Lessons unlock in order because later freedom depends on earlier hearing. You can revisit anything already passed.</p></header>{COURSE_UNITS.map(u=>{const lessons=COURSE_LESSONS.slice(u.range[0],u.range[1]+1);return <section key={u.n} className={course.unit===u.n?"active":""}><header><i>{String(u.n).padStart(2,"0")}</i><div><small>UNIT {u.n} · WEEKS {u.weeks}</small><h2>{u.title}</h2><p>{u.subtitle}</p></div><span>{Math.max(0,Math.min(lessons.length,courseCompleted-u.range[0]))}/{lessons.length}</span></header><div>{lessons.map((l,j)=>{const idx=u.range[0]+j,state=idx<courseCompleted?"passed":idx===courseCompleted?"current":"locked";return <button className={state} disabled={state==="locked"} onClick={()=>openCourseLesson(idx)} key={l.title}><i>{state==="passed"?"✓":state==="locked"?"·":idx+1}</i><div><small>{l.tag} · {l.duration} MIN</small><b>{l.title}</b><p>{l.outcome}</p></div><span>{state.toUpperCase()}</span></button>})}</div></section>})}</div>}
 
