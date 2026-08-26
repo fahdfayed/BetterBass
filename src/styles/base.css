@@ -9,7 +9,25 @@
 *,*::before,*::after{box-sizing:border-box}
 *{margin:0}
 
-html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+/**
+ * Everything in the interface is sized in rem, so scaling the root scales the
+ * whole layout together — type, spacing, the content measure and the rail. A
+ * fixed root is why the app looked correct on a laptop, tiny on a large monitor
+ * and cramped on a phone: the pixels never changed, only the screen did.
+ *
+ * Media queries resolve rem against the initial 16px root, not the current one,
+ * so these breakpoints stay stable as the value below them changes.
+ */
+html{
+ font-size:15px;
+ -webkit-text-size-adjust:100%;
+ scroll-behavior:smooth;
+}
+@media (min-width:30rem){html{font-size:15.5px}}   /* larger phones      480+ */
+@media (min-width:48rem){html{font-size:16px}}     /* tablet, small lap  768+ */
+@media (min-width:90rem){html{font-size:17.5px}}   /* large laptop      1440+ */
+@media (min-width:120rem){html{font-size:19px}}    /* desktop monitor   1920+ */
+@media (min-width:160rem){html{font-size:21px}}    /* 2560 and beyond          */
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 
 body{

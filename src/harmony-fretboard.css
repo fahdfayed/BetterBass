@@ -17,7 +17,7 @@
   padding: 9px 11px;
   border: 1px solid #3a4035;
   color: #7c8377;
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   letter-spacing: 0.08em;
 }
 .harmonyFretboard button,
@@ -39,7 +39,7 @@
 .hfNeckSection > header span,
 .hfNoteTutor article > span,
 .hfVoiceLeading > header span {
-  font: 7px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   letter-spacing: 0.14em;
   color: var(--lime);
 }
@@ -67,7 +67,7 @@
 .hfIntro aside small,
 .hfIntro aside span,
 .hfIntro aside em {
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
 }
 .hfIntro aside small {
   color: var(--ink-3);
@@ -123,7 +123,7 @@
 .hfModes header p,
 .hfNeckSection > header p,
 .hfVoiceLeading header p {
-  font-size: 9px;
+  font-size:max(11px,0.6875rem);
   line-height: 1.75;
   color: #898f83;
   margin: 0;
@@ -143,7 +143,7 @@
 .hfCustomInput span,
 .hfMapControls span {
   display: block;
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   letter-spacing: 0.1em;
   color: #737a6f;
   margin-bottom: 10px;
@@ -155,7 +155,7 @@
   background: transparent;
   color: #e5e8df;
   padding: 13px;
-  font: 9px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
 }
 .hfCustomInput {
   display: grid;
@@ -170,14 +170,14 @@
   border-left: 1px solid #68773a;
   background: var(--lime);
   color: var(--ink-4);
-  font: 700 8px var(--mono);
+  font: 700 max(11px,0.6875rem) var(--mono);
 }
 .hfInputHelp,
 .hfError {
   margin: 0;
   padding: 12px 22px;
   border-top: 1px solid var(--line);
-  font: 6px/1.7 var(--mono);
+  font: max(11px,0.6875rem)/1.7 var(--mono);
   color: var(--ink-3);
 }
 .hfError {
@@ -210,16 +210,16 @@
   display: block;
 }
 .hfChordRail button small {
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   color: #62695f;
 }
 .hfChordRail button b {
-  font: 20px var(--mono);
+  font: 1.25rem var(--mono);
   margin: 27px 0 6px;
   color: #c7ccc2;
 }
 .hfChordRail button span {
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
 }
 .hfChordRail button.next {
   background: transparent;
@@ -260,12 +260,12 @@
   color: var(--lime);
 }
 .hfChordDecode > div > small {
-  font: 7px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   color: var(--violet);
 }
 .hfChordDecode > p {
   max-width: 780px;
-  font-size: 10px;
+  font-size:max(11px,0.6875rem);
   line-height: 1.7;
   color: #979d91;
 }
@@ -284,13 +284,13 @@
 }
 .hfChordDecode dt,
 .hfNoteTutor dt {
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   color: #6e756a;
 }
 .hfChordDecode dd,
 .hfNoteTutor dd {
   margin: 0;
-  font: 8px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   color: #d2d7cd;
 }
 .hfChordPreview {
@@ -300,7 +300,7 @@
   border: 1px solid #525b48;
   background: transparent;
   color: var(--lime);
-  font: 7px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
 }
 .hfChordPreview:disabled {
   cursor: not-allowed;
@@ -312,7 +312,7 @@
   background: transparent;
 }
 .hfAutoFollow h3 {
-  font-size: 25px;
+  font-size:1.5625rem;
   line-height: 1.15;
   margin: 25px 0;
 }
@@ -323,7 +323,7 @@
 }
 .hfTimingControls label {
   padding: 13px;
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   color: var(--ink-3);
 }
 .hfTimingControls label + label {
@@ -337,7 +337,7 @@
   border: 0;
   background: transparent;
   color: white;
-  font: 17px var(--mono);
+  font: 1.0625rem var(--mono);
 }
 .hfTimingControls input:disabled,
 .hfTimingControls select:disabled {
@@ -352,19 +352,19 @@
   padding: 11px 13px;
   border: 1px solid var(--line);
   color: var(--ink-3);
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
 }
 .hfBandStyle select {
   width: 100%;
   border: 0;
   background: transparent;
   color: #edf2e7;
-  font: 11px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
 }
 .hfBandStyle small {
   grid-column: 1/-1;
   color: #737b6e;
-  font: 6px/1.5 var(--mono);
+  font: max(11px,0.6875rem)/1.5 var(--mono);
 }
 .hfBandStyle select:disabled {
   opacity: 0.45;
@@ -380,7 +380,7 @@
   gap: 12px;
   padding: 9px 11px;
   border-bottom: 1px solid var(--line);
-  font: 5px/1.4 var(--mono);
+  font: max(11px,0.6875rem)/1.4 var(--mono);
   color: #767e71;
 }
 .hfBandMixer > header b {
@@ -403,7 +403,7 @@
   background: transparent;
   color: #6f766b;
   text-align: left;
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
 }
 .hfBandMixer button:nth-child(2n) {
   border-right: 0;
@@ -432,7 +432,7 @@
   align-items: center;
   gap: 10px;
   padding: 12px 0;
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   color: var(--ink-3);
 }
 .hfHarmonyLevel input {
@@ -455,16 +455,16 @@
 }
 .hfSounding small {
   color: var(--violet);
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
 }
 .hfSounding b {
   margin: 8px 0 6px;
   color: #dce2d5;
-  font: 8px/1.6 var(--mono);
+  font: max(11px,0.6875rem)/1.6 var(--mono);
 }
 .hfSounding span {
   color: var(--ink-3);
-  font: 6px/1.55 var(--mono);
+  font: max(11px,0.6875rem)/1.55 var(--mono);
 }
 .hfAutoFollow > button {
   width: 100%;
@@ -473,14 +473,14 @@
   background: var(--lime);
   color: var(--ink-4);
   padding: 15px;
-  font: 7px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
 }
 .hfAutoFollow > button.stop {
   border-color: var(--red);
   background: var(--red);
 }
 .hfAutoFollow > p {
-  font: 7px/1.5 var(--mono);
+  font: max(11px,0.6875rem)/1.5 var(--mono);
   color: var(--ink-3);
 }
 .hfHeadphoneNote {
@@ -488,7 +488,7 @@
   padding-top: 8px;
   border-top: 1px solid var(--line);
   color: #646b60;
-  font: 5px/1.5 var(--mono);
+  font: max(11px,0.6875rem)/1.5 var(--mono);
 }
 .hfAutoPulse {
   position: absolute;
@@ -541,12 +541,12 @@
   display: block;
 }
 .hfModeSelect small {
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   color: #6f766a;
 }
 .hfModeSelect b {
   min-height: 52px;
-  font-size: 18px;
+  font-size:1.125rem;
   line-height: 1.2;
   margin: 28px 0 0;
 }
@@ -554,7 +554,7 @@
   position: absolute;
   right: 20px;
   top: 17px;
-  font: 25px var(--mono);
+  font: 1.5625rem var(--mono);
   color: #434a3f;
 }
 .hfModes article.active strong {
@@ -564,16 +564,16 @@
   margin: 18px 0;
   padding: 9px;
   background: transparent;
-  font: 6px/1.5 var(--mono);
+  font: max(11px,0.6875rem)/1.5 var(--mono);
   color: var(--violet);
 }
 .hfModeSelect p {
-  font-size: 9px;
+  font-size:max(11px,0.6875rem);
   line-height: 1.65;
   color: #90968a;
 }
 .hfModeSelect em {
-  font: 6px/1.6 var(--mono);
+  font: max(11px,0.6875rem)/1.6 var(--mono);
   font-style: normal;
   color: #777e72;
   border-top: 1px solid var(--line);
@@ -586,7 +586,7 @@
   border: 0;
   background: transparent;
   color: var(--lime);
-  font: 7px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
 }
 .hfMapControls {
   display: flex;
@@ -609,7 +609,7 @@
   background: transparent;
   color: #757c70;
   padding: 8px 10px;
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
 }
 .hfMapControls button.active {
   border-color: var(--lime);
@@ -637,7 +637,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font: 5px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   color: var(--ink-3);
 }
 .hfLegend i,
@@ -701,7 +701,7 @@
 .hfFretNumbers > span {
   display: grid;
   place-items: center;
-  font: 5px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   color: #6f766b;
 }
 .hfFretNumbers > span.marked {
@@ -725,7 +725,7 @@
   display: grid;
   place-items: center;
   z-index: 1;
-  font: 10px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   color: var(--lime);
 }
 .hfString button {
@@ -765,11 +765,11 @@
 .hfString button > b {
   max-width: 35px;
   overflow: hidden;
-  font: 5px/1 var(--mono);
+  font: max(11px,0.6875rem)/1 var(--mono);
   white-space: nowrap;
 }
 .hfString button > small {
-  font: 5px/1 var(--mono);
+  font: max(11px,0.6875rem)/1 var(--mono);
   margin-top: 2px;
 }
 .hfString button > i {
@@ -814,24 +814,24 @@
   height: 17px;
 }
 .hfRoleBadge span {
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   text-align: center;
 }
 .hfNoteTutor article > h2 {
-  font-size: 35px;
+  font-size:2.1875rem;
   margin: 10px 0 4px;
 }
 .hfNoteTutor h2 small {
-  font: 9px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   color: #858c80;
 }
 .hfNoteTutor article > h3 {
-  font-size: 14px;
+  font-size:0.875rem;
   color: var(--lime);
   margin: 7px 0;
 }
 .hfNoteTutor article > p {
-  font-size: 9px;
+  font-size:max(11px,0.6875rem);
   line-height: 1.75;
   color: #93998d;
   margin: 8px 0;
@@ -848,7 +848,7 @@
   background: var(--lime);
   color: var(--ink-4);
   padding: 17px 14px;
-  font: 7px/1.5 var(--mono);
+  font: max(11px,0.6875rem)/1.5 var(--mono);
 }
 .hfVoiceLeading {
   margin-top: 48px;
@@ -878,11 +878,11 @@
   display: block;
 }
 .hfVoiceGrid small {
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   color: var(--ink-3);
 }
 .hfVoiceGrid b {
-  font: 22px var(--mono);
+  font: 1.375rem var(--mono);
   margin: 35px 0 11px;
 }
 .hfVoiceGrid b i {
@@ -891,7 +891,7 @@
   margin: 0 8px;
 }
 .hfVoiceGrid span {
-  font: 6px/1.5 var(--mono);
+  font: max(11px,0.6875rem)/1.5 var(--mono);
   color: var(--violet);
 }
 .hfVoiceLeading > footer {
@@ -908,17 +908,17 @@
   display: block;
 }
 .hfVoiceLeading footer span {
-  font: 6px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   color: #6f766b;
 }
 .hfVoiceLeading footer b {
-  font: 9px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
   margin-top: 9px;
 }
 .hfVoiceLeading footer button {
   border: 0;
   background: var(--lime);
-  font: 7px var(--mono);
+  font: max(11px,0.6875rem) var(--mono);
 }
 .hfArabic {
   text-align: right;
@@ -1025,7 +1025,7 @@
     margin-top: 0;
   }
   .hfIntro h1 {
-    font-size: 52px;
+    font-size:3.25rem;
   }
   .hfIntro > aside {
     min-height: 160px;
