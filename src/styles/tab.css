@@ -1,0 +1,106 @@
+/* Tab reader. */
+.tab{display:flex;flex-direction:column;gap:var(--s5)}
+.tabBar{display:flex;align-items:center;gap:var(--s5);flex-wrap:wrap;padding-bottom:var(--s4);border-bottom:1px solid var(--rule)}
+.tabPlay{min-width:7rem;justify-content:center}
+.tabSpeed{display:flex;align-items:center;gap:var(--s2)}
+.tabSpeed select{color:var(--ink);font-size:var(--t-small);cursor:pointer}
+.tabToggles{display:flex;gap:var(--s4);margin-left:auto}
+.tabToggle{font-size:var(--t-small);color:var(--ink-4);transition:color var(--t-base) var(--ease)}
+.tabToggle:hover{color:var(--ink-2)}
+.tabToggle.on{color:var(--accent)}
+.tabViewport{overflow:auto;max-height:70vh;overscroll-behavior:contain}
+/* Holds the score and the string names in one coordinate space, so the names
+   stay on their lines while the viewport scrolls. */
+.tabStage{position:relative;width:max-content;min-width:100%}
+.tabStrings{position:absolute;inset:0;pointer-events:none}
+.tabStrings span{position:absolute;transform:translate(-1.15em,-50%);
+ font-size:var(--t-tiny);line-height:1;font-weight:500;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.tabLoading,.tabError{font-size:var(--t-small);color:var(--ink-3)}
+.tabError{color:var(--wrong)}
+.tabSource{font-family:var(--font-mono);font-size:var(--t-small);color:var(--ink-3);white-space:pre-wrap;padding:var(--s4) 0;border-top:1px solid var(--rule)}
+/* alphaTab renders onto a light surface by default; keep it readable on either ground. */
+.tabViewport .at-surface{background:transparent !important}
+
+/*
+ * The playhead.
+ *
+ * alphaTab positions these elements but ships no stylesheet at all, so without
+ * a colour here the cursor tracks the music perfectly and is invisible while
+ * doing it. The bar band is a fill, which is where the lime is allowed to go;
+ * the beat line uses the text-safe accent so it reads on the cream ground too.
+ */
+.tabViewport .at-cursor-bar{background:var(--accent-fill);opacity:.13}
+.tabViewport .at-cursor-beat{background:var(--accent);opacity:.9}
+/* Notes light up as they sound. */
+.tabViewport .at-highlight *{fill:var(--accent);stroke:var(--accent)}
+/* A dragged selection, used when picking a range to loop. */
+.tabViewport .at-selection div{background:var(--accent-fill);opacity:.1}
+/*
+ * Colour only. alphaTab sizes these by writing a large width and a scale into
+ * the transform — the beat line is 300px scaled by 0.01 — so setting a width
+ * here shrinks it by that same factor until it disappears. It also runs its own
+ * transform transition timed to the beat, which a transition of ours overrides.
+ */
+
+/* Seek bar. */
+.tabSeek{display:flex;align-items:center;gap:var(--s4)}
+.tabTime{font-size:var(--t-tiny);color:var(--ink-3);min-width:2.6rem;font-variant-numeric:tabular-nums}
+.tabTime:last-child{text-align:right}
+.tabScrub{flex:1;-webkit-appearance:none;appearance:none;height:1.25rem;background:transparent;cursor:pointer}
+.tabScrub:disabled{cursor:default;opacity:.45}
+/* The filled portion is driven by --played, set from the playhead. */
+.tabScrub::-webkit-slider-runnable-track{height:3px;border-radius:2px;
+ background:linear-gradient(to right,var(--accent) 0,var(--accent) var(--played,0%),var(--rule) var(--played,0%),var(--rule) 100%)}
+.tabScrub::-moz-range-track{height:3px;border-radius:2px;background:var(--rule)}
+.tabScrub::-moz-range-progress{height:3px;border-radius:2px;background:var(--accent)}
+.tabScrub::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:.75rem;height:.75rem;border-radius:50%;
+ background:var(--accent);border:none;margin-top:-.28rem;transition:transform var(--t-base) var(--ease)}
+.tabScrub::-moz-range-thumb{width:.75rem;height:.75rem;border-radius:50%;background:var(--accent);border:none}
+.tabScrub:hover::-webkit-slider-thumb,.tabScrub:active::-webkit-slider-thumb{transform:scale(1.25)}
+.tabScrub:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px}
+
+/* Exercise sets — the picker, the brief, and the reader beneath them. */
+.exercises{display:flex;flex-direction:column;gap:var(--s5)}
+.exercisePick{display:flex;flex-wrap:wrap;gap:var(--s4)}
+.exerciseChip{display:inline-flex;align-items:baseline;gap:var(--s2);font-size:var(--t-small);color:var(--ink-3);padding-bottom:var(--s1);border-bottom:1px solid transparent;transition:color var(--t-base) var(--ease),border-color var(--t-base) var(--ease)}
+.exerciseChip i{font-family:var(--font-mono);font-style:normal;font-size:var(--t-tiny);color:var(--ink-4)}
+.exerciseChip:hover{color:var(--ink)}
+.exerciseChip.on{color:var(--ink);border-bottom-color:var(--accent)}
+.exerciseChip.on i{color:var(--accent)}
+.exerciseBrief{display:flex;flex-direction:column;gap:var(--s2);font-size:var(--t-small)}
+.exerciseBrief p{margin:0}
+.exerciseBrief .label{margin-right:var(--s2)}
+
+/* Tab studio. */
+.studioModes{display:flex;gap:var(--s5);margin-bottom:var(--s5)}
+.studioOpen,.studioWrite{display:flex;flex-direction:column;gap:var(--s4);margin-bottom:var(--s6)}
+/* The real input stays reachable by keyboard but the styled button drives it. */
+.studioFile{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.studioText{width:100%;min-height:14rem;resize:vertical;font-size:var(--t-small);line-height:1.6;color:var(--ink);background:var(--wash);border:1px solid var(--rule);border-radius:2px;padding:var(--s4)}
+.studioText:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.studioWrite code{font-family:var(--font-mono);font-size:.92em;color:var(--ink-2)}
+.row-actions{display:flex;gap:var(--s4);align-items:center}
+
+/* Masterclass — chapters, each opening to its sections. */
+.chapters{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+.chapter{border-bottom:1px solid var(--rule)}
+.chapter h2{margin:0;font:inherit}
+.chapterHead{display:flex;align-items:baseline;gap:var(--s5);width:100%;text-align:left;
+ padding:var(--s5) 0;color:var(--ink-2);transition:color var(--t-base) var(--ease)}
+.chapterHead:hover,.chapter.is-open .chapterHead{color:var(--ink)}
+.chapterHead .figure{font-style:normal;font-size:var(--t-tiny);color:var(--ink-4);min-width:1.4rem}
+.chapter.is-open .chapterHead .figure{color:var(--accent)}
+.chapterTitle{flex:1;font-size:var(--t-h3);font-weight:500;letter-spacing:-.01em}
+.chapterCount{font-size:var(--t-tiny);color:var(--ink-4)}
+.chapterBody{padding:0 0 var(--s6) calc(1.4rem + var(--s5))}
+.chapterNote,.epigraph{max-width:var(--measure);margin:0 0 var(--s5)}
+.epigraph{font-style:italic;color:var(--ink-3)}
+
+.masterSection{padding-top:var(--s6);margin-top:var(--s6);border-top:1px solid var(--rule)}
+.masterSection:first-of-type{border-top:0;margin-top:0}
+.masterSection h3{font-size:var(--t-body);font-weight:500;margin:0 0 var(--s3)}
+.masterSection>p{max-width:var(--measure);margin:0 0 var(--s4)}
+.masterSection .label{margin-right:var(--s2)}
+@media (max-width:48rem){
+ .chapterBody{padding-left:0}
+}

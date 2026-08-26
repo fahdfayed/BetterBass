@@ -21,7 +21,7 @@ export type NavGroup={label:string;items:Destination[]};
 
 export type IconName=
  |"home"|"course"|"practice"|"coach"|"maqam"|"slap"|"labs"|"progress"
- |"fretboard"|"band"|"analyze"|"outside"|"theory"|"games"|"search"|"menu"|"map";
+ |"fretboard"|"band"|"analyze"|"outside"|"theory"|"games"|"search"|"menu"|"map"|"tabs"|"masterclass";
 
 export const NAV:NavGroup[]=[
  {label:"Learn",items:[
@@ -43,6 +43,7 @@ export const NAV:NavGroup[]=[
  {label:"Specialties",items:[
   {view:"maqam",label:"Arabic maqam",blurb:"Sayr, hand routes and backing",icon:"maqam",keywords:["arabic","maqam","quarter tone","egyptian","oriental"]},
   {view:"slap",label:"Slap bass",blurb:"Beginner through advanced routines",icon:"slap",keywords:["thumb","pop","funk","technique"]},
+  {view:"jaco",label:"Jaco masterclass",blurb:"Eight techniques, with the exercises to build them",icon:"masterclass",keywords:["jaco","pastorius","fretless","harmonics","tenths","bebop","weather report","masterclass","portrait of tracy","donna lee"]},
  ]},
  {label:"Labs",items:[
   {view:"tools",label:"Tool library",blurb:"Every focused tool in one place",icon:"labs",keywords:["tools","all"],children:[
@@ -52,6 +53,7 @@ export const NAV:NavGroup[]=[
    {view:"advanced",label:"Outside lab",blurb:"Motif, enclosure and side-slip work",icon:"outside",keywords:["outside","tension","chromatic","motif"]},
    {view:"reference",label:"Theory reference",blurb:"Look up a scale, mode or chord",icon:"theory",keywords:["theory","scales","modes","chords","reference"]},
    {view:"games",label:"Training games",blurb:"Ear, interval and target recall",icon:"games",keywords:["game","ear","quiz","drill"]},
+   {view:"tabs",label:"Tab studio",blurb:"Open a Guitar Pro file, or write your own",icon:"tabs",keywords:["tab","tabs","guitar pro","gp5","gp4","gpx","musicxml","import","upload","notation","songsterr","write"]},
   ]},
  ]},
  {label:"You",items:[

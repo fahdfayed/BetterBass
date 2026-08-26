@@ -1,7 +1,9 @@
 import {lazy,Suspense} from "react";
+import {courseTabsFor} from "../tab/course-exercises";
 
 const HarmonyFretboard=lazy(()=>import("../HarmonyFretboard"));
 const TheoryReference=lazy(()=>import("../TheoryReference"));
+const ExerciseTabs=lazy(()=>import("../tab/ExerciseTabs"));
 
 /** Everything the panes need, threaded from BassLab in one bundle. */
 export type ToolBridge={
@@ -30,6 +32,8 @@ export type ToolBridge={
  endTake:()=>void;
  eventCount:number;
  listening:boolean;
+ /** Which lesson this is, so its written exercises can be found. */
+ lessonIndex:number;
  /** The lesson's characteristic tones, for the ear pad. */
  intervals:number[];
  character:number[];
@@ -43,7 +47,7 @@ export const WORKSPACE_LABELS=[
  "Theory reference",
  "Ear trainer",
  "Fretboard",
- "Backing band",
+ "Exercises",
  "Backing band",
  "Take recorder",
 ];
@@ -91,6 +95,17 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
    />
   </Suspense>
  );
+
+ // PRACTICE is where the lesson's written exercises live: the tab, the
+ // playback and the tempo control are the work, not a description of it.
+ if(stage===3){
+  const exercises=courseTabsFor(bridge.lessonIndex);
+  if(exercises.length)return (
+   <Suspense fallback={<Loading/>}>
+    <ExerciseTabs exercises={exercises} label="Lesson exercises"/>
+   </Suspense>
+  );
+ }
 
  if(stage===3||stage===4)return (
   <div className="transport">

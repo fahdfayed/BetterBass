@@ -35,6 +35,7 @@ import "./styles/game.css";
 import "./styles/lesson.css";
 import "./styles/lesson-content.css";
 import "./styles/library.css";
+import "./styles/tab.css";
 import "./styles/legacy-bridge.css";
 
 // Last of all: repoints the legacy custom properties at the new language.

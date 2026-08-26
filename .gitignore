@@ -2,6 +2,9 @@ node_modules/
 dist/
 public/assets/
 public/index.html
+# Copied out of the alphaTab package by its vite plugin on every build.
+public/font/
+public/soundfont/
 .data/
 .env
 .env.*

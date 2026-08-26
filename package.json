@@ -12,15 +12,17 @@
     "vercel-build": "vite build",
     "start": "node server/index.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "node --test tests/api.test.mjs tests/store.test.mjs tests/pitch.test.mjs tests/progression.test.mjs",
-    "check": "tsc --noEmit && vite build && node --test tests/api.test.mjs tests/store.test.mjs tests/pitch.test.mjs tests/progression.test.mjs"
+    "test": "node --test tests/api.test.mjs tests/store.test.mjs tests/pitch.test.mjs tests/progression.test.mjs tests/exercises.test.mjs",
+    "check": "tsc --noEmit && vite build && node --test tests/api.test.mjs tests/store.test.mjs tests/pitch.test.mjs tests/progression.test.mjs tests/exercises.test.mjs"
   },
   "dependencies": {
+    "@coderline/alphatab": "^1.8.4",
     "express": "5.2.1",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },
   "devDependencies": {
+    "@coderline/alphatab-vite": "^1.8.4",
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
