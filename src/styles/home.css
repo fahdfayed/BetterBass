@@ -16,8 +16,11 @@
 .lede-act{display:flex;align-items:center;gap:var(--s5);flex-wrap:wrap;margin-top:var(--s4)}
 .lede-act .dim{font-size:var(--t-small)}
 
-.lede-meter{display:flex;align-items:center;gap:var(--s4);margin-top:var(--s5)}
-.lede-meter .meter{flex:1;max-width:22rem}
+/* The count leads. At zero the bar carries no information and a label sitting
+   after an invisible hairline just reads as text stranded in space. */
+.lede-meter{display:flex;align-items:center;gap:var(--s4);margin-top:var(--s6)}
+.lede-meter .label{order:-1;flex:none}
+.lede-meter .meter{flex:1;max-width:18rem}
 
 /* ---- sections ------------------------------------------------------------ */
 
