@@ -3,6 +3,8 @@ import {fadeAndClose,startAudioClock,type AudioClock} from "./audio-clock";
 import AppShell from "./components/AppShell";
 import Home from "./views/Home";
 import WorldMap from "./views/WorldMap";
+const TabStudio=lazy(()=>import("./tab/TabStudio"));
+const JacoMasterclass=lazy(()=>import("./views/JacoMasterclass"));
 import ThemeToggle from "./components/ThemeToggle";
 import CourseLibrary from "./views/CourseLibrary";
 import LessonWorkspace from "./views/LessonWorkspace";
@@ -242,6 +244,9 @@ export default function BassLab(){
   {labMode==="diagnose"&&<div className="diagnosisLab"><article><span>06 · SHOULD I THINK MODALLY?</span><h2>{harmonyCases[harmonyQuiz].p}</h2><p>Diagnose the harmonic situation before improvising. The right mental model changes what counts as home, movement and resolution.</p><div><button onClick={()=>setLabFeedback(harmonyCases[harmonyQuiz].a==="MODAL"?`CORRECT — ${harmonyCases[harmonyQuiz].why}`:`NOT THIS TIME — ${harmonyCases[harmonyQuiz].why}`)}>MODAL</button><button onClick={()=>setLabFeedback(harmonyCases[harmonyQuiz].a==="FUNCTIONAL"?`CORRECT — ${harmonyCases[harmonyQuiz].why}`:`NOT THIS TIME — ${harmonyCases[harmonyQuiz].why}`)}>FUNCTIONAL</button><button onClick={()=>setLabFeedback(harmonyCases[harmonyQuiz].a==="HYBRID"?`CORRECT — ${harmonyCases[harmonyQuiz].why}`:`NOT THIS TIME — ${harmonyCases[harmonyQuiz].why}`)}>HYBRID</button></div>{labFeedback&&<p className={labFeedback.startsWith("CORRECT")?"correct":""}>{labFeedback}</p>}<button className="nextCase" onClick={()=>{setHarmonyQuiz((harmonyQuiz+1)%harmonyCases.length);setLabFeedback("")}}>NEXT HARMONIC SITUATION →</button></article><aside><span>DECISION LENS</span><div><b>STATIC</b><p>Develop mode, colour, rhythm and motif over one centre.</p></div><div><b>DIRECTIONAL</b><p>Track guide tones, dominant pull and nearest destinations.</p></div><div><b>MIXED</b><p>Preserve a larger home while honoring temporary chord gravity.</p></div></aside></div>}
  </div>}
 
+ {view==="tabs"&&<Suspense fallback={<ToolLoading/>}><TabStudio/></Suspense>}
+ {view==="jaco"&&<Suspense fallback={<ToolLoading/>}><JacoMasterclass/></Suspense>}
+
  {view==="map"&&<WorldMap
   territories={territories}
   lessonTitles={COURSE_LESSONS.map(lesson=>lesson.title)}
@@ -282,7 +287,7 @@ export default function BassLab(){
    root,mode,fbView,fog,picked,setRoot,setMode,setChord,setFbView,setFog,setPicked,audition,
    playing,startRuntime,bpm,setBpm,bar,beat,
    recording,beginTake:()=>void beginTake(),endTake,eventCount:events.length,listening,
-   intervals:course.intervals,character:course.character,noteName:(pc:number)=>N[pc],
+   lessonIndex:courseIndex,intervals:course.intervals,character:course.character,noteName:(pc:number)=>N[pc],
   }}/>}
   instruction={<>
    {courseStep===0&&<div className="learnStage">

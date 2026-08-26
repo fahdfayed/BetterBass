@@ -1,4 +1,6 @@
 "use client";
+import ExerciseTabs from "./tab/ExerciseTabs";
+import {maqamTab} from "./tab/lab-exercises";
 
 import {useEffect,useMemo,useRef,useState} from "react";
 import {startAudioClock,type AudioClock} from "./audio-clock";
@@ -340,6 +342,15 @@ export default function MaqamLab({livePitch,listening,onToggleListening}:Props){
    <section className="maqamProfile">
     <header><div><span>{maqam.family} · {maqam.level}</span><h2>{maqam.name}<i>{maqam.ar}</i></h2><p>{maqam.character}</p></div><button onClick={()=>audition()}>▶ HEAR EXACT-CENT MAP</button></header>
     <div className="maqamDegrees">{maqam.cents.map((c,i)=>{const info=toneInfo(maqam,c);return <button key={`${c}-${i}`} className={targetDegree===i?"active":i===maqam.ghammaz?"ghammaz":""} onClick={()=>setTargetDegree(i)}><small>{maqam.degrees[i]}</small><b>{pathMode==="fretted"?info.name:`${c+(maqam.rootOffset??0)}¢`}</b><span>{pathMode==="fretted"?(info.bend?`${info.bend>0?"+":""}${info.bend}¢ bend`:`${info.name} fret`):`${info.name} anchor ${info.bend>=0?"+":""}${info.bend}¢`}</span></button>})}</div>
+    {(()=>{
+     const written=maqamTab(maqam.id);
+     // Only the equal-tempered maqamat can be written as frets. For the rest the
+     // cents map above is the accurate instrument, and a tab would misspell the
+     // very interval that identifies the maqam.
+     return written
+      ?<ExerciseTabs exercises={[written]}/>
+      :<p className="maqamCaution">{maqam.name} turns on intervals that sit between the frets, so it has no written tab — work it from the cent map and the drone above.</p>;
+    })()}
     {maqam.nonOctave&&<p className="maqamCaution">* Saba’s upper notes here are a guided practice route, not a universal octave formula. Learn the lower jins and repertoire-specific sayr first.</p>}
     <div className="maqamAnatomy">
      <article><span>LOWER IDENTITY</span><h3>{maqam.rootJins}</h3><p>Root at {pitchName(root)} · first station at degree {maqam.ghammaz+1}, {toneInfo(maqam,maqam.cents[maqam.ghammaz]).name}.</p></article>

@@ -30,6 +30,7 @@ const ROUTES:Pattern[]=[
  {path:"/coach/plan",view:"adaptive"},
  {path:"/maqam",view:"maqam"},
  {path:"/slap",view:"slap"},
+ {path:"/masterclass/jaco",view:"jaco"},
  {path:"/labs",view:"tools"},
  {path:"/labs/fretboard",view:"fret"},
  {path:"/labs/band",view:"runtime"},
@@ -37,6 +38,7 @@ const ROUTES:Pattern[]=[
  {path:"/labs/outside",view:"advanced"},
  {path:"/labs/theory",view:"reference"},
  {path:"/labs/games",view:"games"},
+ {path:"/labs/tabs",view:"tabs"},
  {path:"/progress",view:"courseProgress"},
 ];
 

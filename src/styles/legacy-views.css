@@ -468,3 +468,122 @@
 /* The mastery-order list beside the hero. */
 .slapHero aside,
 .slapHero>div:last-child{border:0 !important;background:none !important;padding-left:var(--s6) !important}
+
+/* ====================================================== overlap repairs === */
+
+/**
+ * Raising the type sizes made every block of legacy copy taller, and the
+ * original layouts had absolutely positioned decorations sitting in space that
+ * the shorter text used to leave free. Corner numerals now collide with the
+ * text beside them, and bottom-anchored footers collide with the paragraph
+ * above.
+ *
+ * Corner numerals keep their position and the container reserves a gutter for
+ * them. Footers that are really just the last line of a card go back into
+ * normal flow, which is where they belonged.
+ */
+
+/* Corner numerals: reserve a gutter so text wraps before reaching them. */
+.page .lessonVocabulary article,
+.page .theoryConceptGrid article,
+.page .practiceStage article,
+.page .maintenance article{
+ padding-right:3.25rem !important;
+}
+
+/* Bottom-anchored card footers return to flow. */
+.page .osScreen button>b[style],
+.page .toolGrid button>b,
+.page .labGrid button>b,
+.page .hfModeSelect strong{
+ position:static !important;
+ display:block;
+ margin-top:var(--s3);
+}
+
+/* Any remaining bottom-anchored text inside a legacy card flows instead. */
+.page .osScreen article>b:last-child,
+.page .osScreen button>b:last-child{
+ position:static !important;
+ margin-top:var(--s3);
+}
+
+/* ---- tucked tab strips --------------------------------------------------- */
+
+/**
+ * redesign.css offset these two strips with position:relative and top:82px
+ * (132px and 128px at narrower widths) so they tucked under the hero's bottom
+ * edge. The hero no longer has that edge, so the offset simply pushed the
+ * strips 82px down onto the section beneath them — which is the overlap on
+ * /slap and /coach.
+ *
+ * The offset goes, and both strips join every other tab bar in the app:
+ * labels on a line with the active one underlined.
+ */
+.slapTabs,
+.coachTabs{
+ top:0 !important;
+ position:static !important;
+ display:flex !important;
+ grid-template-columns:none !important;
+ border:0 !important;
+ border-bottom:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ margin-bottom:var(--s6) !important;
+ gap:var(--s6) !important;
+ overflow-x:auto;
+ scrollbar-width:none;
+}
+.slapTabs::-webkit-scrollbar,
+.coachTabs::-webkit-scrollbar{display:none}
+
+.slapTabs button,
+.coachTabs button{
+ position:relative;
+ flex:0 0 auto !important;
+ min-width:0 !important;
+ min-height:0 !important;
+ border:0 !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:0 0 var(--s3) !important;
+ color:var(--ink-4) !important;
+ font-weight:500 !important;
+ white-space:nowrap;
+}
+.slapTabs button:hover,
+.coachTabs button:hover{color:var(--ink-2) !important;background:none !important}
+.slapTabs button.active,
+.coachTabs button.active{color:var(--ink) !important;background:none !important}
+.slapTabs button.active::after,
+.coachTabs button.active::after{
+ content:"";
+ position:absolute;
+ left:0;bottom:-1px;
+ width:100%;height:1px;
+ background:var(--accent);
+ animation:tabMark var(--t-base) var(--ease-out) both;
+}
+/* The strips stack a small index above the label; inline keeps them on one line. */
+.slapTabs button i,
+.coachTabs button i{display:inline !important;margin:0 var(--s2) 0 0 !important;opacity:1 !important;color:var(--ink-4)}
+.slapTabs button span,
+.coachTabs button span{display:inline !important}
+
+/* ---- grid overflow ------------------------------------------------------- */
+
+/**
+ * A grid or flex child defaults to min-width:auto, so it refuses to shrink below
+ * its content and spills out of its own track. The legacy layouts were authored
+ * against smaller text; now that the type scale is larger, columns like
+ * .practiceConsole's left track overflow into the column beside them.
+ *
+ * Letting legacy children shrink is the standard remedy and costs nothing —
+ * they wrap instead of overlapping.
+ */
+.page .osScreen *{min-width:0}
+.page .osScreen p,
+.page .osScreen small,
+.page .osScreen b,
+.page .osScreen span{overflow-wrap:anywhere}

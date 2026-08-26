@@ -81,7 +81,7 @@ export default function CourseLibrary({lessons,units,completed,current,onOpen}:P
   <>
    <header className="libHead rise">
     <div>
-     <span className="eyebrow">{lessons.length}-lesson curriculum</span>
+     <span className="label">{lessons.length}-lesson curriculum</span>
      <h1 className="display" data-page-heading tabIndex={-1}>
       From scales to <span className="gradientText">free improvisation</span>.
      </h1>
@@ -91,8 +91,8 @@ export default function CourseLibrary({lessons,units,completed,current,onOpen}:P
      </p>
     </div>
     <div className="hudStats">
-     <div className="hudStat"><b className="mono">{counts.passed}<i>/{counts.all}</i></b><span className="eyebrow">Passed</span></div>
-     <div className="hudStat"><b className="mono">{Math.round((counts.passed/counts.all)*100)}<i>%</i></b><span className="eyebrow">Complete</span></div>
+     <div className="hudStat"><b className="mono">{counts.passed}<i>/{counts.all}</i></b><span className="label">Passed</span></div>
+     <div className="hudStat"><b className="mono">{Math.round((counts.passed/counts.all)*100)}<i>%</i></b><span className="label">Complete</span></div>
     </div>
    </header>
 
@@ -122,7 +122,7 @@ export default function CourseLibrary({lessons,units,completed,current,onOpen}:P
    </div>
 
    {matches.length===0&&(
-    <p className="libEmpty card">
+    <p className="libEmpty">
      Nothing matches{query.trim()?` “${query.trim()}”`:""}
      {filter!=="all"?` in ${STATE_LABEL[filter].toLowerCase()} lessons`:""}.
     </p>
@@ -142,9 +142,9 @@ export default function CourseLibrary({lessons,units,completed,current,onOpen}:P
          <header className="libUnitHead">
           <i aria-hidden="true">{unit.n}</i>
           <div>
-           <span className="eyebrow">Unit {unit.n} · Weeks {unit.weeks}</span>
+           <span className="label">Unit {unit.n} · Weeks {unit.weeks}</span>
            <h2>{unit.title}</h2>
-           <p className="muted">{unit.subtitle}</p>
+           <p className="dim">{unit.subtitle}</p>
           </div>
           <span className="mono libUnitCount">{done}/{inUnit.length}</span>
          </header>

@@ -11,6 +11,9 @@
     "allowSyntheticDefaultImports": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    // The test suite runs source files directly through node's type stripping,
+    // which needs explicit extensions on relative imports.
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
