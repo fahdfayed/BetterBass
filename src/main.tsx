@@ -40,6 +40,7 @@ import "./styles/legacy-bridge.css";
 // Last of all: repoints the legacy custom properties at the new language.
 // Custom properties cascade on definition, so this must win.
 import "./styles/legacy-tokens.css";
+import "./styles/legacy-views.css";
 
 // Marks that scripting is available, so motion.css can hide reveal targets. If
 // this never runs the content stays visible rather than invisible.

@@ -1,0 +1,133 @@
+/**
+ * Hand-tuned corrections for the screens that have not been rebuilt yet.
+ *
+ * Each block below is one view, worked through by eye rather than by a blanket
+ * rule — the automated passes could not tell a decorative frame from a
+ * functional one. As a view is properly rebuilt its block here is deleted.
+ *
+ * The pattern in every case is the same: a frame becomes a rule, a fill becomes
+ * air, and a second accent hue collapses onto the single one.
+ */
+
+/* ========================================================== Arabic maqam == */
+
+/* Sections were panels with gold or teal frames. They become bands separated by
+   a single rule, like every rebuilt screen. */
+.maqamPrinciple,
+.maqamProfile,
+.maqamNextStep{
+ border:0 !important;
+ border-top:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:var(--s6) 0 0 !important;
+}
+.maqamNextStep{border-top-color:color-mix(in oklab,var(--accent) 45%,transparent) !important}
+
+/* The tab strip was a rounded, framed pill bar. Now it is a line of labels with
+   the active one underlined — the same treatment as the lesson stage rail. */
+.maqamTabs{
+ border:0 !important;
+ border-bottom:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:0 !important;
+ gap:var(--s6) !important;
+ overflow-x:auto;
+ scrollbar-width:none;
+}
+.maqamTabs::-webkit-scrollbar{display:none}
+.maqamTabs button{
+ position:relative;
+ border:0 !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:0 0 var(--s3) !important;
+ color:var(--ink-4) !important;
+ white-space:nowrap;
+}
+.maqamTabs button:hover{color:var(--ink-2) !important}
+.maqamTabs button.active{color:var(--ink) !important}
+.maqamTabs button.active::after{
+ content:"";
+ position:absolute;
+ left:0;bottom:-1px;
+ width:100%;height:1px;
+ background:var(--accent);
+ animation:tabMark var(--t-base) var(--ease-out) both;
+}
+
+/* The control bar was a filled slab. It becomes a strip bounded by rules. */
+.maqamControlBar{
+ border:0 !important;
+ border-block:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:var(--s4) 0 !important;
+}
+
+/* Inner blocks: hairline separation instead of frames. */
+.maqamProfile article,
+.maqamPrinciple article,
+.maqam article{
+ border:0 !important;
+ border-top:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:var(--s4) 0 !important;
+}
+.maqamProfile article:first-of-type,
+.maqamPrinciple article:first-of-type{border-top:0 !important;padding-top:0 !important}
+
+/* The aside carried a gold frame; a single left rule says the same thing. */
+.page aside{
+ border:0 !important;
+ border-left:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ padding-left:var(--s5) !important;
+}
+
+/* Maqam's gold was a second accent. There is only one now. */
+.maqamNextStep b,
+.maqamNextStep strong,
+.maqamProfile b{color:var(--accent) !important}
+
+/* Buttons throughout the maqam lab were framed chips. They become flat controls
+   that light on hover, with the active one carrying the accent — scoped to the
+   lab root so the rebuilt vocabulary elsewhere is untouched. */
+.maqamLab button:not(.action):not(.action-primary){
+ border:0 !important;
+ border-radius:var(--r-control) !important;
+ background:none !important;
+ color:var(--ink-3) !important;
+ transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
+}
+.maqamLab button:not(.action):not(.action-primary):hover{
+ color:var(--ink) !important;
+ background:var(--wash) !important;
+}
+.maqamLab button.active:not(.action){
+ color:var(--accent) !important;
+ background:var(--accent-wash) !important;
+}
+
+/* The lab's gold second accent, wherever it survived as a literal. */
+.maqamLab [style*="#d6a84a"],
+.maqamLab [style*="#c8a24a"]{color:var(--accent) !important}
+
+/**
+ * The lab carries its own scoped palette — gold, a second gold and a teal — used
+ * 66 times between them. Repointing those three at the single accent converts
+ * the whole view at once, and keeps the distinctions they were drawing (a
+ * microtonal marker still reads differently from body text) rather than
+ * flattening them away.
+ */
+.maqamLab{
+ --mq-gold:var(--accent);
+ --mq-gold2:color-mix(in oklab,var(--accent) 72%,white);
+ --mq-teal:var(--ink-3);
+ --mq-line:var(--rule);
+ --mq-panel:transparent;
+ --mq-ink:var(--bg);
+ --mq-wine:var(--warn);
+}
