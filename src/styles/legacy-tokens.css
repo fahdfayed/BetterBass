@@ -16,28 +16,32 @@
  */
 
 :root{
- /* Re-assert the new ground over the two legacy definitions. */
+ /* globals.css and redesign.css both define --bg, and both load after the token
+    file, so it has to be re-asserted here or the ground reverts to #0d0f14.
+    The cream theme still wins over this: :root[data-theme="cream"] carries an
+    attribute selector and therefore outranks a bare :root. */
  --bg:#08080a;
 
- /* Panels become air. Boxes dissolve; only their contents remain. */
+ /* Every other legacy variable is expressed in terms of the new tokens rather
+    than a literal, so the whole legacy surface follows the theme. */
  --panel:transparent;
- --panel2:rgba(255,255,255,.032);
+ --panel2:var(--wash);
  --surface-soft:transparent;
- --surface-raised:rgba(255,255,255,.032);
+ --surface-raised:var(--wash);
 
  /* Borders become hairline separators. */
- --line:rgba(255,255,255,.07);
+ --line:var(--rule);
 
  /* Text steps map onto the new four-level scale. */
- --text:#f4f4f6;
- --muted:rgba(244,244,246,.46);
+ --text:var(--ink);
+ --muted:var(--ink-3);
 
  /* The old palette had four competing accent hues. They all collapse onto the
     single accent, except where a colour genuinely carried state. */
- --lime:#8b6fff;
- --violet:#8b6fff;
- --blue:rgba(244,244,246,.46);
- --red:#fbbf24;
+ --lime:var(--accent);
+ --violet:var(--accent);
+ --blue:var(--ink-3);
+ --red:var(--wrong);
 
  /* One radius family instead of 11px/12px/13px/14px/15px/17px/18px/24px. */
  --radius-md:.5rem;

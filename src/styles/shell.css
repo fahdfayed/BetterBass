@@ -53,7 +53,7 @@
  display:grid;
  place-items:center;
  border-radius:var(--r-control);
- background:var(--accent);
+ background:var(--accent-fill);
  color:var(--accent-ink);
  font-size:var(--t-micro);
  font-weight:800;
@@ -114,7 +114,7 @@
  font-size:var(--t-micro);
  letter-spacing:var(--track-label);
  text-transform:uppercase;
- color:var(--ink-4);
+ color:var(--ink-3);
  white-space:nowrap;
  opacity:0;
  height:0;
@@ -302,3 +302,39 @@
 .head-selects select:hover{color:var(--ink)}
 .head-selects option{background:var(--bg-lift)}
 @media (max-width:68rem){.head-selects{display:none}}
+
+/* ---- theme toggle -------------------------------------------------------- */
+
+.themeToggle{
+ display:flex;
+ align-items:center;
+ gap:var(--s3);
+ color:var(--ink-3);
+ font-size:var(--t-small);
+ transition:color var(--t-base) var(--ease);
+}
+.themeToggle:hover{color:var(--ink)}
+.themeTrack{
+ position:relative;
+ width:2.1rem;height:1.15rem;
+ flex:none;
+ border-radius:var(--r-pill);
+ border:1px solid var(--rule-strong);
+ transition:border-color var(--t-base) var(--ease);
+}
+.themeTrack i{
+ position:absolute;
+ top:50%;left:.15rem;
+ width:.7rem;height:.7rem;
+ border-radius:var(--r-pill);
+ background:var(--ink-3);
+ transform:translateY(-50%);
+ transition:transform var(--t-base) var(--ease-spring),background var(--t-base) var(--ease);
+}
+.themeToggle[aria-checked="true"] .themeTrack i{
+ transform:translateY(-50%) translateX(.85rem);
+ background:var(--accent-fill);
+}
+.themeToggle:hover .themeTrack{border-color:var(--accent)}
+.themeName{min-width:2.6rem;text-align:left}
+@media (max-width:60rem){.themeName{display:none}}

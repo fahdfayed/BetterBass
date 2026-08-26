@@ -71,13 +71,15 @@ p{text-wrap:pretty}
 .h2{font-size:var(--t-h2)}
 .h3{font-size:var(--t-h3);font-weight:600;letter-spacing:-.01em}
 
-/* Labels are small, spaced and quiet. They name things without competing. */
+/* Labels are small, spaced and quiet. They name things without competing —
+   but they are still meant to be read, so they sit on the label step (--ink-3)
+   rather than the muted one below it. */
 .label{
  font-size:var(--t-micro);
  font-weight:500;
  letter-spacing:var(--track-label);
  text-transform:uppercase;
- color:var(--ink-4);
+ color:var(--ink-3);
 }
 
 .lead{font-size:var(--t-lead);line-height:1.5;color:var(--ink-2);max-width:var(--measure-text)}
@@ -133,7 +135,7 @@ p{text-wrap:pretty}
 .action-primary{
  padding:.75rem 1.4rem;
  border-radius:var(--r-pill);
- background:var(--accent);
+ background:var(--accent-fill);
  color:var(--accent-ink);
  font-weight:560;
  transition:transform var(--t-fast) var(--ease-out),background var(--t-base) var(--ease),opacity var(--t-base) var(--ease);

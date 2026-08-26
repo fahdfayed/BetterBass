@@ -3,6 +3,7 @@ import {createRoot} from "react-dom/client";
 import BassLab from "./BassLab";
 import ErrorBoundary from "./ErrorBoundary";
 import NodeRuntimeShell from "./NodeRuntimeShell";
+import {initTheme} from "./theme";
 
 // Design tokens first: every sheet below reads these custom properties.
 import "./styles/tokens.css";
@@ -45,6 +46,9 @@ import "./styles/legacy-views.css";
 // Marks that scripting is available, so motion.css can hide reveal targets. If
 // this never runs the content stays visible rather than invisible.
 document.documentElement.classList.add("js");
+
+// Ground is chosen before the first paint, so the page never flashes.
+initTheme();
 
 const root=document.getElementById("root");
 if(!root)throw new Error("Bass Lab root element is missing.");

@@ -3,6 +3,7 @@ import {fadeAndClose,startAudioClock,type AudioClock} from "./audio-clock";
 import AppShell from "./components/AppShell";
 import Home from "./views/Home";
 import WorldMap from "./views/WorldMap";
+import ThemeToggle from "./components/ThemeToggle";
 import CourseLibrary from "./views/CourseLibrary";
 import LessonWorkspace from "./views/LessonWorkspace";
 import LessonTools,{WORKSPACE_LABELS} from "./views/LessonTools";
@@ -202,6 +203,7 @@ export default function BassLab(){
    <label><span className="label">Key</span><select aria-label="Key centre" value={root} onChange={e=>{setRoot(+e.target.value);setChord(`${N[+e.target.value]}m7`)}}>{N.map((n,i)=><option value={i} key={n}>{n}</option>)}</select></label>
    <label><span className="label">Sound</span><select aria-label="Home mode" value={mode} onChange={e=>setMode(+e.target.value)}>{MODES.map((m,i)=><option value={i} key={m.n}>{m.n}</option>)}</select></label>
   </div>}
+  <ThemeToggle/>
   <VoiceControl/>
   <button className={listening?"action action-quiet":"action-primary"} onClick={startAudio}>
    {listening?"Disconnect":"Connect bass"}
