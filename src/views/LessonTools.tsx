@@ -62,7 +62,7 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
   const tones=[...new Set([0,...bridge.character,...bridge.intervals])].slice(0,8);
   return (
    <div className="earPad">
-    <p className="muted">Play each tone against the drone. Predict it before you press it.</p>
+    <p className="dim">Play each tone against the drone. Predict it before you press it.</p>
     <div className="earGrid">
      {tones.map(interval=>{
       const pc=(root+interval+120)%12;
@@ -74,7 +74,7 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
       );
      })}
     </div>
-    <button className="btn" onClick={()=>bridge.audition(tones.map(i=>(root+i+120)%12),.42,root)}>
+    <button className="action" onClick={()=>bridge.audition(tones.map(i=>(root+i+120)%12),.42,root)}>
      Play the whole set
     </button>
    </div>
@@ -95,7 +95,7 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
  if(stage===3||stage===4)return (
   <div className="transport">
    <div className="transportRow">
-    <button className={`btn ${bridge.playing?"":"primary"} sheen`} onClick={bridge.startRuntime}>
+    <button className={bridge.playing?"action action-quiet":"action-primary"} onClick={bridge.startRuntime}>
      {bridge.playing?"■ Stop band":"▶ Start band"}
     </button>
     <div className="barBeat mono" aria-live="off">
@@ -103,24 +103,24 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
     </div>
    </div>
    <label className="tempoControl">
-    <span className="eyebrow">Tempo <b className="mono">{bridge.bpm} BPM</b></span>
+    <span className="label">Tempo <b className="mono">{bridge.bpm} BPM</b></span>
     <input type="range" min="50" max="140" value={bridge.bpm} onChange={event=>bridge.setBpm(+event.target.value)}/>
    </label>
-   <p className="muted">The band follows the lesson's key and mode. Change tempo while it runs.</p>
+   <p className="dim">The band follows the lesson's key and mode. Change tempo while it runs.</p>
   </div>
  );
 
  return (
   <div className="transport">
    <div className="transportRow">
-    <button className={`btn ${bridge.recording?"":"primary"} sheen`} onClick={bridge.recording?bridge.endTake:bridge.beginTake}>
+    <button className={bridge.recording?"action action-quiet":"action-primary"} onClick={bridge.recording?bridge.endTake:bridge.beginTake}>
      {bridge.recording?"■ End & analyse":"● Record the take"}
     </button>
     <div className="takeCount mono">
      <b>{bridge.eventCount}</b><small>notes</small>
     </div>
    </div>
-   <p className="muted">
+   <p className="dim">
     {bridge.listening
      ? "Input is live. Record one uninterrupted take, then read the evidence on the left."
      : "Connect the bass from the header, then record one uninterrupted take."}

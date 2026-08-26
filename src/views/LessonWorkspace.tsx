@@ -39,13 +39,13 @@ export default function LessonWorkspace({
  return (
   <div className="lessonShell">
    <header className="missionBar">
-    <button className="btn ghost" onClick={onPrevLesson} disabled={!hasPrev} aria-label="Previous lesson">←</button>
+    <button className="action action-quiet" onClick={onPrevLesson} disabled={!hasPrev} aria-label="Previous lesson">←</button>
     <div className="missionId">
-     <span className="eyebrow">Unit {lesson.unit} · Lesson {lesson.index+1} of {lesson.total}</span>
+     <span className="label">Unit {lesson.unit} · Lesson {lesson.index+1} of {lesson.total}</span>
      <h1 data-page-heading tabIndex={-1}>{lesson.title}</h1>
     </div>
     <span className="chip mono">{lesson.duration} min</span>
-    <button className="btn ghost" onClick={onNextLesson} disabled={!hasNext} aria-label="Next lesson">→</button>
+    <button className="action action-quiet" onClick={onNextLesson} disabled={!hasNext} aria-label="Next lesson">→</button>
    </header>
 
    <nav className="stageTabs" aria-label="Lesson stages">
@@ -68,16 +68,16 @@ export default function LessonWorkspace({
    <div className="lessonSplit">
     <section className="lessonRead stageSwap" key={stageIndex} aria-label="Instruction">
      <div className="stageIntro">
-      <span className="eyebrow">{stageNames[stageIndex]}</span>
+      <span className="label">{stageNames[stageIndex]}</span>
       <h2>{guide.title}</h2>
-      <p className="muted">{guide.body}</p>
+      <p className="dim">{guide.body}</p>
      </div>
      {instruction}
     </section>
 
     <aside className="lessonDo" aria-label={workspaceLabel}>
      <div className="doHead">
-      <span className="eyebrow">Workspace</span>
+      <span className="label">Workspace</span>
       <b>{workspaceLabel}</b>
      </div>
      <div className="doBody">{workspace}</div>
@@ -86,12 +86,12 @@ export default function LessonWorkspace({
 
    <footer className="checkBar">
     <div className="checkCriteria">
-     <span className="eyebrow">Move on when</span>
+     <span className="label">Move on when</span>
      <b>{guide.finish}</b>
     </div>
     <div className="checkAction">
      {!canAdvance&&blockedReason&&<span className="checkBlocked">{blockedReason}</span>}
-     <button className="btn primary sheen" onClick={onAdvance} disabled={!canAdvance}>
+     <button className="action-primary" onClick={onAdvance} disabled={!canAdvance}>
       {advanceLabel} <span className="arrow">→</span>
      </button>
     </div>

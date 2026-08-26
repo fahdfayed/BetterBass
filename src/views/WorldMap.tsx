@@ -23,7 +23,7 @@ export default function WorldMap({territories,lessonTitles,currentLesson,onOpenL
   <>
    <header className="mapHead rise">
     <div>
-     <span className="eyebrow">The route</span>
+     <span className="label">The route</span>
      <h1 className="display" data-page-heading tabIndex={-1}>
       Six <span className="gradientText">territories</span>.
      </h1>
@@ -33,12 +33,12 @@ export default function WorldMap({territories,lessonTitles,currentLesson,onOpenL
      </p>
     </div>
     <div className="hudStats">
-     <div className="hudStat"><b className="mono">{passed}<i>/{lessonTitles.length}</i></b><span className="eyebrow">Lessons passed</span></div>
-     <div className="hudStat"><b className="mono">{territories.filter(t=>t.unlocked).length}<i>/6</i></b><span className="eyebrow">Territories open</span></div>
+     <div className="hudStat"><b className="mono">{passed}<i>/{lessonTitles.length}</i></b><span className="label">Lessons passed</span></div>
+     <div className="hudStat"><b className="mono">{territories.filter(t=>t.unlocked).length}<i>/6</i></b><span className="label">Territories open</span></div>
     </div>
    </header>
 
-   <section className="mapBoard card rise d1" aria-label="Course territory map">
+   <section className="mapBoard rise d1" aria-label="Course territory map">
     <svg className="mapCanvas" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
      {territories.slice(0,-1).map((from,index)=>{
       const to=territories[index+1];
@@ -91,12 +91,12 @@ export default function WorldMap({territories,lessonTitles,currentLesson,onOpenL
    </section>
 
    {selected&&(
-    <section className="card lit territoryPanel rise d2" style={{"--accent":`var(--unit-${selected.id})`} as React.CSSProperties}>
+    <section className="territoryPanel rise d2" style={{"--accent":`var(--unit-${selected.id})`} as React.CSSProperties}>
      <header>
       <div>
-       <span className="eyebrow">Territory {selected.id}</span>
+       <span className="label">Territory {selected.id}</span>
        <h2>{selected.name}</h2>
-       <p className="muted">{selected.subtitle}</p>
+       <p className="dim">{selected.subtitle}</p>
       </div>
       <div className="territoryScore">
        <b className="mono">{selected.done}<i>/{selected.total}</i></b>
