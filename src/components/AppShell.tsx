@@ -12,6 +12,13 @@ type Props={
  children:ReactNode;
 };
 
+/**
+ * Reading pages keep a narrow measure; everything else is a workspace and takes
+ * the screen. Listing the narrow ones is the shorter and more stable list.
+ */
+const READING_VIEWS=new Set(["course","roadmap","map","courseProgress"]);
+const WIDE_VIEWS={has:(view:string)=>!READING_VIEWS.has(view)};
+
 export default function AppShell({course,input,actions,children}:Props){
  const route=useRoute();
  const [open,setOpen]=useState(false);
@@ -127,7 +134,7 @@ export default function AppShell({course,input,actions,children}:Props){
       <div className="headActions">{actions}</div>
      </header>
 
-     <main className="page" id="main" key={route.path}>{children}</main>
+     <main className={`page ${WIDE_VIEWS.has(route.view)?"wide":""}`} id="main" key={route.path}>{children}</main>
     </div>
    </div>
 

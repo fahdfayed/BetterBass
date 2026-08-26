@@ -86,7 +86,13 @@
  --rail:4.5rem;          /* collapsed navigation */
  --rail-open:15.5rem;    /* expanded on hover or focus */
  --header:3.5rem;
- --measure:72rem;        /* content column */
+ /* Two measures, because two kinds of page.
+    A reading column wants roughly seventy characters and should stop growing.
+    A workspace — the lesson split, the fretboard, the labs — is a tool, and on
+    a large screen it should use the screen rather than centring a narrow column
+    inside it and leaving the panes too tight to set text in. */
+ --measure:76rem;        /* reading pages: home, library, map, progress */
+ --measure-wide:118rem;  /* workspaces: lesson, labs, maqam, slap, coach */
  --measure-text:38rem;   /* prose only, kept short enough to read */
 }
 

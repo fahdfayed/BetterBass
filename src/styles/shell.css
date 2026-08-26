@@ -214,6 +214,8 @@
  flex-direction:column;
  gap:var(--s8);
 }
+/* Workspaces take the width they are given. */
+.page.wide{max-width:var(--measure-wide)}
 
 /* ---- palette ------------------------------------------------------------- */
 
