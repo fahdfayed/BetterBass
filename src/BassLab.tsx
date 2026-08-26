@@ -12,7 +12,6 @@ import {goToView,navigate,pathForView,useRoute} from "./router";
 import {autoCorrelate,centsToNote,labelFor,midiHz,NOTE_NAMES,PITCH_MAX_HZ,PITCH_MIN_HZ,PITCH_RMS_GATE,tensionFor,type Harmony} from "./pitch";
 import {COURSE_LESSONS,COURSE_UNITS} from "./course-data";
 import {LESSON_DETAILS} from "./course-details";
-import EgyptianArabicToggle,{useEgyptianArabic} from "./EgyptianArabicToggle";
 import {LEARNING_STATE_EVENT,saveLearningState} from "./learning-storage";
 import VoiceControl from "./VoiceControl";
 
@@ -85,7 +84,6 @@ export default function BassLab(){
  const setView=(next:string)=>next==="courseLesson"?navigate(pathForView("courseLesson",{lesson:courseIndex+1})):goToView(next);
  useEffect(()=>{if(route.view!=="courseLesson")return;const lesson=Number.parseInt(route.params.lesson??"",10);if(Number.isFinite(lesson))setCourseIndex(clampIndex(lesson-1,0,COURSE_LESSONS.length-1))},[route.view,route.params.lesson]);
  const territories=useMemo(()=>territoryStates(courseCompleted,courseIndex),[courseCompleted,courseIndex]);
- const egyptian=useEgyptianArabic();
  const audio=useRef<{ctx:AudioContext,stream:MediaStream,raf:number}|null>(null),eventRef=useRef<{midi:number,start:number,amp:number}|null>(null),eventsRef=useRef<NoteEvent[]>([]),recordRef=useRef(false),runtimeRef=useRef<{ctx:AudioContext,clock:AudioClock,master:GainNode}|null>(null),auditionRef=useRef<AudioContext|null>(null); const ri=root, scale=useMemo(()=>MODES[mode].s.map(x=>(x+ri)%12),[mode,ri]), color=(ri+MODES[mode].s[MODES[mode].c])%12, chordTones=useMemo(()=>[0,3,7,10].map(x=>(x+ri)%12),[ri]);
  // The microphone loop and the backing band both outlive the render that starts
  // them, so anything they read has to come from a ref. Reading the state values
@@ -215,7 +213,6 @@ export default function BassLab(){
   input={{listening,detail:pitch?`${pitch.n}${pitch.oct} · ${Math.round(pitch.hz)} Hz`:"Connect only when a tool asks"}}
   actions={headerActions}
  >
- <EgyptianArabicToggle/>
 
  {view==="today"&&<div className="osScreen"><div className="todayHero"><div><span className="k">TUESDAY · ADAPTIVE SESSION 12</span><h1>TODAY’S<br/><em>SESSION</em></h1><p>Built from your weak modes, neglected keys, register bias and tension-control history—not from a fixed lesson order.</p><button className="mega" onClick={()=>{setView("live");startAudio()}}>START PRACTICE <b>→</b></button></div><div className="weakness"><span>PRIMARY BOTTLENECK</span><h2>Dorian → Mixolydian recognition</h2><div><b>67%</b><i><em style={{width:"67%"}}/></i></div><ul><li><span>Fretboard recall</span><b>Strong below 9 / weak above 12</b></li><li><span>Chromatic groove</span><b className="warn">Needs work</b></li><li><span>Outside-note control</span><b>67%</b></li><li><span>Practice debt</span><b>Phrygian · E♭ · 5/4</b></li></ul></div></div><div className="sessionStrip">{plan.map((x,i)=><article key={x.t}><span>{String(i+1).padStart(2,'0')}</span><div><small>{x.tag} · {x.m} MIN</small><b>{x.t}</b><p>{x.d}</p></div><button>↗</button></article>)}</div><div className="freedomMini"><div><span>FREEDOM SCORE</span><h3>Tension-aware player</h3><p>Next threshold: free improviser</p></div>{["HEAR","SEE","KNOW","PLAY","CREATE"].map((x,i)=><div key={x}><b>{freedom[i]}</b><span>{x}</span><i><em style={{height:`${freedom[i]}%`}}/></i></div>)}</div></div>}
 

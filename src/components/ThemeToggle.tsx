@@ -14,7 +14,7 @@ export default function ThemeToggle(){
    title={cream?"Dark":"Cream"}
   >
    <span className="themeTrack" aria-hidden="true"><i/></span>
-   <span className="themeName" data-no-translate>{cream?"Cream":"Dark"}</span>
+   <span className="themeName">{cream?"Cream":"Dark"}</span>
   </button>
  );
 }

@@ -50,7 +50,7 @@ export default function AppShell({course,input,actions,children}:Props){
 
  return (
   <>
-   <div className="shell" data-translate-root>
+   <div className="shell">
     <a className="sr" href="#main">Skip to content</a>
 
     <nav className={`rail ${open?"open":""}`} aria-label="Main">
@@ -62,7 +62,7 @@ export default function AppShell({course,input,actions,children}:Props){
       <button className="railFind" onClick={()=>setPalette(true)}>
        <Icon name="search"/>
        <span className="railLabel">Search</span>
-       <kbd className="railLabel" data-no-translate>⌘K</kbd>
+       <kbd className="railLabel">⌘K</kbd>
       </button>
      </div>
 

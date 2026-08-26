@@ -160,17 +160,6 @@
  color:var(--ink);
 }
 
-/* The language toggle is global chrome, not part of any one screen. */
-.egyptianToggle{
- background:var(--bg-lift);
- border:1px solid var(--rule);
- border-radius:var(--r-pill);
- color:var(--ink-2);
- box-shadow:none;
- transition:color var(--t-base) var(--ease),border-color var(--t-base) var(--ease);
-}
-.egyptianToggle:hover{color:var(--ink);border-color:var(--rule-strong)}
-
 /* An empty class attribute still matches [class], so the earlier :not([class])
    guard skipped markers written as <i className={...}> with a falsy value. */
 .page .osScreen i,

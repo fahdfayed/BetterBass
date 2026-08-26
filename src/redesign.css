@@ -282,11 +282,6 @@ button:not(:disabled):active{transform:translateY(1px)}
 .theoryTableWrap th{font-size:max(11px,0.6875rem)}
 .theoryTableWrap td{font-size:0.75rem;line-height:1.55}
 
-.egyptianToggle{left:auto;right:18px;bottom:18px;border:1px solid rgba(185,238,120,.55);border-radius:999px;background:transparent;color:var(--lime);padding:10px 14px;box-shadow:none;backdrop-filter:blur(18px)}
-.egyptianToggle:hover{background:var(--lime);color:var(--ink-4)}
-.egyptianToggle span{font-size:0.875rem}
-.egyptianToggle small{font-size:max(11px,0.6875rem)}
-
 @media(max-width:1180px){
  .courseOs.os{grid-template-columns:244px minmax(0,1fr)}
  .courseOs>.appSidebar{width:244px;padding-inline:13px}
@@ -369,8 +364,6 @@ button:not(:disabled):active{transform:translateY(1px)}
  .practiceEnvHead h1,.slapHero h1,.coachHero h1,.maqamHero h1{font-size:2.625rem!important}
  .slapPath{grid-template-columns:1fr}
  .beastSections,.coachTabs,.slapTabs{top:128px}
- .egyptianToggle{right:12px;bottom:12px}
- .egyptianToggle small{display:none}
 }
 
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
