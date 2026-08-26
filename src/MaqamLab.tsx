@@ -321,7 +321,7 @@ export default function MaqamLab({livePitch,listening,onToggleListening}:Props){
 
  return <div className="maqamLab">
   <section className="maqamHero">
-   <div><span>ARABIC MUSIC LAB · مختبر المقامات</span><h1>Don’t memorize a scale.<br/><em>Learn how the maqam moves.</em></h1><p>A bass-first laboratory for ajnas, sayr, quarter-tone intonation, hand routes, modulation and uninterrupted guided practice.</p></div>
+   <div><span>ARABIC MUSIC LAB · مختبر المقامات</span><h1 data-page-heading tabIndex={-1}>Don’t memorize a scale.<br/><em>Learn how the maqam moves.</em></h1><p>A bass-first laboratory for ajnas, sayr, quarter-tone intonation, hand routes, modulation and uninterrupted guided practice.</p></div>
    <aside><small>SELECTED MAQAM</small><b>{maqam.name}<i>{maqam.ar}</i></b><p>{maqam.rootJins} · {maqam.family}</p><button onClick={()=>audition()}>▶ HEAR ASCENT + RETURN</button></aside>
   </section>
 

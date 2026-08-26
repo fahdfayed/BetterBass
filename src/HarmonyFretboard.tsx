@@ -2,7 +2,16 @@
 import {useCallback,useEffect,useMemo,useRef,useState} from "react";
 import {NOTE_ROLES,PITCH_NAMES,PROGRESSION_PRESETS,buildChordVoicing,classifyNote,commonTones,intervalLabel,parseChord,parseProgression,recommendScales,spellChordNote,voiceLeadingPaths,type ChordFamily,type ParsedChord} from "./harmony-fretboard-data";
 
+/**
+ * Both of these tools stand on their own route and also sit inside a lesson as
+ * a workspace pane. A page-level heading is right in the first case and wrong
+ * in the second: inside a lesson it becomes a second h1 and the document claims
+ * two top-level topics. `embedded` picks the level, and only the standalone
+ * form carries the focus target the router looks for on navigation.
+ */
 type Props={
+ /** True when rendered as a lesson workspace pane rather than its own page. */
+ embedded?:boolean;
  homeMode:number;displayMode:string;fog:number;selectedPc:number|null;
  onSetRoot:(root:number)=>void;onSetMode:(mode:number)=>void;onSetChord:(chord:string)=>void;
  onDisplayMode:(mode:string)=>void;onFog:(level:number)=>void;onSelectPc:(pc:number|null)=>void;
@@ -78,7 +87,7 @@ function familyJob(family:ChordFamily){
  return jobs[family][0];
 }
 
-export default function HarmonyFretboard({homeMode,displayMode,fog,selectedPc,onSetRoot,onSetMode,onSetChord,onDisplayMode,onFog,onSelectPc,onAudition}:Props){
+export default function HarmonyFretboard({embedded=false,homeMode,displayMode,fog,selectedPc,onSetRoot,onSetMode,onSetChord,onDisplayMode,onFog,onSelectPc,onAudition}:Props){
  const initial=PROGRESSION_PRESETS[0];
  const [presetId,setPresetId]=useState(initial.id),[draft,setDraft]=useState(initial.chords.join(" | ")),[applied,setApplied]=useState(initial.chords.join(" | ")),[centre,setCentre]=useState(initial.center),[lens,setLens]=useState<string>(initial.lens),[active,setActive]=useState(0),[choice,setChoice]=useState<{key:string;scale:string}|null>(null),[applyError,setApplyError]=useState(""),[autoFollow,setAutoFollow]=useState(false),[countIn,setCountIn]=useState(false),[tempo,setTempo]=useState(80),[barsPerChord,setBarsPerChord]=useState(2),[harmonyLevel,setHarmonyLevel]=useState(46),[bandStyle,setBandStyle]=useState<BandStyleId>("pocket"),[bandMix,setBandMix]=useState<BandMix>({drums:true,keys:true,guitar:true,cue:true});
  const [neckRange,setNeckRange]=useState<NeckRange>("low");
@@ -155,7 +164,7 @@ export default function HarmonyFretboard({homeMode,displayMode,fog,selectedPc,on
  const visible=(role:ReturnType<typeof classifyNote>)=>filter===0||filter===1&&!["approach","outside"].includes(role.id)||filter===2&&role.rank<=6||filter===3&&role.rank<=3||filter===4;
 
  return <div className="osScreen harmonyFretboard">
-  <section className="hfIntro"><div><span>{"HARMONY-AWARE FRETBOARD"}</span><h1>{"See what matters now."}</h1><p>{"Choose a progression, move through its chords and watch every fret change job. The map ranks bass note, root, guide tones, written tensions, modal colour, voice-leading targets and controlled outside routes—it does not pretend one scale is the only answer."}</p></div><aside><small>{"CURRENT DECISION"}</small><b dir="ltr">{current.symbol}</b><span>{PITCH_NAMES[current.root]} {selectedScale.name}</span><em>{selectedRecommendation.score}% {"FIT"}</em></aside></section>
+  <section className="hfIntro"><div><span>{"HARMONY-AWARE FRETBOARD"}</span>{embedded?<h2>{"See what matters now."}</h2>:<h1 data-page-heading tabIndex={-1}>{"See what matters now."}</h1>}<p>{"Choose a progression, move through its chords and watch every fret change job. The map ranks bass note, root, guide tones, written tensions, modal colour, voice-leading targets and controlled outside routes—it does not pretend one scale is the only answer."}</p></div><aside><small>{"CURRENT DECISION"}</small><b dir="ltr">{current.symbol}</b><span>{PITCH_NAMES[current.root]} {selectedScale.name}</span><em>{selectedRecommendation.score}% {"FIT"}</em></aside></section>
 
   <section className="hfBuilder">
    <header><div><span>{"01 · CHOOSE THE HARMONIC STORY"}</span><h2>{"Progression first. Scale second."}</h2></div><p>{"The same G7 can ask for Mixolydian, Lydian dominant, diminished or altered language depending on its spelling and destination."}</p></header>

@@ -587,3 +587,16 @@
 .page .osScreen small,
 .page .osScreen b,
 .page .osScreen span{overflow-wrap:anywhere}
+
+/*
+ * Live session heading.
+ *
+ * The big readout in this header is the pitch being detected, not a title, so
+ * it is no longer an h1 — the eyebrow above it is. These rules carry the old
+ * appearance across: the readout keeps the size the element selector used to
+ * give it, and the title is pulled back to eyebrow scale, which has to outrank
+ * the `.liveHead h1` rule still sitting in globals.css.
+ */
+.liveHead .livePitch{display:block;font:900 6.25rem/1 var(--font-mono);margin:20px 0 0}
+.liveHead .livePitch small{font-size:1.875rem}
+.liveHead h1.liveTitle{font:max(11px,.6875rem) var(--font-mono);letter-spacing:.14em;margin:0}

@@ -1,23 +1,19 @@
 "use client";
 import {useState} from "react";
 import {THEORY_DICTIONARIES,THEORY_DOMAINS,type LocalText} from "./bass-theory-data";
+import {MODES} from "./harmony-fretboard-data";
 
 const N=["C","C♯","D","E♭","E","F","F♯","G","A♭","A","B♭","B"];
-const MODES=[
- {n:"Ionian",f:"1 2 3 4 5 6 7",s:[0,2,4,5,7,9,11]}, {n:"Dorian",f:"1 2 ♭3 4 5 6 ♭7",s:[0,2,3,5,7,9,10]},
- {n:"Phrygian",f:"1 ♭2 ♭3 4 5 ♭6 ♭7",s:[0,1,3,5,7,8,10]}, {n:"Lydian",f:"1 2 3 ♯4 5 6 7",s:[0,2,4,6,7,9,11]},
- {n:"Mixolydian",f:"1 2 3 4 5 6 ♭7",s:[0,2,4,5,7,9,10]}, {n:"Aeolian",f:"1 2 ♭3 4 5 ♭6 ♭7",s:[0,2,3,5,7,8,10]},
- {n:"Locrian",f:"1 ♭2 ♭3 4 ♭5 ♭6 ♭7",s:[0,1,3,5,6,8,10]}
-];
-type Props={root:number;onSetMode:(mode:number)=>void;onAudition:(notes:number[],hold?:number)=>void};
+/** See the note on HarmonyFretboard: this tool is also a lesson workspace pane. */
+type Props={embedded?:boolean;root:number;onSetMode:(mode:number)=>void;onAudition:(notes:number[],hold?:number)=>void};
 
-export default function TheoryReference({root,onSetMode,onAudition}:Props){
+export default function TheoryReference({embedded=false,root,onSetMode,onAudition}:Props){
  const [theoryDomain,setTheoryDomain]=useState(0),[theoryDictionary,setTheoryDictionary]=useState(0);
  const theory=THEORY_DOMAINS[theoryDomain],dictionary=THEORY_DICTIONARIES[theoryDictionary],lt=(value:LocalText)=>value.en,ri=root;
  return <div className={`osScreen courseReference theoryEncyclopedia ${""}`} dir={"ltr"}>
   <header>
    <span>{"COMPLETE BASS THEORY REFERENCE"}</span>
-   <h1>{<>The language behind<br/>every bass decision.</>}</h1>
+   {embedded?<h2>{<>The language behind<br/>every bass decision.</>}</h2>:<h1 data-page-heading tabIndex={-1}>{<>The language behind<br/>every bass decision.</>}</h1>}
    <p>{"One reference from first principles to professional musicianship: time, ear, fretboard, harmony, line construction, improvisation, reading, arranging and global musical systems. Open it when a lesson needs an explanation—it is not a second course to complete in order."}</p>
   </header>
 

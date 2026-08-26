@@ -151,7 +151,7 @@ export const THEORY_DICTIONARIES:TheoryDictionary[]=[
   {name:t("Major 6th"),formula:"9 SEMITONES · 6",semitones:9,meaning:t("Dorian lift, major color and inversion of minor 3rd.")},
   {name:t("Minor 7th"),formula:"10 SEMITONES · ♭7",semitones:10,meaning:t("Dominant/minor-7 family, funk and Mixolydian color.")},
   {name:t("Major 7th"),formula:"11 SEMITONES · 7",semitones:11,meaning:t("Strong leading pull and major-7 color.")},
-  {name:t("Octave"),formula:"12 SEMITONES · 8",semitones:0,meaning:t("Same pitch class, new register and classic bass-line reinforcement.")},
+  {name:t("Octave"),formula:"12 SEMITONES · 8",semitones:12,meaning:t("Same pitch class, new register and classic bass-line reinforcement.")},
  ]},
  {id:"chords",title:t("Chord-formula dictionary"),intro:t("Spell from the chord root. Extensions are compound scale degrees; slash notes specify the bass."),columns:[t("CHORD"),t("FORMULA"),t("FUNCTION / COLOR")],rows:[
   {name:t("Major triad"),formula:"1 3 5",meaning:t("Stable major quality.")},{name:t("Minor triad"),formula:"1 ♭3 5",meaning:t("Stable minor quality.")},{name:t("Diminished triad"),formula:"1 ♭3 ♭5",meaning:t("Unstable symmetrical tendency.")},{name:t("Augmented triad"),formula:"1 3 ♯5",meaning:t("Open symmetrical expansion.")},

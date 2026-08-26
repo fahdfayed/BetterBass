@@ -664,7 +664,7 @@ export default function PerformanceCoach({root,modeName,courseTitle,courseComple
 
  return <div className="coachScreen osScreen">
   <header className="coachHero">
-   <div><span>PHASE 10 · HANDS-FREE PERFORMANCE INTELLIGENCE</span><h1>Play the bass.<br/><em>The coach runs itself.</em></h1><p>Press Start once. Spoken cues, click, reference tones, continuous note detection, automatic tempo changes, corrective repair loops and block transitions continue until the routine is finished.</p></div>
+   <div><span>PHASE 10 · HANDS-FREE PERFORMANCE INTELLIGENCE</span><h1 data-page-heading tabIndex={-1}>Play the bass.<br/><em>The coach runs itself.</em></h1><p>Press Start once. Spoken cues, click, reference tones, continuous note detection, automatic tempo changes, corrective repair loops and block transitions continue until the routine is finished.</p></div>
    <aside><small>PLAYER STATE</small><b>{overall===null?`${scoredAxes.length}/5`:overall}</b><span>{overall===null?"AXES VERIFIED":"EVIDENCE SCORE"}</span><p>{overall===null?`${5-scoredAxes.length} baseline${5-scoredAxes.length===1?"":"s"} still need proof.`:`Current stage · ${masteryLabel(overall)}`}</p><button onClick={()=>setTab("ASSESS")}>{overall===null?"CONTINUE BASELINE":"RETEST A SKILL"} →</button></aside>
   </header>
   <nav className="coachTabs" aria-label="Adaptive coach sections">{(["TODAY","ASSESS","EVIDENCE","HISTORY"] as CoachTab[]).map(name=><button className={tab===name?"active":""} onClick={()=>setTab(name)} key={name}>{name}</button>)}</nav>

@@ -57,7 +57,7 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
 
  if(stage===0)return (
   <Suspense fallback={<Loading/>}>
-   <TheoryReference root={root} onSetMode={bridge.setMode} onAudition={bridge.audition}/>
+   <TheoryReference embedded root={root} onSetMode={bridge.setMode} onAudition={bridge.audition}/>
   </Suspense>
  );
 
@@ -88,6 +88,7 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
  if(stage===2)return (
   <Suspense fallback={<Loading/>}>
    <HarmonyFretboard
+    embedded
     homeMode={bridge.mode} displayMode={bridge.fbView} fog={bridge.fog} selectedPc={bridge.picked}
     onSetRoot={bridge.setRoot} onSetMode={bridge.setMode} onSetChord={bridge.setChord}
     onDisplayMode={bridge.setFbView} onFog={bridge.setFog} onSelectPc={bridge.setPicked}

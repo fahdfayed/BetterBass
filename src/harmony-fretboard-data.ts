@@ -91,6 +91,25 @@ export const SCALE_LIBRARY:ScaleDef[]=[
  {id:"dominant-bebop",name:"Dominant bebop",ar:"بيبُب دومينانت",formula:"1 2 3 4 5 6 ♭7 7",intervals:[0,2,4,5,7,9,10,11],character:[10,11],use:t("Eight-note dominant field that can place chord tones on downbeats."),watch:t("The major 7 is normally a passing tone, not a held dominant colour.")},
 ];
 
+/**
+ * The seven diatonic modes, in scale order.
+ *
+ * Derived from the scale library rather than written out again: the same seven
+ * were previously declared a second time in the lesson shell and a third time
+ * in the theory reference, which is three places for them to drift apart.
+ *
+ * `c` is the index of the tone that identifies the mode against its nearest
+ * neighbour — the last of its character tones, since Ionian and Locrian each
+ * list two and it is the second that separates them.
+ */
+export type Mode={n:string;f:string;s:number[];c:number};
+export const MODES:Mode[]=SCALE_LIBRARY.slice(0,7).map(scale=>({
+ n:scale.name,
+ f:scale.formula,
+ s:scale.intervals,
+ c:scale.intervals.indexOf(scale.character[scale.character.length-1]),
+}));
+
 export type ProgressionPreset={id:string;name:LocalText;brief:LocalText;center:number;homeMode:number;lens:"functional"|"modal"|"modern";chords:string[]};
 export const PROGRESSION_PRESETS:ProgressionPreset[]=[
  {id:"dorian",name:t("Dorian pocket"),brief:t("Static minor centre with IV dominant colour."),center:9,homeMode:1,lens:"modal",chords:["Am9","D13","Am9","E7sus4"]},

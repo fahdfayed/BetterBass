@@ -27,9 +27,9 @@
  /* ---- text ------------------------------------------------------------ */
  /* Four steps of emphasis. Most of the interface lives in the middle two. */
  --ink:#f4f4f6;
- --ink-2:rgba(244,244,246,.72);
- --ink-3:rgba(244,244,246,.46);
- --ink-4:rgba(244,244,246,.28);
+ --ink-2:rgba(244,244,246,.82);
+ --ink-3:rgba(244,244,246,.68);
+ --ink-4:rgba(244,244,246,.56);
 
  /* ---- accent ---------------------------------------------------------- */
  /*
@@ -147,9 +147,9 @@
  --rule-strong:rgba(0,0,0,.20);
 
  --ink:#111111;
- --ink-2:#555555;
- --ink-3:#888888;
- --ink-4:#aaaaaa;
+ --ink-2:#454545;
+ --ink-3:#5c5c5c;
+ --ink-4:#6d6d6d;
 
  /* The mark is a deep violet — the dark theme's accent taken down until it
     reads on cream. The fill stays lime, with black ink on it. */
