@@ -22,9 +22,9 @@
  to{opacity:1;transform:scale(1)}
 }
 
-.rise{animation:riseIn var(--dur-reveal) var(--ease-out) both}
-.fade{animation:fadeIn var(--dur-slow) var(--ease) both}
-.pop{animation:scaleIn var(--dur-slow) var(--ease-spring) both}
+.rise{animation:riseIn var(--t-slow) var(--ease-out) both}
+.fade{animation:fadeIn var(--t-slow) var(--ease) both}
+.pop{animation:scaleIn var(--t-slow) var(--ease-spring) both}
 
 /* Depth steps for staggering a section's children. */
 .d1{animation-delay:60ms}
@@ -44,7 +44,7 @@
 .reveal.revealArmed{
  opacity:0;
  transform:translate3d(0,20px,0);
- transition:opacity var(--dur-reveal) var(--ease-out),transform var(--dur-reveal) var(--ease-out);
+ transition:opacity var(--t-slow) var(--ease-out),transform var(--t-slow) var(--ease-out);
 }
 .reveal.revealArmed.seen{opacity:1;transform:translate3d(0,0,0)}
 
@@ -54,7 +54,7 @@
  from{opacity:0;transform:translate3d(0,10px,0)}
  to{opacity:1;transform:translate3d(0,0,0)}
 }
-.viewEnter{animation:viewIn var(--dur-slow) var(--ease-out) both}
+.viewEnter{animation:viewIn var(--t-slow) var(--ease-out) both}
 
 /* ---- ambient ---------------------------------------------------------- */
 

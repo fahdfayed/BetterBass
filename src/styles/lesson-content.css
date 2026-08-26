@@ -12,7 +12,7 @@
  * document, the way a problem statement does.
  */
 
-.lessonRead>div{display:flex;flex-direction:column;gap:var(--s-6)}
+.lessonRead>div{display:flex;flex-direction:column;gap:var(--s6)}
 
 /* ---- blocks ------------------------------------------------------------- */
 
@@ -21,19 +21,20 @@
 .lessonRead>div>aside{
  display:flex;
  flex-direction:column;
- gap:var(--s-3);
+ gap:var(--s3);
 }
 
 /* A hairline between blocks gives the document its rhythm. */
-.lessonRead>div>*+*{padding-top:var(--s-6);border-top:1px solid var(--line)}
+.lessonRead>div>*+*{padding-top:var(--s6);border-top:1px solid var(--line)}
 
-.lessonRead header{display:flex;flex-direction:column;gap:var(--s-2)}
+.lessonRead header{display:flex;flex-direction:column;gap:var(--s2)}
 
 /* ---- type --------------------------------------------------------------- */
 
-.lessonRead h2{font-size:var(--step-1);font-weight:640;letter-spacing:-.015em}
-.lessonRead h3{font-size:var(--step-0);font-weight:620}
-.lessonRead p{color:var(--text-muted);line-height:1.65}
+.lessonRead h2{font-size:var(--t-lead);font-weight:640;letter-spacing:-.015em}
+.lessonRead h3{font-size:var(--t-body);font-weight:620}
+.lessonRead p{color:var(--ink-2);line-height:1.65}
+.lessonRead small{font-size:var(--t-small);color:var(--ink-3);line-height:1.5}
 .lessonRead b,.lessonRead strong{color:var(--text);font-weight:620}
 
 /* The leading span in a block header is its numbered label. */
@@ -41,47 +42,46 @@
 .lessonRead>div>article>span:first-child,
 .lessonRead>div>aside>span:first-child,
 .lessonRead article>span:first-child{
- font-size:var(--step--1);
+ font-size:var(--t-small);
  font-weight:640;
- letter-spacing:var(--tracking-eyebrow);
+ letter-spacing:var(--track-label);
  text-transform:uppercase;
  color:var(--accent);
 }
 
 /* ---- lists -------------------------------------------------------------- */
 
-.lessonRead ul,.lessonRead ol{display:flex;flex-direction:column;gap:var(--s-2);padding-left:1.15rem;margin:0}
-.lessonRead li{color:var(--text-muted);line-height:1.6}
-.lessonRead li::marker{color:var(--text-faint)}
+.lessonRead ul,.lessonRead ol{display:flex;flex-direction:column;gap:var(--s2);padding-left:1.15rem;margin:0}
+.lessonRead li{color:var(--ink-2);line-height:1.6}
+.lessonRead li::marker{color:var(--ink-3)}
 
 /* ---- definition rows (exercise grids) ----------------------------------- */
 
-.lessonRead dl{display:flex;flex-direction:column;gap:var(--s-2);margin:0}
-.lessonRead dl>div{display:grid;grid-template-columns:6.5rem minmax(0,1fr);gap:var(--s-3);align-items:baseline}
+.lessonRead dl{display:flex;flex-direction:column;gap:var(--s2);margin:0}
+.lessonRead dl>div{display:grid;grid-template-columns:6.5rem minmax(0,1fr);gap:var(--s3);align-items:baseline}
 .lessonRead dt{
- font-size:.68rem;
+ font-size:var(--t-micro);
  font-weight:640;
  letter-spacing:.09em;
  text-transform:uppercase;
- color:var(--text-faint);
+ color:var(--ink-3);
 }
-.lessonRead dd{margin:0;color:var(--text-muted);font-size:var(--step--1)}
+.lessonRead dd{margin:0;color:var(--ink-2);font-size:var(--t-small)}
 
 /* ---- inner cards (vocabulary terms, exercises, hear cards) -------------- */
 
-.lessonRead section>div{display:flex;flex-direction:column;gap:var(--s-3)}
+.lessonRead section>div{display:flex;flex-direction:column;gap:var(--s3)}
 .lessonRead section>div>article{
  display:flex;
  flex-direction:column;
- gap:var(--s-2);
- padding:var(--s-4);
- border:1px solid var(--line);
- border-radius:var(--r-md);
- background:var(--surface-1);
+ gap:var(--s2);
+ padding:var(--s4) 0;
+ border-top:1px solid var(--rule);
 }
+.lessonRead section>div>article:first-child{border-top:0;padding-top:0}
 .lessonRead section>div>article>i{
  font-style:normal;
- font-size:.68rem;
+ font-size:var(--t-micro);
  font-weight:700;
  letter-spacing:.08em;
  color:var(--accent);
@@ -92,15 +92,14 @@
 .lessonRead label{
  display:flex;
  align-items:flex-start;
- gap:var(--s-3);
- padding:var(--s-3) var(--s-4);
- border:1px solid var(--line);
- border-radius:var(--r-md);
- background:var(--surface-1);
+ gap:var(--s4);
+ padding:var(--s3);
+ margin-inline:calc(var(--s3) * -1);
+ border-radius:var(--r-control);
  cursor:pointer;
- transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease);
+ transition:background var(--t-base) var(--ease);
 }
-.lessonRead label:hover{background:var(--surface-2);border-color:var(--line-strong)}
+.lessonRead label:hover{background:var(--wash)}
 .lessonRead label input[type="checkbox"]{
  width:1.05rem;height:1.05rem;
  margin-top:.2rem;
@@ -108,82 +107,71 @@
  accent-color:var(--accent);
  cursor:pointer;
 }
-.lessonRead label:has(input:checked){border-color:color-mix(in oklab,var(--ok) 40%,transparent)}
-.lessonRead label:has(input:checked) span{color:var(--text-faint);text-decoration:line-through}
-.lessonRead label>i{font-style:normal;font-size:var(--step--1);color:var(--accent);font-weight:700}
-.lessonRead label>span{font-size:var(--step--1);color:var(--text-muted);line-height:1.55}
+.lessonRead label:has(input:checked)>i{color:var(--done)}
+.lessonRead label:has(input:checked) span{color:var(--ink-3);text-decoration:line-through}
+.lessonRead label>i{font-style:normal;font-size:var(--t-small);color:var(--accent);font-weight:700}
+.lessonRead label>span{font-size:var(--t-small);color:var(--ink-2);line-height:1.55}
 
 /* ---- tables ------------------------------------------------------------- */
 
-.lessonRead .theoryTableWrap{
- overflow-x:auto;
- overscroll-behavior-x:contain;
- border:1px solid var(--line);
- border-radius:var(--r-md);
-}
-.lessonRead table{width:100%;border-collapse:collapse;font-size:var(--step--1)}
+.lessonRead .theoryTableWrap{overflow-x:auto;overscroll-behavior-x:contain}
+.lessonRead table{width:100%;border-collapse:collapse;font-size:var(--t-small)}
 .lessonRead th{
  position:sticky;
  top:0;
- padding:.6rem var(--s-3);
- background:var(--surface-solid);
- border-bottom:1px solid var(--line-strong);
+ padding:.6rem var(--s3);
+ background:var(--bg-lift);
+ border-bottom:1px solid var(--rule-strong);
  text-align:left;
- font-size:.66rem;
+ font-size:var(--t-micro);
  font-weight:660;
  letter-spacing:.09em;
  text-transform:uppercase;
- color:var(--text-faint);
+ color:var(--ink-3);
  white-space:nowrap;
 }
-.lessonRead td{padding:.55rem var(--s-3);border-bottom:1px solid var(--line);color:var(--text-muted);vertical-align:top}
+.lessonRead td{padding:.55rem var(--s3);border-bottom:1px solid var(--line);color:var(--ink-2);vertical-align:top}
 .lessonRead tbody tr:last-child td{border-bottom:0}
-.lessonRead tbody tr:hover td{background:var(--surface-1)}
+.lessonRead tbody tr:hover td{background:var(--wash)}
 .lessonRead td:first-child{color:var(--text);font-weight:620;font-variant-numeric:tabular-nums;white-space:nowrap}
 
 /* ---- semantic callouts -------------------------------------------------- */
 
-.lessonRead .theoryDiagnosis{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:var(--s-3)}
+.lessonRead .theoryDiagnosis{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:var(--s3)}
 .lessonRead .theoryDiagnosis>article{
- padding:var(--s-4);
- border:1px solid var(--line);
- border-left:2px solid var(--line-strong);
- border-radius:var(--r-md);
- background:var(--surface-1);
+ padding:0 0 0 var(--s4);
+ border-left:1px solid var(--rule-strong);
 }
-.lessonRead .myth{border-left-color:var(--warn) !important;background:color-mix(in oklab,var(--warn) 7%,transparent) !important}
+.lessonRead .myth{border-left-color:var(--warn) !important;background:none !important}
 .lessonRead .myth>span:first-child{color:var(--warn) !important}
-.lessonRead .fix{border-left-color:var(--ok) !important;background:color-mix(in oklab,var(--ok) 7%,transparent) !important}
-.lessonRead .fix>span:first-child{color:var(--ok) !important}
+.lessonRead .fix{border-left-color:var(--done) !important;background:none !important}
+.lessonRead .fix>span:first-child{color:var(--done) !important}
 
 .lessonRead .sayIt,
 .lessonRead .stagePass,
 .lessonRead .juryThreshold{
- padding:var(--s-4) var(--s-5);
- border:1px dashed color-mix(in oklab,var(--accent) 40%,var(--line-strong));
- border-radius:var(--r-md);
- background:color-mix(in oklab,var(--accent) 6%,transparent);
+ padding:var(--s4) 0 0;
+ border-top:1px solid color-mix(in oklab,var(--accent) 45%,transparent);
+ background:none;
 }
-.lessonRead .sayIt>b:first-child{color:var(--accent);font-size:var(--step--1);letter-spacing:var(--tracking-eyebrow)}
+.lessonRead .sayIt>b:first-child{color:var(--accent);font-size:var(--t-small);letter-spacing:var(--track-label)}
 
 /* Formula callout: the one line that carries the whole lesson. */
 .lessonRead>div>aside>b{
  display:block;
- padding:var(--s-3) var(--s-4);
- border-radius:var(--r-md);
- background:var(--surface-2);
+ padding:var(--s3) 0;
  font-family:var(--font-mono);
- font-size:var(--step-0);
+ font-size:var(--t-body);
  font-weight:600;
  letter-spacing:.01em;
  line-height:1.5;
 }
 .lessonRead>div>aside small{
- font-size:.68rem;
+ font-size:var(--t-micro);
  font-weight:640;
  letter-spacing:.09em;
  text-transform:uppercase;
- color:var(--text-faint);
+ color:var(--ink-3);
 }
 
 /* ---- containment -------------------------------------------------------- */
@@ -207,7 +195,7 @@
 .lessonRead .earLadder,
 .lessonRead .tempoLadder{
  grid-template-columns:minmax(0,1fr);
- gap:var(--s-3);
+ gap:var(--s3);
 }
 .lessonRead [class]>*{min-width:0}
 .lessonRead pre,.lessonRead code{white-space:pre-wrap;word-break:break-word}
@@ -216,3 +204,20 @@
  .lessonRead dl>div{grid-template-columns:minmax(0,1fr);gap:2px}
  .lessonRead .theoryDiagnosis{grid-template-columns:minmax(0,1fr)}
 }
+
+/* ---- legacy frames ------------------------------------------------------- */
+
+/* The original sheets frame these blocks. In this language a block is defined
+   by the space around it, so the frame goes and the hairlines above do the
+   separating. Declared last so the rules that add a single top rule survive. */
+.lessonRead section,
+.lessonRead article,
+.lessonRead aside,
+.lessonRead>div>div{
+ border-right-width:0;
+ border-bottom-width:0;
+ border-left-width:0;
+ border-radius:0;
+ background:none;
+}
+.lessonRead .theoryDiagnosis>article{border-left-width:1px}

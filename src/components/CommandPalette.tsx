@@ -43,11 +43,11 @@ export default function CommandPalette({open,onClose}:{open:boolean;onClose:()=>
  };
 
  return (
-  <div className="paletteScrim" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)onClose()}}>
-   <div className="palette" role="dialog" aria-modal="true" aria-label="Jump to">
+  <div className="palScrim" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)onClose()}}>
+   <div className="pal" role="dialog" aria-modal="true" aria-label="Jump to">
     <input
      ref={inputRef}
-     className="paletteInput"
+     className="palInput"
      type="text"
      placeholder="Jump to a lesson, lab or routine…"
      value={query}
@@ -61,8 +61,8 @@ export default function CommandPalette({open,onClose}:{open:boolean;onClose:()=>
      spellCheck={false}
     />
     {results.length===0
-     ? <p className="paletteEmpty">Nothing matches “{query}”.</p>
-     : <ul className="paletteList" id="palette-results" role="listbox" ref={listRef}>
+     ? <p className="palEmpty">Nothing matches “{query}”.</p>
+     : <ul className="palList" id="palette-results" role="listbox" ref={listRef}>
         {results.map((item,index)=>(
          <li key={item.view} role="none">
           <button
@@ -72,13 +72,13 @@ export default function CommandPalette({open,onClose}:{open:boolean;onClose:()=>
            aria-selected={index===active}
            data-index={index}
            data-active={index===active}
-           className="paletteItem"
+           className="palItem"
            onMouseMove={()=>setActive(index)}
            onClick={()=>choose(index)}
           >
            <Icon name={item.icon}/>
            <span>{item.label}</span>
-           <span className="where">{item.parent?`${item.group} · ${item.parent}`:item.group}</span>
+           <span className="palWhere">{item.parent?`${item.group} · ${item.parent}`:item.group}</span>
           </button>
          </li>
         ))}

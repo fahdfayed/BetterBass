@@ -148,11 +148,11 @@ export default function CourseLibrary({lessons,units,completed,current,onOpen}:P
           </div>
           <span className="mono libUnitCount">{done}/{inUnit.length}</span>
          </header>
-         <ol className="libRows">{inUnit.map(row)}</ol>
+         <ol className="libRows stagger" key={`${filter}-${query}`}>{inUnit.map(row)}</ol>
         </section>
        );
       })
-    : <ol className="libRows libFlat">{matches.map(row)}</ol>}
+    : <ol className="libRows libFlat stagger" key={`${filter}-${query}`}>{matches.map(row)}</ol>}
   </>
  );
 }

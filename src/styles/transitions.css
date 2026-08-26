@@ -1,0 +1,101 @@
+/**
+ * Page transitions and the shared motion vocabulary.
+ *
+ * Route changes run through the View Transitions API (see router.ts), which
+ * snapshots the old page and the new one and animates between them. The chrome
+ * is named so it stays put while only the content moves — a sidebar that
+ * cross-fades against itself on every click reads as a flicker, not a
+ * transition.
+ *
+ * Everything animated here is transform and opacity only. The pitch detector
+ * already runs work on every animation frame while the mic is live, so motion
+ * has to stay on the compositor.
+ */
+
+/* ---- what persists across a navigation ---------------------------------- */
+
+.rail{view-transition-name:app-rail}
+.head{view-transition-name:app-head}
+
+/* Persistent chrome is not animated at all; it simply carries over. */
+::view-transition-old(app-rail),
+::view-transition-new(app-rail),
+::view-transition-old(app-head),
+::view-transition-new(app-head),
+::view-transition-new(app-head){
+ animation:none;
+ mix-blend-mode:normal;
+}
+
+/* ---- the page itself ---------------------------------------------------- */
+
+::view-transition-old(root){
+ animation:pageLeave 200ms var(--ease) both;
+}
+::view-transition-new(root){
+ animation:pageEnter 340ms var(--ease-out) both;
+}
+
+@keyframes pageLeave{
+ from{opacity:1;transform:translate3d(0,0,0) scale(1)}
+ to{opacity:0;transform:translate3d(0,-8px,0) scale(.994)}
+}
+@keyframes pageEnter{
+ from{opacity:0;transform:translate3d(0,14px,0) scale(.996)}
+ to{opacity:1;transform:translate3d(0,0,0) scale(1)}
+}
+
+/* The old page must not sit on top of the new one while both are present. */
+::view-transition-group(root){isolation:auto}
+::view-transition-image-pair(root){isolation:auto}
+::view-transition-old(root){z-index:0}
+::view-transition-new(root){z-index:1}
+
+/* ---- staggered entrance ------------------------------------------------- */
+
+/**
+ * Children of a .stagger container fan in on arrival. Depth is capped at ten so
+ * a twenty-eight row list never makes the reader wait for the last item.
+ */
+.stagger>*{animation:staggerIn var(--t-slow) var(--ease-out) both}
+.stagger>*:nth-child(1){animation-delay:20ms}
+.stagger>*:nth-child(2){animation-delay:50ms}
+.stagger>*:nth-child(3){animation-delay:80ms}
+.stagger>*:nth-child(4){animation-delay:110ms}
+.stagger>*:nth-child(5){animation-delay:140ms}
+.stagger>*:nth-child(6){animation-delay:170ms}
+.stagger>*:nth-child(7){animation-delay:200ms}
+.stagger>*:nth-child(8){animation-delay:230ms}
+.stagger>*:nth-child(9){animation-delay:260ms}
+.stagger>*:nth-child(n+10){animation-delay:290ms}
+
+@keyframes staggerIn{
+ from{opacity:0;transform:translate3d(0,12px,0)}
+ to{opacity:1;transform:translate3d(0,0,0)}
+}
+
+/* ---- stage switching inside a lesson ------------------------------------ */
+
+/* Switching stage is a change of task, so the instruction re-enters while the
+   instrument pane stays where it is. */
+.stageSwap{animation:stageIn 300ms var(--ease-out) both}
+@keyframes stageIn{
+ from{opacity:0;transform:translate3d(10px,0,0)}
+ to{opacity:1;transform:translate3d(0,0,0)}
+}
+
+/* ---- numbers ------------------------------------------------------------ */
+
+/* A value that has just changed gets one pulse, so a score moving is noticed
+   without the reader having to be watching that corner of the screen. */
+.tick{animation:tickPop 420ms var(--ease-spring) both}
+@keyframes tickPop{
+ 0%{transform:scale(1)}
+ 40%{transform:scale(1.14)}
+ 100%{transform:scale(1)}
+}
+
+@media (prefers-reduced-motion:reduce){
+ ::view-transition-old(root),::view-transition-new(root),
+ .stagger>*,.stageSwap,.tick{animation:none !important}
+}

@@ -12,175 +12,118 @@ type Props={
  onOpenUnit:(lessonIndex:number)=>void;
 };
 
-const QUICK=[
- {view:"runtime",icon:"band",title:"Play with the band",blurb:"Backing tracks, progressions and tempo"},
- {view:"coach",icon:"coach",title:"Use the live coach",blurb:"Listen, detect and correct your take"},
- {view:"maqam",icon:"maqam",title:"Practise a maqam",blurb:"Sayr, hand routes and backing"},
- {view:"slap",icon:"slap",title:"Train slap bass",blurb:"Beginner through advanced routines"},
+const ELSEWHERE=[
+ {view:"runtime",icon:"band",label:"Play with the band",note:"Vamps, progressions, tempo"},
+ {view:"coach",icon:"coach",label:"Live coach",note:"Listen, detect, correct"},
+ {view:"maqam",icon:"maqam",label:"Arabic maqam",note:"Sayr and hand routes"},
+ {view:"slap",icon:"slap",label:"Slap bass",note:"Beginner to advanced"},
 ] as const;
 
-/** Circumference of the r=52 progress ring, so the dash offset can be derived. */
-const RING=2*Math.PI*52;
-
+/**
+ * Home states one thing loudly — the next lesson — and lists everything else
+ * quietly beneath it. No panels: sections are separated by air and a hairline,
+ * and every secondary destination is a row that lights up under the cursor.
+ */
 export default function Home({percent,completed,lesson,stage,flow,units,onOpenLesson,onOpenUnit}:Props){
- // The four flow blocks map onto six lesson stages, so two stages share a block.
- const flowPosition=Math.min(flow.length-1,Math.floor(stage.index/1.5));
+ const here=Math.min(flow.length-1,Math.floor(stage.index/1.5));
 
  return (
   <>
-   <header className="homeHero rise">
-    <div className="homeHeroText">
-     <span className="eyebrow">Outside In · Bass learning studio</span>
-     <h1 className="display" data-page-heading tabIndex={-1}>
-      Your next step is <span className="gradientText">ready</span>.
-     </h1>
-     <p className="lede">
-      Continue the course, start a hands-free routine, or open a focused tool.
-      Everything else can wait.
-     </p>
+   <header className="lede-block">
+    <span className="label rise">Unit {lesson.unit} · Lesson {lesson.index+1} of {lesson.total}</span>
+    <h1 className="display rise d1" data-page-heading tabIndex={-1}>{lesson.title}</h1>
+    <p className="lead rise d2">{lesson.outcome}</p>
+
+    <div className="lede-act rise d3">
+     <button className="action-primary" onClick={onOpenLesson}>
+      {stage.index?"Continue":"Begin"} <span className="caret" aria-hidden="true">→</span>
+     </button>
+     <span className="dim mono">{lesson.duration} min · {stage.names[stage.index]}</span>
     </div>
 
-    <div className="progressRing" role="img" aria-label={`${percent}% of the course complete`}>
-     <svg viewBox="0 0 120 120">
-      <circle className="ringTrack" cx="60" cy="60" r="52"/>
-      <circle
-       className="ringValue"
-       cx="60" cy="60" r="52"
-       style={{strokeDasharray:RING,strokeDashoffset:RING-(RING*percent)/100}}
-      />
-     </svg>
-     <div className="ringLabel">
-      <b className="mono">{percent}<i>%</i></b>
-      <span className="eyebrow">Complete</span>
-     </div>
+    <div className="lede-meter rise d4">
+     <div className="meter"><span style={{width:`${percent}%`}}/></div>
+     <span className="label">{completed} of {lesson.total} passed</span>
     </div>
    </header>
 
-   <section className="homeFocus">
-    <article className="card lit homeLesson rise d1">
-     <div className="homeLessonTop">
-      <span className="chip accent">Next lesson</span>
-      <span className="chip mono">{lesson.duration} min</span>
-     </div>
-     <span className="eyebrow">Unit {lesson.unit} · Lesson {lesson.index+1} of {lesson.total}</span>
-     <h2>{lesson.title}</h2>
-     <p className="muted">{lesson.outcome}</p>
-
-     <ol className="stageRail" aria-label="Lesson stages">
-      {stage.names.map((name,index)=>(
-       <li key={name} className={index<stage.index?"done":index===stage.index?"active":""}>
-        <i aria-hidden="true">{index<stage.index?"✓":index+1}</i>
-        <span>{name}</span>
-       </li>
-      ))}
-     </ol>
-
-     <button className="btn primary sheen homeLessonGo" onClick={onOpenLesson}>
-      {stage.index?"Continue lesson":"Start lesson"} <span className="arrow">→</span>
+   <section className="band reveal">
+    <div className="band-head">
+     <h2 className="label">Today</h2>
+     <button className="action action-quiet" onClick={onOpenLesson}>
+      Open lesson <span className="caret" aria-hidden="true">→</span>
      </button>
-    </article>
-
-    <aside className="card homeHandsFree rise d2">
-     <div className="orb" aria-hidden="true"><Icon name="practice"/><i/><i/><i/></div>
-     <span className="eyebrow">Hands-free practice</span>
-     <h2>Touch once. Keep both hands on the bass.</h2>
-     <p className="muted">
-      Choose the time and blocks before you begin. Spoken cues, timers,
-      corrections and transitions then run automatically.
-     </p>
-     <ul className="ticks">
-      <li>Choose 10, 25, 45 or 90 minutes</li>
-      <li>Skip any block before starting</li>
-      <li>Live listening and automatic feedback</li>
-     </ul>
-     <button className="btn" onClick={()=>goToView("practice")}>
-      Set up a routine <span className="arrow">→</span>
-     </button>
-    </aside>
-   </section>
-
-   <section className="homeSection reveal">
-    <header className="sectionHead">
-     <div>
-      <span className="eyebrow">How today's lesson flows</span>
-      <h2>Four blocks, one clear finish line.</h2>
-     </div>
-     <button className="btn ghost" onClick={onOpenLesson}>Open lesson <span className="arrow">→</span></button>
-    </header>
-    <ol className="flowTrack">
-     {flow.map((block,index)=>{
-      const state=index===flowPosition?"current":index<flowPosition?"done":"later";
-      return (
-       <li key={block.n} className={`card flowBlock ${state}`}>
-        <div className="flowTop">
-         <i className="mono">{block.n}</i>
-         <span>{block.name}</span>
-         <b className="mono">{block.minutes} min</b>
-        </div>
-        <p className="muted">{block.task}</p>
-        <span className={`chip ${state==="current"?"accent":""}`}>
-         {state==="current"?"Up next":state==="done"?"Done":"Later"}
+    </div>
+    <ol className="rows stagger">
+     {flow.map((block,index)=>(
+      <li key={block.n}>
+       <button
+        className={`row flow-row ${index===here?"is-current":""} ${index<here?"is-done":""}`}
+        onClick={onOpenLesson}
+       >
+        <span className="figure row-n">{block.n}</span>
+        <span className="row-main">
+         <b>{block.name}</b>
+         <small className="dim">{block.task}</small>
         </span>
-       </li>
-      );
-     })}
+        <span className="row-end mono dim">{block.minutes}m</span>
+       </button>
+      </li>
+     ))}
     </ol>
    </section>
 
-   <section className="homeSection reveal">
-    <header className="sectionHead">
-     <div>
-      <span className="eyebrow">Quick start</span>
-      <h2>Go straight to the work you need.</h2>
-     </div>
-    </header>
-    <div className="quickGrid">
-     {QUICK.map(item=>(
-      <button key={item.view} className="card interactive lit quickTile" onClick={()=>goToView(item.view)}>
-       <Icon name={item.icon}/>
-       <span><b>{item.title}</b><small>{item.blurb}</small></span>
-       <em className="arrow" aria-hidden="true">→</em>
-      </button>
+   <section className="band reveal">
+    <h2 className="label band-head">Elsewhere</h2>
+    <ol className="rows stagger">
+     {ELSEWHERE.map(item=>(
+      <li key={item.view}>
+       <button className="row" onClick={()=>goToView(item.view)}>
+        <span className="row-icon"><Icon name={item.icon}/></span>
+        <span className="row-main">
+         <b>{item.label}</b>
+         <small className="dim">{item.note}</small>
+        </span>
+        <span className="caret row-end dim" aria-hidden="true">→</span>
+       </button>
+      </li>
      ))}
-    </div>
+    </ol>
    </section>
 
-   <section className="homeSection reveal">
-    <header className="sectionHead">
-     <div>
-      <span className="eyebrow">Your course</span>
-      <h2>Six connected units.</h2>
-     </div>
-     <button className="btn ghost" onClick={()=>goToView("roadmap")}>
-      See all {lesson.total} lessons <span className="arrow">→</span>
+   <section className="band reveal">
+    <div className="band-head">
+     <h2 className="label">The course</h2>
+     <button className="action action-quiet" onClick={()=>goToView("roadmap")}>
+      All {lesson.total} lessons <span className="caret" aria-hidden="true">→</span>
      </button>
-    </header>
-    <div className="unitGrid">
+    </div>
+    <ol className="rows stagger">
      {units.map(unit=>{
       const total=unit.range[1]-unit.range[0]+1;
       const done=Math.max(0,Math.min(total,completed-unit.range[0]));
       const locked=unit.range[0]>completed;
-      const state=unit.n===lesson.unit?"active":done===total?"complete":locked?"locked":"";
       return (
-       <button
-        key={unit.n}
-        className={`card interactive unitCard ${state}`}
-        style={{"--accent":`var(--unit-${unit.n})`} as React.CSSProperties}
-        onClick={()=>{if(!locked)onOpenUnit(Math.max(unit.range[0],Math.min(completed,unit.range[1])))}}
-        disabled={locked}
-        aria-label={`Unit ${unit.n}: ${unit.title}. ${done} of ${total} lessons complete.${locked?" Locked.":""}`}
-       >
-        <div className="unitTop">
-         <i aria-hidden="true">{done===total?"✓":unit.n}</i>
-         <em className="mono">{done}/{total}</em>
-        </div>
-        <b>{unit.title}</b>
-        <small>{unit.subtitle}</small>
-        <div className="meter"><span style={{width:`${(done/total)*100}%`}}/></div>
-       </button>
+       <li key={unit.n}>
+        <button
+         className={`row unit-row ${unit.n===lesson.unit?"is-current":""}`}
+         disabled={locked}
+         onClick={()=>{if(!locked)onOpenUnit(Math.max(unit.range[0],Math.min(completed,unit.range[1])))}}
+        >
+         <span className="figure row-n">{String(unit.n).padStart(2,"0")}</span>
+         <span className="row-main">
+          <b>{unit.title}</b>
+          <small className="dim">{unit.subtitle}</small>
+         </span>
+         <span className="unit-progress">
+          <span className="meter"><span style={{width:`${(done/total)*100}%`}}/></span>
+          <span className="mono dim">{done}/{total}</span>
+         </span>
+        </button>
+       </li>
       );
      })}
-    </div>
+    </ol>
    </section>
   </>
  );

@@ -1,0 +1,170 @@
+/**
+ * TRANSITIONAL — delete alongside the last old stylesheet.
+ *
+ * The original sheets drive their entire appearance from seventeen custom
+ * properties. Custom properties cascade on *definition* but resolve at *use*,
+ * so redefining them here — after every other sheet — repoints all of the
+ * not-yet-rebuilt views at the new language without editing a line of their CSS.
+ *
+ * Two of them (globals.css and redesign.css) also defined --bg, which was
+ * silently overwriting the new ground. That is corrected here too.
+ *
+ * The important mapping is --panel: the old design put almost everything in a
+ * filled, bordered panel. Pointing those fills at transparent dissolves the
+ * boxes and leaves the content sitting on the same single plane as the rebuilt
+ * screens, which is the whole point of the new language.
+ */
+
+:root{
+ /* globals.css and redesign.css both define --bg, and both load after the token
+    file, so it has to be re-asserted here or the ground reverts to #0d0f14.
+    The cream theme still wins over this: :root[data-theme="cream"] carries an
+    attribute selector and therefore outranks a bare :root. */
+ --bg:#08080a;
+
+ /* Every other legacy variable is expressed in terms of the new tokens rather
+    than a literal, so the whole legacy surface follows the theme. */
+ --panel:transparent;
+ --panel2:var(--wash);
+ --surface-soft:transparent;
+ --surface-raised:var(--wash);
+
+ /* Borders become hairline separators. */
+ --line:var(--rule);
+
+ /* Text steps map onto the new four-level scale. */
+ --text:var(--ink);
+ --muted:var(--ink-3);
+
+ /* The old palette had four competing accent hues. They all collapse onto the
+    single accent, except where a colour genuinely carried state. */
+ --lime:var(--accent);
+ --violet:var(--accent);
+ --blue:var(--ink-3);
+ --red:var(--wrong);
+
+ /* One radius family instead of 11px/12px/13px/14px/15px/17px/18px/24px. */
+ --radius-md:.5rem;
+ --radius-lg:.5rem;
+ --radius-xl:.75rem;
+
+ /* Nothing floats, so nothing casts. */
+ --shadow:none;
+
+ --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+ --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+
+/**
+ * The old sheets also hard-code colours and decoration that no variable
+ * controls. These rules dissolve the remaining boxes structurally, scoped to
+ * legacy screens so nothing rebuilt is affected.
+ */
+
+.page>.osScreen{padding:0;max-width:none;margin:0;width:100%}
+
+/* Strip the panel treatment from legacy blocks: no fill, no border box, no
+   shadow. What remains is spacing, which is what should have separated them. */
+/* Many legacy rules hard-code the panel hex rather than reading the variable,
+   so the fill has to be removed structurally as well. Only the block-level
+   containers are cleared — anything deeper may be carrying real state. */
+.page .osScreen section,
+.page .osScreen article,
+.page .osScreen aside,
+.page .osScreen>div,
+.page .osScreen>div>div{
+ background:transparent;
+ box-shadow:none;
+}
+
+/* What used to be a panel edge becomes a separator. */
+.page .osScreen section,
+.page .osScreen article,
+.page .osScreen aside{
+ border-color:var(--rule);
+}
+
+/* Type inside legacy screens picks up the new scale. */
+.page .osScreen h1{font-size:var(--t-h1);font-weight:500;letter-spacing:var(--track-display)}
+.page .osScreen h2{font-size:var(--t-h2);font-weight:540;letter-spacing:-.02em}
+.page .osScreen h3{font-size:var(--t-h3);font-weight:600}
+.page .osScreen p{color:var(--ink-2)}
+.page .osScreen small{color:var(--ink-3)}
+
+/* The recurring "eyebrow" span at the head of a legacy block. */
+.page .osScreen>div>span:first-child,
+.page .osScreen header>span:first-child,
+.page .osScreen section>span:first-child,
+.page .osScreen article>span:first-child{
+ font-size:var(--t-micro);
+ font-weight:500;
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ color:var(--ink-4);
+}
+
+/* Legacy buttons adopt the single action style. */
+.page .osScreen button{
+ border-radius:var(--r-control);
+ transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease),border-color var(--t-base) var(--ease);
+}
+
+/* Legacy screens set their own intro block; give it the same rhythm as the
+   rebuilt statement rather than a competing one. */
+.page .osScreen>.screenIntro{
+ display:flex;
+ flex-direction:column;
+ gap:var(--s4);
+ padding:0 0 var(--s6);
+ border:0;
+ background:none;
+}
+
+/**
+ * Legacy controls hard-code an olive-tinted chrome (#191e16, #20231c, #30342a)
+ * from the original palette, which reads as a different product next to the new
+ * near-black. Controls are allowed to keep a fill — a select should look
+ * pressable — but it has to be the new one.
+ */
+.page .osScreen select,
+.page .osScreen input:not([type="range"]):not([type="checkbox"]),
+.page .osScreen textarea{
+ background:var(--wash);
+ border:1px solid var(--rule);
+ border-radius:var(--r-control);
+ color:var(--ink);
+}
+.page .osScreen select:hover,
+.page .osScreen input:hover{border-color:var(--rule-strong)}
+.page .osScreen option{background:var(--bg-lift)}
+.page .osScreen input[type="range"]{accent-color:var(--accent)}
+
+/* Small inline markers: counters, pips, tally marks. */
+.page .osScreen i:not([class]),
+.page .osScreen u:not([class]),
+.page .osScreen em:not([class]){background:var(--wash);color:var(--ink-2)}
+
+/* Legacy buttons that are not the primary action sit flat until hovered. */
+.page .osScreen button:not(.mega):not(.coursePrimary):not(.primaryAction){
+ background:transparent;
+ border-color:var(--rule);
+}
+.page .osScreen button:not(.mega):not(.coursePrimary):not(.primaryAction):hover{
+ background:var(--wash);
+ border-color:var(--rule-strong);
+}
+.page .osScreen button.active,
+.page .osScreen button[aria-pressed="true"]{
+ background:var(--accent-wash);
+ border-color:color-mix(in oklab,var(--accent) 45%,transparent);
+ color:var(--ink);
+}
+
+/* An empty class attribute still matches [class], so the earlier :not([class])
+   guard skipped markers written as <i className={...}> with a falsy value. */
+.page .osScreen i,
+.page .osScreen u{background:var(--wash);color:var(--ink-2)}
+
+/* Legacy warning copy keeps its meaning but moves onto the new warn hue. */
+.page .osScreen .warn,
+.page .osScreen p.warn{background:color-mix(in oklab,var(--warn) 10%,transparent);color:var(--warn)}

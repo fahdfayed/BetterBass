@@ -1,5 +1,5 @@
 export type SpeechSettings={enabled:boolean;rate:number};
-type SpeakOptions={interrupt?:boolean;lang?:"en-US"|"ar-EG";rate?:number};
+type SpeakOptions={interrupt?:boolean;rate?:number};
 
 const STORAGE_KEY="basslab-speech-v2";
 const SETTINGS_EVENT="basslab-speech-settings";
@@ -75,13 +75,13 @@ export function speakCoach(message:string,options:SpeakOptions={}){
  if(!settings.enabled)return Promise.resolve(false);
  const id=++requestId,interrupt=options.interrupt??true;
  return (async()=>{
-  const synth=window.speechSynthesis,arabic=(options.lang||window.localStorage.getItem("basslab-language"))==="ar-EG",lang=arabic?"ar-EG":"en-US";
-  const spoken=arabic?(await import("./egyptian-translator")).toEgyptianArabic(message):message,text=spoken.replace(/[–—]/g," ").replace(/\s+/g," ").trim();
+  const synth=window.speechSynthesis,lang="en-US";
+  const text=message.replace(/[–—]/g," ").replace(/\s+/g," ").trim();
   const voices=await loadedVoices(synth);
   if(id!==requestId)return false;
   if(interrupt){synth.cancel();await new Promise(resolve=>window.setTimeout(resolve,55));if(id!==requestId)return false}
   const utterance=new SpeechSynthesisUtterance(text),voice=voiceFor(lang,voices);
-  utterance.lang=lang;utterance.rate=options.rate??settings.rate;utterance.pitch=arabic ? .96 : .92;utterance.volume=1;if(voice)utterance.voice=voice;
+  utterance.lang=lang;utterance.rate=options.rate??settings.rate;utterance.pitch=.92;utterance.volume=1;if(voice)utterance.voice=voice;
   utterance.onstart=()=>emitStatus(true);
   utterance.onend=()=>{if(id===requestId)emitStatus(false)};
   utterance.onerror=event=>{if(!["canceled","interrupted"].includes(event.error))console.warn("Bass Lab voice error:",event.error);if(id===requestId)emitStatus(false)};

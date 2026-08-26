@@ -42,7 +42,15 @@ export default function WorldMap({territories,lessonTitles,currentLesson,onOpenL
     <svg className="mapCanvas" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
      {territories.slice(0,-1).map((from,index)=>{
       const to=territories[index+1];
-      return <path key={from.id} className={`mapLink ${to.unlocked?"open":"locked"}`} d={link(from,to)}/>;
+      return (
+       <path
+        key={from.id}
+        className={`mapLink ${to.unlocked?"open":"locked"}`}
+        d={link(from,to)}
+        pathLength={1}
+        style={{animationDelay:`${180+index*160}ms`}}
+       />
+      );
      })}
     </svg>
 
@@ -53,7 +61,11 @@ export default function WorldMap({territories,lessonTitles,currentLesson,onOpenL
        <li
         key={territory.id}
         className={`mapNode ${state} ${open===territory.id?"selected":""}`}
-        style={{left:`${territory.x}%`,top:`${territory.y}%`,"--accent":`var(--unit-${territory.id})`} as React.CSSProperties}
+        style={{
+         left:`${territory.x}%`,top:`${territory.y}%`,
+         "--accent":`var(--unit-${territory.id})`,
+         animationDelay:`${140+(territory.id-1)*140}ms`,
+        } as React.CSSProperties}
        >
         <button
          onClick={()=>setOpen(territory.id)}
@@ -93,7 +105,7 @@ export default function WorldMap({territories,lessonTitles,currentLesson,onOpenL
      </header>
 
      {selected.unlocked
-      ? <ol className="missionList">
+      ? <ol className="missionList stagger" key={selected.id}>
          {Array.from({length:selected.total},(_,offset)=>{
           const index=selected.range[0]+offset;
           const isPassed=offset<selected.done;

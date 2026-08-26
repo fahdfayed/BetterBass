@@ -1,0 +1,470 @@
+/**
+ * Hand-tuned corrections for the screens that have not been rebuilt yet.
+ *
+ * Each block below is one view, worked through by eye rather than by a blanket
+ * rule — the automated passes could not tell a decorative frame from a
+ * functional one. As a view is properly rebuilt its block here is deleted.
+ *
+ * The pattern in every case is the same: a frame becomes a rule, a fill becomes
+ * air, and a second accent hue collapses onto the single one.
+ */
+
+/* ========================================================== Arabic maqam == */
+
+/* Sections were panels with gold or teal frames. They become bands separated by
+   a single rule, like every rebuilt screen. */
+.maqamPrinciple,
+.maqamProfile,
+.maqamNextStep{
+ border:0 !important;
+ border-top:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:var(--s6) 0 0 !important;
+}
+.maqamNextStep{border-top-color:color-mix(in oklab,var(--accent) 45%,transparent) !important}
+
+/* The tab strip was a rounded, framed pill bar. Now it is a line of labels with
+   the active one underlined — the same treatment as the lesson stage rail. */
+.maqamTabs{
+ border:0 !important;
+ border-bottom:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:0 !important;
+ gap:var(--s6) !important;
+ overflow-x:auto;
+ scrollbar-width:none;
+}
+.maqamTabs::-webkit-scrollbar{display:none}
+.maqamTabs button{
+ position:relative;
+ border:0 !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:0 0 var(--s3) !important;
+ color:var(--ink-4) !important;
+ white-space:nowrap;
+}
+.maqamTabs button:hover{color:var(--ink-2) !important}
+.maqamTabs button.active{color:var(--ink) !important}
+.maqamTabs button.active::after{
+ content:"";
+ position:absolute;
+ left:0;bottom:-1px;
+ width:100%;height:1px;
+ background:var(--accent);
+ animation:tabMark var(--t-base) var(--ease-out) both;
+}
+
+/* The control bar was a filled slab. It becomes a strip bounded by rules. */
+.maqamControlBar{
+ border:0 !important;
+ border-block:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:var(--s4) 0 !important;
+}
+
+/* Inner blocks: hairline separation instead of frames. */
+.maqamProfile article,
+.maqamPrinciple article,
+.maqam article{
+ border:0 !important;
+ border-top:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:var(--s4) 0 !important;
+}
+.maqamProfile article:first-of-type,
+.maqamPrinciple article:first-of-type{border-top:0 !important;padding-top:0 !important}
+
+/* The aside carried a gold frame; a single left rule says the same thing. */
+.page aside{
+ border:0 !important;
+ border-left:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ padding-left:var(--s5) !important;
+}
+
+/* Maqam's gold was a second accent. There is only one now. */
+.maqamNextStep b,
+.maqamNextStep strong,
+.maqamProfile b{color:var(--accent) !important}
+
+/* Buttons throughout the maqam lab were framed chips. They become flat controls
+   that light on hover, with the active one carrying the accent — scoped to the
+   lab root so the rebuilt vocabulary elsewhere is untouched. */
+.maqamLab button:not(.action):not(.action-primary){
+ border:0 !important;
+ border-radius:var(--r-control) !important;
+ background:none !important;
+ color:var(--ink-3) !important;
+ transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
+}
+.maqamLab button:not(.action):not(.action-primary):hover{
+ color:var(--ink) !important;
+ background:var(--wash) !important;
+}
+.maqamLab button.active:not(.action){
+ color:var(--accent) !important;
+ background:var(--accent-wash) !important;
+}
+
+/* The lab's gold second accent, wherever it survived as a literal. */
+.maqamLab [style*="#d6a84a"],
+.maqamLab [style*="#c8a24a"]{color:var(--accent) !important}
+
+/**
+ * The lab carries its own scoped palette — gold, a second gold and a teal — used
+ * 66 times between them. Repointing those three at the single accent converts
+ * the whole view at once, and keeps the distinctions they were drawing (a
+ * microtonal marker still reads differently from body text) rather than
+ * flattening them away.
+ */
+.maqamLab{
+ --mq-gold:var(--accent);
+ --mq-gold2:color-mix(in oklab,var(--accent) 72%,white);
+ --mq-teal:var(--ink-3);
+ --mq-line:var(--rule);
+ --mq-panel:transparent;
+ --mq-ink:var(--bg);
+ --mq-wine:var(--warn);
+}
+
+/* ======================================================= Practice studio == */
+
+/* This view had already picked up the new rule colour, so only the frames
+   themselves were left. Blocks become bands; the two tab strips become
+   underlines; controls go flat. */
+.guidedDay,
+.dayContext,
+.practiceConsole,
+.beastBodyCheck,
+.practiceControlBar,
+.tempoLadderBeast,
+.stateModel,
+.sessionRowCard,
+.errorDock,
+.blockExecutionFlow{
+ border:0 !important;
+ border-top:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:var(--s6) 0 0 !important;
+}
+/* The control bar reads as a strip, closed on both sides. */
+.practiceControlBar{
+ border-block:1px solid var(--rule) !important;
+ padding:var(--s4) 0 !important;
+}
+
+/* Segmented switch and section tabs: labels on a line, active one underlined. */
+.practiceTrackSwitch,
+.beastSections{
+ border:0 !important;
+ border-bottom:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:0 !important;
+ gap:var(--s6) !important;
+ overflow-x:auto;
+ scrollbar-width:none;
+}
+.practiceTrackSwitch::-webkit-scrollbar,
+.beastSections::-webkit-scrollbar{display:none}
+.practiceTrackSwitch button,
+.beastSections button{
+ position:relative;
+ border:0 !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:0 0 var(--s3) !important;
+ color:var(--ink-4) !important;
+ white-space:nowrap;
+}
+.practiceTrackSwitch button:hover,
+.beastSections button:hover{color:var(--ink-2) !important}
+.practiceTrackSwitch button.active,
+.beastSections button.active,
+.practiceTrackSwitch button[aria-pressed="true"]{color:var(--ink) !important}
+.practiceTrackSwitch button.active::after,
+.beastSections button.active::after,
+.practiceTrackSwitch button[aria-pressed="true"]::after{
+ content:"";
+ position:absolute;
+ left:0;bottom:-1px;
+ width:100%;height:1px;
+ background:var(--accent);
+ animation:tabMark var(--t-base) var(--ease-out) both;
+}
+
+/* Remaining controls in the studio. */
+.beastPractice button:not(.action):not(.action-primary):not(.mega),
+.practiceConsole button:not(.action):not(.action-primary){
+ border:0 !important;
+ border-radius:var(--r-control) !important;
+ background:none !important;
+ color:var(--ink-3) !important;
+}
+.beastPractice button:not(.action):not(.action-primary):hover,
+.practiceConsole button:not(.action):not(.action-primary):hover{
+ color:var(--ink) !important;
+ background:var(--wash) !important;
+}
+.beastPractice button.complete,
+.practiceConsole button.complete{color:var(--done) !important}
+
+/* ================================== Progress · Slap · Coach · Labs · Games */
+
+/* Every one of these follows the shape already proven on maqam and practice:
+   a framed hero, framed article blocks and framed buttons. Named individually
+   rather than matched by a wildcard, so a frame that turns out to be load
+   bearing can be put back one line at a time. */
+
+.progressHero,
+.slapHero,
+.coachHero,
+.rescueGame,
+.calStats,
+.pipeline,
+.coachControlStrip,
+.freedomMini,
+.sessionStrip,
+.weakness,
+.todayHero,
+.diagnosticFlow,
+.juryResult,
+.habitEvidence,
+.routineBuilder,
+.passageLayout{
+ border:0 !important;
+ border-top:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:var(--s6) 0 0 !important;
+}
+
+/* Strips read as bounded on both edges rather than as slabs. */
+.coachControlStrip,
+.calStats{
+ border-block:1px solid var(--rule) !important;
+ padding:var(--s4) 0 !important;
+}
+
+/* Article blocks inside those screens: hairline separated, not framed. */
+.progressHero article,
+.slapHero article,
+.coachHero article,
+.rescueGame article,
+.pipeline>div,
+.freedomMini article,
+.sessionStrip article,
+.page .osScreen>div>article,
+.page .osScreen section>article{
+ border:0 !important;
+ border-top:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:var(--s4) 0 !important;
+}
+
+/* Controls across the remaining legacy screens. .mega and the course primaries
+   stay filled — they are the one action per screen. */
+.page .osScreen button:not(.mega):not(.coursePrimary):not(.primaryAction):not(.action):not(.action-primary),
+.slapLab button:not(.action):not(.action-primary),
+.performanceCoach button:not(.action):not(.action-primary),
+.ghostButton{
+ border:0 !important;
+ border-radius:var(--r-control) !important;
+ background:none !important;
+ color:var(--ink-3) !important;
+ transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
+}
+.page .osScreen button:not(.mega):not(.coursePrimary):not(.primaryAction):not(.action):not(.action-primary):hover,
+.slapLab button:not(.action):not(.action-primary):hover,
+.performanceCoach button:not(.action):not(.action-primary):hover,
+.ghostButton:hover{
+ color:var(--ink) !important;
+ background:var(--wash) !important;
+}
+.page .osScreen button.active,
+.slapLab button.active,
+.performanceCoach button.active{
+ color:var(--accent) !important;
+ background:var(--accent-wash) !important;
+}
+
+/* The one filled action per legacy screen keeps its weight, on the new accent. */
+.page .osScreen button.mega,
+.page .osScreen button.coursePrimary,
+.page .osScreen button.primaryAction{
+ border:0 !important;
+ border-radius:var(--r-pill) !important;
+ background:var(--accent) !important;
+ color:var(--accent-ink) !important;
+}
+
+/* ============================ Theory · Fretboard · Band · Outside · Live == */
+
+/* The layer revealed once the outer frames came off. Same treatment. */
+.theoryCoverage,
+.theoryChapter,
+.runtimeHero,
+.progressionBuilder,
+.referenceExercises,
+.hfBuilder,
+.hfTimingControls,
+.hfBandStyle,
+.hfIntro,
+.hfChordRail,
+.hfVoiceLeading,
+.hfNoteTutor,
+.hfMapControls,
+.hfVoiceGrid,
+.hfArabic,
+.gps,
+.slapNextStep,
+.slapSafety,
+.abilities,
+.exerciseStage,
+.takeAnalysis,
+.coachBlocks{
+ border:0 !important;
+ border-top:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:var(--s6) 0 0 !important;
+}
+
+/* Control clusters read as strips. */
+.hfTimingControls,
+.hfMapControls,
+.hfBandStyle{
+ border-block:1px solid var(--rule) !important;
+ padding:var(--s4) 0 !important;
+}
+
+/* Tab strips: underline the active one, like every other tab strip. */
+.labTabs{
+ border:0 !important;
+ border-bottom:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:0 !important;
+ gap:var(--s6) !important;
+}
+.labTabs button{
+ position:relative;
+ border:0 !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:0 0 var(--s3) !important;
+ color:var(--ink-4) !important;
+}
+.labTabs button:hover{color:var(--ink-2) !important}
+.labTabs button.active{color:var(--ink) !important}
+.labTabs button.active::after{
+ content:"";
+ position:absolute;left:0;bottom:-1px;width:100%;height:1px;
+ background:var(--accent);
+ animation:tabMark var(--t-base) var(--ease-out) both;
+}
+
+/* Tables keep their scroll container but lose the frame; the header rule
+   already separates them from what is above. */
+.theoryTableWrap{border:0 !important;border-radius:0 !important;background:none !important}
+
+/* The metronome pulse indicator is a dot, not a bordered box. */
+.pulse{border:0 !important;background:none !important}
+
+/* The last named frames. What remains after this is a handful of unnamed
+   wrappers, left alone deliberately: without a class there is no way to tell a
+   decorative frame from a structural one, and guessing is what broke this
+   before. They go when their view is properly rebuilt. */
+.theoryDictionaryIntro,
+.runtimeMissions,
+.hfBandMixer,
+.hfSounding{
+ border:0 !important;
+ border-top:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:var(--s6) 0 0 !important;
+}
+
+.theoryDictionaryTabs{
+ border:0 !important;
+ border-bottom:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:0 !important;
+ gap:var(--s6) !important;
+}
+.theoryDictionaryTabs button{
+ position:relative;
+ border:0 !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:0 0 var(--s3) !important;
+ color:var(--ink-4) !important;
+}
+.theoryDictionaryTabs button.active{color:var(--ink) !important}
+.theoryDictionaryTabs button.active::after{
+ content:"";
+ position:absolute;left:0;bottom:-1px;width:100%;height:1px;
+ background:var(--accent);
+ animation:tabMark var(--t-base) var(--ease-out) both;
+}
+
+/* ============================================================= Slap bass == */
+
+/* Same shape as maqam: a scoped palette the global remap never saw. */
+.slapLab{
+ --acid:var(--accent);
+ --orange:var(--warn);
+ --cyan:var(--ink-3);
+ /* Its own 1500px cap fought the workspace measure. */
+ max-width:none !important;
+}
+
+/* The hero's emphasised line was a highlighted slab. Emphasis is the accent. */
+.slapHero em{
+ background:none !important;
+ color:var(--accent) !important;
+ font-style:normal;
+}
+.slapHero{
+ border:0 !important;
+ border-radius:0 !important;
+ background:none !important;
+ padding:0 0 var(--s7) !important;
+ gap:var(--s7) !important;
+}
+
+/* The five-step rail is a real grid whose cells need their own padding. The
+   generic legacy article rule was stripping it, which collapsed each cell and
+   stacked the number on top of its label. */
+.slapFlowRail{
+ border:0 !important;
+ border-top:1px solid var(--rule) !important;
+ border-radius:0 !important;
+ margin-bottom:var(--s6) !important;
+}
+/* .page .osScreen>div>article in legacy-tokens is more specific, and !important
+   on both sides means specificity decides. Matching its weight and loading
+   later is what actually wins here. */
+.page .osScreen .slapFlowRail article{
+ padding:var(--s5) var(--s5) var(--s5) 0 !important;
+ border-top:0 !important;
+ border-right:1px solid var(--rule) !important;
+ background:none !important;
+}
+.page .osScreen .slapFlowRail article:last-child{border-right:0 !important}
+.page .osScreen .slapFlowRail article>b{color:var(--ink-4) !important}
+.page .osScreen .slapFlowRail article.done>b,
+.page .osScreen .slapFlowRail article.active>b{color:var(--accent) !important}
+
+/* The mastery-order list beside the hero. */
+.slapHero aside,
+.slapHero>div:last-child{border:0 !important;background:none !important;padding-left:var(--s6) !important}

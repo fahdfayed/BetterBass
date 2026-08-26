@@ -24,16 +24,16 @@
 .courseOs{background:transparent}
 
 /* Header controls carried over from the old topbar. */
-.headerSelects{display:flex;align-items:center;gap:var(--s-3)}
+.headerSelects{display:flex;align-items:center;gap:var(--s3)}
 .headerSelects label{display:flex;flex-direction:column;gap:2px}
 .headerSelects select{
  padding:.3rem .5rem;
  border:1px solid var(--line);
- border-radius:var(--r-sm);
- background:var(--surface-2);
+ border-radius:var(--r-control);
+ background:var(--wash);
  color:var(--text);
- font-size:var(--step--1);
+ font-size:var(--t-small);
  cursor:pointer;
 }
-.headerSelects select:hover{border-color:var(--line-strong)}
+.headerSelects select:hover{border-color:var(--rule-strong)}
 @media (max-width:60rem){.headerSelects{display:none}}

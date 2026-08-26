@@ -92,5 +92,5 @@ export default function NodeRuntimeShell({children}:{children:ReactNode}){
  },[apiBase,id,ready]);
 
  if(!ready)return <main className="nodeBoot" aria-live="polite"><i/><span>NODE · EXPRESS</span><h1>Loading your Bass Lab…</h1><p>Restoring this learner’s course, practice and performance state.</p></main>;
- return <><div data-no-translate className={`nodeRuntimeStatus ${status}`} role="status" aria-live="polite"><i/><span>NODE API</span><b>{status==="connecting"?"CONNECTING":status==="saving"?"SAVING":status==="offline"?"LOCAL FALLBACK":"SYNCED"}</b></div>{children}</>;
+ return <><div className={`nodeRuntimeStatus ${status}`} role="status" aria-live="polite"><i/><span>NODE API</span><b>{status==="connecting"?"CONNECTING":status==="saving"?"SAVING":status==="offline"?"LOCAL FALLBACK":"SYNCED"}</b></div>{children}</>;
 }
