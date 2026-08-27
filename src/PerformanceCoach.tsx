@@ -4,9 +4,9 @@
 import {useEffect,useMemo,useRef,useState} from "react";
 import {saveLearningState} from "./learning-storage";
 import {speakCoach,stopCoachSpeech} from "./speech";
+import {SHORT_NAMES as DEGREES} from "./theory/degrees";
 
 const NOTES=["C","C♯","D","E♭","E","F","F♯","G","A♭","A","B♭","B"];
-const DEGREES=["1","♭2","2","♭3","3","4","♯4/♭5","5","♭6","6","♭7","7"];
 const AXES=["HEAR","SEE","KNOW","PLAY","CREATE"] as const;
 type Axis=typeof AXES[number];
 type CoachTab="TODAY"|"ASSESS"|"EVIDENCE"|"HISTORY";

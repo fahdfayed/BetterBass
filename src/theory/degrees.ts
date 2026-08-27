@@ -99,6 +99,20 @@ export const readFormula=(formula:string):FormulaPiece[]=>
 export const degreeAt=(semitones:number):Degree=>
  DEGREES[((semitones%12)+12)%12];
 
+/**
+ * The compact label a fretboard, game or coach uses for a distance.
+ *
+ * The first spelling, except at the tritone, which has no single accepted
+ * name — writing only ♯4 or only ♭5 would pick a side the note does not take.
+ */
+export const shortName=(semitones:number):string=>{
+ const degree=degreeAt(semitones);
+ return degree.semitones===6?`${degree.names[0]}/${degree.names[1]}`:degree.names[0];
+};
+
+/** Those labels for one octave, root first. */
+export const SHORT_NAMES:string[]=Array.from({length:12},(_,i)=>shortName(i));
+
 const FLATS=["C","D♭","D","E♭","E","F","G♭","G","A♭","A","B♭","B"];
 
 /**

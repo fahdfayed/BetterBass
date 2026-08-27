@@ -4,7 +4,7 @@ import {DEGREE_NAMES,MODES,PITCH_NAMES,SCALE_LIBRARY} from "../src/harmony-fretb
 import {THEORY_DICTIONARIES,THEORY_DOMAINS} from "../src/bass-theory-data.ts";
 import {COURSE_LESSONS} from "../src/course-data.ts";
 import {JACO_EXERCISES} from "../src/tab/jaco-masterclass.ts";
-import {DEGREES,isDegreeFormula,semitonesOf} from "../src/theory/degrees.ts";
+import {DEGREES,isDegreeFormula,semitonesOf,SHORT_NAMES} from "../src/theory/degrees.ts";
 
 /**
  * Theory checks.
@@ -232,4 +232,26 @@ test("every scale formula on the site can be explained to a reader",()=>{
   assert.ok(isDegreeFormula(scale.formula),
    `${scale.id}: "${scale.formula}" contains a symbol the glossary cannot explain`);
  }
+});
+
+test("the compact degree labels agree with the glossary they come from",()=>{
+ // The fretboard, the games and the coach all label a distance the same way,
+ // and all three read it from the glossary rather than keeping a copy. Three
+ // copies is how one of them ends up disagreeing about a note.
+ assert.equal(SHORT_NAMES.length,12,"one label per semitone of the octave");
+
+ SHORT_NAMES.forEach((label,semitones)=>{
+  const degree=DEGREES[semitones];
+  for(const spelling of label.split("/")){
+   assert.ok(degree.names.includes(spelling),
+    `"${label}" offers ${spelling}, which is not a name for ${degree.label}`);
+   assert.equal(semitonesOf(spelling),semitones,
+    `${spelling} should be ${semitones} semitones above the root`);
+  }
+ });
+
+ // The tritone is the one distance with no single accepted spelling, so it is
+ // the one label that names both.
+ assert.equal(SHORT_NAMES.filter(l=>l.includes("/")).length,1);
+ assert.equal(SHORT_NAMES[6],"♯4/♭5");
 });

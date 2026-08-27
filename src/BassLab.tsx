@@ -9,10 +9,14 @@ import ThemeToggle from "./components/ThemeToggle";
 import CourseLibrary from "./views/CourseLibrary";
 import LessonWorkspace from "./views/LessonWorkspace";
 import LessonTools,{WORKSPACE_LABELS} from "./views/LessonTools";
+import ToolLibrary from "./views/ToolLibrary";
+import CourseProgress from "./views/CourseProgress";
+import TodaySession from "./views/TodaySession";
+import RescueGames from "./views/RescueGames";
 import {territoryStates} from "./game/progression";
 import {MODES} from "./harmony-fretboard-data";
 import Formula from "./components/Formula";
-import {degreeAt} from "./theory/degrees";
+import {degreeAt,SHORT_NAMES as DEG} from "./theory/degrees";
 import {goToView,navigate,pathForView,useRoute} from "./router";
 import {autoCorrelate,centsToNote,labelFor,midiHz,NOTE_NAMES,PITCH_MAX_HZ,PITCH_MIN_HZ,PITCH_RMS_GATE,tensionFor,type Harmony} from "./pitch";
 import {COURSE_LESSONS,COURSE_UNITS} from "./course-data";
@@ -28,7 +32,6 @@ const HarmonyFretboard=lazy(()=>import("./HarmonyFretboard"));
 const TheoryReference=lazy(()=>import("./TheoryReference"));
 
 const N=NOTE_NAMES;
-const DEG=["1","♭2","2","♭3","3","4","♯4/♭5","5","♭6","6","♭7","7"];
 const STRINGS=[{name:"E",open:4},{name:"A",open:9},{name:"D",open:2},{name:"G",open:7}];
 function courseRole(iv:number,character:number[]){if(iv===0)return "TONAL ANCHOR";if(character.includes(iv))return "DEFINING COLOUR";if(iv===3||iv===4)return "QUALITY TONE";if(iv===10||iv===11)return "CHORD FAMILY / DIRECTION";if(iv===7)return "STABLE SUPPORT";if(iv===1||iv===6||iv===8)return "ACTIVE TENSION";return "MODAL COLOUR / PATH"}
 function courseBehavior(iv:number,character:number[]){if(iv===0)return "Rest, repeat or receive the final resolution.";if(character.includes(iv))return "Expose against home; repeat selectively so its identity is heard.";if(iv===3||iv===4)return "State major or minor quality before adding decoration.";if(iv===10)return "Define the seventh-chord family; often descend or return to 1.";if(iv===11)return "Hear strong semitone pull upward into 1.";if(iv===7)return "Stabilize the line without defining major or minor by itself.";if(iv===1)return "Very exposed above home; duration and destination must be deliberate.";if(iv===6)return "Tritone pressure; context decides colour versus outside tension.";return "Connect structural tones, colour the harmony or develop a motif."}
@@ -49,14 +52,6 @@ const VIEW_META:Record<string,{eyebrow:string,title:string}>={
 };
 const NAV_ACTIVE:Record<string,string[]>={course:["course"],roadmap:["roadmap","courseLesson"],practice:["practice","today","live"],coach:["coach","adaptive"],maqam:["maqam"],slap:["slap"],tools:["tools","fret","runtime","engine","advanced","reference","games"],courseProgress:["courseProgress"]};
 
-function UiIcon({name}:{name:string}){
- const paths:Record<string,string[]>={
-  home:["M3 10.5 12 3l9 7.5","M5.5 9v12h13V9"],course:["M4 5.5c2.8-.9 5.4-.4 8 1.5v13c-2.6-1.9-5.2-2.4-8-1.5z","M20 5.5c-2.8-.9-5.4-.4-8 1.5v13c2.6-1.9 5.2-2.4 8-1.5z"],
-  practice:["M8 5.5v13l11-6.5z"],coach:["M3 12h3l2.2-5 3.6 10 2.7-7 2 4H21"],maqam:["M9 18V6l10-2v12","M9 18c0 1.4-1.6 2.5-3.5 2.5S2 19.4 2 18s1.6-2.5 3.5-2.5S9 16.6 9 18Z","M19 16c0 1.4-1.6 2.5-3.5 2.5S12 17.4 12 16s1.6-2.5 3.5-2.5S19 14.6 19 16Z"],
-  slap:["M13 2 5 13h6l-1 9 9-13h-6z"],library:["M4 4h6v6H4z","M14 4h6v6h-6z","M4 14h6v6H4z","M14 14h6v6h-6z"],progress:["M4 20V10","M10 20V4","M16 20v-7","M22 20H2"],
- };
- return <span className="navIcon" aria-hidden="true"><svg viewBox="0 0 24 24">{(paths[name]||paths.library).map((d,i)=><path d={d} key={i}/>)}</svg></span>
-}
 function ToolLoading(){return <div className="toolLoading" role="status"><i/><span>Opening your workspace…</span></div>}
 const outsideLevels=["Chromatic approach","Two-note enclosure","Chromatic passing run","½-beat side-slip","Two-beat side-slip","Outside motif","Semitone sequence","Outside pentatonic","Superimposed triad","Free controlled phrase"];
 const LESSONS=[
@@ -187,14 +182,6 @@ export default function BassLab(){
  const openCoachTool=(tool:string)=>{if(tool==="coach"){setView("coach");return}if(tool==="hear"){setExercise(0);setView("engine");return}if(tool==="listen"){setExercise(4);setView("engine");return}if(tool==="fret"){setView("fret");return}if(tool==="know"){setView("reference");return}if(tool==="create"){setView("advanced");return}if(tool==="practice"){setView("practice");return}setView(tool)};
  const pageMeta=VIEW_META[view]??{eyebrow:"BASS LAB",title:"Practice"};
  const showHarmonicControls=["courseLesson","coach","fret","runtime","engine","live","advanced","games","reference"].includes(view);
- const toolCards=[
-  {id:"runtime",icon:"practice",tag:"PLAY",title:"Backing band",desc:"Choose a style, tempo and progression, then practise over a responsive four-bar band."},
-  {id:"fret",icon:"course",tag:"SEE",title:"Harmony fretboard",desc:"See chord tones, modal colour and tension across the full neck in the current key."},
-  {id:"engine",icon:"coach",tag:"LISTEN",title:"Record and analyse",desc:"Let the site hear a take and explain timing, note function, tension and resolution."},
-  {id:"advanced",icon:"slap",tag:"CREATE",title:"Improvisation lab",desc:"Work on motifs, enclosures, side-slips, voice leading and deliberate outside playing."},
-  {id:"reference",icon:"library",tag:"UNDERSTAND",title:"Theory reference",desc:"Look up the exact concept you need without leaving the lesson or starting another course."},
-  {id:"adaptive",icon:"progress",tag:"PLAN",title:"Adaptive training plan",desc:"Turn your weakest key, skill and overdue review into one focused practice route."},
- ];
   const headerActions=<>
   {showHarmonicControls&&view!=="fret"&&<div className="head-selects">
    <label><span className="label">Key</span><select aria-label="Key centre" value={root} onChange={e=>{setRoot(+e.target.value);setChord(`${N[+e.target.value]}m7`)}}>{N.map((n,i)=><option value={i} key={n}>{n}</option>)}</select></label>
@@ -213,7 +200,8 @@ export default function BassLab(){
   actions={headerActions}
  >
 
- {view==="today"&&<div className="osScreen"><div className="todayHero"><div><span className="k">TUESDAY · ADAPTIVE SESSION 12</span><h1 data-page-heading tabIndex={-1}>TODAY’S<br/><em>SESSION</em></h1><p>Built from your weak modes, neglected keys, register bias and tension-control history—not from a fixed lesson order.</p><button className="mega" onClick={()=>{setView("live");startAudio()}}>START PRACTICE <b>→</b></button></div><div className="weakness"><span>PRIMARY BOTTLENECK</span><h2>Dorian → Mixolydian recognition</h2><div><b>67%</b><i><em style={{width:"67%"}}/></i></div><ul><li><span>Fretboard recall</span><b>Strong below 9 / weak above 12</b></li><li><span>Chromatic groove</span><b className="warn">Needs work</b></li><li><span>Outside-note control</span><b>67%</b></li><li><span>Practice debt</span><b>Phrygian · E♭ · 5/4</b></li></ul></div></div><div className="sessionStrip">{plan.map((x,i)=><article key={x.t}><span>{String(i+1).padStart(2,'0')}</span><div><small>{x.tag} · {x.m} MIN</small><b>{x.t}</b><p>{x.d}</p></div><button>↗</button></article>)}</div><div className="freedomMini"><div><span>FREEDOM SCORE</span><h3>Tension-aware player</h3><p>Next threshold: free improviser</p></div>{["HEAR","SEE","KNOW","PLAY","CREATE"].map((x,i)=><div key={x}><b>{freedom[i]}</b><span>{x}</span><i><em style={{height:`${freedom[i]}%`}}/></i></div>)}</div></div>}
+ {view==="today"&&<TodaySession plan={plan} freedom={freedom}
+  onStart={()=>{setView("live");startAudio()}}/>}
 
  {view==="adaptive"&&<div className="osScreen"><div className="screenIntro"><span>PHASE 4 · PERSONAL CURRICULUM ENGINE</span><h1 data-page-heading tabIndex={-1}>Train the player<br/>who showed up.</h1><p>The curriculum preserves the manual’s 28-week spine, but today’s route is rebuilt from current evidence: recorded takes, neglected keys, mastery decay, recurring habits and jury scores.</p></div>{!adaptiveReady?<div className="diagnosticFlow"><div className="diagProgress"><span>BASELINE DIAGNOSTIC</span>{[0,1,2,3,4].map(i=><i className={i<diagStep?"done":i===diagStep?"active":""} key={i}/>)}</div><article><span>DOMAIN {diagStep+1} / 5 · {["HEAR","KNOW","SEE","PLAY","CREATE"][diagStep]}</span><h2>{["Can you identify function before seeing the fretboard?","Can you explain why tension resolves?","Can you locate functions across the entire neck?","Can you preserve time while harmony changes?","Can you create rather than run a memorized shape?"][diagStep]}</h2><p>{["An A drone sounds. Imagine ten random tones: identify inside/outside, interval and best destination.","Over Am7, classify D♯ as an approach, enclosure component, side-slip colour or unresolved tension according to context.","Find the ♭3, 6 and ♭7 of three random roots below fret 5 and above fret 12.","Play 16 bars: chord tones, modal colour, chromatic approach, then home—without changing the pocket.","Develop one three-note motif, displace it rhythmically, move it outside by semitone and resolve it."][diagStep]}</p><div className="diagChoices"><button onClick={()=>answerDiagnostic(45)}>NOT RELIABLE<small>Below 60%</small></button><button onClick={()=>answerDiagnostic(68)}>USABLE<small>60–75%</small></button><button onClick={()=>answerDiagnostic(82)}>STRONG<small>76–89%</small></button><button onClick={()=>answerDiagnostic(94)}>AUTOMATIC<small>90%+</small></button></div><small className="diagNote">Recorded Listening Engine evidence is blended into PLAY and CREATE. Self-report only establishes the initial baseline.</small></article></div>:<><div className="adaptiveOverview"><article className="computedFreedom"><span>COMPUTED FREEDOM SCORE</span><div>{["HEAR","SEE","KNOW","PLAY","CREATE"].map((x,i)=><div key={x}><b>{freedom[i]}</b><span>{x}</span><i><em style={{width:`${freedom[i]}%`}}/></i></div>)}</div><p>Primary bottleneck: <b>{["hearing function","full-neck visualization","harmonic explanation","execution under pressure","spontaneous creation"][freedom.indexOf(Math.min(...freedom))]}</b>. This receives the largest block today.</p></article><article className="readiness"><span>PLAYER STAGE</span><h2>{Math.min(...freedom)>85?"Free improviser":Math.min(...freedom)>72?"Inside / outside player":"Tension-aware player"}</h2><div><b>{Math.round(freedom.reduce((a,b)=>a+b,0)/5)}</b><small>OVERALL</small></div><p>Scores are calculated from diagnostic evidence, take analysis and cross-key transfer—not hours practiced.</p></article></div><div className="adaptGrid"><article className="practiceDebt"><span>PRACTICE DEBT · AUTO-SCHEDULED</span>{[["Phrygian recognition",reviewDays[0],74],["E♭ fretboard",reviewDays[1],58],["Enclosures",reviewDays[2],66],["5/4 pocket",reviewDays[3],49],["High register",reviewDays[4],43]].map((x,i)=><div key={x[0] as string}><span className={+x[1]>14?"urgent":""}>{x[1]}d</span><div><b>{x[0]}</b><i><em style={{width:`${x[2]}%`}}/></i></div><small>{+x[1]>14?"REVIEW DUE":"MAINTAIN"}</small></div>)}</article><article className="masteryLadder"><span>MASTERY IS NOT COMPLETE / INCOMPLETE</span>{[["Dorian colour","Automatic",96],["Chromatic approach","Musical",84],["Enclosures","Playable",72],["Side-slip","Understood",61],["Superimposition","Learned",43],["Free outside","Unknown",18]].map(x=><div key={x[0] as string}><b>{x[0]}</b><i><em style={{width:`${x[2]}%`}}/></i><span>{x[1]}</span></div>)}</article></div><div className="matrixBlock"><header><div><span>12-KEY MATRIX</span><h2>The truth about “I know this.”</h2></div><p>Outside-control transfer is strongest in A, G and C. F♯, D♭ and A♭ are automatically weighted into the next seven sessions.</p></header><div className="adaptiveMatrix">{N.map((n,i)=><button key={n} onClick={()=>{const m=[...keyMatrix];m[i]=Math.min(100,m[i]+3);setKeyMatrix(m)}}><b>{n}</b><span style={{opacity:.35+keyMatrix[i]/150}}>{keyMatrix[i]}</span><small>{keyMatrix[i]>=80?'STRONG':keyMatrix[i]>=60?'USABLE':'DEBT'}</small></button>)}</div></div><div className="antiHabit"><div><span>GROOVE DNA → ANTI-HABIT</span><h2>Break the patterns you hide inside.</h2><p>71% of phrases start on beat 1 · 63% begin on root · 84% of fills ascend · 79% E/A string bias.</p></div><label><input type="checkbox" checked={antiHabit} onChange={e=>setAntiHabit(e.target.checked)}/><i/><span>{antiHabit?"ACTIVE — comfort rules banned":"ACTIVATE ANTI-HABIT MODE"}</span></label></div><div className="adaptiveAction"><div><span>NEXT SESSION LOGIC</span><p>Weakest Freedom axis + weakest key + oldest debt + one anti-habit + five-minute boss fight.</p></div><button onClick={buildAdaptiveDay}>GENERATE TODAY FROM EVIDENCE →</button><button onClick={()=>{setAdaptiveReady(false);setDiagStep(0)}}>RETAKE DIAGNOSTIC</button></div></>}</div>}
 
@@ -226,7 +214,8 @@ export default function BassLab(){
  {view==="fret"&&<Suspense fallback={<ToolLoading/>}><HarmonyFretboard homeMode={mode} displayMode={fbView} fog={fog} selectedPc={picked} onSetRoot={setRoot} onSetMode={setMode} onSetChord={setChord} onDisplayMode={setFbView} onFog={setFog} onSelectPc={setPicked} onAudition={audition}/></Suspense>} 
 
 
- {view==="games"&&<div className="osScreen"><div className="screenIntro"><span>MISTAKE RECOVERY TRAINING</span><h1 data-page-heading tabIndex={-1}>Rescue the note.</h1><p>The computer gives you tension. Your job is to give it meaning. There is no penalty for leaving home—only for failing to return.</p></div><div className="rescueGame"><div className="forced"><span>HARMONY</span><b>{chord}</b><small>FORCED NOTE</small><h2>{N[rescueNote]}</h2><em>{DEG[(rescueNote-ri+12)%12]} · OUTSIDE</em></div><div className="choose"><span>PLAY OR CHOOSE YOUR RESOLUTION</span><h3>You get one note to rescue it.</h3><div>{N.map((n,i)=><button onClick={()=>rescueMove(i)} key={n}>{n}</button>)}</div><p className={lastRescue.startsWith('RECOVERED')?'success':''}>{lastRescue||`Try ${N[rescueNote]} → ?`}</p></div></div><div className="gameShelf">{["Note Location Sniper","Interval Sniper","Wrong Note Rescue","Target Note Landing","Enclosure Generator","Rhythm Before Notes","Fog of War","Daily Boss Fight"].map((x,i)=><article key={x}><span>{String(i+1).padStart(2,'0')}</span><b>{x}</b><p>{["Find any called pitch in under two seconds.","Hear the root; play the requested function.","Make a forced outside note sound deliberate.","Hit assigned notes on exact beats and bars.","Surround chord tones from above and below.","Build music before adding pitch choices.","Maps disappear as recall improves.","Three minutes. No help. No stopping."][i]}</p><button onClick={()=>launchGame(i)}>LAUNCH →</button></article>)}</div></div>}
+ {view==="games"&&<RescueGames chord={chord} root={ri} forced={rescueNote}
+  verdict={lastRescue} onRescue={rescueMove} onLaunch={launchGame}/>}
 
 
 
@@ -262,7 +251,7 @@ export default function BassLab(){
   onOpenUnit={openCourseLesson}
  />}
 
- {view==="tools"&&<div className="osScreen toolLibraryPage"><header><div><span>TOOL LIBRARY</span><h1 data-page-heading tabIndex={-1}>Find the right tool.<br/>Get back to playing.</h1><p>These are the same focused labs already inside the course, now organized by what you need to do.</p></div><button onClick={()=>setView("courseLesson")}>Return to current lesson <span>→</span></button></header><section className="toolLibraryGrid">{toolCards.map(tool=><button onClick={()=>setView(tool.id)} key={tool.id}><UiIcon name={tool.icon}/><span>{tool.tag}</span><h2>{tool.title}</h2><p>{tool.desc}</p><b>Open tool <i>→</i></b></button>)}</section><aside className="libraryHint"><UiIcon name="course"/><div><b>Not sure what to choose?</b><p>Return to the current lesson. It opens the correct tool at the moment you need it.</p></div><button onClick={()=>setView("courseLesson")}>Continue lesson</button></aside></div>}
+ {view==="tools"&&<ToolLibrary onOpen={setView}/>}
 
  {view==="courseLesson"&&<LessonWorkspace
   lesson={{index:courseIndex,total:COURSE_LESSONS.length,title:course.title,unit:course.unit,outcome:course.outcome,duration:course.duration}}
@@ -359,7 +348,10 @@ export default function BassLab(){
  {view==="maqam"&&<Suspense fallback={<ToolLoading/>}><MaqamLab livePitch={pitch} listening={listening} onToggleListening={startAudio}/></Suspense>} 
  {view==="slap"&&<Suspense fallback={<ToolLoading/>}><SlapLab livePitch={pitch} listening={listening} onToggleListening={startAudio} events={events}/></Suspense>} 
 
- {view==="courseProgress"&&<div className="osScreen courseProgressPage"><header><span>COURSE PROGRESS</span><h1 data-page-heading tabIndex={-1}>What can you<br/>actually do now?</h1><p>Progress is tied to passed performance standards, not browsing time.</p></header><section className="progressHero"><div><b>{coursePct}%</b><span>COURSE COMPLETE</span><i><em style={{width:`${coursePct}%`}}/></i></div><article><small>CURRENT POSITION</small><h2>Unit {course.unit}: {courseUnit.title}</h2><p>Lesson {courseIndex+1}: {course.title}</p><button onClick={()=>setView("courseLesson")}>CONTINUE COURSE →</button></article></section><div className="unitProgressList">{COURSE_UNITS.map(u=>{const total=u.range[1]-u.range[0]+1,done=Math.max(0,Math.min(total,courseCompleted-u.range[0]));return <article key={u.n}><i>{done===total?"✓":u.n}</i><div><small>UNIT {u.n}</small><b>{u.title}</b><span>{done}/{total} LESSONS</span><u><em style={{width:`${done/total*100}%`}}/></u></div></article>})}</div><section className="abilities"><span>EARNED ABILITIES</span>{["Establish home without overusing the root","Name intervals by function","State chord quality with structural tones","Control tension through rhythm and duration","Hear modal colour before touching the bass","Improvise a mode without running its scale","Follow guide tones through changing harmony","Leave the key and resolve deliberately"].map((x,i)=><div className={courseCompleted>i*3?"earned":""} key={x}><i>{courseCompleted>i*3?"✓":"·"}</i><span>{x}</span></div>)}</section></div>}
+ {view==="courseProgress"&&<CourseProgress
+  percent={coursePct} completed={courseCompleted} lessonIndex={courseIndex}
+  lessonTitle={course.title} unitNumber={course.unit} unitTitle={courseUnit.title}
+  onContinue={()=>setView("courseLesson")}/>}
 
  {view==="reference"&&<Suspense fallback={<ToolLoading/>}><TheoryReference root={root} onSetMode={setMode} onAudition={audition}/></Suspense>}
 
