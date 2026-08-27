@@ -199,20 +199,16 @@
  animation:tabMark var(--t-base) var(--ease-out) both;
 }
 
-/* Remaining controls in the studio. */
-.beastPractice button:not(.action):not(.action-primary):not(.mega),
-.practiceConsole button:not(.action):not(.action-primary){
+/* Remaining controls in the studio. */.practiceConsole button:not(.action):not(.action-primary){
  border:0 !important;
  border-radius:var(--r-control) !important;
  background:none !important;
  color:var(--ink-3) !important;
 }
-.beastPractice button:not(.action):not(.action-primary):hover,
 .practiceConsole button:not(.action):not(.action-primary):hover{
  color:var(--ink) !important;
  background:var(--wash) !important;
 }
-.beastPractice button.complete,
 .practiceConsole button.complete{color:var(--done) !important}
 
 /* ================================== Progress · Slap · Coach · Labs · Games */
@@ -269,36 +265,24 @@
  padding:var(--s4) 0 !important;
 }
 
-/* Controls across the remaining legacy screens. .mega and the course primaries
-   stay filled — they are the one action per screen. */
-.page .osScreen button:not(.mega):not(.coursePrimary):not(.primaryAction):not(.action):not(.action-primary),
-.slapLab button:not(.action):not(.action-primary),
-.performanceCoach button:not(.action):not(.action-primary),
-.ghostButton{
+/* Controls across the remaining legacy screens. .mega stays filled — it is the
+   one action on its screen. */.page .osScreen button:not(.mega):not(.action):not(.action-primary), .slapLab button:not(.action):not(.action-primary), .ghostButton{
  border:0 !important;
  border-radius:var(--r-control) !important;
  background:none !important;
  color:var(--ink-3) !important;
  transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
 }
-.page .osScreen button:not(.mega):not(.coursePrimary):not(.primaryAction):not(.action):not(.action-primary):hover,
-.slapLab button:not(.action):not(.action-primary):hover,
-.performanceCoach button:not(.action):not(.action-primary):hover,
-.ghostButton:hover{
+.page .osScreen button:not(.mega):not(.action):not(.action-primary):hover, .slapLab button:not(.action):not(.action-primary):hover, .ghostButton:hover{
  color:var(--ink) !important;
  background:var(--wash) !important;
 }
-.page .osScreen button.active,
-.slapLab button.active,
-.performanceCoach button.active{
+.page .osScreen button.active, .slapLab button.active{
  color:var(--accent) !important;
  background:var(--accent-wash) !important;
 }
 
-/* The one filled action per legacy screen keeps its weight, on the new accent. */
-.page .osScreen button.mega,
-.page .osScreen button.coursePrimary,
-.page .osScreen button.primaryAction{
+/* The one filled action per legacy screen keeps its weight, on the new accent. */.page .osScreen button.mega{
  border:0 !important;
  border-radius:var(--r-pill) !important;
  background:var(--accent) !important;
@@ -307,29 +291,7 @@
 
 /* ============================ Theory · Fretboard · Band · Outside · Live == */
 
-/* The layer revealed once the outer frames came off. Same treatment. */
-.theoryCoverage,
-.theoryChapter,
-.runtimeHero,
-.progressionBuilder,
-.referenceExercises,
-.hfBuilder,
-.hfTimingControls,
-.hfBandStyle,
-.hfIntro,
-.hfChordRail,
-.hfVoiceLeading,
-.hfNoteTutor,
-.hfMapControls,
-.hfVoiceGrid,
-.hfArabic,
-.gps,
-.slapNextStep,
-.slapSafety,
-.abilities,
-.exerciseStage,
-.takeAnalysis,
-.coachBlocks{
+/* The layer revealed once the outer frames came off. Same treatment. */.theoryCoverage, .theoryChapter, .runtimeHero, .progressionBuilder, .referenceExercises, .hfBuilder, .hfTimingControls, .hfBandStyle, .hfIntro, .hfChordRail, .hfVoiceLeading, .hfNoteTutor, .hfMapControls, .hfVoiceGrid, .gps, .slapNextStep, .slapSafety, .abilities, .exerciseStage, .takeAnalysis, .coachBlocks{
  border:0 !important;
  border-top:1px solid var(--rule) !important;
  border-radius:0 !important;
@@ -491,11 +453,7 @@
  padding-right:3.25rem !important;
 }
 
-/* Bottom-anchored card footers return to flow. */
-.page .osScreen button>b[style],
-.page .toolGrid button>b,
-.page .labGrid button>b,
-.page .hfModeSelect strong{
+/* Bottom-anchored card footers return to flow. */.page .osScreen button>b[style], .page .hfModeSelect strong{
  position:static !important;
  display:block;
  margin-top:var(--s3);

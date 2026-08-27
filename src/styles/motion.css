@@ -31,8 +31,6 @@
 .d2{animation-delay:120ms}
 .d3{animation-delay:180ms}
 .d4{animation-delay:240ms}
-.d5{animation-delay:300ms}
-.d6{animation-delay:360ms}
 
 /* ---- scroll reveal ---------------------------------------------------- */
 
@@ -54,7 +52,6 @@
  from{opacity:0;transform:translate3d(0,10px,0)}
  to{opacity:1;transform:translate3d(0,0,0)}
 }
-.viewEnter{animation:viewIn var(--t-slow) var(--ease-out) both}
 
 /* ---- ambient ---------------------------------------------------------- */
 
@@ -72,20 +69,8 @@
 
 .pulse{animation:pulseGlow 2.4s var(--ease) infinite}
 
-/* A light sweep across a surface, used on primary actions. Clipped by the host,
-   which must set its own overflow:hidden and position. */
-.sheen::after{
- content:"";
- position:absolute;
- inset:0;
- background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.14) 50%,transparent 80%);
- transform:translateX(-100%);
- pointer-events:none;
-}
-.sheen:hover::after{animation:shimmer 900ms var(--ease)}
-
 @media (prefers-reduced-motion:reduce){
  .reveal.revealArmed{opacity:1;transform:none}
- .sheen:hover::after{animation:none}
+
  .pulse{animation:none}
 }

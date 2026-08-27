@@ -2,8 +2,7 @@
 .tab{display:flex;flex-direction:column;gap:var(--s5)}
 .tabBar{display:flex;align-items:center;gap:var(--s5);flex-wrap:wrap;padding-bottom:var(--s4);border-bottom:1px solid var(--rule)}
 .tabPlay{min-width:7rem;justify-content:center}
-.tabSpeed{display:flex;align-items:center;gap:var(--s2)}
-.tabSpeed select{color:var(--ink);font-size:var(--t-small);cursor:pointer}
+
 .tabToggles{display:flex;gap:var(--s4);margin-left:auto}
 .tabToggle{font-size:var(--t-small);color:var(--ink-4);transition:color var(--t-base) var(--ease)}
 .tabToggle:hover{color:var(--ink-2)}
@@ -17,7 +16,7 @@
  font-size:var(--t-tiny);line-height:1;font-weight:500;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .tabLoading,.tabError{font-size:var(--t-small);color:var(--ink-3)}
 .tabError{color:var(--wrong)}
-.tabSource{font-family:var(--font-mono);font-size:var(--t-small);color:var(--ink-3);white-space:pre-wrap;padding:var(--s4) 0;border-top:1px solid var(--rule)}
+
 /* alphaTab renders onto a light surface by default; keep it readable on either ground. */
 .tabViewport .at-surface{background:transparent !important}
 

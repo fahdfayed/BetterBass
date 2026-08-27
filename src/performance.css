@@ -147,7 +147,7 @@
 .evidenceGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
 .debtBoard>div{display:grid;grid-template-columns:55px 1fr 60px;gap:12px;align-items:center;border-top:1px solid var(--line);padding:15px 0}
 .debtBoard>div>b{font:max(11px,0.6875rem) var(--mono);padding:7px;text-align:center;border:1px solid}
-.debtBoard>div>b.now{color:var(--red);border-color:#634037}.debtBoard>div>b.due{color:#d9b85c;border-color:#5b5338}.debtBoard>div>b.build{color:var(--violet);border-color:#50405e}
+.debtBoard>div>b.now{color:var(--red);border-color:#634037}.debtBoard>div>b.build{color:var(--violet);border-color:#50405e}
 .debtBoard p,.masteryBoard p{margin:0}.debtBoard strong,.debtBoard small,.masteryBoard b,.masteryBoard small{display:block}.debtBoard strong,.masteryBoard b{font-size:max(11px,0.6875rem)}.debtBoard small,.masteryBoard small{font:max(11px,0.6875rem) var(--mono);color:var(--ink-4);margin-top:5px}
 .debtBoard>div>em{font:max(11px,0.6875rem) var(--mono);font-style:normal;color:var(--ink-4);text-align:right}
 .clearDebt,.emptyLedger{font-size:max(11px,0.6875rem);color:var(--ink-3);padding-top:20px}

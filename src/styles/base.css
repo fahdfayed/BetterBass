@@ -72,7 +72,6 @@ p{text-wrap:pretty}
 }
 .h1{font-size:var(--t-h1)}
 .h2{font-size:var(--t-h2)}
-.h3{font-size:var(--t-h3);font-weight:600;letter-spacing:-.01em}
 
 /* Labels are small, spaced and quiet. They name things without competing —
    but they are still meant to be read, so they sit on the label step (--ink-3)
@@ -103,13 +102,6 @@ p{text-wrap:pretty}
 
 /* The replacement for borders. A rule separates; it does not enclose. */
 .rule{height:1px;background:var(--rule);border:0}
-
-/* A rule that fades out, so a section ends rather than being cut off. */
-.rule-fade{
- height:1px;
- border:0;
- background:linear-gradient(90deg,var(--rule-strong),transparent);
-}
 
 /* ---- actions ------------------------------------------------------------- */
 
@@ -203,7 +195,7 @@ p{text-wrap:pretty}
 
 .stack{display:flex;flex-direction:column}
 .between{display:flex;align-items:center;justify-content:space-between;gap:var(--s5)}
-.scrollX{overflow-x:auto;overscroll-behavior-x:contain}
+
 .sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
 /*

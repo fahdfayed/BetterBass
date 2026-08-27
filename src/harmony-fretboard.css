@@ -11,15 +11,7 @@
   --hf-approach: var(--red);
   --hf-outside: #4a4f46;
 }
-.headerContextLock {
-  display: inline-block;
-  margin: 0 8px;
-  padding: 9px 11px;
-  border: 1px solid #3a4035;
-  color: var(--ink-3);
-  font: max(11px,0.6875rem) var(--mono);
-  letter-spacing: 0.08em;
-}
+
 .harmonyFretboard button,
 .harmonyFretboard input,
 .harmonyFretboard select {
@@ -920,63 +912,7 @@
   background: var(--lime);
   font: max(11px,0.6875rem) var(--mono);
 }
-.hfArabic {
-  text-align: right;
-}
-.hfArabic .hfChordRail button,
-.hfArabic .hfModeSelect,
-.hfArabic .hfVoiceGrid button {
-  text-align: right;
-}
-.hfArabic .hfBuilderControls label {
-  border-right: 0;
-  border-left: 1px solid var(--line);
-}
-.hfArabic .hfBuilderControls label:last-child {
-  border-left: 0;
-}
-.hfArabic .hfCustomInput button {
-  border-left: 0;
-  border-right: 1px solid #68773a;
-}
-.hfArabic .hfTimingControls label + label {
-  border-left: 0;
-  border-right: 1px solid var(--line);
-}
-.hfArabic .hfBandMixer > header b,
-.hfArabic .hfHarmonyLevel b {
-  text-align: left;
-}
-.hfArabic .hfBandMixer button {
-  border-right: 0;
-  border-left: 1px solid var(--line);
-  text-align: right;
-}
-.hfArabic .hfBandMixer button:nth-child(2n) {
-  border-left: 0;
-}
-.hfArabic .hfModeSelect strong {
-  right: auto;
-  left: 20px;
-}
-.hfArabic .hfHear {
-  left: auto;
-  right: 22px;
-}
-.hfArabic .hfMapControls span {
-  margin: 0 0 0 8px;
-}
-.hfArabic .hfVoiceGrid button {
-  border-right: 0;
-  border-left: 1px solid var(--line);
-}
-.hfArabic .hfVoiceGrid button:last-child {
-  border-left: 0;
-}
-.hfArabic .hfVoiceLeading > footer > div {
-  border-right: 0;
-  border-left: 1px solid var(--line);
-}
+
 @media (max-width: 1100px) {
   .hfIntro,
   .hfCurrent {
@@ -1091,19 +1027,7 @@
   .hfChordDecode dl > div {
     grid-template-columns: 90px 1fr;
   }
-  .hfArabic .hfBuilderControls label,
-  .hfArabic .hfBuilderControls label:first-child {
-    border-left: 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .hfArabic .hfVoiceGrid button {
-    border-left: 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .hfArabic .hfVoiceLeading > footer > div {
-    border-left: 0;
-    border-bottom: 1px solid var(--line);
-  }
+
 }
 
 /* The arithmetic a scale recommendation is scored on, not just its verdict. */
