@@ -18,6 +18,20 @@ export function centsToNote(hz:number){
  return {midi,hz,n:NOTE_NAMES[(midi%12+12)%12],oct:Math.floor(midi/12)-1,cents:Math.round(1200*Math.log2(hz/freq))};
 }
 
+/**
+ * One note the listening engine heard, with everything it worked out about it.
+ *
+ * `fn` and `tension` are the note's function against the harmony it was played
+ * over; `resolution` is filled in once the following note is known, so it is
+ * "recovered", "unresolved" or a dash rather than a judgment made on the spot.
+ */
+export type NoteEvent={
+ id:number,midi:number,n:string,oct:number,
+ start:number,end:number,dur:number,amp:number,
+ beat:number,offset:number,
+ fn:string,tension:number,resolution:string,
+};
+
 /** The harmony a note is judged against: home, chord tones, modal colour, scale. */
 export type Harmony={ri:number,chordTones:number[],color:number,scale:number[]};
 export const tensionFor=(ni:number,h:Harmony)=>ni===h.ri?0:h.chordTones.includes(ni)?1:ni===h.color?2:h.scale.includes(ni)?3:4;

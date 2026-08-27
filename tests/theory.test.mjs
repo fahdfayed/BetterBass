@@ -5,6 +5,7 @@ import {THEORY_DICTIONARIES,THEORY_DOMAINS} from "../src/bass-theory-data.ts";
 import {COURSE_LESSONS} from "../src/course-data.ts";
 import {JACO_EXERCISES} from "../src/tab/jaco-masterclass.ts";
 import {DEGREES,isDegreeFormula,semitonesOf,SHORT_NAMES} from "../src/theory/degrees.ts";
+import {verdict} from "../src/take-verdict.ts";
 
 /**
  * Theory checks.
@@ -254,4 +255,36 @@ test("the compact degree labels agree with the glossary they come from",()=>{
  // the one label that names both.
  assert.equal(SHORT_NAMES.filter(l=>l.includes("/")).length,1);
  assert.equal(SHORT_NAMES[6],"♯4/♭5");
+});
+
+test("the coach names the first thing that is actually wrong with a take",()=>{
+ // The verdict used to be a nested ternary written out twice, once for the
+ // heading and once for the advice, so the two could drift apart. It is one
+ // function now, and the order it tests in is the point: an unresolved
+ // departure is worth saying before a thin modal identity, and both are worth
+ // saying before "that was fine".
+ const note=(over)=>({id:1,midi:57,n:"A",oct:2,start:0,end:1,dur:400,amp:.1,
+                      beat:1,offset:0,fn:"ROOT",tension:0,resolution:"—",...over});
+
+ const dorian=1,characteristic=6;   // F♯, the major 6th above A
+
+ const stranded=verdict([note({tension:4,resolution:"unresolved"}),
+                         note({midi:54}),note({midi:54})],dorian,characteristic);
+ assert.match(stranded.heading,/The return was not always clear/,
+  "an unresolved departure outranks everything else, even with the colour present");
+
+ const colourless=verdict([note(),note({midi:55})],dorian,characteristic);
+ assert.equal(colourless.heading,
+  "Technically inside, but Dorian identity is weak: its 6 barely appears.");
+ assert.equal(colourless.advice,
+  "Feature F♯ — the major 6th — twice, including once on beat 1 or 3. Avoid adding more notes.");
+
+ // Two uses of the characteristic tone is the threshold, not three.
+ const heard=verdict([note({midi:54}),note({midi:66})],dorian,characteristic);
+ assert.equal(heard.heading,"Harmonic intention is readable.");
+ assert.match(heard.advice,/25% more silence/);
+
+ // An empty take has no departure and no colour, so it lands on the middle case
+ // rather than congratulating a player who has not played.
+ assert.match(verdict([],dorian,characteristic).heading,/identity is weak/);
 });

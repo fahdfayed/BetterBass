@@ -6,9 +6,9 @@ import {useEffect,useMemo,useRef,useState} from "react";
 import {startAudioClock,type AudioClock} from "./audio-clock";
 import {saveLearningState} from "./learning-storage";
 import {speakCoach,stopCoachSpeech} from "./speech";
+import type {NoteEvent} from "./pitch";
 
 type LivePitch={n:string;oct:number;cents:number;hz:number}|null;
-type NoteEvent={id:number;midi:number;n:string;oct:number;start:number;end:number;dur:number;amp:number;beat:number;offset:number;fn:string;tension:number;resolution:string};
 type Props={livePitch:LivePitch;listening:boolean;onToggleListening:()=>Promise<boolean>;events:NoteEvent[]};
 type Drill={id:string;level:number;title:string;ar:string;mechanic:string;pattern:string;notes:string;start:number;goal:number;bars:number;verify:string;self:string;application:string};
 type DrillGuide={purpose:string;before:string;count:string;fretting:string;listen:string;mistake:string;repair:string;pass:string;next:string};
