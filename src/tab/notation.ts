@@ -334,3 +334,97 @@ export function degreesUsed(exercise:TabExercise):number[]{
  }
  return seen;
 }
+
+/* ---------------- transposition ---------------- */
+
+/**
+ * Rewrite the note names inside an exercise's label.
+ *
+ * Labels are written prose — "Am7", "Dm7 → G7 → Cmaj7", "D Dorian drone" — so
+ * moving an exercise to another key has to move the names in its label too, or
+ * the tab plays in F while the heading still says A minor.
+ *
+ * Only a bare note name is touched: a letter A to G, optionally with one
+ * accidental, standing as its own word. That leaves "As written" and "Cycle of
+ * fifths" alone, because neither "As" nor "Cycle" is a note name on its own.
+ */
+export function transposeLabel(label:string,semitones:number):string{
+ if(semitones===0)return label;
+ const STEP:Record<string,number>={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+ /*
+  * A note name here is a letter A to G, optionally with one accidental, that
+  * is either standing alone or followed by something that only ever follows a
+  * chord root — a quality, a number, a slash. Requiring a word boundary after
+  * the letter is not enough: it would rewrite the D of "D Dorian" and leave
+  * the A of "Am7" alone, which is exactly backwards. Requiring no letter after
+  * is not enough either, for the same reason in reverse.
+  */
+ // The trailing alternatives matter: without a space or punctuation among
+ // them, "B♭ major" backtracks to bare "B", shifts that, and leaves the flat
+ // stranded behind it as "C♭".
+ const NOTE=/\b([A-G])([♯♭#b])?(?=maj|min|dim|aug|sus|add|m|°|ø|[+\/0-9]|[\s·,;:)\]]|$|\b)/g;
+ return label.replace(NOTE,(whole,letter:string,accidental?:string)=>{
+  const shift=accidental==="♯"||accidental==="#"?1:accidental==="♭"||accidental==="b"?-1:0;
+  const from=STEP[letter];
+  if(from===undefined)return whole;
+  return FLAT_NAMES[(((from+shift+semitones)%12)+12)%12];
+ });
+}
+
+
+/** Roots the search will try, low to high, when moving an exercise. */
+const ROOT_SEARCH_LOW=28;   // open E, the lowest note on the instrument
+const ROOT_SEARCH_HIGH=45;  // an octave and a half up, past which nothing sits
+
+/**
+ * Move an exercise to another key.
+ *
+ * Exercises are written as degrees above a root and fretted at the last
+ * moment, so a key change is a change of one number — which is what makes all
+ * twelve keys available from material written once. The catch is range: the
+ * same degrees an octave too high run off the end of the neck, and an octave
+ * too low fall under the open E. So rather than shifting the root by the
+ * interval, every octave of the target note is tried and the lowest one that
+ * the whole exercise actually fits on is taken.
+ *
+ * Returns null when no octave works, which is the honest answer for material
+ * that already spans most of the neck.
+ */
+export function transpose(exercise:TabExercise,pitchClass:number):TabExercise|null{
+ const target=((pitchClass%12)+12)%12;
+ for(let root=ROOT_SEARCH_LOW;root<=ROOT_SEARCH_HIGH;root++){
+  if((((root%12)+12)%12)!==target)continue;
+  const moved:TabExercise={
+   ...exercise,
+   root,
+   rootName:transposeLabel(exercise.rootName,root-exercise.root),
+   title:exercise.title,
+  };
+  try{
+   toAlphaTex(moved);
+   return moved;
+  }catch{
+   // This octave does not fit on the neck; try the next one up.
+  }
+ }
+ return null;
+}
+
+/**
+ * Which of the twelve keys an exercise can actually be played in.
+ *
+ * Material written as frets rather than degrees — the Beast passages, the
+ * harmonics studies — has no root to move, so it reports none rather than
+ * offering twelve keys that would all sound identical.
+ */
+export function playableKeys(exercise:TabExercise):number[]{
+ if(degreesUsed(exercise).length===0)return [];
+ const keys:number[]=[];
+ for(let pitchClass=0;pitchClass<12;pitchClass++){
+  if(transpose(exercise,pitchClass))keys.push(pitchClass);
+ }
+ return keys;
+}
+
+/** The bare name of a pitch class, for labelling a key. */
+export const keyName=(pitchClass:number)=>FLAT_NAMES[((pitchClass%12)+12)%12];

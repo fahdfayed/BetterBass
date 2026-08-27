@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {COURSE_LESSONS} from "../src/course-data.ts";
-import {BASS_TUNING,beatsOf,fingerings,toAlphaTex,c,f,n,r} from "../src/tab/notation.ts";
+import {BASS_TUNING,beatsOf,degreesUsed,fingerings,keyName,playableKeys,toAlphaTex,transpose,transposeLabel,c,f,n,r} from "../src/tab/notation.ts";
 import {parseAsciiTab} from "../src/tab/ascii-tab.ts";
 import {COURSE_TABS,courseTabsFor} from "../src/tab/course-exercises.ts";
 import {BEAST_TABS,MAQAM_TABS,SLAP_TABS} from "../src/tab/lab-exercises.ts";
@@ -269,4 +269,48 @@ test("only effect keywords alphaTex actually knows are emitted",()=>{
  }
  // Guard the guard: if nothing is shaded any more, this test proves nothing.
  assert.ok(seen.size>0,"no note effects were emitted at all");
+});
+
+test("an exercise moved to another key keeps its shape",()=>{
+ // Transposition is a change of one number because exercises are written as
+ // degrees and fretted at the last moment. What must not change is the music:
+ // the same intervals, in the same order, at the new pitch.
+ for(const exercise of everyExercise.slice(0,40)){
+  const keys=playableKeys(exercise);
+  if(keys.length===0)continue;
+  const before=degreesUsed(exercise);
+  for(const key of keys){
+   const moved=transpose(exercise,key);
+   assert.ok(moved,`${exercise.id}: reported ${keyName(key)} playable but would not transpose`);
+   assert.deepEqual(degreesUsed(moved),before,
+    `${exercise.id} in ${keyName(key)}: the degrees changed`);
+   assert.equal(((moved.root%12)+12)%12,key,`${exercise.id}: landed in the wrong key`);
+   assert.doesNotThrow(()=>toAlphaTex(moved),`${exercise.id} in ${keyName(key)} does not fit the neck`);
+  }
+ }
+});
+
+test("material written as frets is not offered a key it cannot change",()=>{
+ // The Beast passages and the harmonics studies are written at fixed places on
+ // the neck. Moving the root would change nothing anyone could hear, so no
+ // keys are offered rather than twelve identical ones.
+ const fretted=everyExercise.filter(x=>degreesUsed(x).length===0);
+ assert.ok(fretted.length>20,`expected the fretted material, found ${fretted.length}`);
+ for(const exercise of fretted){
+  assert.deepEqual(playableKeys(exercise),[],`${exercise.id} offered a key change it cannot make`);
+ }
+});
+
+test("a label follows its exercise into the new key",()=>{
+ // Chord symbols and key names inside a label have to move with the music, or
+ // the tab plays in F under a heading that still says A minor.
+ assert.equal(transposeLabel("Am7",8),"Fm7");
+ assert.equal(transposeLabel("Dm7 → G7 → Cmaj7",3),"Fm7 → B♭7 → E♭maj7");
+ assert.equal(transposeLabel("D Dorian drone",2),"E Dorian drone");
+ assert.equal(transposeLabel("B♭ major",1),"B major","an accidental must not be left behind");
+ // Words that merely start with a note letter are not note names.
+ assert.equal(transposeLabel("As written",5),"As written");
+ assert.equal(transposeLabel("Cycle of fifths",5),"Cycle of fifths");
+ assert.equal(transposeLabel("Fast swing",3),"Fast swing");
+ assert.equal(transposeLabel("Am7",0),"Am7","no move, no change");
 });

@@ -16,8 +16,6 @@ type Props={
  source:TabSource;
  /** Shown above the transport; the exercise's own title. */
  title?:string;
- /** Starting tempo as a fraction of the written one. */
- initialSpeed?:number;
  /** Practice material usually wants to loop from the start. */
  initialLooping?:boolean;
  /**
@@ -27,7 +25,14 @@ type Props={
  root?:number;
 };
 
-const SPEEDS=[0.5,0.6,0.7,0.8,0.9,1];
+/**
+ * Ticks in a bar of the given time signature.
+ *
+ * alphaTab counts a quarter note as 960 ticks, so a bar is its beat count
+ * scaled by how long each beat is.
+ */
+const QUARTER=960;
+const barTicks=(numerator:number,denominator:number)=>numerator*(4/denominator)*QUARTER;
 
 /** Milliseconds as m:ss, for the transport readout. */
 const clock=(ms:number)=>{
@@ -112,7 +117,7 @@ function stringLabels(stage:HTMLElement):StringLabel[]{
  * Loaded lazily: the engine is about 1.1MB and the soundfont another 0.9MB, and
  * neither is needed until a learner opens a tab.
  */
-export default function TabPlayer({source,title,initialSpeed=1,initialLooping=false,root}:Props){
+export default function TabPlayer({source,title,initialLooping=false,root}:Props){
  const host=useRef<HTMLDivElement>(null);
  const viewport=useRef<HTMLDivElement>(null);
  const api=useRef<alphaTab.AlphaTabApi|null>(null);
@@ -120,7 +125,20 @@ export default function TabPlayer({source,title,initialSpeed=1,initialLooping=fa
  const [ready,setReady]=useState(false);
  const [error,setError]=useState("");
  const [playing,setPlaying]=useState(false);
- const [speed,setSpeed]=useState(initialSpeed);
+ /*
+  * Tempo, not a percentage.
+  *
+  * The transport used to offer "80%", which is not a number anybody practises
+  * to. Every exercise carries the tempo it is written at, so the control works
+  * in beats per minute and converts to the ratio the engine wants.
+  */
+ const [bpm,setBpm]=useState(0);
+ // The tempo the exercise is written at, read from the score once it loads.
+ // The BPM control is relative to this, and the engine wants a ratio.
+ const [written,setWritten]=useState(0);
+ const [bars,setBars]=useState(0);
+ const [loopFrom,setLoopFrom]=useState(1);
+ const [loopTo,setLoopTo]=useState(0);
  const [looping,setLooping]=useState(initialLooping);
  const [metronome,setMetronome]=useState(false);
  const [countIn,setCountIn]=useState(true);
@@ -182,7 +200,14 @@ export default function TabPlayer({source,title,initialSpeed=1,initialLooping=fa
   // checking generated alphaTex against what actually gets built.
   if(import.meta.env.DEV)(window as unknown as {__alphaTab?:unknown}).__alphaTab=instance;
 
-  const onReady=()=>setReady(true);
+  const onReady=()=>{
+   setReady(true);
+   const count=instance.score?.masterBars.length??0;
+   setBars(count);
+   setWritten(Math.round(instance.score?.tempo??0));
+   setLoopFrom(1);
+   setLoopTo(count);
+  };
   const onPlayerState=(args:{state:number})=>setPlaying(args.state===alphaTab.synth.PlayerState.Playing);
   const onSoundFont=(e:{loaded:number;total:number})=>setSoundFontProgress(e.total?e.loaded/e.total:0);
   const onPosition=(e:{currentTime:number;endTime:number})=>setPosition({current:e.currentTime,total:e.endTime});
@@ -247,6 +272,7 @@ export default function TabPlayer({source,title,initialSpeed=1,initialLooping=fa
   setReady(false);
   setError("");
   setPosition({current:0,total:0});
+  setBpm(0);
   setSounding([]);
   setLabels([]);
   clearSurface();
@@ -282,7 +308,33 @@ export default function TabPlayer({source,title,initialSpeed=1,initialLooping=fa
  },[theme]);
 
  // Transport settings the learner changes while the engine is already running.
- useEffect(()=>{if(api.current)api.current.playbackSpeed=speed},[speed]);
+ useEffect(()=>{
+  const instance=api.current;
+  if(!instance||!written)return;
+  instance.playbackSpeed=(bpm||written)/written;
+ },[bpm,written]);
+
+ /*
+  * Loop a range of bars rather than the whole exercise.
+  *
+  * Practice happens on the two bars that are failing. The engine has supported
+  * a playback range all along; nothing exposed it.
+  */
+ useEffect(()=>{
+  const instance=api.current;
+  if(!instance||!bars)return;
+  const masterBars=instance.score?.masterBars;
+  if(!masterBars?.length)return;
+  const wholePiece=loopFrom<=1&&loopTo>=bars;
+  if(wholePiece){instance.playbackRange=null;return}
+  const first=masterBars[Math.max(0,loopFrom-1)];
+  const last=masterBars[Math.min(masterBars.length-1,loopTo-1)];
+  const after=masterBars[loopTo];
+  instance.playbackRange={
+   startTick:first.start,
+   endTick:after?after.start:last.start+barTicks(last.timeSignatureNumerator,last.timeSignatureDenominator),
+  };
+ },[loopFrom,loopTo,bars]);
  useEffect(()=>{if(api.current)api.current.isLooping=looping},[looping]);
  useEffect(()=>{if(api.current)api.current.metronomeVolume=metronome?1:0},[metronome]);
  useEffect(()=>{if(api.current)api.current.countInVolume=countIn?1:0},[countIn]);
@@ -313,14 +365,17 @@ export default function TabPlayer({source,title,initialSpeed=1,initialLooping=fa
      Stop
     </button>
 
-    <label className="tabSpeed">
-     <span className="label">Speed</span>
-     <select value={speed} onChange={event=>setSpeed(Number(event.target.value))}>
-      {SPEEDS.map(value=>(
-       <option key={value} value={value}>{Math.round(value*100)}%</option>
-      ))}
-     </select>
-    </label>
+    {written>0&&(
+     <div className="tabTempo">
+      <span className="label">Tempo</span>
+      <button type="button" onClick={()=>setBpm(Math.max(30,(bpm||written)-4))} aria-label="Slower">−</button>
+      <b className="mono">{bpm||written}<small>BPM</small></b>
+      <button type="button" onClick={()=>setBpm(Math.min(Math.round(written*1.2),(bpm||written)+4))} aria-label="Faster">+</button>
+      {bpm>0&&bpm!==written&&(
+       <button type="button" className="tabToggle" onClick={()=>setBpm(written)}>written {written}</button>
+      )}
+     </div>
+    )}
 
     <div className="tabToggles">
      <button className={`tabToggle ${looping?"on":""}`} aria-pressed={looping} onClick={()=>setLooping(v=>!v)}>Loop</button>
@@ -328,6 +383,28 @@ export default function TabPlayer({source,title,initialSpeed=1,initialLooping=fa
      <button className={`tabToggle ${countIn?"on":""}`} aria-pressed={countIn} onClick={()=>setCountIn(v=>!v)}>Count-in</button>
     </div>
    </header>
+
+   {bars>1&&(
+    <div className="tabLoopRange">
+     <span className="label">Loop bars</span>
+     <label>
+      <span className="sr">From bar</span>
+      <select value={loopFrom} onChange={e=>{const v=Number(e.target.value);setLoopFrom(v);if(v>loopTo)setLoopTo(v)}}>
+       {Array.from({length:bars},(_,i)=><option key={i} value={i+1}>{i+1}</option>)}
+      </select>
+     </label>
+     <i aria-hidden="true">to</i>
+     <label>
+      <span className="sr">To bar</span>
+      <select value={loopTo} onChange={e=>{const v=Number(e.target.value);setLoopTo(v);if(v<loopFrom)setLoopFrom(v)}}>
+       {Array.from({length:bars},(_,i)=><option key={i} value={i+1}>{i+1}</option>)}
+      </select>
+     </label>
+     {(loopFrom>1||loopTo<bars)&&(
+      <button type="button" className="tabToggle" onClick={()=>{setLoopFrom(1);setLoopTo(bars)}}>whole exercise</button>
+     )}
+    </div>
+   )}
 
    <div className="tabSeek">
     <span className="tabTime mono">{clock(shown)}</span>

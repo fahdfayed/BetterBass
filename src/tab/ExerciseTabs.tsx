@@ -1,6 +1,6 @@
 import {lazy,Suspense,useMemo,useState} from "react";
 import {type Degree,degreeAt,exampleFor} from "../theory/degrees";
-import {type TabExercise,degreesUsed,noteName,toAlphaTex} from "./notation";
+import {type TabExercise,degreesUsed,keyName,noteName,playableKeys,toAlphaTex,transpose} from "./notation";
 
 const TabPlayer=lazy(()=>import("./TabPlayer"));
 
@@ -56,7 +56,22 @@ function DegreeKey({exercise}:{exercise:TabExercise}){
  */
 export default function ExerciseTabs({exercises,label}:{exercises:TabExercise[];label?:string}){
  const [index,setIndex]=useState(0);
- const exercise=exercises[Math.min(index,exercises.length-1)];
+ const [key,setKey]=useState<number|null>(null);
+ const written=exercises[Math.min(index,exercises.length-1)];
+
+ /*
+  * All twelve keys, from material written once.
+  *
+  * Exercises are stored as degrees above a root and fretted at the last
+  * moment, so the key is one number. Both source methods say the same thing —
+  * take everything round the cycle — and until now the site could only offer
+  * whichever key each exercise happened to be written in.
+  */
+ const keys=useMemo(()=>playableKeys(written),[written]);
+ const exercise=useMemo(()=>{
+  if(key===null||key===((written.root%12)+12)%12)return written;
+  return transpose(written,key)??written;
+ },[written,key]);
 
  // Rendering the notation is the expensive half of showing a tab, so it is not
  // redone until the learner actually picks a different exercise.
@@ -76,7 +91,7 @@ export default function ExerciseTabs({exercises,label}:{exercises:TabExercise[];
        key={item.id}
        className={`exerciseChip ${i===index?"on":""}`}
        aria-current={i===index?"true":undefined}
-       onClick={()=>setIndex(i)}
+       onClick={()=>{setIndex(i);setKey(null)}}
       >
        <i aria-hidden="true">{String(i+1).padStart(2,"0")}</i>
        <span>{item.title}</span>
@@ -89,6 +104,31 @@ export default function ExerciseTabs({exercises,label}:{exercises:TabExercise[];
     <p>{exercise.brief}</p>
     <p className="dim"><span className="label">Pass</span> {exercise.pass}</p>
    </div>
+
+   {keys.length>1&&(
+    <div className="keyPick">
+     <span className="label">Key</span>
+     <span className="keyRow">
+      {keys.map(pitchClass=>{
+       const current=((exercise.root%12)+12)%12===pitchClass;
+       const asWritten=((written.root%12)+12)%12===pitchClass;
+       return (
+        <button
+         key={pitchClass}
+         type="button"
+         className={`keyChip ${current?"on":""}`}
+         aria-pressed={current}
+         title={asWritten?"As written":`Transpose to ${keyName(pitchClass)}`}
+         onClick={()=>setKey(pitchClass)}
+        >
+         {keyName(pitchClass)}
+        </button>
+       );
+      })}
+     </span>
+     {exercise!==written&&<span className="keyNote dim">{written.rootName} as written</span>}
+    </div>
+   )}
 
    <DegreeKey exercise={exercise}/>
 
