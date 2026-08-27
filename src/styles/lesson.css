@@ -31,7 +31,15 @@
 
 /* Six steps along one line. The active one is marked by weight and a rule
    beneath it, not by a filled tab. */
-.stageTabs{display:flex;gap:var(--s6);border-bottom:1px solid var(--rule);overflow-x:auto;scrollbar-width:none}
+/*
+ * The stage rail scrolls sideways when six stages will not fit on a phone.
+ *
+ * min-width:0 alone is not enough here: the rail sits in a column flex
+ * container, where the cross-axis line grows to fit the widest item, so the
+ * rail stayed wider than the screen and took the whole page with it. Capping it
+ * at the container width is what lets its own overflow-x do the scrolling.
+ */
+.stageTabs{display:flex;min-width:0;max-width:100%;gap:var(--s6);border-bottom:1px solid var(--rule);overflow-x:auto;scrollbar-width:none}
 .stageTabs::-webkit-scrollbar{display:none}
 .stageTab{
  position:relative;
@@ -63,7 +71,29 @@
 
 /* ---- the split ---------------------------------------------------------- */
 
-.lessonSplit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s7);align-items:start}
+.lessonSplit{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:var(--s5);align-items:start}
+
+/*
+ * The divider between reading and working.
+ *
+ * How much room the workspace needs depends on which tool is open — a
+ * fretboard wants width, a paragraph of instruction does not — so the split is
+ * the reader's to set, and it is remembered. The hit area is wider than the
+ * line it draws, because a two-pixel target is not a target.
+ */
+.splitter{
+ align-self:stretch;width:var(--s5);min-height:12rem;
+ display:grid;place-items:center;cursor:col-resize;
+ background:none;border:0;touch-action:none;
+}
+.splitter i{
+ display:block;width:2px;height:100%;border-radius:2px;
+ background:var(--rule);transition:background var(--t-base) var(--ease);
+}
+.splitter:hover i,.splitter:focus-visible i{background:var(--accent)}
+.splitter:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+/* While dragging, the pointer must not select the text it crosses. */
+body.isSplitting{user-select:none;cursor:col-resize}
 .lessonRead{display:flex;flex-direction:column;gap:var(--s5);min-width:0}
 .stageIntro{display:flex;flex-direction:column;gap:var(--s2)}
 .stageIntro h2{font-size:var(--t-h3)}
@@ -141,7 +171,8 @@
 /* ---- responsive --------------------------------------------------------- */
 
 @media (max-width:68rem){
- .lessonSplit{grid-template-columns:minmax(0,1fr);gap:var(--s6)}
+ .lessonSplit{grid-template-columns:minmax(0,1fr)!important;gap:var(--s6)}
+ .splitter{display:none}
  .lessonDo{
   position:static;
   max-height:none;

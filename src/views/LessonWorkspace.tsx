@@ -1,4 +1,5 @@
 import type {ReactNode} from "react";
+import {useSplit} from "./useSplit";
 
 type Props={
  lesson:{index:number;total:number;title:string;unit:number;outcome:string;duration:number};
@@ -36,6 +37,8 @@ export default function LessonWorkspace({
  canAdvance,blockedReason,onPrevLesson,onNextLesson,hasPrev,hasNext,
  instruction,workspace,workspaceLabel,
 }:Props){
+ const {split,frame,onPointerDown,onKeyDown,min,max}=useSplit();
+
  return (
   <div className="lessonShell">
    <header className="missionBar">
@@ -65,7 +68,7 @@ export default function LessonWorkspace({
     })}
    </nav>
 
-   <div className="lessonSplit">
+   <div className="lessonSplit" ref={frame} style={{gridTemplateColumns:`minmax(0,${split}fr) auto minmax(0,${100-split}fr)`}}>
     <section className="lessonRead stageSwap" key={stageIndex} aria-label="Instruction">
      <div className="stageIntro">
       <span className="label">{stageNames[stageIndex]}</span>
@@ -74,6 +77,20 @@ export default function LessonWorkspace({
      </div>
      {instruction}
     </section>
+
+    <div
+     className="splitter"
+     role="separator"
+     tabIndex={0}
+     aria-label="Resize the workspace"
+     aria-orientation="vertical"
+     aria-valuenow={Math.round(split)}
+     aria-valuemin={min}
+     aria-valuemax={max}
+     onPointerDown={onPointerDown}
+     onKeyDown={onKeyDown}
+     onDoubleClick={()=>onKeyDown({key:"Enter",preventDefault(){},shiftKey:false} as never)}
+    ><i aria-hidden="true"/></div>
 
     <aside className="lessonDo" aria-label={workspaceLabel}>
      <div className="doHead">

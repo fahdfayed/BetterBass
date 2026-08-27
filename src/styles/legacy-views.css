@@ -583,10 +583,15 @@
  * they wrap instead of overlapping.
  */
 .page .osScreen *{min-width:0}
+/*
+ * `anywhere` breaks a word at any character it likes, which is how BASS became
+ * "BAS S" and DICTIONARIES became "DICTIONARI ES". `break-word` only breaks a
+ * word that could not fit on a line of its own, which is what was wanted.
+ */
 .page .osScreen p,
 .page .osScreen small,
 .page .osScreen b,
-.page .osScreen span{overflow-wrap:anywhere}
+.page .osScreen span{overflow-wrap:break-word}
 
 /*
  * Live session heading.
@@ -600,3 +605,45 @@
 .liveHead .livePitch{display:block;font:900 6.25rem/1 var(--font-mono);margin:20px 0 0}
 .liveHead .livePitch small{font-size:1.875rem}
 .liveHead h1.liveTitle{font:max(11px,.6875rem) var(--font-mono);letter-spacing:.14em;margin:0}
+
+/*
+ * Tools embedded in the lesson workspace.
+ *
+ * The reference and the fretboard were built as full-page views, and their
+ * layouts respond to the width of the window. Inside a lesson they sit in a
+ * pane that is a fraction of it, so on a wide screen a six-column row is asked
+ * to fit six columns into a few hundred pixels and every heading wraps to one
+ * word a line.
+ *
+ * A container query is the fix a media query cannot be: it asks how much room
+ * this element actually has, not how big the window is. The full-page views are
+ * untouched, because nothing declares a container there.
+ */
+.doBody{container-type:inline-size;container-name:workspace}
+
+@container workspace (max-width: 62rem){
+ .theoryCoverage{grid-template-columns:repeat(3,1fr)}
+ .theoryCoverage article:nth-child(3){border-right:0}
+ .theoryCoverage article:nth-child(-n+3){border-bottom:1px solid var(--rule)}
+ .theoryConceptGrid{grid-template-columns:1fr}
+ .theoryConceptGrid article{min-height:0;border-right:0}
+ .theoryEvidence,.theoryUseFlow>div,.theoryMastery>div{grid-template-columns:1fr}
+ .theoryEvidence article{min-height:0;border-right:0;border-bottom:1px solid var(--rule)}
+ .theoryDomainNav{grid-template-columns:1fr 1fr}
+ .theoryUseFlow>header,.theoryMastery>header,
+ .theoryDomainSection>header,.theoryDictionary>header{grid-template-columns:1fr}
+ .theoryChapterHead{grid-template-columns:1fr}
+ .theoryChapterHead>b{display:none}
+ .thinkingReference{grid-template-columns:1fr}
+ .hfModes>div{grid-template-columns:repeat(2,1fr)}
+ .hfModeSelect{min-height:0;padding-bottom:22px}
+ .hfModes>div>article{min-height:0}
+}
+
+@container workspace (max-width: 34rem){
+ .theoryCoverage{grid-template-columns:1fr 1fr}
+ .theoryCoverage article:nth-child(3){border-right:1px solid var(--rule)}
+ .theoryCoverage article:nth-child(2n){border-right:0}
+ .theoryDomainNav{grid-template-columns:1fr}
+ .hfModes>div{grid-template-columns:1fr}
+}
