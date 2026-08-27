@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {DEGREE_NAMES,MODES,PITCH_NAMES,SCALE_LIBRARY} from "../src/harmony-fretboard-data.ts";
+import {DEGREE_NAMES,MODES,parseChord,PITCH_NAMES,PROGRESSION_PRESETS,SCALE_LIBRARY} from "../src/harmony-fretboard-data.ts";
 import {THEORY_DICTIONARIES,THEORY_DOMAINS} from "../src/bass-theory-data.ts";
 import {COURSE_LESSONS} from "../src/course-data.ts";
 import {JACO_EXERCISES} from "../src/tab/jaco-masterclass.ts";
@@ -287,4 +287,77 @@ test("the coach names the first thing that is actually wrong with a take",()=>{
  // An empty take has no departure and no colour, so it lands on the middle case
  // rather than congratulating a player who has not played.
  assert.match(verdict([],dorian,characteristic).heading,/identity is weak/);
+});
+
+test("chord symbols are spelled the way a reader would spell them",()=>{
+ /*
+  * parseChord is what turns "Am9" into notes on the neck, so every claim the
+  * fretboard makes about a chord rests on it. These are the spellings that are
+  * not in dispute: if one of them ever changes, something upstream broke.
+  */
+ const SPELLINGS={
+  C:[0,4,7],Cm:[0,3,7],Cmaj7:[0,4,7,11],Cm7:[0,3,7,10],C7:[0,4,7,10],
+  "Cm7b5":[0,3,6,10],Cdim7:[0,3,6,9],Cdim:[0,3,6],Caug:[0,4,8],"C+":[0,4,8],
+  Csus2:[0,2,7],Csus4:[0,5,7],C6:[0,4,7,9],Cm6:[0,3,7,9],"C6/9":[0,2,4,7,9],
+  C9:[0,2,4,7,10],Cmaj9:[0,2,4,7,11],Cm9:[0,2,3,7,10],
+  C11:[0,2,4,5,7,10],C13:[0,2,4,5,7,9,10],"Cmaj7#11":[0,4,6,7,11],
+  "C7b9":[0,1,4,7,10],"C7#9":[0,3,4,7,10],"C7#5":[0,4,8,10],
+  CmMaj7:[0,3,7,11],Cadd9:[0,2,4,7],
+ };
+ for(const [symbol,expected] of Object.entries(SPELLINGS)){
+  const chord=parseChord(symbol);
+  assert.equal(chord.error,undefined,`${symbol} should be readable`);
+  const got=[...new Set(chord.intervals.map(iv=>((iv%12)+12)%12))].sort((a,b)=>a-b);
+  assert.deepEqual(got,[...expected].sort((a,b)=>a-b),
+   `${symbol} should be ${expected.join(" ")} above the root`);
+ }
+
+ // A slash chord keeps its own root; only the bass moves.
+ for(const [symbol,root,bass] of [["C/E",0,4],["Dm7/G",2,7],["Fmaj7/A",5,9]]){
+  const chord=parseChord(symbol);
+  assert.equal(chord.root,root,`${symbol} is rooted on its own letter`);
+  assert.equal(chord.bass,bass,`${symbol} puts the slash note in the bass`);
+ }
+
+ // Something unreadable says so rather than quietly becoming a C major triad,
+ // which is what it falls back to.
+ for(const bad of ["H7","xyz"]) assert.ok(parseChord(bad).error,`${bad} should report an error`);
+});
+
+test("every progression preset agrees with the key it declares",()=>{
+ for(const preset of PROGRESSION_PRESETS){
+  const chords=preset.chords.map(symbol=>{
+   const chord=parseChord(symbol);
+   assert.equal(chord.error,undefined,
+    `${preset.id}: "${symbol}" does not parse, so the whole preset is guesswork`);
+   return chord;
+  });
+
+  // The declared centre has to be a chord in the progression, or the preset
+  // names a home the player never actually arrives at.
+  const roots=chords.map(chord=>chord.root);
+  assert.ok(roots.includes(preset.center),
+   `${preset.id}: centre ${PITCH_NAMES[preset.center]} is not the root of any of `
+   +`${preset.chords.join(", ")}`);
+
+  // And the chord on that centre has to be the quality the home field claims.
+  const mode=MODES[preset.homeMode];
+  const modeThird=mode.s[2];
+  const tonic=chords[roots.indexOf(preset.center)];
+  const tonicThird=tonic.intervals.map(iv=>((iv%12)+12)%12).find(iv=>iv===3||iv===4);
+  assert.equal(tonicThird,modeThird,
+   `${preset.id}: ${tonic.symbol} is ${tonicThird===3?"minor":"major"} but `
+   +`${mode.n} has a ${modeThird===3?"minor":"major"} third`);
+
+  // A preset that says it is modal is claiming one field explains everything.
+  if(preset.lens==="modal"){
+   const field=new Set(mode.s.map(iv=>(preset.center+iv)%12));
+   for(const chord of chords){
+    const outside=chord.pcs.map(pc=>((pc%12)+12)%12).filter(pc=>!field.has(pc));
+    assert.deepEqual(outside,[],
+     `${preset.id} is modal, but ${chord.symbol} leaves `
+     +`${PITCH_NAMES[preset.center]} ${mode.n} on ${outside.map(pc=>PITCH_NAMES[pc]).join(" ")}`);
+   }
+  }
+ }
 });
