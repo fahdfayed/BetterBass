@@ -11,6 +11,7 @@ import LessonWorkspace from "./views/LessonWorkspace";
 import LessonTools,{WORKSPACE_LABELS} from "./views/LessonTools";
 import {territoryStates} from "./game/progression";
 import {MODES} from "./harmony-fretboard-data";
+import Formula from "./components/Formula";
 import {goToView,navigate,pathForView,useRoute} from "./router";
 import {autoCorrelate,centsToNote,labelFor,midiHz,NOTE_NAMES,PITCH_MAX_HZ,PITCH_MIN_HZ,PITCH_RMS_GATE,tensionFor,type Harmony} from "./pitch";
 import {COURSE_LESSONS,COURSE_UNITS} from "./course-data";
@@ -288,7 +289,7 @@ export default function BassLab(){
    {courseStep===0&&<div className="learnStage">
     <section className="prerequisiteCheck"><header><span>00 · BEFORE YOU BEGIN</span><h2>Check the foundation.</h2><p>These are retrieval checks, not reading questions. Attempt each on the bass or with your voice before revealing more material.</p></header><div>{courseDetail.selfCheck.map((x,i)=><label key={x}><input type="checkbox"/><i>{String(i+1).padStart(2,"0")}</i><span>{x}</span></label>)}</div></section>
     <article className="courseTheory"><span>01 · CORE THEORY</span><h2>{course.outcome}</h2>{course.concept.map((p,i)=><p key={i}>{p}</p>)}</article>
-    <aside><span>FUNCTION FORMULA</span><b>{course.formula}</b><div><small>ESSENTIAL DISTINCTION</small><p>{course.distinction}</p></div></aside>
+    <aside><span>FUNCTION FORMULA</span><b><Formula formula={course.formula}/></b><div><small>ESSENTIAL DISTINCTION</small><p>{course.distinction}</p></div></aside>
     <section className="lessonVocabulary"><header><span>02 · WORKING VOCABULARY</span><h2>Terms you must be able to use.</h2></header><div>{courseDetail.terms.map((x,i)=><article key={x.name}><i>{String(i+1).padStart(2,"0")}</i><b>{x.name}</b><p>{x.definition}</p></article>)}</div></section>
     <section className="workedExample"><header><span>03 · WORKED EXAMPLE IN {N[ri]}</span><h2>Turn the formula into musical jobs.</h2><p>Read each row across. Note name is local; degree and function are what let the idea transpose.</p></header><div className="theoryTableWrap"><table><thead><tr><th>DEGREE</th><th>NOTE</th><th>ROLE</th><th>WHAT TO HEAR / DO</th></tr></thead><tbody>{course.intervals.map((iv,i)=><tr className={course.character.includes(iv)?"character":""} key={`${iv}-${i}`}><td>{DEG[iv]}</td><td>{N[(ri+iv)%12]}</td><td>{courseRole(iv,course.character)}</td><td>{courseBehavior(iv,course.character)}</td></tr>)}</tbody></table></div></section>
     <section className="theoryDiagnosis"><article><span>BASSIST’S PERSPECTIVE</span><p>{courseDetail.bassFocus}</p></article><article className="myth"><span>COMMON MISCONCEPTION</span><p>{courseDetail.misconception}</p></article><article className="fix"><span>CORRECTION</span><p>{courseDetail.correction}</p></article></section>

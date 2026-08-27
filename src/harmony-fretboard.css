@@ -1105,3 +1105,11 @@
     border-bottom: 1px solid var(--line);
   }
 }
+
+/* The arithmetic a scale recommendation is scored on, not just its verdict. */
+.hfWorking{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px}
+.hfWorking em{
+ font-style:normal;font:max(11px,0.6875rem) var(--font-mono);
+ color:var(--ink-3);letter-spacing:.04em;
+}
+.hfWorking em.short{color:var(--wrong)}

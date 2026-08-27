@@ -4,6 +4,7 @@ import {DEGREE_NAMES,MODES,PITCH_NAMES,SCALE_LIBRARY} from "../src/harmony-fretb
 import {THEORY_DICTIONARIES,THEORY_DOMAINS} from "../src/bass-theory-data.ts";
 import {COURSE_LESSONS} from "../src/course-data.ts";
 import {JACO_EXERCISES} from "../src/tab/jaco-masterclass.ts";
+import {DEGREES,isDegreeFormula,semitonesOf} from "../src/theory/degrees.ts";
 
 /**
  * Theory checks.
@@ -15,32 +16,12 @@ import {JACO_EXERCISES} from "../src/tab/jaco-masterclass.ts";
  * theory and check it against itself.
  */
 
-/**
- * Degree shorthand to semitones above the root.
- *
- * The site writes its formulas the way a chart does — a flat seventh is the
- * seventh lowered a semitone, ten from the root, B-flat in C — and several
- * degrees have two names depending on whether they are read as a scale step or
- * a chord extension. Both spellings resolve to the same distance.
+/*
+ * The degree table under test is the same one the site renders from, so a
+ * formula measured here is measured exactly as a reader sees it explained.
  */
-const STEP={
- "1":0,
- "♭2":1,"♭9":1,
- "2":2,"9":2,
- "♯2":3,"♯9":3,"♭3":3,
- "3":4,
- "4":5,"11":5,
- "♯4":6,"♯11":6,"♭5":6,
- "5":7,
- "♯5":8,"♭6":8,"♭13":8,
- "6":9,"13":9,"𝄫7":9,
- "♭7":10,
- "7":11,
- "8":12,
-};
-
 const parseFormula=formula=>formula.trim().split(/\s+/).map(token=>{
- const value=STEP[token];
+ const value=semitonesOf(token);
  assert.notEqual(value,undefined,`unknown degree "${token}" in "${formula}"`);
  return value;
 });
@@ -74,9 +55,6 @@ test("the seven modes are the first seven scales, and stay that way",()=>{
  for(const mode of MODES)assert.ok(mode.c>=0,`${mode.n}: character tone not found in its own scale`);
 });
 
-/** True when a formula is a plain degree list rather than prose or alternatives. */
-const isDegreeList=formula=>formula.trim().split(/\s+/).every(token=>token in STEP);
-
 test("interval rows agree with the distance they name",()=>{
  // These rows are written as prose ("7 SEMITONES · 5") and the number is also
  // stored separately, because the reference renders a worked example from it.
@@ -102,7 +80,7 @@ test("degree formulas everywhere are written in degrees the system knows",()=>{
  // that every token is a degree the site can resolve, and that none repeats.
  let checked=0;
  for(const dictionary of THEORY_DICTIONARIES)for(const row of dictionary.rows){
-  if(!isDegreeList(row.formula))continue;   // alternatives and prose are not measurable
+  if(!isDegreeFormula(row.formula))continue;   // alternatives and prose are not measurable
   const tokens=row.formula.trim().split(/\s+/);
   parseFormula(row.formula);
   assert.equal(new Set(tokens).size,tokens.length,
@@ -221,5 +199,37 @@ test("only real harmonic nodes are written as harmonics",()=>{
    assert.ok(NODES.has(event.fret),
     `${exercise.id}: fret ${event.fret} is not a natural-harmonic node`);
   }
+ }
+});
+
+test("the degree glossary covers the octave without collisions",()=>{
+ // This table is both what the site shows a reader and what every formula on
+ // the site is measured against, so a wrong entry is a wrong explanation and a
+ // wrong measurement at the same time.
+ assert.equal(DEGREES.length,13,"twelve semitones plus the octave");
+ assert.deepEqual(DEGREES.map(d=>d.semitones),[0,1,2,3,4,5,6,7,8,9,10,11,12]);
+
+ const seen=new Map();
+ for(const degree of DEGREES){
+  assert.ok(degree.label&&degree.meaning,`${degree.names[0]}: missing label or meaning`);
+  assert.ok(degree.meaning.length>25,`${degree.names[0]}: meaning is too thin to help`);
+  for(const name of degree.names){
+   assert.equal(seen.get(name),undefined,`"${name}" names two different distances`);
+   seen.set(name,degree.semitones);
+  }
+ }
+
+ // The spellings a reader actually meets in the site's own formulas.
+ assert.equal(semitonesOf("♭7"),10,"a flat seventh is ten semitones above the root");
+ assert.equal(semitonesOf("♯9"),semitonesOf("♭3"),"the same distance, named for its context");
+ assert.equal(semitonesOf("♯11"),semitonesOf("♭5"));
+ assert.equal(semitonesOf("not-a-degree"),undefined);
+});
+
+test("every scale formula on the site can be explained to a reader",()=>{
+ // The glossary is only useful if it recognises the shorthand actually used.
+ for(const scale of SCALE_LIBRARY){
+  assert.ok(isDegreeFormula(scale.formula),
+   `${scale.id}: "${scale.formula}" contains a symbol the glossary cannot explain`);
  }
 });

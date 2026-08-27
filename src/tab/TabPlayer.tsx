@@ -1,5 +1,7 @@
 import {type CSSProperties,useEffect,useRef,useState} from "react";
 import {useTheme} from "../theme";
+import {type Degree,degreeAt} from "../theory/degrees";
+import {noteName} from "./notation";
 import * as alphaTab from "@coderline/alphatab";
 import soundFontUrl from "@coderline/alphatab/soundfont/sonivox.sf3?url";
 import bravuraUrl from "@coderline/alphatab/font/Bravura.woff2?url";
@@ -18,6 +20,11 @@ type Props={
  initialSpeed?:number;
  /** Practice material usually wants to loop from the start. */
  initialLooping?:boolean;
+ /**
+  * Concert pitch the exercise is rooted on. Given one, the reader can name
+  * each note's function as it sounds rather than only showing where it is.
+  */
+ root?:number;
 };
 
 const SPEEDS=[0.5,0.6,0.7,0.8,0.9,1];
@@ -105,7 +112,7 @@ function stringLabels(stage:HTMLElement):StringLabel[]{
  * Loaded lazily: the engine is about 1.1MB and the soundfont another 0.9MB, and
  * neither is needed until a learner opens a tab.
  */
-export default function TabPlayer({source,title,initialSpeed=1,initialLooping=false}:Props){
+export default function TabPlayer({source,title,initialSpeed=1,initialLooping=false,root}:Props){
  const host=useRef<HTMLDivElement>(null);
  const viewport=useRef<HTMLDivElement>(null);
  const api=useRef<alphaTab.AlphaTabApi|null>(null);
@@ -122,9 +129,15 @@ export default function TabPlayer({source,title,initialSpeed=1,initialLooping=fa
  // While a finger is on the slider the incoming position updates are ignored,
  // so the handle does not fight the playhead it is being dragged away from.
  const [scrubbing,setScrubbing]=useState<number|null>(null);
+ const [sounding,setSounding]=useState<{name:string;degree:Degree}[]>([]);
  const [labels,setLabels]=useState<StringLabel[]>([]);
  const stage=useRef<HTMLDivElement>(null);
  const theme=useTheme();
+ // The engine is created once; the root can change when the caller swaps
+ // exercise, so the beat handler reads it through a ref rather than closing
+ // over the value it was built with.
+ const rootRef=useRef(root);
+ rootRef.current=root;
 
  // One engine per mounted player. Re-created only if the host element changes.
  useEffect(()=>{
@@ -173,6 +186,22 @@ export default function TabPlayer({source,title,initialSpeed=1,initialLooping=fa
   const onPlayerState=(args:{state:number})=>setPlaying(args.state===alphaTab.synth.PlayerState.Playing);
   const onSoundFont=(e:{loaded:number;total:number})=>setSoundFontProgress(e.total?e.loaded/e.total:0);
   const onPosition=(e:{currentTime:number;endTime:number})=>setPosition({current:e.currentTime,total:e.endTime});
+  /*
+   * Naming what is sounding.
+   *
+   * The reader already knows every pitch it plays; until now it only showed
+   * where to put a finger. Given the exercise root it can say what each note
+   * is doing — which is the difference between reading a tab and hearing a
+   * function.
+   */
+  const onBeat=(beat:{notes?:{realValue:number}[]})=>{
+   if(rootRef.current===undefined)return;
+   const notes=beat?.notes??[];
+   setSounding(notes.map(note=>({
+    name:noteName(note.realValue).replace(/\d+$/,""),
+    degree:degreeAt(note.realValue-rootRef.current!),
+   })));
+  };
   const onError=(e:Error)=>setError(e?.message||"The tab could not be rendered.");
   // postRenderFinished fires once everything is placed, which is the only point
   // at which the stave lines can be measured.
@@ -182,6 +211,7 @@ export default function TabPlayer({source,title,initialSpeed=1,initialLooping=fa
   instance.playerStateChanged.on(onPlayerState as never);
   instance.soundFontLoad.on(onSoundFont as never);
   instance.playerPositionChanged.on(onPosition as never);
+  instance.playedBeatChanged.on(onBeat as never);
   instance.error.on(onError as never);
   instance.postRenderFinished.on(onPlaced);
 
@@ -217,6 +247,7 @@ export default function TabPlayer({source,title,initialSpeed=1,initialLooping=fa
   setReady(false);
   setError("");
   setPosition({current:0,total:0});
+  setSounding([]);
   setLabels([]);
   clearSurface();
   try{
@@ -320,6 +351,20 @@ export default function TabPlayer({source,title,initialSpeed=1,initialLooping=fa
     />
     <span className="tabTime mono dim">{clock(position.total)}</span>
    </div>
+
+   {root!==undefined&&(
+    <p className="nowSounding" role="status" aria-live="off">
+     {sounding.length===0
+      ?<span className="dim">Press play to hear each note named as it sounds.</span>
+      :sounding.map((note,i)=>(
+       <span key={i} className="soundingNote">
+        <b>{note.name}</b>
+        <i>{note.degree.names[0]}</i>
+        <small>{note.degree.label}</small>
+       </span>
+      ))}
+    </p>
+   )}
 
    {error&&<p className="tabError" role="alert">{error}</p>}
    {loadingSoundFont&&(

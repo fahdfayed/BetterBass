@@ -2,6 +2,7 @@
 import {useState} from "react";
 import {THEORY_DICTIONARIES,THEORY_DOMAINS,type LocalText} from "./bass-theory-data";
 import {MODES} from "./harmony-fretboard-data";
+import Formula from "./components/Formula";
 
 const N=["C","C♯","D","E♭","E","F","F♯","G","A♭","A","B♭","B"];
 /** See the note on HarmonyFretboard: this tool is also a lesson workspace pane. */
@@ -40,7 +41,7 @@ export default function TheoryReference({embedded=false,root,onSetMode,onAuditio
   <section className="theoryChapter">
    <header className="theoryChapterHead"><div><span>{`DOMAIN ${theory.n} · ${lt(theory.level)}`}</span><h2>{lt(theory.title)}</h2><p>{lt(theory.aim)}</p></div><b>{theory.n}</b></header>
    <article className="theoryCore"><span>{"THE CENTRAL IDEA"}</span><p>{lt(theory.core)}</p></article>
-   <div className="theoryConceptGrid">{theory.concepts.map((concept,i)=><article key={concept.formula}><i>{String(i+1).padStart(2,"0")}</i><span>{lt(concept.name)}</span><b dir="ltr">{concept.formula}</b><p>{lt(concept.explain)}</p></article>)}</div>
+   <div className="theoryConceptGrid">{theory.concepts.map((concept,i)=><article key={concept.formula}><i>{String(i+1).padStart(2,"0")}</i><span>{lt(concept.name)}</span><b dir="ltr"><Formula formula={concept.formula}/></b><p>{lt(concept.explain)}</p></article>)}</div>
    <div className="theoryEvidence">
     <article><span>{"ON BASS"}</span><h3>{"Turn it into action"}</h3><p>{lt(theory.bass)}</p></article>
     <article><span>{"COMMON TRAP"}</span><h3>{"Know when knowledge misleads"}</h3><p>{lt(theory.trap)}</p></article>
@@ -52,7 +53,7 @@ export default function TheoryReference({embedded=false,root,onSetMode,onAuditio
    <header><span>{"WORKING DICTIONARIES"}</span><h2>{"Look up the relationship—not only the label."}</h2><p>{`The reference root is currently ${N[ri]}. Change it in the course tools to transpose interval examples instantly.`}</p></header>
    <div className="theoryDictionaryTabs" role="tablist" aria-label={"Theory dictionaries"}>{THEORY_DICTIONARIES.map((item,i)=><button type="button" role="tab" aria-selected={theoryDictionary===i} className={theoryDictionary===i?"active":""} onClick={()=>setTheoryDictionary(i)} key={item.id}>{lt(item.title)}</button>)}</div>
    <div className="theoryDictionaryIntro"><div><span>{"SELECTED DICTIONARY"}</span><h3>{lt(dictionary.title)}</h3><p>{lt(dictionary.intro)}</p></div><b dir="ltr">ROOT · {N[ri]}</b></div>
-   <div className="theoryTableWrap"><table><thead><tr>{dictionary.columns.map(column=><th key={column.en}>{lt(column)}</th>)}</tr></thead><tbody>{dictionary.rows.map(row=><tr key={`${row.name.en}-${row.formula}`}><td>{lt(row.name)}</td><td dir="ltr">{row.formula}</td><td>{lt(row.meaning)}{row.semitones!==undefined&&<small className="theoryRootExample" dir="ltr">{N[ri]} → {N[(ri+row.semitones)%12]}</small>}</td></tr>)}</tbody></table></div>
+   <div className="theoryTableWrap"><table><thead><tr>{dictionary.columns.map(column=><th key={column.en}>{lt(column)}</th>)}</tr></thead><tbody>{dictionary.rows.map(row=><tr key={`${row.name.en}-${row.formula}`}><td>{lt(row.name)}</td><td dir="ltr"><Formula formula={row.formula}/></td><td>{lt(row.meaning)}{row.semitones!==undefined&&<small className="theoryRootExample" dir="ltr">{N[ri]} → {N[(ri+row.semitones)%12]}</small>}</td></tr>)}</tbody></table></div>
   </section>
 
   <section className="modeReference"><div className="refHead"><span>{"THE SEVEN MODES · SAME ROOT"}</span><p>{`Click a row to hear the mode over ${N[ri]}. The characteristic degree is the fastest clue, but it never replaces melodic behavior, phrasing or feel.`}</p></div>{MODES.map((m,i)=><button type="button" onClick={()=>{onSetMode(i);onAudition(m.s.map(x=>(ri+x)%12),.25)}} key={m.n}><b>{m.n}</b><span dir="ltr">{m.f}</span><em dir="ltr">{["3 + 7","NATURAL 6","♭2","♯4","♭7","♭6","♭5 + ♭2"][i]}</em><small>{(["major reference","minor with lift","minor, darkest root rub","major, raised-four colour","major dominant colour","natural minor","m7♭5 environment"])[i]}</small><i>▶</i></button>)}</section>

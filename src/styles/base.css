@@ -205,3 +205,31 @@ p{text-wrap:pretty}
 .between{display:flex;align-items:center;justify-content:space-between;gap:var(--s5)}
 .scrollX{overflow-x:auto;overscroll-behavior-x:contain}
 .sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/*
+ * Formulas that explain themselves.
+ *
+ * Degree shorthand is unreadable to anyone who does not already know it, so
+ * each degree is a button and its meaning is written underneath. The meaning
+ * sits in the flow rather than floating: nothing to position, nothing clipped
+ * by a scrolling table, and the same behaviour under a finger as a pointer.
+ */
+.formula{display:inline-flex;flex-direction:column;gap:var(--s2);align-items:flex-start}
+.formulaLine{display:inline}
+.degree{
+ font:inherit;color:inherit;padding:0 .12em;border-radius:2px;
+ border-bottom:1px dotted var(--ink-4);
+ transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
+}
+.degree:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.degree.on{color:var(--accent-ink);background:var(--accent);border-bottom-color:transparent}
+.degreeMeaning:empty{display:none}
+.degreeMeaning{
+ display:flex;flex-wrap:wrap;gap:var(--s1) var(--s3);align-items:baseline;
+ font-size:var(--t-small);line-height:1.5;max-width:var(--measure);
+ padding:var(--s3) 0 0;border-top:1px solid var(--rule);
+}
+.degreeMeaning b{font-family:var(--font-mono);color:var(--accent);font-weight:500}
+.degreeMeaning i{font-style:normal;color:var(--ink-3);font-size:var(--t-tiny);
+ letter-spacing:.06em;text-transform:uppercase}
+.degreeMeaning>span{flex:1 1 16rem;color:var(--ink-2)}

@@ -1,7 +1,51 @@
 import {lazy,Suspense,useMemo,useState} from "react";
-import {type TabExercise,toAlphaTex} from "./notation";
+import {type Degree,degreeAt,exampleFor} from "../theory/degrees";
+import {type TabExercise,degreesUsed,noteName,toAlphaTex} from "./notation";
 
 const TabPlayer=lazy(()=>import("./TabPlayer"));
+
+/**
+ * The notes an exercise is built from, named and explained.
+ *
+ * Every exercise says what to do and how to know you have it. Neither answers
+ * the question a learner actually has in front of the tab — what is this note
+ * doing here. The degrees are read back out of the music, so the answer is
+ * always the exercise that is on screen.
+ */
+function DegreeKey({exercise}:{exercise:TabExercise}){
+ const [open,setOpen]=useState<Degree|null>(null);
+ const degrees=useMemo(()=>degreesUsed(exercise),[exercise]);
+ if(degrees.length===0)return null;   // material that arrived already fretted
+
+ return (
+  <div className="degreeKey">
+   <span className="label">Built from</span>
+   <span className="degreeKeyRow">
+    {degrees.map(degree=>{
+     const meaning=degreeAt(degree);
+     const isOpen=open?.semitones===meaning.semitones;
+     return (
+      <button
+       key={degree}
+       type="button"
+       className={`degreeChip ${isOpen?"on":""}`}
+       aria-expanded={isOpen}
+       onClick={()=>setOpen(isOpen?null:meaning)}
+      >
+       <b>{meaning.names[0]}</b>
+       <i>{noteName(exercise.root+degree).replace(/\d+$/,"")}</i>
+      </button>
+     );
+    })}
+   </span>
+   {open&&(
+    <p className="degreeKeyMeaning" role="status">
+     <b>{open.label}</b> {open.meaning} {exampleFor(open,exercise.root)}
+    </p>
+   )}
+  </div>
+ );
+}
 
 /**
  * A set of exercises with the reader underneath them.
@@ -46,6 +90,8 @@ export default function ExerciseTabs({exercises,label}:{exercises:TabExercise[];
     <p className="dim"><span className="label">Pass</span> {exercise.pass}</p>
    </div>
 
+   <DegreeKey exercise={exercise}/>
+
    {tex instanceof Error
     ?<p className="tabError" role="alert">{tex.message}</p>
     :(
@@ -55,6 +101,7 @@ export default function ExerciseTabs({exercises,label}:{exercises:TabExercise[];
        source={{kind:"tex",tex}}
        title={exercise.title}
        initialLooping={exercise.loop}
+       root={exercise.root}
       />
      </Suspense>
     )}

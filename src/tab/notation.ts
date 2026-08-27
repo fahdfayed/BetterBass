@@ -310,3 +310,27 @@ export const c=(degs:number[],d:Duration=4,extra:Partial<Extract<Event,{t:"c"}>>
 export const f=(string:number,fret:number,d:Duration=8,extra:Partial<Extract<Event,{t:"f"}>>={}):Event=>({t:"f",string,fret,d,...extra});
 /** Several degrees in a row at one note value. */
 export const run=(degs:number[],d:Duration=4):Event[]=>degs.map(deg=>n(deg,d));
+
+/**
+ * The distinct degrees an exercise is built from, in the order they first
+ * appear.
+ *
+ * An exercise says what to do and how to know you have it, but never which
+ * notes it is made of or what they are for. That answer is already sitting in
+ * the music, so it is read back rather than written out — it cannot drift from
+ * the exercise the way a hand-written note would.
+ *
+ * Material that arrived already fretted has no root to measure against, so it
+ * returns nothing rather than inventing degrees.
+ */
+export function degreesUsed(exercise:TabExercise):number[]{
+ const seen:number[]=[];
+ for(const bar of exercise.bars)for(const event of bar){
+  const degrees=event.t==="n"?[event.deg]:event.t==="c"?event.degs:[];
+  for(const degree of degrees){
+   const pitchClass=((degree%12)+12)%12;
+   if(!seen.includes(pitchClass))seen.push(pitchClass);
+  }
+ }
+ return seen;
+}

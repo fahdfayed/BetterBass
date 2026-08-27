@@ -1,6 +1,7 @@
 "use client";
 import {useCallback,useEffect,useMemo,useRef,useState} from "react";
 import {NOTE_ROLES,PITCH_NAMES,PROGRESSION_PRESETS,buildChordVoicing,classifyNote,commonTones,intervalLabel,parseChord,parseProgression,recommendScales,spellChordNote,voiceLeadingPaths,type ChordFamily,type ParsedChord} from "./harmony-fretboard-data";
+import {degreeAt} from "./theory/degrees";
 
 /**
  * Both of these tools stand on their own route and also sit inside a lesson as
@@ -187,7 +188,15 @@ export default function HarmonyFretboard({embedded=false,homeMode,displayMode,fo
 
   <section className="hfModes">
    <header><div><span>{"03 · RANKED CHORD-SCALE OPTIONS"}</span><h2>{"Several can be correct. Their jobs are different."}</h2></div><p>{"Percentages rank literal chord fit, tonal-centre overlap and connection into the next chord. They are guidance—not a law that replaces your ear."}</p></header>
-   <div>{recommendations.map((recommendation,i)=>{const chosen=recommendation.scale.id===selectedScale.id;return <article className={chosen?"active":""} key={recommendation.scale.id}><button className="hfModeSelect" type="button" onClick={()=>setChoice({key:currentKey,scale:recommendation.scale.id})}><small>{i===0?"BEST STARTING POINT":i===1?"CONTEXT OPTION":"ALTERNATIVE COLOUR"}</small><b>{PITCH_NAMES[current.root]} {recommendation.scale.name}</b><strong>{recommendation.score}%</strong><code dir="ltr">{recommendation.scale.formula}</code><p>{recommendation.reason.en} {recommendation.scale.use.en}</p><em>{"WATCH · "}{recommendation.scale.watch.en}</em></button><button type="button" className="hfHear" onClick={()=>onAudition([...recommendation.scale.intervals.map(iv=>mod(current.root+iv)),current.root],.22,current.root)}>▶ {"HEAR"}</button></article>})}</div>
+   <div>{recommendations.map((recommendation,i)=>{const chosen=recommendation.scale.id===selectedScale.id;return <article className={chosen?"active":""} key={recommendation.scale.id}><button className="hfModeSelect" type="button" onClick={()=>setChoice({key:currentKey,scale:recommendation.scale.id})}><small>{i===0?"BEST STARTING POINT":i===1?"CONTEXT OPTION":"ALTERNATIVE COLOUR"}</small><b>{PITCH_NAMES[current.root]} {recommendation.scale.name}</b><strong>{recommendation.score}%</strong><code dir="ltr">{recommendation.scale.formula}</code><p>{recommendation.reason.en} {recommendation.scale.use.en}</p><span className="hfWorking">{(()=>{
+     const total=current.intervals.length,covered=total-recommendation.missing.length;
+     return <>
+      <em className={recommendation.missing.length?"short":""}>{covered}/{total} chord tones</em>
+      {recommendation.missing.length>0&&<em className="short">{"no "}{recommendation.missing.map(iv=>degreeAt(iv).names[0]).join(", ")}</em>}
+      <em>{recommendation.contextOverlap}{"/7 shared with the key"}</em>
+      {recommendation.commonNext>0&&<em>{recommendation.commonNext}{" lead into the next chord"}</em>}
+     </>;
+    })()}</span><em>{"WATCH · "}{recommendation.scale.watch.en}</em></button><button type="button" className="hfHear" onClick={()=>onAudition([...recommendation.scale.intervals.map(iv=>mod(current.root+iv)),current.root],.22,current.root)}>▶ {"HEAR"}</button></article>})}</div>
   </section>
 
   <section className="hfMapControls"><div><span>{"LABELS"}</span>{viewLabels.map(([value,en,ar])=><button type="button" aria-pressed={actualDisplay===value} className={actualDisplay===value?"active":""} onClick={()=>onDisplayMode(value)} key={value}>{en}</button>)}</div><div><span>{"SHOW"}</span>{filterLabels.map(([value,en,ar])=><button type="button" aria-pressed={filter===value} className={filter===value?"active":""} onClick={()=>onFog(value)} key={value}>{en}</button>)}</div><div><span>{"NECK AREA"}</span>{rangeLabels.map(([value,en,ar])=><button type="button" aria-pressed={neckRange===value} className={neckRange===value?"active":""} onClick={()=>setNeckRange(value)} key={value}>{en}</button>)}</div></section>
