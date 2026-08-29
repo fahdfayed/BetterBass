@@ -554,6 +554,148 @@ const SPECS:Spec[]=[
   [n(1,8),n(4,8),n(6,8),n(4,8),n(0,4),n(3,4)],
   [n(0,1)],
  ]},
+
+ /* ---------------- Register transfer, one per lesson ---------------- */
+ {lesson:0,index:3,title:"Same function, second register",brief:"5 and ♭3 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name 5 and ♭3 the same way, and neither one is a box you are reciting.",root:A1,rootName:"A drone",tempo:66,bars:[
+  [n(0,4),n(7,4),n(3,4),n(0,4)],
+  [n(12,4),n(19,4),n(15,4),n(12,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:1,index:3,title:"Same function, second register",brief:"♭2 and ♯4/♭5 and 7 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name ♭2 and ♯4/♭5 and 7 the same way, and neither one is a box you are reciting.",root:A1,rootName:"A drone",tempo:56,bars:[
+  [n(0,4),n(1,4),n(6,4),n(11,4)],
+  [n(12,4),n(13,4),n(18,4),n(23,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:2,index:3,title:"Same function, second register",brief:"♭3 and ♭7 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name ♭3 and ♭7 the same way, and neither one is a box you are reciting.",root:A1,rootName:"Am7",tempo:72,bars:[
+  [n(0,4),n(3,4),n(10,4),n(0,4)],
+  [n(12,4),n(15,4),n(22,4),n(12,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:3,index:3,title:"Same function, second register",brief:"♭2 low on the neck, then the same function an octave up. The shape may change; the function may not.",pass:"Both registers name ♭2 the same way, and neither one is a box you are reciting.",root:A1,rootName:"Am7",tempo:70,bars:[
+  [n(0,4),n(1,4),n(0,4),n(1,4)],
+  [n(12,4),n(13,4),n(12,4),n(13,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:4,index:3,title:"Same function, second register",brief:"3 and 7 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name 3 and 7 the same way, and neither one is a box you are reciting.",root:C2,rootName:"C drone",tempo:64,bars:[
+  [n(0,4),n(4,4),n(11,4),n(0,4)],
+  [n(12,4),n(16,4),n(23,4),n(12,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:5,index:3,title:"Same function, second register",brief:"♭3 and 6 and ♭7 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name ♭3 and 6 and ♭7 the same way, and neither one is a box you are reciting.",root:C2,rootName:"C drone",tempo:66,bars:[
+  [n(0,4),n(3,4),n(9,4),n(10,4)],
+  [n(12,4),n(15,4),n(21,4),n(22,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:6,index:3,title:"Same function, second register",brief:"♯4/♭5 and ♭7 and 6 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name ♯4/♭5 and ♭7 and 6 the same way, and neither one is a box you are reciting.",root:C2,rootName:"C drone",tempo:60,bars:[
+  [n(0,4),n(6,4),n(10,4),n(9,4)],
+  [n(12,4),n(18,4),n(22,4),n(21,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:7,index:3,title:"Same function, second register",brief:"6 low on the neck, then the same function an octave up. The shape may change; the function may not.",pass:"Both registers name 6 the same way, and neither one is a box you are reciting.",root:D2,rootName:"D Dorian drone",tempo:72,bars:[
+  [n(0,4),n(9,4),n(0,4),n(9,4)],
+  [n(12,4),n(21,4),n(12,4),n(21,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:8,index:3,title:"Same function, second register",brief:"3 and 7 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name 3 and 7 the same way, and neither one is a box you are reciting.",root:C2,rootName:"Cmaj7 drone",tempo:75,bars:[
+  [n(0,4),n(4,4),n(11,4),n(0,4)],
+  [n(12,4),n(16,4),n(23,4),n(12,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:9,index:3,title:"Same function, second register",brief:"6 low on the neck, then the same function an octave up. The shape may change; the function may not.",pass:"Both registers name 6 the same way, and neither one is a box you are reciting.",root:D2,rootName:"D drone",tempo:76,bars:[
+  [n(0,4),n(9,4),n(0,4),n(9,4)],
+  [n(12,4),n(21,4),n(12,4),n(21,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:10,index:3,title:"Same function, second register",brief:"♭2 low on the neck, then the same function an octave up. The shape may change; the function may not.",pass:"Both registers name ♭2 the same way, and neither one is a box you are reciting.",root:E1,rootName:"E drone",tempo:65,bars:[
+  [n(0,4),n(1,4),n(0,4),n(1,4)],
+  [n(12,4),n(13,4),n(12,4),n(13,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:11,index:3,title:"Same function, second register",brief:"♯4/♭5 low on the neck, then the same function an octave up. The shape may change; the function may not.",pass:"Both registers name ♯4/♭5 the same way, and neither one is a box you are reciting.",root:C2,rootName:"C drone",tempo:72,bars:[
+  [n(0,4),n(6,4),n(0,4),n(6,4)],
+  [n(12,4),n(18,4),n(12,4),n(18,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:12,index:3,title:"Same function, second register",brief:"♭7 low on the neck, then the same function an octave up. The shape may change; the function may not.",pass:"Both registers name ♭7 the same way, and neither one is a box you are reciting.",root:G1,rootName:"G7 vamp",tempo:78,bars:[
+  [n(0,4),n(10,4),n(0,4),n(10,4)],
+  [n(12,4),n(22,4),n(12,4),n(22,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:13,index:3,title:"Same function, second register",brief:"♭6 low on the neck, then the same function an octave up. The shape may change; the function may not.",pass:"Both registers name ♭6 the same way, and neither one is a box you are reciting.",root:A1,rootName:"A drone",tempo:72,bars:[
+  [n(0,4),n(8,4),n(0,4),n(8,4)],
+  [n(12,4),n(20,4),n(12,4),n(20,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:14,index:3,title:"Same function, second register",brief:"♯4/♭5 and ♭2 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name ♯4/♭5 and ♭2 the same way, and neither one is a box you are reciting.",root:B1,rootName:"B drone",tempo:70,bars:[
+  [n(0,4),n(6,4),n(1,4),n(0,4)],
+  [n(12,4),n(18,4),n(13,4),n(12,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:15,index:3,title:"Same function, second register",brief:"6 low on the neck, then the same function an octave up. The shape may change; the function may not.",pass:"Both registers name 6 the same way, and neither one is a box you are reciting.",root:D2,rootName:"Dm7",tempo:88,bars:[
+  [n(0,4),n(9,4),n(0,4),n(9,4)],
+  [n(12,4),n(21,4),n(12,4),n(21,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:16,index:3,title:"Same function, second register",brief:"6 low on the neck, then the same function an octave up. The shape may change; the function may not.",pass:"Both registers name 6 the same way, and neither one is a box you are reciting.",root:A1,rootName:"A · drum loop",tempo:84,bars:[
+  [n(0,4),n(9,4),n(0,4),n(9,4)],
+  [n(12,4),n(21,4),n(12,4),n(21,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:17,index:3,title:"Same function, second register",brief:"6 low on the neck, then the same function an octave up. The shape may change; the function may not.",pass:"Both registers name 6 the same way, and neither one is a box you are reciting.",root:A1,rootName:"A Dorian",tempo:80,bars:[
+  [n(0,4),n(9,4),n(0,4),n(9,4)],
+  [n(12,4),n(21,4),n(12,4),n(21,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:18,index:3,title:"Same function, second register",brief:"6 and ♭7 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name 6 and ♭7 the same way, and neither one is a box you are reciting.",root:A1,rootName:"A Mixolydian",tempo:90,bars:[
+  [n(0,4),n(9,4),n(10,4),n(0,4)],
+  [n(12,4),n(21,4),n(22,4),n(12,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:19,index:3,title:"Same function, second register",brief:"6 low on the neck, then the same function an octave up. The shape may change; the function may not.",pass:"Both registers name 6 the same way, and neither one is a box you are reciting.",root:A1,rootName:"A drone",tempo:56,bars:[
+  [n(0,4),n(9,4),n(0,4),n(9,4)],
+  [n(12,4),n(21,4),n(12,4),n(21,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:20,index:3,title:"Same function, second register",brief:"6 low on the neck, then the same function an octave up. The shape may change; the function may not.",pass:"Both registers name 6 the same way, and neither one is a box you are reciting.",root:D2,rootName:"Dm7 vamp",tempo:84,bars:[
+  [n(0,4),n(9,4),n(0,4),n(9,4)],
+  [n(12,4),n(21,4),n(12,4),n(21,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:21,index:3,title:"Same function, second register",brief:"6 low on the neck, then the same function an octave up. The shape may change; the function may not.",pass:"Both registers name 6 the same way, and neither one is a box you are reciting.",root:D2,rootName:"Dm7 drone",tempo:80,bars:[
+  [n(0,4),n(9,4),n(0,4),n(9,4)],
+  [n(12,4),n(21,4),n(12,4),n(21,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:22,index:3,title:"Same function, second register",brief:"6 and ♯4/♭5 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name 6 and ♯4/♭5 the same way, and neither one is a box you are reciting.",root:D2,rootName:"Three contexts",tempo:78,bars:[
+  [n(0,4),n(9,4),n(6,4),n(0,4)],
+  [n(12,4),n(21,4),n(18,4),n(12,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:23,index:3,title:"Same function, second register",brief:"7 and 4 and 3 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name 7 and 4 and 3 the same way, and neither one is a box you are reciting.",root:D2,rootName:"Dm7 → G7 → Cmaj7",tempo:66,bars:[
+  [n(0,4),n(11,4),n(5,4),n(4,4)],
+  [n(12,4),n(23,4),n(17,4),n(16,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:24,index:3,title:"Same function, second register",brief:"7 and 2 and ♯4/♭5 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name 7 and 2 and ♯4/♭5 the same way, and neither one is a box you are reciting.",root:D2,rootName:"Dm7",tempo:70,bars:[
+  [n(0,4),n(11,4),n(2,4),n(6,4)],
+  [n(12,4),n(23,4),n(14,4),n(18,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:25,index:3,title:"Same function, second register",brief:"♭2 and 7 and 2 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name ♭2 and 7 and 2 the same way, and neither one is a box you are reciting.",root:A1,rootName:"Am7",tempo:72,bars:[
+  [n(0,4),n(1,4),n(11,4),n(2,4)],
+  [n(12,4),n(13,4),n(23,4),n(14,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:26,index:3,title:"Same function, second register",brief:"♭2 and 3 and ♯4/♭5 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name ♭2 and 3 and ♯4/♭5 the same way, and neither one is a box you are reciting.",root:A1,rootName:"A Dorian",tempo:84,bars:[
+  [n(0,4),n(1,4),n(4,4),n(6,4)],
+  [n(12,4),n(13,4),n(16,4),n(18,4)],
+  [n(12,2),n(0,2)],
+ ]},
+ {lesson:27,index:3,title:"Same function, second register",brief:"6 and ♭2 and ♯4/♭5 low on the neck, then the same functions an octave up. The shape may change; the function may not.",pass:"Both registers name 6 and ♭2 and ♯4/♭5 the same way, and neither one is a box you are reciting.",root:A1,rootName:"32-bar form",tempo:80,bars:[
+  [n(0,4),n(9,4),n(1,4),n(6,4)],
+  [n(12,4),n(21,4),n(13,4),n(18,4)],
+  [n(12,2),n(0,2)],
+ ]},
 ];
 
 const key=(lesson:number,index:number)=>`l${lesson}-${index}`;
