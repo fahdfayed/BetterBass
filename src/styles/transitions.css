@@ -84,6 +84,17 @@
  to{opacity:1;transform:translate3d(0,0,0)}
 }
 
+/* ---- paced reading ------------------------------------------------------ */
+
+/* A beat of teaching arriving on request. It enters from below rather than the
+   side, because it is being added underneath what has already been read
+   rather than replacing it. */
+.pacedBeat{animation:beatIn 320ms var(--ease-out) both}
+@keyframes beatIn{
+ from{opacity:0;transform:translate3d(0,12px,0)}
+ to{opacity:1;transform:translate3d(0,0,0)}
+}
+
 /* ---- numbers ------------------------------------------------------------ */
 
 /* A value that has just changed gets one pulse, so a score moving is noticed
@@ -97,5 +108,5 @@
 
 @media (prefers-reduced-motion:reduce){
  ::view-transition-old(root),::view-transition-new(root),
- .stagger>*,.stageSwap,.tick{animation:none !important}
+ .stagger>*,.stageSwap,.tick,.pacedBeat{animation:none !important}
 }

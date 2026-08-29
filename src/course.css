@@ -40,3 +40,11 @@
 
 @media(max-width:1050px){.theoryCoverage{grid-template-columns:repeat(3,1fr)}.theoryCoverage article:nth-child(3){border-right:0}.theoryCoverage article:nth-child(-n+3){border-bottom:1px solid var(--line)}.theoryUseFlow>header,.theoryMastery>header{grid-template-columns:.5fr 1.5fr}.theoryDomainSection>header,.theoryDictionary>header{grid-template-columns:1fr 1fr}.theoryDomainSection>header p,.theoryDictionary>header p{grid-column:1/-1}.theoryDomainNav{grid-template-columns:1fr 1fr}.theoryEvidence{grid-template-columns:1fr}.theoryEvidence article{min-height:0;border-right:0;border-bottom:1px solid var(--line)}.theoryEvidence article:last-child{border-bottom:0}.theoryUseFlow>div,.theoryMastery>div{overflow-x:auto;grid-template-columns:repeat(5,190px)}}
 @media(max-width:650px){.theoryCoverage{grid-template-columns:1fr 1fr}.theoryCoverage article:nth-child(3){border-right:1px solid var(--line)}.theoryCoverage article:nth-child(2n){border-right:0}.theoryCoverage article:nth-child(-n+4){border-bottom:1px solid var(--line)}.theoryUseFlow>header,.theoryDomainSection>header,.theoryDictionary>header,.theoryMastery>header{grid-template-columns:1fr}.theoryDomainSection>header p,.theoryDictionary>header p{grid-column:auto}.theoryDomainNav{grid-template-columns:1fr}.theoryDomainNav button{min-height:190px}.theoryChapterHead{grid-template-columns:1fr}.theoryChapterHead>b{display:none}.theoryChapterHead>div,.theoryCore,.theoryConceptGrid article{padding:24px 20px}.theoryCore{grid-template-columns:1fr;gap:15px}.theoryConceptGrid{grid-template-columns:1fr}.theoryConceptGrid article,.theoryConceptGrid article:nth-child(2n){min-height:0;border-right:0}.theoryConceptGrid article>b{margin-top:38px}.theoryDictionaryIntro{grid-template-columns:1fr;gap:18px}.theoryDictionaryIntro>b{justify-self:start}.theoryEncyclopedia .modeReference>button{padding:16px 12px}}
+
+/* The control that hands over the next beat of a stage. It sits outside the
+   stage's own grid so it spans the full reading column rather than landing in
+   a column of it. */
+.pacedNext{display:flex;align-items:center;gap:var(--s5);flex-wrap:wrap;margin:35px 0 0;padding-top:25px;border-top:1px solid var(--rule)}
+.pacedCount{margin:0;color:var(--ink-3);font-size:var(--t-small)}
+.pacedCount b{color:var(--ink-2)}
+.pacedNext .action-quiet{margin-left:auto}
