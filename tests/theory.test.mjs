@@ -361,3 +361,33 @@ test("every progression preset agrees with the key it declares",()=>{
   }
  }
 });
+
+test("the scale dictionary explains every scale the fretboard offers",()=>{
+ const dictionary=THEORY_DICTIONARIES.find(d=>/scale/i.test(d.title));
+ assert.ok(dictionary,"there should be a scale dictionary to look scales up in");
+
+ // A row that names a scale the fretboard can select has to agree with it.
+ // Three rows once carried a description where the formula belongs — "H–W
+ // REPEATING" — which reads fine and cannot be checked, explained or heard.
+ for(const row of dictionary.rows){
+  assert.ok(isDegreeFormula(row.formula),
+   `"${row.name}" is written as "${row.formula}", which the glossary cannot explain`);
+ }
+
+ const spell=formula=>formula.split(/\s+/).map(token=>semitonesOf(token)).join(",");
+ for(const row of dictionary.rows){
+  const scale=SCALE_LIBRARY.find(s=>s.name.toLowerCase()===row.name.toLowerCase());
+  if(!scale)continue;
+  assert.equal(spell(row.formula),spell(scale.formula),
+   `${row.name}: the dictionary says "${row.formula}" and the fretboard plays "${scale.formula}"`);
+ }
+
+ // Any scale a player can pick has somewhere to read about it.
+ const explained=new Set(dictionary.rows.map(r=>r.name.toLowerCase()));
+ const named=name=>[...explained].some(row=>row===name||row.split(" / ").includes(name));
+ for(const scale of SCALE_LIBRARY){
+  const lower=scale.name.toLowerCase();
+  assert.ok(named(lower)||[...explained].some(row=>row.includes(lower)),
+   `${scale.name} can be chosen on the fretboard but is in no dictionary`);
+ }
+});
