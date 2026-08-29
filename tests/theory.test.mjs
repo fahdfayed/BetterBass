@@ -391,3 +391,57 @@ test("the scale dictionary explains every scale the fretboard offers",()=>{
    `${scale.name} can be chosen on the fretboard but is in no dictionary`);
  }
 });
+
+test("the chord dictionary describes what the fretboard actually sounds",()=>{
+ const dictionary=THEORY_DICTIONARIES.find(d=>/chord/i.test(d.title));
+ assert.ok(dictionary,"there should be a chord dictionary");
+
+ /*
+  * A row and the chord reader have to agree, or a player reads one thing and
+  * hears another. The mapping is written out here rather than derived, so the
+  * test states the expectation instead of restating the data.
+  */
+ const EXAMPLES={
+  "Major triad":"C","Minor triad":"Cm","Diminished triad":"Cdim","Augmented triad":"Caug",
+  "Major 6":"C6","Minor 6":"Cm6","Major 7":"Cmaj7","Dominant 7":"C7","Minor 7":"Cm7",
+  "Minor-major 7":"CmMaj7","Half-diminished 7":"Cm7b5","Diminished 7":"Cdim7",
+  "Major 9":"Cmaj9","Dominant 9":"C9","Minor 9":"Cm9",
+  "Major 7 ♯11":"Cmaj7#11","Major 7 ♯5":"Cmaj7#5","Minor 11":"Cm11",
+  "Dominant 7sus4":"C7sus4","Minor 6/9":"Cm6/9",
+ };
+ // Rows deliberately not mapped: "Sus2 / Sus4" and "11 / Sus dominant" name two
+ // chords in one row, and "Altered dominant" and "Slash chord" name a family
+ // rather than a spelling. "13" is checked separately, just below.
+
+ const pitchesOf=intervals=>[...new Set(intervals.map(iv=>((iv%12)+12)%12))].sort((a,b)=>a-b).join(",");
+
+ let checked=0;
+ for(const row of dictionary.rows){
+  const symbol=EXAMPLES[row.name];
+  if(!symbol)continue;
+  checked++;
+  assert.ok(isDegreeFormula(row.formula),
+   `"${row.name}" is written as "${row.formula}", which the glossary cannot explain`);
+  const fromFormula=[...new Set(row.formula.split(/\s+/).map(t=>semitonesOf(t)))].sort((a,b)=>a-b).join(",");
+  const chord=parseChord(symbol);
+  assert.equal(chord.error,undefined,`${symbol} should be readable`);
+  assert.equal(fromFormula,pitchesOf(chord.intervals),
+   `${row.name}: the dictionary says "${row.formula}" but ${symbol} sounds different`);
+ }
+ assert.ok(checked>=20,`only ${checked} chord rows were cross-checked against the reader`);
+
+ /*
+  * The one place the two disagree on purpose. The reader stacks a 13 chord in
+  * full, eleventh included; the dictionary leaves the eleventh out and says so,
+  * because over a dominant with a major third it is an avoid note rather than
+  * a chord tone. Both are defensible and they are not the same claim, so the
+  * difference is written down here instead of being quietly averaged away.
+  */
+ const thirteenth=dictionary.rows.find(row=>row.name==="13");
+ const stated=[...new Set(thirteenth.formula.split(/\s+/).map(t=>semitonesOf(t)))].sort((a,b)=>a-b);
+ const sounded=pitchesOf(parseChord("C13").intervals).split(",").map(Number);
+ assert.deepEqual(stated,[0,2,4,7,9,10],"the dictionary's 13 omits the eleventh");
+ assert.deepEqual(sounded,[0,2,4,5,7,9,10],"the reader's 13 includes the eleventh");
+ assert.deepEqual(sounded.filter(iv=>!stated.includes(iv)),[5],
+  "the eleventh is the only thing they differ about");
+});
