@@ -27,6 +27,7 @@ import {degreeAt,SHORT_NAMES as DEG} from "./theory/degrees";
 import {goToView,navigate,pathForView,useRoute} from "./router";
 import {autoCorrelate,centsToNote,labelFor,midiHz,NOTE_NAMES,PITCH_MAX_HZ,PITCH_MIN_HZ,PITCH_RMS_GATE,tensionFor,type Harmony,type NoteEvent} from "./pitch";
 import {COURSE_LESSONS,COURSE_UNITS} from "./course-data";
+import {lessonContext} from "./course-context";
 import {LESSON_DETAILS} from "./course-details";
 import {LEARNING_STATE_EVENT,saveLearningState} from "./learning-storage";
 import VoiceControl from "./VoiceControl";
@@ -82,6 +83,23 @@ export default function BassLab(){
  // player can see nothing of, and on a first visit it is the longest pause in
  // the app. The buttons that start listening read from this.
  const [connecting,setConnecting]=useState(false);
+ /*
+  * The workspace follows the lesson.
+  *
+  * Its panes are the fretboard, the band and the ear pad, and they were opening
+  * on whatever key the player last left them in — so the Lydian lesson showed
+  * its fretboard in Dorian, and the pane that says the band follows the
+  * lesson's key and mode was telling the truth about nothing. This sets the
+  * ground when the lesson changes, and not on every render, so a player who
+  * moves the key inside a lesson keeps their change until they leave it.
+  */
+ useEffect(()=>{
+  const ground=lessonContext(courseIndex);
+  setRoot(ground.root);
+  setMode(ground.mode);
+  setChord(ground.chord);
+ },[courseIndex]);
+
  const territories=useMemo(()=>territoryStates(courseCompleted,courseIndex),[courseCompleted,courseIndex]);
  const audio=useRef<{ctx:AudioContext,stream:MediaStream,raf:number}|null>(null),eventRef=useRef<{midi:number,start:number,amp:number}|null>(null),eventsRef=useRef<NoteEvent[]>([]),recordRef=useRef(false),runtimeRef=useRef<{ctx:AudioContext,clock:AudioClock,master:GainNode}|null>(null),auditionRef=useRef<AudioContext|null>(null); const ri=root, scale=useMemo(()=>MODES[mode].s.map(x=>(x+ri)%12),[mode,ri]), color=(ri+MODES[mode].s[MODES[mode].c])%12, chordTones=useMemo(()=>[0,3,7,10].map(x=>(x+ri)%12),[ri]);
  // The microphone loop and the backing band both outlive the render that starts

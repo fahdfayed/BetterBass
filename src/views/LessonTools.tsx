@@ -89,7 +89,7 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
   <Suspense fallback={<Loading/>}>
    <HarmonyFretboard
     embedded
-    homeMode={bridge.mode} displayMode={bridge.fbView} fog={bridge.fog} selectedPc={bridge.picked}
+    centre={root} homeMode={bridge.mode} displayMode={bridge.fbView} fog={bridge.fog} selectedPc={bridge.picked}
     onSetRoot={bridge.setRoot} onSetMode={bridge.setMode} onSetChord={bridge.setChord}
     onDisplayMode={bridge.setFbView} onFog={bridge.setFog} onSelectPc={bridge.setPicked}
     onAudition={bridge.audition}

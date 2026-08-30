@@ -14,6 +14,14 @@ type Props={
  /** True when rendered as a lesson workspace pane rather than its own page. */
  embedded?:boolean;
  homeMode:number;displayMode:string;fog:number;selectedPc:number|null;
+ /**
+  * The centre to show, when something outside decides it.
+  *
+  * On its own page the board owns its centre and this is left off. Inside a
+  * lesson the lesson decides — otherwise the Lydian lesson opens its fretboard
+  * wherever the player last left one, which is what it used to do.
+  */
+ centre?:number;
  onSetRoot:(root:number)=>void;onSetMode:(mode:number)=>void;onSetChord:(chord:string)=>void;
  onDisplayMode:(mode:string)=>void;onFog:(level:number)=>void;onSelectPc:(pc:number|null)=>void;
  onAudition:(notes:number[],hold?:number,droneRoot?:number)=>void;
@@ -88,10 +96,13 @@ function familyJob(family:ChordFamily){
  return jobs[family];
 }
 
-export default function HarmonyFretboard({embedded=false,homeMode,displayMode,fog,selectedPc,onSetRoot,onSetMode,onSetChord,onDisplayMode,onFog,onSelectPc,onAudition}:Props){
+export default function HarmonyFretboard({embedded=false,centre:givenCentre,homeMode,displayMode,fog,selectedPc,onSetRoot,onSetMode,onSetChord,onDisplayMode,onFog,onSelectPc,onAudition}:Props){
  const initial=PROGRESSION_PRESETS[0];
  const [presetId,setPresetId]=useState(initial.id),[draft,setDraft]=useState(initial.chords.join(" | ")),[applied,setApplied]=useState(initial.chords.join(" | ")),[centre,setCentre]=useState(initial.center),[lens,setLens]=useState<string>(initial.lens),[active,setActive]=useState(0),[choice,setChoice]=useState<{key:string;scale:string}|null>(null),[applyError,setApplyError]=useState(""),[autoFollow,setAutoFollow]=useState(false),[countIn,setCountIn]=useState(false),[tempo,setTempo]=useState(80),[barsPerChord,setBarsPerChord]=useState(2),[harmonyLevel,setHarmonyLevel]=useState(46),[bandStyle,setBandStyle]=useState<BandStyleId>("pocket"),[bandMix,setBandMix]=useState<BandMix>({drums:true,keys:true,guitar:true,cue:true});
  const [neckRange,setNeckRange]=useState<NeckRange>("low");
+
+ // A centre handed in from outside replaces the board's own, when it moves.
+ useEffect(()=>{if(givenCentre!==undefined)setCentre(givenCentre)},[givenCentre]);
  const parsed=useMemo(()=>parseProgression(applied),[applied]),chords=parsed.chords,current=chords[Math.min(active,Math.max(0,chords.length-1))]||parseChord("Cmaj9"),next=chords.length>1?chords[(active+1)%chords.length]:current,currentKey=`${active}:${current.symbol}:${applied}`;
  const recommendations=useMemo(()=>recommendScales(current,next,centre,homeMode,lens),[current,next,centre,homeMode,lens]),selectedRecommendation=recommendations.find(x=>choice?.key===currentKey&&x.scale.id===choice.scale)||recommendations[0],selectedScale=selectedRecommendation.scale,paths=useMemo(()=>voiceLeadingPaths(current,next),[current,next]),shared=useMemo(()=>commonTones(current,next),[current,next]);
  const actualDisplay=displayMode==="interval"?"degree":displayMode==="function"||displayMode==="heat"?"priority":displayMode,filter=Math.min(4,fog),visibleFrets=neckRange==="low"?FRETS.slice(0,13):neckRange==="middle"?FRETS.slice(5,16):neckRange==="high"?FRETS.slice(10):FRETS;
