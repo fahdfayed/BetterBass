@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {lessonContext} from "../src/course-context.ts";
 import {COURSE_LESSONS} from "../src/course-data.ts";
+import {LESSON_DETAILS} from "../src/course-details.ts";
 import {MODES,PITCH_NAMES} from "../src/harmony-fretboard-data.ts";
 
 /**
@@ -77,4 +78,52 @@ test("an index outside the course still returns a usable ground",()=>{
  // The route carries a lesson number from the URL, which can be anything.
  assert.deepEqual(lessonContext(-5),lessonContext(0));
  assert.deepEqual(lessonContext(999),lessonContext(COURSE_LESSONS.length-1));
+});
+
+const significant=(text)=>new Set(
+ (text.toLowerCase().match(/[a-z♯♭0-9]+/g)??[]).filter(word=>word.length>3)
+);
+
+test("a lesson's prerequisites come from before it, not from itself",()=>{
+ /*
+  * The opening section says "check the foundation" and used to show the
+  * lesson's own outcomes: the Lydian lesson asked whether you could feature ♯4
+  * over a major third before it had explained either. A prerequisite that
+  * restates the outcome is the same mistake in a new field.
+  */
+ assert.equal(LESSON_DETAILS.length,COURSE_LESSONS.length);
+ for(let i=0;i<LESSON_DETAILS.length;i++){
+  const {prerequisites,selfCheck}=LESSON_DETAILS[i];
+  assert.equal(prerequisites.length,3,`lesson ${i} needs three prerequisites`);
+  for(const item of prerequisites){
+   assert.ok(item.length>20,`"${item}" is too short to be a real check`);
+   assert.ok(!selfCheck.includes(item),
+    `lesson ${i} lists "${item}" as both a prerequisite and an outcome`);
+
+   /*
+    * An exact match is the easy case. "Name the single degree that separates
+    * Aeolian from Dorian" against "Can you compare Aeolian and Dorian by one
+    * degree?" is the same question asked twice, and matches nothing exactly.
+    */
+   for(const outcome of selfCheck){
+    const shared=[...significant(item)].filter(word=>significant(outcome).has(word));
+    assert.ok(shared.length<3,
+     `lesson ${i} asks the same thing before and after:
+`+
+     `  before: ${item}
+  after:  ${outcome}
+  shared: ${shared.join(", ")}`);
+   }
+  }
+ }
+
+ // The first lesson cannot stand on an earlier one, so it stands on the
+ // instrument instead.
+ assert.match(LESSON_DETAILS[0].prerequisites.join(" "),/in tune|pulse|neck/);
+
+ // And a later lesson's prerequisites should name material the course has
+ // actually covered by then. Lydian follows the mode lessons, so its
+ // foundation is about thirds and drones, not about ♯4.
+ const lydian=LESSON_DETAILS[11].prerequisites.join(" ");
+ assert.match(lydian,/major third|major seventh/);
 });
