@@ -589,6 +589,18 @@
  */
 .doBody{container-type:inline-size;container-name:workspace}
 
+/*
+ * And the full-page views are a narrow container too, on a phone.
+ *
+ * The note above was written for the embedded case and stopped there, so on a
+ * 375px screen none of these rules fired and the theory encyclopedia laid its
+ * five-step flow out as five fixed 190px columns — 950px of content with no
+ * way to scroll to it. Naming the page itself means one set of rules answers
+ * both questions, because they are the same question: how much room is there.
+ * A lesson's own .doBody is nested inside this and still wins where it applies.
+ */
+.page{container-type:inline-size;container-name:workspace}
+
 @container workspace (max-width: 62rem){
  .theoryCoverage{grid-template-columns:repeat(3,1fr)}
  .theoryCoverage article:nth-child(3){border-right:0}
