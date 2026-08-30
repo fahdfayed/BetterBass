@@ -144,12 +144,20 @@
 .page .osScreen u:not([class]),
 .page .osScreen em:not([class]){background:var(--wash);color:var(--ink-2)}
 
-/* Legacy buttons that are not the primary action sit flat until hovered. */
-.page .osScreen button:not(.mega):not(.coursePrimary):not(.primaryAction){
+/*
+ * Legacy buttons that are not the primary action sit flat until hovered.
+ *
+ * The exclusions used to name .coursePrimary and .primaryAction, which no
+ * longer exist anywhere in the source, and missed .action-primary, which is
+ * what a primary action is actually called now. So this quietly stripped the
+ * fill off every primary button inside a legacy screen — on the dark theme
+ * that left near-black ink on the near-black page, at 1:1.
+ */
+.page .osScreen button:not(.mega):not(.action):not(.action-primary){
  background:transparent;
  border-color:var(--rule);
 }
-.page .osScreen button:not(.mega):not(.coursePrimary):not(.primaryAction):hover{
+.page .osScreen button:not(.mega):not(.action):not(.action-primary):hover{
  background:var(--wash);
  border-color:var(--rule-strong);
 }

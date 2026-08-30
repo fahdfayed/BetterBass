@@ -19,6 +19,7 @@ import ImprovisationLab from "./views/ImprovisationLab";
 import AdaptivePlan from "./views/AdaptivePlan";
 import BackingBand from "./views/BackingBand";
 import ListeningEngine from "./views/ListeningEngine";
+import ProgressionAnalyser from "./views/ProgressionAnalyser";
 import {territoryStates} from "./game/progression";
 import {MODES} from "./harmony-fretboard-data";
 import Formula from "./components/Formula";
@@ -54,9 +55,10 @@ const VIEW_META:Record<string,{eyebrow:string,title:string}>={
  practice:{eyebrow:"HANDS-FREE TRAINING",title:"Practice studio"},coach:{eyebrow:"LISTENING + FEEDBACK",title:"Live coach"},maqam:{eyebrow:"ARABIC MUSIC",title:"Maqam lab"},slap:{eyebrow:"TECHNIQUE + GROOVE",title:"Slap bass"},
  tools:{eyebrow:"ALL EXISTING TOOLS",title:"Tool library"},courseProgress:{eyebrow:"YOUR DEVELOPMENT",title:"Progress"},fret:{eyebrow:"HARMONY TOOL",title:"Fretboard map"},runtime:{eyebrow:"PLAY WITH A BAND",title:"Backing band"},
  engine:{eyebrow:"RECORD + UNDERSTAND",title:"Take analysis"},advanced:{eyebrow:"CONTROLLED TENSION",title:"Improvisation lab"},reference:{eyebrow:"LOOK SOMETHING UP",title:"Theory reference"},adaptive:{eyebrow:"PERSONAL CURRICULUM",title:"Adaptive plan"},
+ progression:{eyebrow:"READ A PROGRESSION",title:"Progression reader"},
  today:{eyebrow:"TODAY'S TRAINING",title:"Practice plan"},live:{eyebrow:"REAL-TIME PRACTICE",title:"Live session"},games:{eyebrow:"EAR + FRETBOARD",title:"Training games"},
 };
-const NAV_ACTIVE:Record<string,string[]>={course:["course"],roadmap:["roadmap","courseLesson"],practice:["practice","today","live"],coach:["coach","adaptive"],maqam:["maqam"],slap:["slap"],tools:["tools","fret","runtime","engine","advanced","reference","games"],courseProgress:["courseProgress"]};
+const NAV_ACTIVE:Record<string,string[]>={course:["course"],roadmap:["roadmap","courseLesson"],practice:["practice","today","live"],coach:["coach","adaptive"],maqam:["maqam"],slap:["slap"],tools:["tools","fret","runtime","engine","advanced","reference","games","progression"],courseProgress:["courseProgress"]};
 
 function ToolLoading(){return <div className="toolLoading" role="status"><i/><span>Opening your workspace…</span></div>}
 const outsideLevels=["Chromatic approach","Two-note enclosure","Chromatic passing run","½-beat side-slip","Two-beat side-slip","Outside motif","Semitone sequence","Outside pentatonic","Superimposed triad","Free controlled phrase"];
@@ -255,6 +257,10 @@ export default function BassLab(){
   onLoadIntoBand={semitones=>{setProgression([0,semitones,0,0]);setStyle("Psychedelic");setView("runtime")}}
   tab={labMode} onTabChange={setLabMode} feedback={labFeedback} onFeedback={setLabFeedback}/>}
 
+ {view==="progression"&&<ProgressionAnalyser audition={audition}
+  onSendToFretboard={(centre,homeMode,list)=>{
+   setRoot(centre);setMode(homeMode);setChord(list[0]??"Am7");setView("fret");
+  }}/>}
  {view==="tabs"&&<Suspense fallback={<ToolLoading/>}><TabStudio/></Suspense>}
  {view==="jaco"&&<Suspense fallback={<ToolLoading/>}><JacoMasterclass/></Suspense>}
 

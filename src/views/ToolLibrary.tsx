@@ -10,6 +10,7 @@ const TOOLS=[
  {id:"fret",icon:"course",tag:"SEE",title:"Harmony fretboard",desc:"See chord tones, modal colour and tension across the full neck in the current key."},
  {id:"engine",icon:"coach",tag:"LISTEN",title:"Record and analyse",desc:"Let the site hear a take and explain timing, note function, tension and resolution."},
  {id:"advanced",icon:"slap",tag:"CREATE",title:"Improvisation lab",desc:"Work on motifs, enclosures, side-slips, voice leading and deliberate outside playing."},
+ {id:"progression",icon:"course",tag:"READ",title:"Progression reader",desc:"Type a progression and read what it is doing — key, Roman numerals, function, and which chords are borrowed rather than merely outside."},
  {id:"reference",icon:"library",tag:"UNDERSTAND",title:"Theory reference",desc:"Look up the exact concept you need without leaving the lesson or starting another course."},
  {id:"adaptive",icon:"progress",tag:"PLAN",title:"Adaptive training plan",desc:"Turn your weakest key, skill and overdue review into one focused practice route."},
 ];
