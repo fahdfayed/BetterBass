@@ -31,7 +31,7 @@
 .hfNeckSection > header span,
 .hfNoteTutor article > span,
 .hfVoiceLeading > header span {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   letter-spacing: 0.14em;
   color: var(--lime);
 }
@@ -59,7 +59,7 @@
 .hfIntro aside small,
 .hfIntro aside span,
 .hfIntro aside em {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfIntro aside small {
   color: var(--ink-3);
@@ -115,7 +115,7 @@
 .hfModes header p,
 .hfNeckSection > header p,
 .hfVoiceLeading header p {
-  font-size:max(11px,0.6875rem);
+  font-size:var(--t-micro);
   line-height: 1.75;
   color: var(--ink-3);
   margin: 0;
@@ -135,7 +135,7 @@
 .hfCustomInput span,
 .hfMapControls span {
   display: block;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   letter-spacing: 0.1em;
   color: var(--ink-3);
   margin-bottom: 10px;
@@ -147,7 +147,7 @@
   background: transparent;
   color: var(--ink);
   padding: 13px;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfCustomInput {
   display: grid;
@@ -162,14 +162,14 @@
   border-left: 1px solid #68773a;
   background: var(--lime);
   color: var(--ink-4);
-  font: 700 max(11px,0.6875rem) var(--mono);
+  font: 700 var(--t-micro) var(--mono);
 }
 .hfInputHelp,
 .hfError {
   margin: 0;
   padding: 12px 22px;
   border-top: 1px solid var(--line);
-  font: max(11px,0.6875rem)/1.7 var(--mono);
+  font: var(--t-micro)/1.7 var(--mono);
   color: var(--ink-3);
 }
 .hfError {
@@ -202,16 +202,16 @@
   display: block;
 }
 .hfChordRail button small {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-4);
 }
 .hfChordRail button b {
-  font: 1.25rem var(--mono);
+  font: var(--t-lead) var(--mono);
   margin: 27px 0 6px;
   color: var(--ink-2);
 }
 .hfChordRail button span {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfChordRail button.next {
   background: transparent;
@@ -252,12 +252,12 @@
   color: var(--lime);
 }
 .hfChordDecode > div > small {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--violet);
 }
 .hfChordDecode > p {
   max-width: 780px;
-  font-size:max(11px,0.6875rem);
+  font-size:var(--t-micro);
   line-height: 1.7;
   color: var(--ink-3);
 }
@@ -276,13 +276,13 @@
 }
 .hfChordDecode dt,
 .hfNoteTutor dt {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-4);
 }
 .hfChordDecode dd,
 .hfNoteTutor dd {
   margin: 0;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-2);
 }
 .hfChordPreview {
@@ -292,7 +292,7 @@
   border: 1px solid #525b48;
   background: transparent;
   color: var(--lime);
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfChordPreview:disabled {
   cursor: not-allowed;
@@ -304,7 +304,7 @@
   background: transparent;
 }
 .hfAutoFollow h3 {
-  font-size:1.5625rem;
+  font-size:var(--t-h2);
   line-height: 1.15;
   margin: 25px 0;
 }
@@ -315,7 +315,7 @@
 }
 .hfTimingControls label {
   padding: 13px;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-3);
 }
 .hfTimingControls label + label {
@@ -329,7 +329,7 @@
   border: 0;
   background: transparent;
   color: white;
-  font: 1.0625rem var(--mono);
+  font: var(--t-body) var(--mono);
 }
 .hfTimingControls input:disabled,
 .hfTimingControls select:disabled {
@@ -344,19 +344,19 @@
   padding: 11px 13px;
   border: 1px solid var(--line);
   color: var(--ink-3);
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfBandStyle select {
   width: 100%;
   border: 0;
   background: transparent;
   color: var(--ink);
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfBandStyle small {
   grid-column: 1/-1;
   color: var(--ink-3);
-  font: max(11px,0.6875rem)/1.5 var(--mono);
+  font: var(--t-micro)/1.5 var(--mono);
 }
 .hfBandStyle select:disabled {
   opacity: 0.45;
@@ -372,7 +372,7 @@
   gap: 12px;
   padding: 9px 11px;
   border-bottom: 1px solid var(--line);
-  font: max(11px,0.6875rem)/1.4 var(--mono);
+  font: var(--t-micro)/1.4 var(--mono);
   color: var(--ink-3);
 }
 .hfBandMixer > header b {
@@ -395,7 +395,7 @@
   background: transparent;
   color: var(--ink-4);
   text-align: left;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfBandMixer button:nth-child(2n) {
   border-right: 0;
@@ -424,7 +424,7 @@
   align-items: center;
   gap: 10px;
   padding: 12px 0;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-3);
 }
 .hfHarmonyLevel input {
@@ -447,16 +447,16 @@
 }
 .hfSounding small {
   color: var(--violet);
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfSounding b {
   margin: 8px 0 6px;
   color: var(--ink);
-  font: max(11px,0.6875rem)/1.6 var(--mono);
+  font: var(--t-micro)/1.6 var(--mono);
 }
 .hfSounding span {
   color: var(--ink-3);
-  font: max(11px,0.6875rem)/1.55 var(--mono);
+  font: var(--t-micro)/1.55 var(--mono);
 }
 .hfAutoFollow > button {
   width: 100%;
@@ -465,14 +465,14 @@
   background: var(--lime);
   color: var(--ink-4);
   padding: 15px;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfAutoFollow > button.stop {
   border-color: var(--red);
   background: var(--red);
 }
 .hfAutoFollow > p {
-  font: max(11px,0.6875rem)/1.5 var(--mono);
+  font: var(--t-micro)/1.5 var(--mono);
   color: var(--ink-3);
 }
 .hfHeadphoneNote {
@@ -480,7 +480,7 @@
   padding-top: 8px;
   border-top: 1px solid var(--line);
   color: var(--ink-4);
-  font: max(11px,0.6875rem)/1.5 var(--mono);
+  font: var(--t-micro)/1.5 var(--mono);
 }
 .hfAutoPulse {
   position: absolute;
@@ -533,12 +533,12 @@
   display: block;
 }
 .hfModeSelect small {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-4);
 }
 .hfModeSelect b {
   min-height: 52px;
-  font-size:1.125rem;
+  font-size:var(--t-lead);
   line-height: 1.2;
   margin: 28px 0 0;
 }
@@ -546,7 +546,7 @@
   position: absolute;
   right: 20px;
   top: 17px;
-  font: 1.5625rem var(--mono);
+  font: var(--t-h2) var(--mono);
   color: var(--ink-4);
 }
 .hfModes article.active strong {
@@ -556,16 +556,16 @@
   margin: 18px 0;
   padding: 9px;
   background: transparent;
-  font: max(11px,0.6875rem)/1.5 var(--mono);
+  font: var(--t-micro)/1.5 var(--mono);
   color: var(--violet);
 }
 .hfModeSelect p {
-  font-size:max(11px,0.6875rem);
+  font-size:var(--t-micro);
   line-height: 1.65;
   color: var(--ink-3);
 }
 .hfModeSelect em {
-  font: max(11px,0.6875rem)/1.6 var(--mono);
+  font: var(--t-micro)/1.6 var(--mono);
   font-style: normal;
   color: var(--ink-3);
   border-top: 1px solid var(--line);
@@ -578,7 +578,7 @@
   border: 0;
   background: transparent;
   color: var(--lime);
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfMapControls {
   display: flex;
@@ -601,7 +601,7 @@
   background: transparent;
   color: var(--ink-3);
   padding: 8px 10px;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfMapControls button.active {
   border-color: var(--lime);
@@ -629,7 +629,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-3);
 }
 .hfLegend i,
@@ -693,7 +693,7 @@
 .hfFretNumbers > span {
   display: grid;
   place-items: center;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-4);
 }
 .hfFretNumbers > span.marked {
@@ -717,7 +717,7 @@
   display: grid;
   place-items: center;
   z-index: 1;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--lime);
 }
 .hfString button {
@@ -757,11 +757,11 @@
 .hfString button > b {
   max-width: 35px;
   overflow: hidden;
-  font: max(11px,0.6875rem)/1 var(--mono);
+  font: var(--t-micro)/1 var(--mono);
   white-space: nowrap;
 }
 .hfString button > small {
-  font: max(11px,0.6875rem)/1 var(--mono);
+  font: var(--t-micro)/1 var(--mono);
   margin-top: 2px;
 }
 .hfString button > i {
@@ -806,7 +806,7 @@
   height: 17px;
 }
 .hfRoleBadge span {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   text-align: center;
 }
 
@@ -824,16 +824,16 @@
   margin: 10px 0 4px;
 }
 .hfNoteTutor h2 small {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-3);
 }
 .hfNoteTutor article > h3 {
-  font-size:0.875rem;
+  font-size:var(--t-small);
   color: var(--lime);
   margin: 7px 0;
 }
 .hfNoteTutor article > p {
-  font-size:max(11px,0.6875rem);
+  font-size:var(--t-micro);
   line-height: 1.75;
   color: var(--ink-3);
   margin: 8px 0;
@@ -850,7 +850,7 @@
   background: var(--lime);
   color: var(--ink-4);
   padding: 17px 14px;
-  font: max(11px,0.6875rem)/1.5 var(--mono);
+  font: var(--t-micro)/1.5 var(--mono);
 }
 .hfVoiceLeading {
   margin-top: 48px;
@@ -880,11 +880,11 @@
   display: block;
 }
 .hfVoiceGrid small {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-3);
 }
 .hfVoiceGrid b {
-  font: 1.375rem var(--mono);
+  font: var(--t-h3) var(--mono);
   margin: 35px 0 11px;
 }
 .hfVoiceGrid b i {
@@ -893,7 +893,7 @@
   margin: 0 8px;
 }
 .hfVoiceGrid span {
-  font: max(11px,0.6875rem)/1.5 var(--mono);
+  font: var(--t-micro)/1.5 var(--mono);
   color: var(--violet);
 }
 .hfVoiceLeading > footer {
@@ -910,17 +910,17 @@
   display: block;
 }
 .hfVoiceLeading footer span {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-4);
 }
 .hfVoiceLeading footer b {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   margin-top: 9px;
 }
 .hfVoiceLeading footer button {
   border: 0;
   background: var(--lime);
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 
 @media (max-width: 1100px) {
@@ -971,7 +971,7 @@
     margin-top: 0;
   }
   .hfIntro h1 {
-    font-size:3.25rem;
+    font-size:var(--t-h1);
   }
   .hfIntro > aside {
     min-height: 160px;
@@ -1043,7 +1043,7 @@
 /* The arithmetic a scale recommendation is scored on, not just its verdict. */
 .hfWorking{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px}
 .hfWorking em{
- font-style:normal;font:max(11px,0.6875rem) var(--font-mono);
+ font-style:normal;font:var(--t-micro) var(--font-mono);
  color:var(--ink-3);letter-spacing:.04em;
 }
 .hfWorking em.short{color:var(--wrong)}

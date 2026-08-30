@@ -50,6 +50,11 @@ a{color:inherit;text-decoration:none}
 h1,h2,h3,h4{font-weight:560;line-height:1.14;letter-spacing:var(--track-display);text-wrap:balance}
 p{text-wrap:pretty}
 
+/* <small> keeps its relative shrink, but never past the smallest step the
+   scale has. Inside text already at 11px the browser default took it to
+   9.2px, which is smaller than anything on this site is allowed to be. */
+small{font-size:max(var(--t-micro),.85em)}
+
 :focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px}
 :focus:not(:focus-visible){outline:none}
 ::selection{background:var(--accent-wash);color:var(--ink)}

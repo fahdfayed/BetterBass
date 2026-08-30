@@ -88,7 +88,7 @@ button:not(:disabled):active{transform:translateY(1px)}
 .practiceTrackSwitch small{font-size:max(11px,0.6875rem)}
 .beastSections,.coachTabs,.slapTabs{top:82px;border-radius:12px;overflow-x:auto;background:transparent}
 .beastSections button,.coachTabs button,.slapTabs button{min-height:48px;font-size:max(11px,0.6875rem)}
-.lessonPracticeFlow p,.lessonToolDeck p,.universalTempo p,.dayContext p,.sessionBlocks p,.activeBlock>p{font-size:0.75rem}
+.lessonPracticeFlow p,.lessonToolDeck p,.universalTempo p,.dayContext p,.sessionBlocks p,.activeBlock>p{font-size:var(--t-small)}
 .lessonPracticeFlow i,.lessonToolDeck i,.lessonToolDeck small,.universalTempo span,.dayContext b,.dayContext span,.sessionBlocks small,.activeBlock>header span{font-size:max(11px,0.6875rem)}
 .dayObjective h2{font-size:clamp(36px,4vw,58px);line-height:1}
 .dayObjective p{font-size:0.9375rem}
@@ -100,7 +100,7 @@ button:not(:disabled):active{transform:translateY(1px)}
 .slapHero button,.drillDetail footer button,.proofGrid button,.routineConsole button,.grooveEngine aside button{border-radius:10px}
 .slapPath{grid-template-columns:repeat(4,1fr);gap:10px}
 .slapPath button{min-height:230px;border-radius:14px;background:transparent}
-.slapPath p,.routineMap article p,.grooveEngine aside p,.proofGrid p{font-size:0.75rem}
+.slapPath p,.routineMap article p,.grooveEngine aside p,.proofGrid p{font-size:var(--t-small)}
 .drillDetail,.runner,.routineMap,.gridPanel,.grooveEngine aside,.proofGrid>div,.proofGrid aside{border-radius:15px;background:transparent}
 .runnerTime>b{font-size:clamp(52px,7vw,86px)}
 .routineBuilder,.routineConsole,.grooveEngine,.proofGrid{scroll-margin-top:150px}
@@ -117,7 +117,7 @@ button:not(:disabled):active{transform:translateY(1px)}
 .runtimeHero,.bandSettings,.mixer,.runtimeMissions{border-radius:17px;background:transparent}
 .transport h2{font-size:2.0625rem}
 .controlGrid label,.tempoControl,.progressionBuilder small,.runtimeActions button,.channel b,.channel small{font-size:max(11px,0.6875rem)}
-.runtimeMissions p{font-size:0.75rem}
+.runtimeMissions p{font-size:var(--t-small)}
 .diagnosticFlow>article{border-radius:18px;background:transparent}
 .diagnosticFlow h2{font-size:2.25rem}
 .diagnosticFlow p,.computedFreedom p,.readiness p,.practiceDebt b,.masteryLadder b,.matrixBlock header p,.antiHabit p,.adaptiveAction p{font-size:0.75rem}
@@ -132,7 +132,7 @@ button:not(:disabled):active{transform:translateY(1px)}
 .hfIntro>aside{min-height:0;padding:24px;background:transparent}
 .hfIntro aside small,.hfIntro aside span,.hfIntro aside em,.hfBuilder header span,.hfCurrent>article>span,.hfModes>header span,.hfNeckSection>header span,.hfNoteTutor article>span,.hfVoiceLeading>header span{font-size:max(11px,0.6875rem)}
 .hfBuilder>header,.hfModes>header,.hfNeckSection>header,.hfVoiceLeading>header{padding:24px 27px}
-.hfBuilder header p,.hfModes header p,.hfNeckSection>header p,.hfVoiceLeading header p{font-size:0.75rem!important}
+.hfBuilder header p,.hfModes header p,.hfNeckSection>header p,.hfVoiceLeading header p{font-size:var(--t-small)!important}
 .hfBuilderControls label,.hfCustomInput label{padding:17px 19px}
 .hfBuilderControls span,.hfCustomInput span,.hfMapControls span{font-size:max(11px,0.6875rem)}
 .hfBuilderControls select,.hfCustomInput input{padding:11px 12px;font-size:max(11px,0.6875rem)}
@@ -188,16 +188,16 @@ button:not(:disabled):active{transform:translateY(1px)}
 .hfNeckSection.blind .hfString button>i{display:block;background:transparent;border-color:#565e6a}
 .hfNeckSection.blind .hfString button.picked>i{border-color:var(--lime)}
 .hfNoteTutor{border-radius:17px;margin-top:14px;padding:25px}
-.hfNoteTutor p{font-size:0.75rem}
+.hfNoteTutor p{font-size:var(--t-small)}
 
 .forced>span, .forced>small, .forced em, .gameShelf span, .gameShelf button{font-size:max(11px,0.6875rem)}
-.gameShelf p{font-size:0.75rem}
+.gameShelf p{font-size:var(--t-small)}
 
 .gameShelf article{border-radius:12px;background:transparent}
 
 .theoryCoverage,.theoryUseFlow>div,.theoryDomainNav button,.theoryChapter,.theoryDictionaryTabs,.theoryDictionaryIntro,.theoryMastery>div{border-radius:14px;overflow:hidden}
 .theoryDomainNav button{background:transparent}
-.theoryDomainNav p,.theoryUseFlow p,.theoryConceptGrid p,.theoryEvidence p,.theoryDictionary>header p,.theoryDictionaryIntro p,.theoryMastery p{font-size:0.75rem}
+.theoryDomainNav p,.theoryUseFlow p,.theoryConceptGrid p,.theoryEvidence p,.theoryDictionary>header p,.theoryDictionaryIntro p,.theoryMastery p{font-size:var(--t-small)}
 .theoryChapterHead p,.theoryCore p{font-size:0.875rem}
 .theoryChapterHead span,.theoryCore>span,.theoryEvidence article>span,.theoryDictionaryIntro span,.theoryUseFlow b,.theoryMastery b{font-size:max(11px,0.6875rem)}
 .theoryDomainNav button small,.theoryDictionaryTabs button{font-size:max(11px,0.6875rem)}
