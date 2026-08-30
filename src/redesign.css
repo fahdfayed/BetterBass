@@ -22,7 +22,6 @@ html{background:var(--bg);scroll-behavior:smooth}
 body{background:transparent;font-size:0.9375rem;line-height:1.55}
 button,select,input{font-family:inherit}
 button{transition:background-color .16s ease,border-color .16s ease,color .16s ease,transform .16s ease,opacity .16s ease}
-button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid rgba(185,238,120,.42);outline-offset:3px}
 button:not(:disabled):active{transform:translateY(1px)}
 ::selection{background:var(--lime);color:var(--ink-4)}
 

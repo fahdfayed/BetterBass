@@ -252,7 +252,6 @@
  padding:var(--s5) var(--s6);
  border-bottom:1px solid var(--rule);
  font-size:var(--t-lead);
- outline:none;
 }
 .palInput::placeholder{color:var(--ink-4)}
 .palList{list-style:none;padding:var(--s2) var(--s3) var(--s3);margin:0;overflow-y:auto}
