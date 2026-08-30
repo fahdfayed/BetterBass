@@ -376,7 +376,7 @@ export default function BassLab(){
  {view==="courseProgress"&&<CourseProgress
   percent={coursePct} completed={courseCompleted} lessonIndex={courseIndex}
   lessonTitle={course.title} unitNumber={course.unit} unitTitle={courseUnit.title}
-  onContinue={()=>setView("courseLesson")}/>}
+  onContinue={()=>setView("courseLesson")} onRecordTake={()=>setView("engine")}/>}
 
  {view==="reference"&&<Suspense fallback={<ToolLoading/>}><TheoryReference root={root} onSetMode={setMode} onAudition={audition}/></Suspense>}
 

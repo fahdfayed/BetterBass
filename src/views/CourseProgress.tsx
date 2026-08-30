@@ -1,4 +1,5 @@
 import {COURSE_UNITS} from "../course-data";
+import PracticeHistory from "./PracticeHistory";
 
 /**
  * What the player can actually do, rather than how much they have read.
@@ -28,10 +29,12 @@ type Props={
  unitNumber:number;
  unitTitle:string;
  onContinue:()=>void;
+ /** Open the screen that records and scores a take. */
+ onRecordTake:()=>void;
 };
 
 export default function CourseProgress(
- {percent,completed,lessonIndex,lessonTitle,unitNumber,unitTitle,onContinue}:Props
+ {percent,completed,lessonIndex,lessonTitle,unitNumber,unitTitle,onContinue,onRecordTake}:Props
 ){
  return (
   <div className="osScreen courseProgressPage">
@@ -84,6 +87,8 @@ export default function CourseProgress(
      </div>
     ))}
    </section>
+
+   <PracticeHistory onRecord={onRecordTake}/>
   </div>
  );
 }
