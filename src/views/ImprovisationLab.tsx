@@ -1,4 +1,5 @@
 import {useState} from "react";
+import {useAudition} from "../useAudition";
 import {MODES} from "../harmony-fretboard-data";
 import {NOTE_NAMES as N,type Harmony} from "../pitch";
 import {SHORT_NAMES} from "../theory/degrees";
@@ -80,6 +81,7 @@ export default function ImprovisationLab(
  {harmony,mode,events,recording,onBeginTake,onEndTake,audition,onLoadIntoBand,
   tab:labMode,onTabChange:setLabMode}:Props
 ){
+ const {playing,play}=useAudition(audition);
  const [feedback,setFeedback]=useState("");
  const [mutation,setMutation]=useState("ORIGINAL");
  const [slip,setSlip]=useState(1);
@@ -133,7 +135,10 @@ export default function ImprovisationLab(
       <div className="motifNotes">
        {motif.map((pc,i)=><b key={i}>{N[pc]}<small>{degree(pc)}</small></b>)}
       </div>
-      <button onClick={()=>audition(motif)}>▶ HEAR SOURCE</button>
+      <button onClick={()=>play("source",motif)} aria-busy={playing==="source"}
+              className={playing==="source"?"sounding":""}>
+       {playing==="source"?"♪ SOUNDING":"▶ HEAR SOURCE"}
+      </button>
      </article>
      <article className="mutationPanel">
       <span>MUTATION ENGINE</span>
@@ -144,7 +149,10 @@ export default function ImprovisationLab(
       <div className="motifNotes transformed">
        {mutated.map((pc,i)=><b key={i}>{N[pc]}<small>{degree(pc)}</small></b>)}
       </div>
-      <button className="labPrimary" onClick={()=>audition([...mutated,ri])}>HEAR MUTATION + RETURN →</button>
+      <button className={`labPrimary ${playing==="mutation"?"sounding":""}`}
+              onClick={()=>play("mutation",[...mutated,ri])} aria-busy={playing==="mutation"}>
+       {playing==="mutation"?"♪ SOUNDING":"HEAR MUTATION + RETURN →"}
+      </button>
       <p><b>MISSION:</b> original twice → mutation twice → alter final note → resolve to {N[ri]} without changing the pocket.</p>
      </article>
     </div>
@@ -172,7 +180,10 @@ export default function ImprovisationLab(
         </select>
        </label>
       </div>
-      <button onClick={()=>audition([ri,(ri+3)%12,(ri+slip+12)%12,(ri+3+slip+12)%12,ri])}>▶ HEAR DEPARTURE</button>
+      <button onClick={()=>play("slip",[ri,(ri+3)%12,(ri+slip+12)%12,(ri+3+slip+12)%12,ri])}
+              aria-busy={playing==="slip"} className={playing==="slip"?"sounding":""}>
+       {playing==="slip"?"♪ SOUNDING":"▶ HEAR DEPARTURE"}
+      </button>
      </article>
      <article className="slipTimeline">
       <span>HARMONIC ROUTE</span>
@@ -206,10 +217,12 @@ export default function ImprovisationLab(
       {ENCLOSURES.map(([route,name],i)=>{
        const notes=route.map(x=>(ri+targetTone+x+12)%12);
        return (
-        <button key={i} onClick={()=>audition(notes)}>
+        <button key={i} onClick={()=>play(`route${i}`,notes)}
+                aria-busy={playing===`route${i}`}
+                className={playing===`route${i}`?"sounding":""}>
          <b>{notes.map(pc=>N[pc]).join(" → ")}</b>
          <small>{name}</small>
-         <em>▶ HEAR</em>
+         <em>{playing===`route${i}`?"♪ SOUNDING":"▶ HEAR"}</em>
         </button>
        );
       })}
@@ -241,7 +254,10 @@ export default function ImprovisationLab(
       ))}
      </div>
      {feedback&&<p className="labFeedback">{feedback}</p>}
-     <button className="labPrimary" onClick={()=>audition([5,0,11,5,4,11])}>▶ HEAR GUIDE-TONE SKELETON</button>
+     <button className={`labPrimary ${playing==="guide"?"sounding":""}`}
+            onClick={()=>play("guide",[5,0,11,5,4,11])} aria-busy={playing==="guide"}>
+     {playing==="guide"?"♪ SOUNDING":"▶ HEAR GUIDE-TONE SKELETON"}
+    </button>
     </div>
    )}
 

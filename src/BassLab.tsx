@@ -78,6 +78,10 @@ export default function BassLab(){
  // Both are written from outside the improvisation lab: the enclosure game
  // opens it on a chosen tab, and the lesson jury writes into its feedback line.
  const [labMode,setLabMode]=useState("motif");
+ // Between the click and the browser's permission answer there is a wait the
+ // player can see nothing of, and on a first visit it is the longest pause in
+ // the app. The buttons that start listening read from this.
+ const [connecting,setConnecting]=useState(false);
  const territories=useMemo(()=>territoryStates(courseCompleted,courseIndex),[courseCompleted,courseIndex]);
  const audio=useRef<{ctx:AudioContext,stream:MediaStream,raf:number}|null>(null),eventRef=useRef<{midi:number,start:number,amp:number}|null>(null),eventsRef=useRef<NoteEvent[]>([]),recordRef=useRef(false),runtimeRef=useRef<{ctx:AudioContext,clock:AudioClock,master:GainNode}|null>(null),auditionRef=useRef<AudioContext|null>(null); const ri=root, scale=useMemo(()=>MODES[mode].s.map(x=>(x+ri)%12),[mode,ri]), color=(ri+MODES[mode].s[MODES[mode].c])%12, chordTones=useMemo(()=>[0,3,7,10].map(x=>(x+ri)%12),[ri]);
  // The microphone loop and the backing band both outlive the render that starts
@@ -98,10 +102,10 @@ export default function BassLab(){
  useEffect(()=>{try{const p=JSON.parse(localStorage.getItem("basslab-course")||"null");if(p&&typeof p==="object"){const done=clampIndex(p.completed,0,COURSE_LESSONS.length);setCourseCompleted(done);setCourseIndex(clampIndex(p.index??done,0,COURSE_LESSONS.length-1));setCourseStep(clampIndex(p.step,0,5))}}catch{}},[]);
  useEffect(()=>{setJuryScores([70,70,70,70,70]);setPracticeTempo(55+COURSE_LESSONS[courseIndex].unit*5)},[courseIndex]);
  const finishEvent=(end:number)=>{const e=eventRef.current;if(!e||!recordRef.current)return;const pc=(e.midi%12+12)%12,liveBpm=bpmRef.current,elapsed=(e.start-takeStartRef.current)/1000,beatFloat=elapsed/(60/liveBpm),beat=Math.floor(beatFloat)%4+1,offset=Math.round((beatFloat-Math.round(beatFloat))*60000/liveBpm),harmony=harmonyRef.current,t=tensionFor(pc,harmony),next:NoteEvent={id:eventId(),midi:e.midi,n:N[pc],oct:Math.floor(e.midi/12)-1,start:e.start,end,dur:Math.max(30,end-e.start),amp:e.amp,beat,offset,fn:labelFor(pc,harmony),tension:t,resolution:"pending"};eventsRef.current=[...eventsRef.current,next];setEvents([...eventsRef.current]);eventRef.current=null};
- const startAudio=async()=>{if(listening){finishEvent(performance.now());if(audio.current){cancelAnimationFrame(audio.current.raf);audio.current.stream.getTracks().forEach(t=>t.stop());audio.current.ctx.close();audio.current=null}setListening(false);return false}try{const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}),ctx=new AudioContext(),src=ctx.createMediaStreamSource(stream),an=ctx.createAnalyser();an.fftSize=4096;an.smoothingTimeConstant=.15;src.connect(an);const b=new Float32Array(an.fftSize);let stable=-1,frames=0,silence=0;const tick=()=>{an.getFloatTimeDomainData(b);let rms=0;for(const x of b)rms+=x*x;rms=Math.sqrt(rms/b.length);
+ const startAudio=async()=>{if(listening){finishEvent(performance.now());if(audio.current){cancelAnimationFrame(audio.current.raf);audio.current.stream.getTracks().forEach(t=>t.stop());audio.current.ctx.close();audio.current=null}setListening(false);return false}setConnecting(true);try{const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}),ctx=new AudioContext(),src=ctx.createMediaStreamSource(stream),an=ctx.createAnalyser();an.fftSize=4096;an.smoothingTimeConstant=.15;src.connect(an);const b=new Float32Array(an.fftSize);let stable=-1,frames=0,silence=0;const tick=()=>{an.getFloatTimeDomainData(b);let rms=0;for(const x of b)rms+=x*x;rms=Math.sqrt(rms/b.length);
   const measuring=calibrationRef.current;
   if(measuring){measuring.samples.push(rms);if(performance.now()>=measuring.until){calibrationRef.current=null;const sorted=[...measuring.samples].sort((a,z)=>a-z),floor=sorted[Math.floor(sorted.length*.9)]??0;setNoise(floor);setCalibrated(true)}if(audio.current)audio.current.raf=requestAnimationFrame(tick);return}
-  const hz=autoCorrelate(b,ctx.sampleRate);if(hz>PITCH_MIN_HZ&&hz<PITCH_MAX_HZ&&rms>Math.max(PITCH_RMS_GATE,noiseRef.current*1.8)){silence=0;const p=centsToNote(hz);setPitch(p);if(p.midi===stable)frames++;else{stable=p.midi;frames=1}if(frames===3){if(eventRef.current&&eventRef.current.midi!==p.midi)finishEvent(performance.now());if(!eventRef.current)eventRef.current={midi:p.midi,start:performance.now(),amp:rms};setHistory(h=>h[h.length-1]===p.midi?h:[...h.slice(-63),p.midi])}}else if(++silence>5&&eventRef.current){finishEvent(performance.now());stable=-1;frames=0}if(audio.current)audio.current.raf=requestAnimationFrame(tick)};audio.current={ctx,stream,raf:requestAnimationFrame(tick)};setAudioError("");setListening(true);return true}catch(error){setPitch(null);setListening(false);setAudioError(error instanceof DOMException&&(error.name==="NotAllowedError"||error.name==="SecurityError")?"Microphone access was blocked. Allow it for this site, then choose your audio-interface input and try again.":"The audio input could not start. Check that an input device is connected and free, then try again.");return false}};
+  const hz=autoCorrelate(b,ctx.sampleRate);if(hz>PITCH_MIN_HZ&&hz<PITCH_MAX_HZ&&rms>Math.max(PITCH_RMS_GATE,noiseRef.current*1.8)){silence=0;const p=centsToNote(hz);setPitch(p);if(p.midi===stable)frames++;else{stable=p.midi;frames=1}if(frames===3){if(eventRef.current&&eventRef.current.midi!==p.midi)finishEvent(performance.now());if(!eventRef.current)eventRef.current={midi:p.midi,start:performance.now(),amp:rms};setHistory(h=>h[h.length-1]===p.midi?h:[...h.slice(-63),p.midi])}}else if(++silence>5&&eventRef.current){finishEvent(performance.now());stable=-1;frames=0}if(audio.current)audio.current.raf=requestAnimationFrame(tick)};audio.current={ctx,stream,raf:requestAnimationFrame(tick)};setAudioError("");setConnecting(false);setListening(true);return true}catch(error){setConnecting(false);setPitch(null);setListening(false);setAudioError(error instanceof DOMException&&(error.name==="NotAllowedError"||error.name==="SecurityError")?"Microphone access was blocked. Allow it for this site, then choose your audio-interface input and try again.":"The audio input could not start. Check that an input device is connected and free, then try again.");return false}};
  // Measure the real noise floor from the running input. The previous fixed .006
  // sat below the detector's own gate, so calibrating changed nothing at all.
  const calibrate=async()=>{if(!listening){const started=await startAudio();if(!started)return}setCalibrated(false);calibrationRef.current={until:performance.now()+1800,samples:[]}};
@@ -219,7 +223,7 @@ export default function BassLab(){
 
  {view==="engine"&&<ListeningEngine
   harmony={harmony} mode={mode}
-  listening={listening} calibrated={calibrated} noise={noise} hearing={!!pitch}
+  listening={listening} connecting={connecting} calibrated={calibrated} noise={noise} hearing={!!pitch}
   audioError={audioError} onCalibrate={calibrate}
   exercise={exercise} onExercise={setExercise}
   bpm={bpm} onBpm={setBpm}
@@ -228,7 +232,7 @@ export default function BassLab(){
   events={events} takeStart={takeStartRef.current}/>}
 
  {view==="live"&&<LiveSession harmony={harmony} pitch={pitch} listening={listening}
-  chord={chord} modeName={MODES[mode].n} report={A}
+  chord={chord} modeName={MODES[mode].n} report={A} connecting={connecting} audioError={audioError}
   onToggleListening={startAudio} onClearTake={()=>setHistory([])}/>}
 
  {view==="fret"&&<Suspense fallback={<ToolLoading/>}><HarmonyFretboard homeMode={mode} displayMode={fbView} fog={fog} selectedPc={picked} onSetRoot={setRoot} onSetMode={setMode} onSetChord={setChord} onDisplayMode={setFbView} onFog={setFog} onSelectPc={setPicked} onAudition={audition}/></Suspense>} 

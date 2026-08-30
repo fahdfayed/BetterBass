@@ -1,4 +1,5 @@
 import {useMemo,useState} from "react";
+import {useAudition} from "../useAudition";
 import {analyseProgression,type ChordFunction} from "../theory/progression-analysis";
 import {MODES,PITCH_NAMES,PROGRESSION_PRESETS,recommendScales} from "../harmony-fretboard-data";
 
@@ -30,6 +31,7 @@ type Props={
 
 export default function ProgressionAnalyser({audition,onSendToFretboard}:Props){
  const [text,setText]=useState("Dm7 G7 Cmaj7");
+ const {playing,play}=useAudition(audition);
  const reading=useMemo(()=>analyseProgression(text),[text]);
  const {key,readings,observations,errors,chords}=reading;
 
@@ -46,7 +48,7 @@ export default function ProgressionAnalyser({audition,onSendToFretboard}:Props){
  const hearAll=()=>{
   // Root motion, so the progression is heard as a path rather than a stack.
   const roots=readings.filter(r=>r.numeral!=="?").map(r=>r.root);
-  if(roots.length)audition(roots,.5);
+  if(roots.length)play("roots",roots,.5);
  };
 
  return (
@@ -63,8 +65,9 @@ export default function ProgressionAnalyser({audition,onSendToFretboard}:Props){
      <input value={text} onChange={event=>setText(event.target.value)} spellCheck={false}
             placeholder="Dm7 G7 Cmaj7" aria-describedby="progHelp"/>
     </label>
-    <button type="button" className="action action-primary" onClick={hearAll}
-            disabled={!readings.length}>▶ Hear the roots</button>
+    <button type="button" className={`action action-primary ${playing==="roots"?"sounding":""}`}
+            onClick={hearAll} disabled={!readings.length} aria-busy={playing==="roots"}>
+     {playing==="roots"?"♪ Sounding":"▶ Hear the roots"}</button>
     <p id="progHelp" className="dim">Try <code>| Am9 | D13 | Am9 | E7sus4 |</code> or <code>Cmaj7 A7 Dm7 G7</code>.</p>
    </div>
 
@@ -114,11 +117,12 @@ export default function ProgressionAnalyser({audition,onSendToFretboard}:Props){
          <span className="progJob">{JOB_LABEL[chord.job]}</span>
          <p>{chord.note}</p>
          {scale&&(
-          <button type="button" className="progScale"
-                  onClick={()=>audition(scale.scale.intervals.map(iv=>(chord.root+iv)%12),.28)}>
+          <button type="button" aria-busy={playing===`scale${index}`}
+                  className={`progScale ${playing===`scale${index}`?"sounding":""}`}
+                  onClick={()=>play(`scale${index}`,scale.scale.intervals.map(iv=>(chord.root+iv)%12),.28)}>
            <small>PLAY IT OVER</small>
            <b>{PITCH_NAMES[chord.root]} {scale.scale.name}</b>
-           <em>▶ hear the scale</em>
+           <em>{playing===`scale${index}`?"♪ sounding":"▶ hear the scale"}</em>
           </button>
          )}
         </article>

@@ -143,6 +143,35 @@ small{font-size:max(var(--t-micro),.85em)}
 .action-primary:hover{color:var(--accent-ink);transform:translateY(-1px)}
 .action-primary:active{transform:translateY(0) scale(.985)}
 .action-primary:disabled{opacity:.25}
+
+/*
+ * A control waiting on something outside the page.
+ *
+ * Asking for the microphone is the longest pause in the app and the browser
+ * owns it, so the button cannot say when it will end — only that it is still
+ * waiting. It stays legible rather than fading to the disabled treatment,
+ * because it is the thing the player is currently looking at.
+ */
+.waiting,.waiting[aria-disabled="true"]{cursor:progress;opacity:.72;animation:waitingPulse 1.6s var(--ease) infinite}
+@keyframes waitingPulse{50%{opacity:.45}}
+/*
+ * A control that is currently making a sound.
+ *
+ * Auditioning a phrase changes nothing on screen, so a player with their output
+ * muted cannot tell the difference between a broken site and quiet speakers.
+ *
+ * The mark is a ring drawn over the button rather than a change to its own
+ * colour or border: those lose to the legacy screens' own button rules, and a
+ * signal that works on five screens out of eight is worse than none.
+ */
+.sounding{position:relative}
+.sounding::after{content:"";position:absolute;inset:0;border:1px solid var(--accent);opacity:.35;animation:soundingPulse 1.1s var(--ease) infinite;pointer-events:none}
+@keyframes soundingPulse{50%{opacity:.08}}
+
+@media (prefers-reduced-motion:reduce){
+ .waiting{animation:none}
+ .sounding::after{animation:none}
+}
 .action-primary:disabled:hover{transform:none}
 
 /* A quiet action that only reveals itself in context. */

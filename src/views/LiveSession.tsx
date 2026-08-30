@@ -13,10 +13,14 @@ type Props={
  /** The note being heard right now, or null when nothing is. */
  pitch:PitchReading|null;
  listening:boolean;
+ /** True while the browser is asking for the microphone. */
+ connecting:boolean;
  chord:string;
  /** The mode's own name, e.g. "Dorian". */
  modeName:string;
  report:TakeReport;
+ /** Why the microphone is unavailable, when it is. */
+ audioError:string;
  onToggleListening:()=>void;
  onClearTake:()=>void;
 };
@@ -30,7 +34,7 @@ type Props={
  * song.
  */
 export default function LiveSession(
- {harmony,pitch,listening,chord,modeName,report,onToggleListening,onClearTake}:Props
+ {harmony,pitch,listening,connecting,chord,modeName,report,audioError,onToggleListening,onClearTake}:Props
 ){
  const {ri,chordTones,color}=harmony;
  const heard=pitch?(N.indexOf(pitch.n)+12)%12:null;
@@ -78,9 +82,12 @@ export default function LiveSession(
      <h2>Make it sound {modeName}.</h2>
      <p>Four bars. Do not run the scale. Feature <b>{N[color]}</b> at least twice, including once on a strong beat. Maintain your groove.</p>
      <div className="barTrack"><i className="done"/><i className="done"/><i/><i/></div>
-     <button className={listening?"stop":""} onClick={onToggleListening}>
-      {listening?"PAUSE ANALYSIS":"START LISTENING"}
+     <button className={listening?"stop":connecting?"waiting":""}
+             onClick={()=>{if(!connecting)onToggleListening()}}
+             aria-disabled={connecting} aria-busy={connecting}>
+      {connecting?"ASKING FOR THE MICROPHONE…":listening?"PAUSE ANALYSIS":"START LISTENING"}
      </button>
+     {audioError&&<p className="audioError" role="alert">{audioError}</p>}
     </article>
     <article className="liveReport">
      <span>LIVE NOTE REPORT</span>

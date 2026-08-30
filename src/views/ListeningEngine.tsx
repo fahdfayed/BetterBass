@@ -40,6 +40,8 @@ type Props={
 
  // Input state. The microphone itself belongs to the page.
  listening:boolean;
+ /** True while the browser is asking for the microphone. */
+ connecting:boolean;
  calibrated:boolean;
  /** Learned noise floor, as a raw amplitude. */
  noise:number;
@@ -72,7 +74,7 @@ type Props={
  * see which note it was reached from.
  */
 export default function ListeningEngine({
- harmony,mode,listening,calibrated,noise,hearing,audioError,onCalibrate,
+ harmony,mode,listening,connecting,calibrated,noise,hearing,audioError,onCalibrate,
  exercise,onExercise,bpm,onBpm,recording,onBeginTake,onEndTake,onClear,events,takeStart,
 }:Props){
  const {ri,color}=harmony;
@@ -96,13 +98,16 @@ export default function ListeningEngine({
       ? `Noise floor learned at ${Math.round(noise*1000)} units. Detection range: E1–G5. Use a clean DI signal for best monophonic tracking.`
       : "Mute the strings for two seconds, then play open E, A, D and G clearly. Keep effects, amp simulation and monitoring outside this browser input."}</p>
      <div className="calStats">
-      <div><small>INPUT</small><b>{listening?"ACTIVE":"OFFLINE"}</b></div>
+      <div><small>INPUT</small><b>{connecting?"ASKING…":listening?"ACTIVE":"OFFLINE"}</b></div>
       <div><small>NOISE FLOOR</small><b>{calibrated?"LOW":"—"}</b></div>
       <div><small>LATENCY</small><b>{calibrated?"~24 ms":"—"}</b></div>
       <div><small>CONFIDENCE</small><b>{hearing?"HIGH":"WAITING"}</b></div>
      </div>
      {audioError&&<p className="audioError" role="alert">{audioError}</p>}
-     <button onClick={onCalibrate}>{calibrated?"RECALIBRATE":"BEGIN CALIBRATION"}</button>
+     <button onClick={()=>{if(!connecting)onCalibrate()}} aria-disabled={connecting} aria-busy={connecting}
+             className={connecting?"waiting":""}>
+      {connecting?"ASKING FOR THE MICROPHONE…":calibrated?"RECALIBRATE":"BEGIN CALIBRATION"}
+     </button>
     </article>
     <article className="pipeline">
      <span>EVENT PIPELINE</span>
@@ -132,8 +137,10 @@ export default function ListeningEngine({
       <label>TEMPO <b>{bpm} BPM</b>
        <input type="range" min="50" max="140" value={bpm} onChange={e=>onBpm(+e.target.value)}/>
       </label>
-      <button className={recording?"stop":""} onClick={recording?onEndTake:onBeginTake}>
-       {recording?"■ END & ANALYZE":"● RECORD TAKE"}
+      <button className={recording?"stop":connecting?"waiting":""}
+              onClick={()=>{if(connecting)return;(recording?onEndTake:onBeginTake)()}}
+              aria-disabled={connecting} aria-busy={connecting}>
+       {connecting?"ASKING FOR THE MICROPHONE…":recording?"■ END & ANALYZE":"● RECORD TAKE"}
       </button>
       <button onClick={onClear}>CLEAR</button>
      </div>

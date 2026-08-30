@@ -90,7 +90,7 @@
 /* Maqam's gold was a second accent. There is only one now. */
 .maqamNextStep b,
 .maqamNextStep strong,
-.maqamProfile b{color:var(--accent) !important}
+.maqamProfile b{color:var(--mq-gold) !important}
 
 /* Buttons throughout the maqam lab were framed chips. They become flat controls
    that light on hover, with the active one carrying the accent — scoped to the
