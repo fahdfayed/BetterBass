@@ -809,6 +809,16 @@
   font: max(11px,0.6875rem) var(--mono);
   text-align: center;
 }
+
+/* On cream the role colour cannot also be the label. Every one of the eleven
+   lands between 1.04 and 4.34 against #f5f0e8, and this label is 11px — the
+   root role is lime, which the token sheet already rules out as text on this
+   ground. Nothing is lost by reading it in ink: the badge states its role
+   twice more, in the border and the swatch, and the neck cells have always
+   worked this way. */
+:root[data-theme="cream"] .hfRoleBadge {
+  color: var(--ink-2);
+}
 .hfNoteTutor article > h2 {
   font-size:2.1875rem;
   margin: 10px 0 4px;

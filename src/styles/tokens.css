@@ -42,6 +42,9 @@
   * company, which is the whole reason the split exists.
   */
  --accent:#8b6fff;
+ /* Ink for the mark itself. --accent-ink is for the lime fill; on cream the
+    mark is a deep violet, so the two cannot be the same colour. */
+ --accent-mark-ink:#0a0714;
  --accent-fill:#8b6fff;
  --accent-ink:#0a0714;
  --accent-wash:rgba(139,111,255,.14);
@@ -149,11 +152,14 @@
  --ink:#111111;
  --ink-2:#454545;
  --ink-3:#5c5c5c;
- --ink-4:#6d6d6d;
+ /* #6d6d6d clears 4.5:1 on the page but only 4.17:1 on a wash, and plenty of
+    muted text sits on a wash. Taken down until it clears on both. */
+ --ink-4:#666666;
 
  /* The mark is a deep violet — the dark theme's accent taken down until it
     reads on cream. The fill stays lime, with black ink on it. */
  --accent:#4b2fc9;
+ --accent-mark-ink:#ffffff;
  --accent-fill:#c8ff00;
  --accent-ink:#111111;
  --accent-wash:rgba(75,47,201,.10);

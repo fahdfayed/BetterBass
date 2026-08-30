@@ -107,7 +107,7 @@
  background:var(--wash) !important;
 }
 .maqamLab button.active:not(.action){
- color:var(--accent) !important;
+ color:var(--mq-gold) !important;
  background:var(--accent-wash) !important;
 }
 
@@ -123,8 +123,18 @@
  * flattening them away.
  */
 .maqamLab{
- --mq-gold:var(--accent);
+ /* Lifted a little off the accent: as small text on the dark ground the
+    accent itself lands at 4.49:1, which is a hundredth short. */
+ --mq-gold:color-mix(in oklab,var(--accent) 88%,white);
  --mq-gold2:color-mix(in oklab,var(--accent) 72%,white);
+}
+
+/* On cream the accent is already dark, so lightening it toward white is what
+   makes it unreadable — 3.3:1 at small sizes. It goes the other way here and
+   still reads apart from the body ink. */
+:root[data-theme="cream"] .maqamLab{
+ --mq-gold:var(--accent);
+ --mq-gold2:color-mix(in oklab,var(--accent) 72%,black);
  --mq-teal:var(--ink-3);
  --mq-line:var(--rule);
  --mq-panel:transparent;
@@ -286,7 +296,7 @@
  border:0 !important;
  border-radius:var(--r-pill) !important;
  background:var(--accent) !important;
- color:var(--accent-ink) !important;
+ color:var(--accent-mark-ink) !important;
 }
 
 /* ============================ Theory · Fretboard · Band · Outside · Live == */

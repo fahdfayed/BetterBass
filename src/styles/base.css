@@ -214,7 +214,7 @@ p{text-wrap:pretty}
  transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
 }
 .degree:hover{color:var(--accent);border-bottom-color:var(--accent)}
-.degree.on{color:var(--accent-ink);background:var(--accent);border-bottom-color:transparent}
+.degree.on{color:var(--accent-mark-ink);background:var(--accent);border-bottom-color:transparent}
 .degreeMeaning:empty{display:none}
 .degreeMeaning{
  display:flex;flex-wrap:wrap;gap:var(--s1) var(--s3);align-items:baseline;

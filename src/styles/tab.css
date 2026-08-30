@@ -137,7 +137,7 @@
  transition:color var(--t-base) var(--ease),border-color var(--t-base) var(--ease);
 }
 .keyChip:hover{color:var(--ink);border-color:var(--ink-4)}
-.keyChip.on{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}
+.keyChip.on{color:var(--accent-mark-ink);background:var(--accent);border-color:var(--accent)}
 .keyNote{font-size:var(--t-tiny)}
 
 /* Tempo in beats per minute, and looping a range of bars. */
