@@ -9,7 +9,6 @@ declare global{interface Window{__BASSLAB_NODE_RUNTIME__?:RuntimeConfig}}
 
 const STATE_KEYS=[
  "basslab-adaptive",
- "basslab-lessons",
  "basslab-course",
  "basslab-last-take",
  "basslab-beast",

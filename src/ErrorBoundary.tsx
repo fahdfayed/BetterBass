@@ -5,7 +5,6 @@ type State={error:Error|null};
 
 const SAVED_KEYS=[
  "basslab-adaptive",
- "basslab-lessons",
  "basslab-course",
  "basslab-last-take",
  "basslab-beast",

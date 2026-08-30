@@ -56,15 +56,13 @@ type Props={
  /** Send a side-slip figure to the backing band and open it. */
  onLoadIntoBand:(semitones:number)=>void;
  /*
-  * Which lab is open, and the line of feedback under it, are both controlled
-  * from outside. They have to be: the enclosure game opens this screen on a
-  * chosen tab, and the lesson jury writes its verdict into the same feedback
-  * line. Neither is this component's to own while that is true.
+  * Which lab is open is controlled from outside, because the enclosure game
+  * opens this screen on a chosen tab. The feedback line used to be too, for a
+  * worse reason: a dead lesson-jury path wrote its verdict into it. That path
+  * is gone, so the line belongs to the lab again.
   */
  tab:string;
  onTabChange:(tab:string)=>void;
- feedback:string;
- onFeedback:(message:string)=>void;
 };
 
 /**
@@ -80,8 +78,9 @@ type Props={
  */
 export default function ImprovisationLab(
  {harmony,mode,events,recording,onBeginTake,onEndTake,audition,onLoadIntoBand,
-  tab:labMode,onTabChange:setLabMode,feedback,onFeedback:setFeedback}:Props
+  tab:labMode,onTabChange:setLabMode}:Props
 ){
+ const [feedback,setFeedback]=useState("");
  const [mutation,setMutation]=useState("ORIGINAL");
  const [slip,setSlip]=useState(1);
  const [slipLength,setSlipLength]=useState(1);
