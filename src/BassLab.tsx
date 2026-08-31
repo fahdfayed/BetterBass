@@ -116,6 +116,15 @@ export default function BassLab(){
   * sit there while the player repeated themselves. This fires on every onset,
   * counting a repeat after silence as a new one.
   */
+ /**
+  * A progression sent to the fretboard from somewhere else.
+  *
+  * The reader used to set a root and navigate, which the board ignored — it
+  * owns its own centre and its own chords, so you arrived on the default vamp
+  * having asked to see your own progression.
+  */
+ const [sentToFretboard,setSentToFretboard]=useState<string[]|undefined>();
+ const [fretCentre,setFretCentre]=useState<number|undefined>();
  const [heard,setHeard]=useState<{midi:number;at:number}|null>(null);
  const heardRef=useRef(-1);
  const takeStartRef=useRef(0),bpmRef=useRef(bpm),noiseRef=useRef(noise),calibrationRef=useRef<{until:number,samples:number[]}|null>(null);
@@ -266,7 +275,7 @@ export default function BassLab(){
   chord={chord} modeName={MODES[mode].n} report={A} connecting={connecting} audioError={audioError}
   onToggleListening={startAudio} onClearTake={()=>setHistory([])}/>}
 
- {view==="fret"&&<Suspense fallback={<ToolLoading/>}><HarmonyFretboard homeMode={mode} displayMode={fbView} fog={fog} selectedPc={picked} onSetRoot={setRoot} onSetMode={setMode} onSetChord={setChord} onDisplayMode={setFbView} onFog={setFog} onSelectPc={setPicked} onAudition={audition}/></Suspense>} 
+ {view==="fret"&&<Suspense fallback={<ToolLoading/>}><HarmonyFretboard centre={fretCentre} progression={sentToFretboard} homeMode={mode} displayMode={fbView} fog={fog} selectedPc={picked} onSetRoot={setRoot} onSetMode={setMode} onSetChord={setChord} onDisplayMode={setFbView} onFog={setFog} onSelectPc={setPicked} onAudition={audition}/></Suspense>} 
 
 
  {view==="games"&&<RescueGames chord={chord} root={ri} forced={rescueNote}
@@ -283,7 +292,9 @@ export default function BassLab(){
 
  {view==="progression"&&<ProgressionAnalyser audition={audition}
   onSendToFretboard={(centre,homeMode,list)=>{
-   setRoot(centre);setMode(homeMode);setChord(list[0]??"Am7");setView("fret");
+   setRoot(centre);setMode(homeMode);setChord(list[0]??"Am7");
+   setFretCentre(centre);setSentToFretboard(list.length?list:undefined);
+   setView("fret");
   }}/>}
  {view==="tabs"&&<Suspense fallback={<ToolLoading/>}><TabStudio/></Suspense>}
  {view==="jaco"&&<Suspense fallback={<ToolLoading/>}><JacoMasterclass/></Suspense>}

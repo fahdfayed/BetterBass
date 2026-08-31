@@ -22,6 +22,16 @@ type Props={
   * wherever the player last left one, which is what it used to do.
   */
  centre?:number;
+ /**
+  * A progression handed over from somewhere else, to load and read here.
+  *
+  * The progression reader's "open this on the fretboard" set a root on the
+  * page around the board and navigated, which the board — owning its own
+  * centre and its own chords — ignored completely. Arriving on the default
+  * vamp after asking to see your own progression is the same as the button
+  * doing nothing.
+  */
+ progression?:string[];
  onSetRoot:(root:number)=>void;onSetMode:(mode:number)=>void;onSetChord:(chord:string)=>void;
  onDisplayMode:(mode:string)=>void;onFog:(level:number)=>void;onSelectPc:(pc:number|null)=>void;
  onAudition:(notes:number[],hold?:number,droneRoot?:number)=>void;
@@ -96,13 +106,25 @@ function familyJob(family:ChordFamily){
  return jobs[family];
 }
 
-export default function HarmonyFretboard({embedded=false,centre:givenCentre,homeMode,displayMode,fog,selectedPc,onSetRoot,onSetMode,onSetChord,onDisplayMode,onFog,onSelectPc,onAudition}:Props){
+export default function HarmonyFretboard({embedded=false,centre:givenCentre,progression:givenProgression,homeMode,displayMode,fog,selectedPc,onSetRoot,onSetMode,onSetChord,onDisplayMode,onFog,onSelectPc,onAudition}:Props){
  const initial=PROGRESSION_PRESETS[0];
  const [presetId,setPresetId]=useState(initial.id),[draft,setDraft]=useState(initial.chords.join(" | ")),[applied,setApplied]=useState(initial.chords.join(" | ")),[centre,setCentre]=useState(initial.center),[lens,setLens]=useState<string>(initial.lens),[active,setActive]=useState(0),[choice,setChoice]=useState<{key:string;scale:string}|null>(null),[applyError,setApplyError]=useState(""),[autoFollow,setAutoFollow]=useState(false),[countIn,setCountIn]=useState(false),[tempo,setTempo]=useState(80),[barsPerChord,setBarsPerChord]=useState(2),[harmonyLevel,setHarmonyLevel]=useState(46),[bandStyle,setBandStyle]=useState<BandStyleId>("pocket"),[bandMix,setBandMix]=useState<BandMix>({drums:true,keys:true,guitar:true,cue:true});
  const [neckRange,setNeckRange]=useState<NeckRange>("low");
 
  // A centre handed in from outside replaces the board's own, when it moves.
  useEffect(()=>{if(givenCentre!==undefined)setCentre(givenCentre)},[givenCentre]);
+
+ /*
+  * Chords handed in replace what is loaded. Joined into the same text the
+  * board's own input produces, so it arrives through one path rather than a
+  * parallel one that could drift from it.
+  */
+ const handedOver=givenProgression?.join(" | ")??"";
+ useEffect(()=>{
+  if(!handedOver)return;
+  setDraft(handedOver);setApplied(handedOver);setPresetId("custom");
+  setActive(0);setChoice(null);setApplyError("");
+ },[handedOver]);
  const parsed=useMemo(()=>parseProgression(applied),[applied]),chords=parsed.chords,current=chords[Math.min(active,Math.max(0,chords.length-1))]||parseChord("Cmaj9"),next=chords.length>1?chords[(active+1)%chords.length]:current,currentKey=`${active}:${current.symbol}:${applied}`;
  const recommendations=useMemo(()=>recommendScales(current,next,centre,homeMode,lens),[current,next,centre,homeMode,lens]),selectedRecommendation=recommendations.find(x=>choice?.key===currentKey&&x.scale.id===choice.scale)||recommendations[0],selectedScale=selectedRecommendation.scale,paths=useMemo(()=>voiceLeadingPaths(current,next),[current,next]),shared=useMemo(()=>commonTones(current,next),[current,next]);
  const actualDisplay=displayMode==="interval"?"degree":displayMode==="function"||displayMode==="heat"?"priority":displayMode,filter=Math.min(4,fog),visibleFrets=neckRange==="low"?FRETS.slice(0,13):neckRange==="middle"?FRETS.slice(5,16):neckRange==="high"?FRETS.slice(10):FRETS;
