@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {CHROMATIC_STUDIES,DEVICES,PROGRESSIONS,QUALITIES,deviceStudy,progressionLine,targetStudy}
+import {CHROMATIC_STUDIES,DEVICES,PROGRESSIONS,QUALITIES,cycleStudy,deviceStudy,extensionStudy,
+ progressionLine,targetStudy}
  from "../src/tab/chromatic-library.ts";
 import {beatsOf,playableKeys,toAlphaTex,transpose} from "../src/tab/notation.ts";
 
@@ -224,4 +225,90 @@ test("a target study covers two registers with the same device",()=>{
  assert.equal(study.bars[1][4].deg-study.bars[0][4].deg,12);
  assert.deepEqual(study.bars[0],study.bars[2]);
  assert.deepEqual(study.bars[1],study.bars[3]);
+});
+
+test("every quality declares extensions that sit above its own seventh",()=>{
+ for(const quality of QUALITIES){
+  assert.equal(quality.extensions.length,3,`${quality.id} needs a 9th, 11th and 13th`);
+  const seventh=quality.tones[3];
+  for(const extension of quality.extensions)
+   assert.ok(extension>seventh,
+    `${quality.id} calls ${extension} an extension but its seventh is ${seventh}`);
+  assert.deepEqual([...quality.extensions].sort((a,b)=>a-b),quality.extensions,
+   `${quality.id} lists its extensions out of order`);
+  // A ninth is a ninth: an octave and a tone, give or take an alteration.
+  assert.ok(quality.extensions[0]>=13&&quality.extensions[0]<=15,
+   `${quality.id} has no recognisable ninth`);
+ }
+ // The altered and raised-eleventh chords are what the approach work is for.
+ for(const id of ["maj7-s11","dom7-s11","dom7-s5","maj7-s5"])
+  assert.ok(QUALITIES.some(q=>q.id===id),`${id} is missing`);
+ assert.deepEqual(QUALITIES.find(q=>q.id==="dom7-s11").tones,[0,4,6,10]);
+ assert.deepEqual(QUALITIES.find(q=>q.id==="dom7-s5").tones,[0,4,8,10]);
+});
+
+test("an extension study aims above the chord, not inside it",()=>{
+ for(const device of DEVICES)for(const quality of QUALITIES){
+  const study=extensionStudy(device,quality);
+  assert.equal(study.bars.length,3,"a ninth, an eleventh and a thirteenth");
+  study.bars.forEach((bar,index)=>{
+   const target=bar[4];
+   assert.equal(target.deg,quality.extensions[index],
+    `${study.id} bar ${index} does not aim at the extension`);
+   // and it really is above every chord tone
+   assert.ok(target.deg>Math.max(...quality.tones),
+    `${study.id} bar ${index} aims inside the chord`);
+  });
+ }
+});
+
+test("a cycle study passes through all twelve keys and comes back",()=>{
+ for(const device of DEVICES)for(const quality of QUALITIES)for(const index of [1,3]){
+  const study=cycleStudy(device,quality,index);
+  assert.equal(study.bars.length,12,"twelve bars, twelve keys");
+
+  const pc=x=>((x%12)+12)%12;
+  const targets=study.bars.map(bar=>bar[4].deg);
+  // Every bar is a different key, so every target is a different pitch class.
+  assert.equal(new Set(targets.map(pc)).size,12,
+   `${study.id} does not reach all twelve keys`);
+
+  /*
+   * The roots ascend by a fourth, so consecutive targets do too — that is what
+   * makes it a cycle rather than twelve unrelated bars.
+   */
+  for(let i=1;i<targets.length;i++)
+   assert.equal(pc(targets[i]-targets[i-1]),5,
+    `${study.id} moves ${targets[i-1]} to ${targets[i]}, which is not a fourth`);
+
+  // and it stays in one register rather than climbing an octave per bar
+  assert.ok(Math.max(...targets)-Math.min(...targets)<=12,
+   `${study.id} spans ${Math.max(...targets)-Math.min(...targets)} semitones`);
+ }
+});
+
+test("an extension is named by the interval it actually is",()=>{
+ /*
+  * A fixed "9th, 11th, 13th" list called maj7's raised eleventh a natural one,
+  * which is precisely the note a major seventh chord cannot take: a natural 11
+  * sits a semitone above the major third.
+  */
+ const named=quality=>extensionStudy(DEVICES[0],quality).brief;
+
+ const maj7=QUALITIES.find(q=>q.id==="maj7");
+ assert.match(named(maj7),/♯11th/,"a major seventh takes a raised eleventh");
+ assert.doesNotMatch(named(maj7),/the 11th/,"and never a natural one");
+
+ // A dominant has a major third too, so the same rule applies.
+ assert.match(named(QUALITIES.find(q=>q.id==="dom7")),/♯11th/);
+
+ // Minor chords have no major third, so the natural eleventh is available.
+ assert.match(named(QUALITIES.find(q=>q.id==="m7")),/the 11th/);
+
+ // Any chord with a major third must not offer a natural 11 as a target.
+ for(const quality of QUALITIES){
+  if(!quality.tones.includes(4))continue;
+  assert.ok(!quality.extensions.includes(17),
+   `${quality.id} has a major third and offers a natural 11 above it`);
+ }
 });

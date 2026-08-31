@@ -60,18 +60,49 @@ export const DEVICES:Device[]=[
   use:"Reserve for the strongest chord tone in the phrase."},
 ];
 
-/** A chord to aim at, as semitones above its own root. */
-export type Quality={id:string;name:string;symbol:string;tones:number[]};
+/**
+ * A chord to aim at, as semitones above its own root.
+ *
+ * The four core tones carry the quality and are what the guide-tone logic
+ * reads. The extensions are targets too — a ninth or a thirteenth is where a
+ * line goes when the chord tones have stopped being interesting — but they are
+ * kept separate so that "the third" and "the seventh" stay at a known index.
+ */
+export type Quality={
+ id:string;name:string;symbol:string;
+ tones:number[];
+ /** Ninth, eleventh and thirteenth, spelled as this chord takes them. */
+ extensions:number[];
+};
 
 export const QUALITIES:Quality[]=[
- {id:"maj7",name:"Major seventh",symbol:"maj7",tones:[0,4,7,11]},
- {id:"m7",name:"Minor seventh",symbol:"m7",tones:[0,3,7,10]},
- {id:"dom7",name:"Dominant seventh",symbol:"7",tones:[0,4,7,10]},
- {id:"m7b5",name:"Half diminished",symbol:"m7♭5",tones:[0,3,6,10]},
- {id:"dim7",name:"Diminished seventh",symbol:"°7",tones:[0,3,6,9]},
- {id:"min-maj7",name:"Minor major seventh",symbol:"mMaj7",tones:[0,3,7,11]},
- {id:"six",name:"Major sixth",symbol:"6",tones:[0,4,7,9]},
+ {id:"maj7",name:"Major seventh",symbol:"maj7",tones:[0,4,7,11],extensions:[14,18,21]},
+ {id:"m7",name:"Minor seventh",symbol:"m7",tones:[0,3,7,10],extensions:[14,17,21]},
+ {id:"dom7",name:"Dominant seventh",symbol:"7",tones:[0,4,7,10],extensions:[14,18,21]},
+ {id:"m7b5",name:"Half diminished",symbol:"m7♭5",tones:[0,3,6,10],extensions:[14,17,20]},
+ {id:"dim7",name:"Diminished seventh",symbol:"°7",tones:[0,3,6,9],extensions:[14,17,20]},
+ {id:"min-maj7",name:"Minor major seventh",symbol:"mMaj7",tones:[0,3,7,11],extensions:[14,17,21]},
+ {id:"six",name:"Major sixth",symbol:"6",tones:[0,4,7,9],extensions:[14,18,21]},
+ // The altered and raised-eleventh chords, which is where most of the
+ // interesting approach work actually happens.
+ {id:"maj7-s11",name:"Major seventh ♯11",symbol:"maj7♯11",tones:[0,4,6,11],extensions:[14,18,21]},
+ {id:"dom7-s11",name:"Dominant ♯11",symbol:"7♯11",tones:[0,4,6,10],extensions:[14,18,21]},
+ {id:"dom7-s5",name:"Dominant ♯5",symbol:"7♯5",tones:[0,4,8,10],extensions:[13,15,18]},
+ {id:"maj7-s5",name:"Major seventh ♯5",symbol:"maj7♯5",tones:[0,4,8,11],extensions:[14,18,21]},
 ];
+
+/**
+ * Name an extension from the interval, not from its position in the list.
+ *
+ * A fixed list of "9th, 11th, 13th" labelled maj7's raised eleventh as a
+ * natural one, which is the note the chord specifically cannot take — the
+ * natural 11 sits a semitone above the major third.
+ */
+const EXTENSION_NAME:Record<number,string>={
+ 13:"♭9th",14:"9th",15:"♯9th",17:"11th",18:"♯11th",20:"♭13th",21:"13th",
+};
+const extensionName=(semitones:number)=>
+ EXTENSION_NAME[semitones]??`${semitones} semitones up`;
 
 const TARGET_NAMES=["root","3rd","5th","7th"];
 
@@ -352,11 +383,76 @@ export function progressionLine(device:Device,progression:Progression,chain:Chai
  };
 }
 
+/**
+ * Aiming above the seventh.
+ *
+ * Chord tones are where a line proves the harmony; extensions are where it says
+ * something about it. A player who can only approach root, third, fifth and
+ * seventh has the vocabulary of the chord and none of the colour, and the
+ * ninth in particular is a target long before it is an exotic one.
+ */
+export function extensionStudy(device:Device,quality:Quality):TabExercise{
+ const tones=[...quality.tones,...quality.extensions];
+ return {
+  id:`chrom-ext-${device.id}-${quality.id}`,
+  title:`${device.name} → extensions of ${quality.symbol}`,
+  brief:`Approach the ${quality.extensions.map(extensionName).join(", the ")} of ${quality.symbol} using `+
+        `${device.name.toLowerCase()}. The chord is underneath the whole time; these are the `+
+        `notes that say something about it rather than state it.`,
+  pass:"Three extensions approached cleanly, each still sounding like part of the chord rather than above it.",
+  root:STUDY_ROOT,
+  rootName:`${KEY_SPELLING[STUDY_ROOT%12]}${quality.symbol}`,
+  tempo:70,
+  bars:quality.extensions.map((_,index)=>
+   approachBar(tones,quality.tones.length+index,device)),
+  loop:true,
+ };
+}
+
+/**
+ * One procedure, twelve bars, every key.
+ *
+ * Transposing a study to a chosen key is useful and is not the same as taking
+ * it round the cycle: the point of the cycle is that the hand never settles,
+ * and the exercise ends where it started having passed through all twelve. The
+ * roots ascend by a fourth, which on this instrument is one string across.
+ */
+export function cycleStudy(device:Device,quality:Quality,targetIndex=1):TabExercise{
+ let previous:number|null=null;
+ const bars=Array.from({length:12},(_,step)=>{
+  const pitchClass=(step*5)%12;
+  const folded=pitchClass>6?pitchClass-12:pitchClass;
+  const options=[folded-12,folded,folded+12].filter(base=>base>=FLOOR&&base<=7);
+  const base=previous===null?options[options.length-1]:options.reduce((best,candidate)=>
+   Math.abs(candidate+quality.tones[targetIndex]-previous!)
+    <Math.abs(best+quality.tones[targetIndex]-previous!)?candidate:best);
+  previous=base+quality.tones[targetIndex];
+  return approachBar(quality.tones.map(tone=>tone+base),targetIndex,device);
+ });
+
+ return {
+  id:`chrom-cycle-${device.id}-${quality.id}-t${targetIndex}`,
+  title:`${quality.symbol} round the cycle · ${device.name}`,
+  brief:`The same approach into the ${TARGET_NAMES[targetIndex]} of ${quality.symbol}, twelve times, `+
+        `with the root rising a fourth each bar until it arrives back where it began. `+
+        `A fourth is one string across, so the shape barely moves — only the position does.`,
+  pass:"Twelve bars at one tempo with no bar taken more slowly than the others, and the last one leading back into the first.",
+  root:STUDY_ROOT,
+  rootName:`${KEY_SPELLING[STUDY_ROOT%12]}${quality.symbol} · cycle of fourths`,
+  tempo:66,
+  bars,
+  loop:true,
+ };
+}
+
 /** Everything the generator can produce, before any key is chosen. */
 export const CHROMATIC_STUDIES:TabExercise[]=[
  ...DEVICES.flatMap(device=>QUALITIES.map(quality=>deviceStudy(device,quality))),
  ...DEVICES.flatMap(device=>QUALITIES.flatMap(quality=>
   quality.tones.map((_,index)=>targetStudy(device,quality,index)))),
+ ...DEVICES.flatMap(device=>QUALITIES.map(quality=>extensionStudy(device,quality))),
+ ...DEVICES.flatMap(device=>QUALITIES.flatMap(quality=>
+  [1,3].map(index=>cycleStudy(device,quality,index)))),
  ...DEVICES.flatMap(device=>PROGRESSIONS.flatMap(progression=>
   (["3-7","7-3"] as Chain[]).map(chain=>progressionLine(device,progression,chain)))),
 ];

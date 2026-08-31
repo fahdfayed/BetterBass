@@ -1,7 +1,7 @@
 import {useMemo,useState} from "react";
 import ExerciseTabs from "../tab/ExerciseTabs";
-import {type Chain,DEVICES,PROGRESSIONS,QUALITIES,deviceStudy,progressionLine,targetStudy}
- from "../tab/chromatic-library";
+import {type Chain,DEVICES,PROGRESSIONS,QUALITIES,cycleStudy,deviceStudy,extensionStudy,
+ progressionLine,targetStudy} from "../tab/chromatic-library";
 
 /**
  * Drill the chromatic devices, rather than only read about them.
@@ -13,9 +13,9 @@ import {type Chain,DEVICES,PROGRESSIONS,QUALITIES,deviceStudy,progressionLine,ta
  * quality, in every key.
  *
  * The studies are generated from the devices rather than written out, so what
- * this page offers is the whole grid — nine ways of arriving at a note, seven
- * chord qualities, four targets, twelve keys — instead of a fixed selection
- * somebody had time to typeset.
+ * this page offers is the whole grid — nine ways of arriving at a note, eleven
+ * chord qualities, every chord tone and extension, round the cycle and through
+ * ten progressions — instead of a fixed selection somebody had time to typeset.
  */
 
 const STUDY_KINDS=[
@@ -23,7 +23,11 @@ const STUDY_KINDS=[
   blurb:"One device aimed at each chord tone in turn. Four bars, and the device changes meaning as the target moves."},
  {id:"target",label:"One target, two registers",
   blurb:"The same approach into one chord tone, low then an octave up, so it stops being a shape and becomes a sound."},
- {id:"line",label:"Through a ii–V–I",
+ {id:"ext",label:"Above the seventh",
+  blurb:"The ninth, eleventh and thirteenth. Chord tones prove the harmony; these say something about it."},
+ {id:"cycle",label:"Round the cycle",
+  blurb:"Twelve bars, the root up a fourth each time, back where it started. A fourth is one string across."},
+ {id:"line",label:"Through a progression",
   blurb:"The device placed where the harmony actually changes, aimed at the guide tones that carry it."},
 ] as const;
 
@@ -42,6 +46,8 @@ export default function ChromaticGym(){
 
  const exercises=useMemo(()=>{
   if(kind==="line")return [progressionLine(device,progression,chain)];
+  if(kind==="ext")return [extensionStudy(device,quality)];
+  if(kind==="cycle")return [1,3].map(index=>cycleStudy(device,quality,index));
   if(kind==="target")
    return quality.tones.map((_,index)=>targetStudy(device,quality,index));
   return [deviceStudy(device,quality)];
@@ -49,7 +55,7 @@ export default function ChromaticGym(){
 
  // The count is the argument for the page existing, so it is stated rather
  // than left to be discovered.
- const total=DEVICES.length*QUALITIES.length*(1+quality.tones.length)
+ const total=DEVICES.length*QUALITIES.length*(1+quality.tones.length+1+2)
   +DEVICES.length*PROGRESSIONS.length*2;
 
  return (
