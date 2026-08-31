@@ -258,3 +258,40 @@
 .sniperScore small{display:block;font:var(--t-micro) var(--mono);letter-spacing:.1em;color:var(--ink-3);margin-top:var(--s1)}
 @media(max-width:820px){.sniperRound{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.sniperWaiting i{animation:none}}
+
+/* One runner, eight drills. */
+.gameShelf .gameMeta{display:block;font:var(--t-micro) var(--mono);letter-spacing:.1em;
+ color:var(--ink-4);margin:var(--s2) 0}
+
+.runner{border:1px solid var(--line);padding:clamp(20px,3vw,34px)}
+.runner>header{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;
+ gap:var(--s4);border-bottom:1px solid var(--line);padding-bottom:var(--s4);margin-bottom:var(--s5)}
+.runner>header .label{font:var(--t-micro) var(--mono);letter-spacing:.12em;color:var(--violet)}
+.runner>header h2{font-size:var(--t-h3);margin:var(--s2) 0 0;max-width:60ch}
+
+.runnerConnect{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s5);
+ border:1px solid var(--line);padding:var(--s5);margin-bottom:var(--s5)}
+.runnerConnect p{margin:0;font-size:var(--t-micro);color:var(--ink-2);flex:1 1 320px}
+
+.runnerBoard{display:grid;grid-template-columns:1.7fr minmax(190px,.8fr);gap:var(--s6);align-items:start}
+.runnerAsk .label{font:var(--t-micro) var(--mono);letter-spacing:.12em;color:var(--ink-3)}
+.runnerAsk b{display:block;font-size:var(--t-h1);line-height:1.1;color:var(--lime);margin:var(--s3) 0}
+.runnerAsk p{font-size:var(--t-small);line-height:1.6;color:var(--ink-2);margin:0 0 var(--s3);max-width:56ch}
+.runnerSteps{display:flex;gap:var(--s2);flex-wrap:wrap}
+.runnerSteps i{font-style:normal;font:var(--t-micro) var(--mono);border:1px solid var(--line);
+ padding:6px 10px;color:var(--ink-3)}
+.runnerSteps i.done{border-color:var(--lime);color:var(--lime)}
+.runnerSteps i.now{border-color:var(--violet);color:var(--ink)}
+
+.runnerBeats{display:flex;gap:var(--s2);margin-bottom:var(--s4)}
+.runnerBeats i{font-style:normal;font:var(--t-micro) var(--mono);width:30px;height:30px;
+ display:grid;place-items:center;border:1px solid var(--line);color:var(--ink-4)}
+.runnerBeats i.on{border-color:var(--lime);color:var(--lime)}
+.runnerSaid{font-size:var(--t-small);margin:0 0 var(--s4)}
+.runnerSaid.good{color:var(--lime)}
+.runnerSaid.bad{color:var(--red)}
+.runnerScore{display:flex;flex-wrap:wrap;gap:var(--s5)}
+.runnerScore b{display:block;font-size:var(--t-h1);line-height:1;color:var(--ink)}
+.runnerScore small{display:block;font:var(--t-micro) var(--mono);letter-spacing:.1em;
+ color:var(--ink-3);margin-top:var(--s1)}
+@media(max-width:800px){.runnerBoard{grid-template-columns:1fr}}
