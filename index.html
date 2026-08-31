@@ -6,18 +6,19 @@
   <meta name="theme-color" content="#0c0c12" />
   <meta name="description" content="A complete interactive bass-learning environment for harmony, time, fretboard command, Arabic maqamat, slap technique and guided practice." />
   <!--
-   The faces were named in the tokens and never loaded, so everything fell back
-   to system-ui and the interface had no voice of its own. Bebas carries the
-   headlines, Inter the prose, JetBrains the labels and anything musical that
-   has to line up in a column.
+   The faces are declared in src/styles/fonts.css and served from this origin.
+   They came from a Google Fonts <link> until now, which never arrived in some
+   contexts and left the page silently wearing system-ui: the layout is
+   identical when that happens, so it is easy to ship and never notice.
+
+   Bricolage carries the headlines, Geist the prose, and JetBrains anything
+   musical that has to line up in a column.
   -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-   rel="stylesheet"
-   href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
-  />
-  <title>Outside In — Bass Lab</title>
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="/fonts/geist.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="/fonts/bricolage-grotesque.woff2" />
+  <title>Outside In: Bass Lab</title>
  </head>
  <body>
   <div id="root"></div>

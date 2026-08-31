@@ -57,7 +57,7 @@ export default function TabStudio(){
   setNotice("");
   try{
    const exercise=exerciseFromAsciiTab({
-    id:"pasted",title:"Pasted tab",brief:"Read from plain tab.",pass:"—",tab:pasted,
+    id:"pasted",title:"Pasted tab",brief:"Read from plain tab.",pass:"-",tab:pasted,
    });
    if(!exercise.bars.some(bar=>bar.length)){
     setPastedTex("");
@@ -91,7 +91,7 @@ export default function TabStudio(){
    const trouble=[
     beyond.length&&`${beyond.length} note${beyond.length>1?"s sit":" sits"} past fret ${MAX_FRET}`,
     marked&&`${marked} ${marked>1?"are":"is"} marked as outside a four-string's range (v below the low E, ^ above the top fret) and will sound at the fret written rather than where they belong`,
-    crowded&&`${crowded} run${crowded>1?"s":""} of three or more digits had to be guessed at — put a space between those notes and it will read them the way you meant`,
+    crowded&&`${crowded} run${crowded>1?"s":""} of three or more digits had to be guessed at. Put a space between those notes and it will read them the way you meant`,
    ].filter(Boolean);
    setNotice(trouble.length?`Read, but check it: ${trouble.join("; ")}.`:"");
 
@@ -106,7 +106,7 @@ export default function TabStudio(){
   setNotice("");
   if(!chosen)return;
   if(chosen.size>MAX_BYTES){
-   setNotice(`${chosen.name} is ${(chosen.size/1024/1024).toFixed(1)}MB — larger than this reader accepts.`);
+   setNotice(`${chosen.name} is ${(chosen.size/1024/1024).toFixed(1)}MB. Larger than this reader accepts.`);
    return;
   }
   try{
@@ -128,7 +128,7 @@ export default function TabStudio(){
    <header className="lede-block">
     <span className="label">Tab studio</span>
     <h1 className="h2" data-page-heading tabIndex={-1}>Your own tabs</h1>
-    <p className="lead">Paste plain tab, open a Guitar Pro file, or write an exercise — then play it back at any tempo.</p>
+    <p className="lead">Paste plain tab, open a Guitar Pro file, or write an exercise, then play it back at any tempo.</p>
    </header>
 
    <nav className="studioModes" aria-label="Source">
@@ -156,7 +156,7 @@ E|-3--5-----3--5---|`}
       <button className="action action-quiet" onClick={()=>{setPasted("");setPastedTex("");setNotice("")}}>Clear</button>
      </div>
      <p className="dim">
-      One line per string, highest first, each starting with its letter — with or without
+      One line per string, highest first, each starting with its letter, with or without
       the <code>|</code>. Fret numbers sit where the note falls, so the spacing carries the
       rhythm and a wider gap reads as a new group. Anything the four strings cannot reach
       is reported rather than quietly moved.
@@ -174,7 +174,7 @@ E|-3--5-----3--5---|`}
      <button className="action" onClick={()=>input.current?.click()}>
       {file?`Replace ${file.name}`:"Choose a Guitar Pro file"}
      </button>
-     <p className="dim">Guitar Pro 3–8, MusicXML and Capella. Files stay on this device — nothing is uploaded.</p>
+     <p className="dim">Guitar Pro 3-8, MusicXML and Capella. Files stay on this device, nothing is uploaded.</p>
     </div>
    ):(
     <div className="studioWrite">
@@ -195,7 +195,7 @@ E|-3--5-----3--5---|`}
       </button>
      </div>
      <p className="dim">
-      A note is <code>fret.string.duration</code> — string 4 is the low E, and the duration is the
+      A note is <code>fret.string.duration</code>. String 4 is the low E, and the duration is the
       bottom of the fraction, so <code>5.4.4</code> is a quarter note at the fifth fret of the E string.
       Bars are separated by <code>|</code> and a rest is <code>r.4</code>.
      </p>

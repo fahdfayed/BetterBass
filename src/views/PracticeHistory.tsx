@@ -39,16 +39,16 @@ export default function PracticeHistory({onRecord}:{onRecord:()=>void}){
 
  if(state==="loading")return (
   <section className="takeHistory">
-   <span>RECORDED EVIDENCE</span>
+   <span>Recorded evidence</span>
    <p className="dim" role="status">Looking for your recorded takes…</p>
   </section>
  );
 
  if(!sessions.length)return (
   <section className="takeHistory">
-   <span>RECORDED EVIDENCE</span>
+   <span>Recorded evidence</span>
    <h2>Nothing recorded yet.</h2>
-   <p>The listening engine scores every take it hears — timing against the grid, how much stayed inside, and whether what left came back. Record one and it appears here.</p>
+   <p>The listening engine scores every take it hears. Timing against the grid, how much stayed inside, and whether what left came back. Record one and it appears here.</p>
    <button type="button" className="action action-primary" onClick={onRecord}>Open the listening engine</button>
   </section>
  );
@@ -59,23 +59,23 @@ export default function PracticeHistory({onRecord}:{onRecord:()=>void}){
 
  return (
   <section className="takeHistory">
-   <span>RECORDED EVIDENCE</span>
+   <span>Recorded evidence</span>
    <h2>{sessions.length===1?"One take":`${sessions.length} takes`}, scored as you played them.</h2>
 
    <div className="takeHeadline">
     <div>
      <b className="mono">{latest.analysis.timingScore}</b>
-     <small>TIMING · LATEST</small>
+     <small>Timing · latest</small>
      {timingTrend!==null&&<i className={timingTrend>=0?"up":"down"}>{signed(timingTrend)} vs earlier</i>}
     </div>
     <div>
      <b className="mono">{latest.analysis.insidePercent}%</b>
-     <small>INSIDE · LATEST</small>
+     <small>Inside · latest</small>
      {insideTrend!==null&&<i className={insideTrend>=0?"up":"down"}>{signed(insideTrend)} vs earlier</i>}
     </div>
     <div>
      <b className="mono">{latest.analysis.averageGridOffsetMs}<small>ms</small></b>
-     <small>MEAN OFF THE GRID</small>
+     <small>Mean off the grid</small>
     </div>
    </div>
 
@@ -97,7 +97,7 @@ export default function PracticeHistory({onRecord}:{onRecord:()=>void}){
         <td className="mono">{a.outsideCount}</td>
         {/* A take that never left home has nothing to have returned from, and
             saying 0% there would read as a failure rather than an absence. */}
-        <td className="mono">{a.outsideCount?`${a.resolutionRate}%`:"—"}</td>
+        <td className="mono">{a.outsideCount?`${a.resolutionRate}%`:"-"}</td>
        </tr>
       );
      })}

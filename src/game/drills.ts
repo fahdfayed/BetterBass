@@ -91,7 +91,7 @@ export const DRILLS:Drill[]=[
    const note=Math.floor(random()*12);
    return {
     prompt:`Play ${NOTE_NAMES[note]}`,
-    hint:"Anywhere on the neck. Speed is the whole point — do not hunt for a shape.",
+    hint:"Anywhere on the neck. Speed is the whole point. Do not hunt for a shape.",
     notes:[note],
     // The window tightens as the streak grows, which is the drill's difficulty.
     limit:Math.max(1.2,2.4-level*.3),
@@ -123,7 +123,7 @@ export const DRILLS:Drill[]=[
    const forced=pick(outside,random);
    // Any chord tone rescues it; the nearest ones are the convincing answers.
    return {
-    prompt:`${NOTE_NAMES[forced]} over ${NOTE_NAMES[root]}${quality.symbol} — resolve it`,
+    prompt:`${NOTE_NAMES[forced]} over ${NOTE_NAMES[root]}${quality.symbol}, resolve it`,
     hint:"Land on any tone of the chord. A semitone away pulls hardest.",
     notes:[],
     accept:inside,
@@ -140,7 +140,7 @@ export const DRILLS:Drill[]=[
    const beat=1+Math.floor(random()*4);
    return {
     prompt:`Play ${NOTE_NAMES[mod(root+degree)]} on beat ${beat}`,
-    hint:`It is the ${SHORT_NAMES[degree]} of ${NOTE_NAMES[root]}. The click keeps going — land it in the bar, not near it.`,
+    hint:`It is the ${SHORT_NAMES[degree]} of ${NOTE_NAMES[root]}. The click keeps going. Land it in the bar, not near it.`,
     notes:[mod(root+degree)],
     beats:[beat],
    };
@@ -210,7 +210,7 @@ export const DRILLS:Drill[]=[
    );
    const inner=source.ask(root,Math.max(level,1),random);
    return {...inner,reference:undefined,limit:undefined,
-    hint:`${source.title} — no reference, no second try.`};
+    hint:`${source.title}, no reference, no second try.`};
   },
  },
 ];

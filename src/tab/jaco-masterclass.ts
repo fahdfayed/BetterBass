@@ -99,7 +99,7 @@ export const JACO_CHAPTERS:Chapter[]=[
   sections:[
    {
     id:"left-hand",title:"Left Hand",
-    note:"Three frets are played one-to-four with the middle fingers resting on the string behind — the hand makes a claw. Five frets are the same shape with the fourth finger stretching and the second taking the note halfway. The whole-tone scale builds that stretch; the diminished scale adds a first-finger slide of a half step to extend the reach without breaking the shape.",
+    note:"Three frets are played one-to-four with the middle fingers resting on the string behind, the hand makes a claw. Five frets are the same shape with the fourth finger stretching and the second taking the note halfway. The whole-tone scale builds that stretch; the diminished scale adds a first-finger slide of a half step to extend the reach without breaking the shape.",
     exercises:[
      ex({
       id:"jaco-lh-1",title:"The claw",
@@ -156,7 +156,7 @@ export const JACO_CHAPTERS:Chapter[]=[
    },
    {
     id:"fretless",title:"The Fretless Bass",
-    note:"Two things carry across: play exactly where the fret would be, and hit the note first and put the vibrato on afterwards — not at the same time as the attack.",
+    note:"Two things carry across: play exactly where the fret would be, and hit the note first and put the vibrato on afterwards, not at the same time as the attack.",
     exercises:[
      ex({
       id:"jaco-fretless-1",title:"Note first, then vibrato",
@@ -182,7 +182,7 @@ export const JACO_CHAPTERS:Chapter[]=[
   sections:[
    {
     id:"theory-basics",title:"Half steps, tetrachords, intervals and the cycle",
-    note:"A major scale is two identical four-note units — whole, whole, half — a whole step apart. Each unit is a tetrachord. The cycle of fifths orders the keys, and most jazz harmony moves along it.",
+    note:"A major scale is two identical four-note units. Whole, whole, half, a whole step apart. Each unit is a tetrachord. The cycle of fifths orders the keys, and most jazz harmony moves along it.",
     exercises:[
      ex({
       id:"jaco-th-1",title:"The chromatic scale",
@@ -193,7 +193,7 @@ export const JACO_CHAPTERS:Chapter[]=[
      }),
      ex({
       id:"jaco-th-2",title:"Two tetrachords",
-      brief:"Whole–whole–half, a whole step, then whole–whole–half again. Play the two halves as two separate ideas before joining them.",
+      brief:"Whole-whole-half, a whole step, then whole-whole-half again. Play the two halves as two separate ideas before joining them.",
       pass:"You can hear the scale as two units rather than eight notes.",
       root:C2,rootName:"C major",tempo:64,
       bars:[
@@ -226,7 +226,7 @@ export const JACO_CHAPTERS:Chapter[]=[
  {
   n:3,id:"harmony",title:"Harmonic Elements",
   epigraph:"“Human beings have nothing to do with music. Music is in the air; you just have to pull it out.”",
-  note:"The part of the playing that set him apart. The approach is always the same: state the harmony from the inside, expand out into chromatic territory, then come back — which only works if the harmonic material is completely under the hand. Spell every chord in your head as you play it rather than running the notes.",
+  note:"The part of the playing that set him apart. The approach is always the same: state the harmony from the inside, expand out into chromatic territory, then come back, which only works if the harmonic material is completely under the hand. Spell every chord in your head as you play it rather than running the notes.",
   sections:[
    {
     id:"triads",title:"Triads",
@@ -234,7 +234,7 @@ export const JACO_CHAPTERS:Chapter[]=[
     exercises:[
      ex({
       id:"jaco-tri-1",title:"Major triad",
-      brief:"Root, 3rd, 5th, octave and back in triplets — then the same shape an octave up, then across two octaves.",
+      brief:"Root, 3rd, 5th, octave and back in triplets, then the same shape an octave up, then across two octaves.",
       pass:"Spelled in your head, not found by feel.",
       root:C2,rootName:"C major",tempo:66,
       bars:intoBars([
@@ -256,7 +256,7 @@ export const JACO_CHAPTERS:Chapter[]=[
      }),
      ex({
       id:"jaco-tri-3",title:"Augmented triad",
-      brief:"Two major 3rds — a major triad with a ♯5. It divides the octave in three, so it repeats every four frets.",
+      brief:"Two major 3rds, a major triad with a ♯5. It divides the octave in three, so it repeats every four frets.",
       pass:"You can start it from any of its three notes and it sounds the same.",
       root:C2,rootName:"C augmented",tempo:66,
       bars:intoBars([
@@ -267,7 +267,7 @@ export const JACO_CHAPTERS:Chapter[]=[
      }),
      ex({
       id:"jaco-tri-4",title:"Diminished triad",
-      brief:"Two minor 3rds — a minor triad with a ♭5. It divides the octave in four.",
+      brief:"Two minor 3rds, a minor triad with a ♭5. It divides the octave in four.",
       pass:"The ♭5 is in tune and does not drift toward the natural 5th.",
       root:A1,rootName:"A diminished",tempo:66,
       bars:intoBars([
@@ -308,10 +308,10 @@ export const JACO_CHAPTERS:Chapter[]=[
    },
    {
     id:"tritone-triads",title:"Alternating Diatonic Triads with Tritone Relationships",
-    note:"Take a second-inversion diatonic triad going up, then answer it with the root-position triad a tritone away coming down. The tritone halves the octave, and superimposing that far triad over the original root supplies the ♭5, ♭7 and ♭9 — which is the sound of an altered dominant, and the thinking behind flat-five substitution. Exercise II is the same idea reversed.",
+    note:"Take a second-inversion diatonic triad going up, then answer it with the root-position triad a tritone away coming down. The tritone halves the octave, and superimposing that far triad over the original root supplies the ♭5, ♭7 and ♭9, which is the sound of an altered dominant, and the thinking behind flat-five substitution. Exercise II is the same idea reversed.",
     exercises:[
      ex({
-      id:"jaco-tt-1",title:"Exercise I — second inversion up, tritone down",
+      id:"jaco-tt-1",title:"Exercise I. Second inversion up, tritone down",
       brief:"Second inversion ascending, then the root-position triad a tritone away descending. Straight through the key.",
       pass:"The far triad sounds like colour over the key, not like a mistake.",
       root:C2,rootName:"C major · flat-five substitution",tempo:60,ts:[2,4],
@@ -321,7 +321,7 @@ export const JACO_CHAPTERS:Chapter[]=[
       ].flatMap(([up,down])=>trip([...up,...[...down].reverse()])),2),
      }),
      ex({
-      id:"jaco-tt-2",title:"Exercise II — root position up, second inversion down",
+      id:"jaco-tt-2",title:"Exercise II. Root position up, second inversion down",
       brief:"The reverse: root position ascending, then the tritone-away triad in second inversion coming down.",
       pass:"Both directions are as fluent as each other.",
       root:C2,rootName:"C major · flat-five substitution",tempo:60,ts:[2,4],
@@ -336,7 +336,7 @@ export const JACO_CHAPTERS:Chapter[]=[
    },
    {
     id:"sevenths",title:"Seventh Chords",
-    note:"Stack one more third on a triad and you have a seventh chord. In a major key: major sevenths on I and IV, minor sevenths on ii, iii and vi, a dominant seventh on V, and a minor seventh flat five on vii. The ii–V–I is the progression most standards are built from — learn it in all twelve keys and you can learn tunes in blocks rather than chord by chord.",
+    note:"Stack one more third on a triad and you have a seventh chord. In a major key: major sevenths on I and IV, minor sevenths on ii, iii and vi, a dominant seventh on V, and a minor seventh flat five on vii. The ii-V-I is the progression most standards are built from. Learn it in all twelve keys and you can learn tunes in blocks rather than chord by chord.",
     exercises:[
      ex({
       id:"jaco-7-1",title:"The seven diatonic sevenths",
@@ -347,7 +347,7 @@ export const JACO_CHAPTERS:Chapter[]=[
        .flatMap(chord=>eighths([...chord,chord[3],chord[2],chord[1],chord[0]]))),
      }),
      ex({
-      id:"jaco-7-2",title:"ii–V–I",
+      id:"jaco-7-2",title:"ii-V-I",
       brief:"Dm7, G7, Cmaj7 as arpeggios, then again using only the 3rds and 7ths.",
       pass:"The guide-tone version still spells the progression on its own.",
       root:D2,rootName:"Dm7 → G7 → Cmaj7",tempo:72,
@@ -371,7 +371,7 @@ export const JACO_CHAPTERS:Chapter[]=[
    },
    {
     id:"dominants",title:"Dominant Seventh Chords",
-    note:"The V chord takes more alteration than any other, which is why it gets its own section. Keep stacking thirds and you reach the 9th, 11th and 13th — the 2nd, 4th and 6th degrees an octave up. Sharpen or flatten those and you have the altered dominant vocabulary the tritone exercise was preparing.",
+    note:"The V chord takes more alteration than any other, which is why it gets its own section. Keep stacking thirds and you reach the 9th, 11th and 13th, the 2nd, 4th and 6th degrees an octave up. Sharpen or flatten those and you have the altered dominant vocabulary the tritone exercise was preparing.",
     exercises:[
      ex({
       id:"jaco-dom-1",title:"Dominant seventh and its extensions",
@@ -414,8 +414,8 @@ export const JACO_CHAPTERS:Chapter[]=[
    },
    {
     id:"harmonics",title:"Harmonics",
-    note:"Touch the string lightly over a node instead of pressing it down and the string divides, sounding a bell tone far above the written position. Counting from the twelfth fret down, the nodes give the octave, the 5th above that, two octaves, the major 3rd above that, and the 5th again — so the ones that sit over a fret spell a major triad spread across three octaves. Two more complete the picture: the ♭7 (ten semitones above the root — B♭ in C) and the 9th. Those do not sit over a fret at all. They fall between the 2nd and 3rd, which is why a harmonics chart prints them as decimals and tells you the numbers are approximate; with those two added the string spells a dominant ninth on its own open note. They are real and worth hunting for, but they are found by ear, and no tab can write them down.",
-    listen:"“Portrait of Tracy” — a whole piece built from these nodes.",
+    note:"Touch the string lightly over a node instead of pressing it down and the string divides, sounding a bell tone far above the written position. Counting from the twelfth fret down, the nodes give the octave, the 5th above that, two octaves, the major 3rd above that, and the 5th again, so the ones that sit over a fret spell a major triad spread across three octaves. Two more complete the picture: the ♭7 (ten semitones above the root. B♭ in C) and the 9th. Those do not sit over a fret at all. They fall between the 2nd and 3rd, which is why a harmonics chart prints them as decimals and tells you the numbers are approximate; with those two added the string spells a dominant ninth on its own open note. They are real and worth hunting for, but they are found by ear, and no tab can write them down.",
+    listen:"“Portrait of Tracy”, a whole piece built from these nodes.",
     exercises:[
      ex({
       id:"jaco-harm-1",title:"The nodes",
@@ -431,7 +431,7 @@ export const JACO_CHAPTERS:Chapter[]=[
      }),
      ex({
       id:"jaco-harm-2",title:"The chord inside one string",
-      brief:"Every node over a fret on the E string, from the twelfth down: E, B, E, G♯, B — an E major triad across three octaves, from a string you never fret. Then hunt between the 2nd and 3rd frets for the two that finish it.",
+      brief:"Every node over a fret on the E string, from the twelfth down: E, B, E, G♯, B, an E major triad across three octaves, from a string you never fret. Then hunt between the 2nd and 3rd frets for the two that finish it.",
       pass:"All five ring cleanly, and you can find at least one of the two unwritable ones by ear.",
       root:E1,rootName:"E9 from the E string",tempo:56,
       bars:[
@@ -478,7 +478,7 @@ export const JACO_CHAPTERS:Chapter[]=[
   sections:[
    {
     id:"scales",title:"Scales",
-    note:"Practise each scale three ways: one octave, two octaves, and extended — up to the point on the G string where the next shift would be needed, which usually stops a little short of two octaves. The extended pattern takes you straight across the strings and back, which is what builds right-hand speed.",
+    note:"Practise each scale three ways: one octave, two octaves, and extended. Up to the point on the G string where the next shift would be needed, which usually stops a little short of two octaves. The extended pattern takes you straight across the strings and back, which is what builds right-hand speed.",
     exercises:[
      ex({
       id:"jaco-sc-1",title:"One octave",
@@ -508,7 +508,7 @@ export const JACO_CHAPTERS:Chapter[]=[
     note:"Three patterns that ran through the lessons: take a scale and move a fixed shape down through it, one degree at a time. They turn a scale into vocabulary. Learn them in all keys.",
     exercises:[
      ex({
-      id:"jaco-seq-1",title:"Sequence 1 — descending fours",
+      id:"jaco-seq-1",title:"Sequence 1, descending fours",
       brief:"Four notes down from each degree, then start again a degree lower.",
       pass:"The pattern never breaks at a string crossing.",
       root:C2,rootName:"C major",tempo:70,
@@ -519,7 +519,7 @@ export const JACO_CHAPTERS:Chapter[]=[
       })),
      }),
      ex({
-      id:"jaco-seq-2",title:"Sequence 2 — down three, up one",
+      id:"jaco-seq-2",title:"Sequence 2. Down three, up one",
       brief:"Three notes down then one back up, moving a degree lower each time.",
       pass:"The turn is as even as the descent.",
       root:C2,rootName:"C major",tempo:70,
@@ -531,8 +531,8 @@ export const JACO_CHAPTERS:Chapter[]=[
       })),
      }),
      ex({
-      id:"jaco-seq-3",title:"Sequence 3 — diatonic thirds",
-      brief:"A note, skip one, the next — then move down a degree and do it again.",
+      id:"jaco-seq-3",title:"Sequence 3, diatonic thirds",
+      brief:"A note, skip one, the next, then move down a degree and do it again.",
       pass:"You can name each interval as a major or a minor 3rd.",
       root:C2,rootName:"C major",tempo:70,
       bars:intoBars([0,2,4,5,7,9,11,12].flatMap(step=>eighths([step,step+4>12?step+3:step+4]))
@@ -542,7 +542,7 @@ export const JACO_CHAPTERS:Chapter[]=[
    },
    {
     id:"modes",title:"Modes",
-    note:"Two ways to see the same thing. A mode is the major scale started from one of its degrees — D Dorian is C major from D. Or it is a major or minor scale with one degree altered — Dorian is minor with a raised 6th, Lydian is major with a ♯4. The second view is the one that tells you what it will sound like. Practise each with the chord it belongs over: Dorian with minor sevenths, Mixolydian with dominants, Lydian with major sevenths, Locrian with minor seven flat five.",
+    note:"Two ways to see the same thing. A mode is the major scale started from one of its degrees. D Dorian is C major from D. Or it is a major or minor scale with one degree altered. Dorian is minor with a raised 6th, Lydian is major with a ♯4. The second view is the one that tells you what it will sound like. Practise each with the chord it belongs over: Dorian with minor sevenths, Mixolydian with dominants, Lydian with major sevenths, Locrian with minor seven flat five.",
     exercises:[
      ex({
       id:"jaco-mode-1",title:"The seven modes from one root",
@@ -561,7 +561,7 @@ export const JACO_CHAPTERS:Chapter[]=[
      }),
      ex({
       id:"jaco-mode-2",title:"Mode and chord together",
-      brief:"Each mode straight after the chord it belongs over — the arpeggio, then the scale.",
+      brief:"Each mode straight after the chord it belongs over, the arpeggio, then the scale.",
       pass:"The chord and scale sound like one idea, not two exercises.",
       root:D2,rootName:"Dm7 · G7 · Cmaj7 · Bm7♭5",tempo:70,
       bars:intoBars([
@@ -654,7 +654,7 @@ export const JACO_CHAPTERS:Chapter[]=[
     note:"Quarter notes at a tempo where quarter notes are difficult. Walking is the technique and time is the whole test.",
     exercises:[ex({
      id:"jaco-rh-walk",title:"Walking at tempo",
-     brief:"Four to the bar through a ii–V–I. Every note the same length.",
+     brief:"Four to the bar through a ii-V-I. Every note the same length.",
      pass:"The time does not lean forward as it gets harder.",
      root:D2,rootName:"Dm7 → G7 → Cmaj7",tempo:120,
      bars:[
@@ -710,7 +710,7 @@ export const JACO_CHAPTERS:Chapter[]=[
     listen:"“Donna Lee”",
     note:"A bebop line played on bass at speed: continuous eighths, chromatic approach notes always on the weak part of the beat, and every phrase landing on a chord tone.",
     exercises:[ex({
-     id:"jaco-solo-bebop",title:"Bebop line over ii–V–I",
+     id:"jaco-solo-bebop",title:"Bebop line over ii-V-I",
      brief:"Continuous eighths. Every chromatic note falls on a weak eighth and resolves by a half step.",
      pass:"Play it at 60 with every note even before taking it faster.",
      root:D2,rootName:"Dm7 → G7 → Cmaj7",tempo:96,
@@ -759,7 +759,7 @@ export const JACO_CHAPTERS:Chapter[]=[
    {
     id:"composed",title:"A composed melody at speed",
     listen:"“Teen Town”",
-    note:"Written, not improvised — a line where the melody and the bass part are the same thing, and the tempo is the difficulty.",
+    note:"Written, not improvised, a line where the melody and the bass part are the same thing, and the tempo is the difficulty.",
     exercises:[ex({
      id:"jaco-solo-fast",title:"Written line at tempo",
      brief:"Sixteenths in a fixed shape. Learn it slowly enough to memorise, then push the tempo.",
@@ -795,7 +795,7 @@ export const JACO_CHAPTERS:Chapter[]=[
    {
     id:"baroque",title:"Baroque line playing",
     listen:"“Chromatic Fantasy”",
-    note:"He worked from Bach and Dotzauer, and thought of that material the same way he thought of a jazz solo — analysed with chord symbols rather than Roman numerals. Continuous line, one voice implying several.",
+    note:"He worked from Bach and Dotzauer, and thought of that material the same way he thought of a jazz solo. Analysed with chord symbols rather than Roman numerals. Continuous line, one voice implying several.",
     exercises:[ex({
      id:"jaco-solo-bach",title:"One voice implying two",
      brief:"A continuous line that alternates a moving upper voice against a held low note, so a single line sounds like two.",
@@ -816,21 +816,21 @@ export const JACO_CHAPTERS:Chapter[]=[
  /* ============================================================= */
  {
   n:7,id:"food-for-thought",title:"Food for Thought",
-  note:"The book closes its teaching with a chapter that has no exercises in it — an argument that the man deserves to be remembered for more than the wreckage of his last years. He was generous with his time, competitive at sport, serious about being a decent citizen, and convinced that attitude was most of playing well: about seventy-five percent mental, as he put it — if you are thinking you are happening, you are always swinging. The point for a student is that the character and the playing were not separable, and the strengths worth copying are not only the musical ones.",
+  note:"The book closes its teaching with a chapter that has no exercises in it, an argument that the man deserves to be remembered for more than the wreckage of his last years. He was generous with his time, competitive at sport, serious about being a decent citizen, and convinced that attitude was most of playing well: about seventy-five percent mental, as he put it, if you are thinking you are happening, you are always swinging. The point for a student is that the character and the playing were not separable, and the strengths worth copying are not only the musical ones.",
   sections:[],
  },
 
  /* ============================================================= */
  {
   n:8,id:"sketchbook",title:"Sketchbook",
-  note:"The last chapter reproduces pages from his own practice book — scrawled staves with instructions to himself in the margins. The ideas on them are worth working even without the handwriting: diminished fourths inside Dorian harmony, everything also played backwards, fifths taken in reverse, and the standing note to practise it all in triplets.",
+  note:"The last chapter reproduces pages from his own practice book. Scrawled staves with instructions to himself in the margins. The ideas on them are worth working even without the handwriting: diminished fourths inside Dorian harmony, everything also played backwards, fifths taken in reverse, and the standing note to practise it all in triplets.",
   sections:[
    {
     id:"dim-fourths",title:"Diminished fourths in Dorian harmony",
     note:"Stack fourths out of the Dorian collection and let the diminished one fall where it falls. The interval that does not fit is the one worth hearing.",
     exercises:[ex({
      id:"jaco-sk-1",title:"Fourths through Dorian",
-     brief:"A fourth from each degree of D Dorian. One of them is diminished — find it by ear before you work it out.",
+     brief:"A fourth from each degree of D Dorian. One of them is diminished. Find it by ear before you work it out.",
      pass:"You can name which degree produced the odd one.",
      root:D2,rootName:"D Dorian",tempo:66,
      bars:intoBars([0,2,3,5,7,9,10,12].flatMap(step=>eighths([step,step+5>12&&step===9?step+4:step+5]))),

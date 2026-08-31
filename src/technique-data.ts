@@ -58,7 +58,7 @@ export const TECHNIQUE_AREAS:TechniqueArea[]=[
   aim:"Reach four frets without collapsing, and silence everything you are not playing.",
   core:"Two left-hand positions cover almost everything. One finger per fret gives each finger its "+
        "own fret and works comfortably from about the fifth fret upward. Lower down the frets are "+
-       "wider, and reaching four of them strains the hand — there the older position, using the first, "+
+       "wider, and reaching four of them strains the hand. There the older position, using the first, "+
        "second and fourth fingers for three frets, is the safer choice. Knowing which one you are in is "+
        "more useful than insisting on either.",
   rules:[
@@ -76,7 +76,7 @@ export const TECHNIQUE_AREAS:TechniqueArea[]=[
            "close is most of what looks like speed."},
    {name:"The hand mutes what it is not playing",
     detail:"Fingers lying lightly across the strings above the one sounding stop them ringing. On "+
-           "bass this is not tidiness — undamped strings turn any line into a chord."},
+           "bass this is not tidiness. Undamped strings turn any line into a chord."},
   ],
   trap:"Squeezing harder when a passage gets difficult. It makes the hand slower, not more accurate, "+
        "and it is the single most common cause of a fourth finger that will not work.",
@@ -86,7 +86,7 @@ export const TECHNIQUE_AREAS:TechniqueArea[]=[
  {
   id:"right",n:"03",title:"The right hand: alternation, thumb and tone",
   aim:"Make every note sound the same, whichever finger and whichever string played it.",
-  core:"The plucking hand decides tone, dynamics and — more than most players expect — time. Its "+
+  core:"The plucking hand decides tone, dynamics and. More than most players expect, time. Its "+
        "job is consistency: two fingers alternating strictly, each producing the same volume and the "+
        "same tone, on every string. Where you pluck changes the sound more than any tone control does, "+
        "so it is worth choosing rather than inheriting.",
@@ -145,10 +145,10 @@ export const TECHNIQUE_AREAS:TechniqueArea[]=[
   core:"Repetition alone does not build skill; it makes whatever you are already doing more "+
        "automatic, including the faults. Practice that works has a single point of attention, a tempo "+
        "slow enough for that attention to be paid, and an honest way of knowing whether the rep was "+
-       "good — and it stops the moment the attention goes.",
+       "good, and it stops the moment the attention goes.",
   rules:[
    {name:"One thing at a time, in rotation",
-    detail:"Attend to one variable per pass — pressure, then tone, then time, then muting. Trying to "+
+    detail:"Attend to one variable per pass. Pressure, then tone, then time, then muting. Trying to "+
            "watch everything means watching nothing, and rotating through them covers the ground "+
            "without splitting the attention."},
    {name:"Slow enough to be correct, not slow as a ritual",

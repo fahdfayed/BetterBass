@@ -48,7 +48,7 @@ export default function NodeRuntimeShell({children}:{children:ReactNode}){
  const postSession=async(learner:string,signature:string,take:string)=>{
   try{
    const events=JSON.parse(take);
-   await jsonRequest(`${apiBase}/sessions/${encodeURIComponent(learner)}`,{method:"POST",body:JSON.stringify({sessionId:signature,source:"browser-audio-analysis",events})});
+   await jsonRequest(`${apiBase}/sessions/${encodeURIComponent(learner)}`,{method:"Post",body:JSON.stringify({sessionId:signature,source:"browser-audio-analysis",events})});
    writeStore(SESSION_MARKER,signature);
   }catch(error){
    if(isPermanent(error))writeStore(SESSION_MARKER,signature);
@@ -90,6 +90,6 @@ export default function NodeRuntimeShell({children}:{children:ReactNode}){
   return()=>{disposed=true;window.clearInterval(timer);window.clearTimeout(debounce);window.removeEventListener(LEARNING_STATE_EVENT,schedule);window.removeEventListener("pagehide",flush);document.removeEventListener("visibilitychange",onVisibility)};
  },[apiBase,id,ready]);
 
- if(!ready)return <main className="nodeBoot" aria-live="polite"><i/><span>NODE · EXPRESS</span><h1>Loading your Bass Lab…</h1><p>Restoring this learner’s course, practice and performance state.</p></main>;
- return <><div className={`nodeRuntimeStatus ${status}`} role="status" aria-live="polite"><i/><span>NODE API</span><b>{status==="connecting"?"CONNECTING":status==="saving"?"SAVING":status==="offline"?"LOCAL FALLBACK":"SYNCED"}</b></div>{children}</>;
+ if(!ready)return <main className="nodeBoot" aria-live="polite"><i/><span>Node · express</span><h1>Loading your Bass Lab…</h1><p>Restoring this learner’s course, practice and performance state.</p></main>;
+ return <><div className={`nodeRuntimeStatus ${status}`} role="status" aria-live="polite"><i/><span>Node api</span><b>{status==="connecting"?"Connecting":status==="saving"?"Saving":status==="offline"?"Local fallback":"Synced"}</b></div>{children}</>;
 }

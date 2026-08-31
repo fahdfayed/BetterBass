@@ -121,7 +121,7 @@ export default function GameRunner({
    const wanted=ask.beats.find(want=>onBeat(at,want));
    if(wanted===undefined){
     setStreak(0);setMisses(count=>count+1);
-    setSaid(`That landed on ${at.toFixed(1)} — the ask was ${ask.beats.join(", ")}.`);
+    setSaid(`That landed on ${at.toFixed(1)}, the ask was ${ask.beats.join(", ")}.`);
     return;
    }
    if(ask.notes.length&&((played%12)+12)%12!==((ask.notes[0]%12)+12)%12){
@@ -190,7 +190,7 @@ export default function GameRunner({
     <div className="runnerAsk" aria-live="polite">
      {over?(
       <>
-       <span className="label">TIME</span>
+       <span className="label">Time</span>
        <b>{score} in {drill.session}s</b>
        <p>Longest run of {best}. {misses} missed.</p>
        <button type="button" className="action action-primary" onClick={restart}>Again</button>
@@ -198,7 +198,7 @@ export default function GameRunner({
      ):(
       <>
        <span className="label">
-        {ask?.limit!==undefined?`WITHIN ${ask.limit.toFixed(1)}s`:"PLAY"}
+        {ask?.limit!==undefined?`WITHIN ${ask.limit.toFixed(1)}s`:"Play"}
        </span>
        <b>{ask?.prompt??"…"}</b>
        {ask?.hint&&<p>{ask.hint}</p>}
@@ -229,9 +229,9 @@ export default function GameRunner({
      )}
      {said&&!over&&<p className={`runnerSaid ${said.startsWith("Yes")||said.startsWith("On it")?"good":"bad"}`} role="status">{said}</p>}
      <div className="runnerScore">
-      <div><b className="mono">{streak}</b><small>IN A ROW</small></div>
-      <div><b className="mono">{best}</b><small>BEST</small></div>
-      {drill.session>0&&<div><b className="mono">{left}</b><small>SECONDS</small></div>}
+      <div><b className="mono">{streak}</b><small>In a row</small></div>
+      <div><b className="mono">{best}</b><small>Best</small></div>
+      {drill.session>0&&<div><b className="mono">{left}</b><small>Seconds</small></div>}
      </div>
     </div>
    </div>

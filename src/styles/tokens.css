@@ -81,8 +81,8 @@
   * sets everything meant to be read. JetBrains carries labels and anything
   * musical that has to line up in a column.
   */
- --font-display:"Bebas Neue","Oswald","Arial Narrow",Impact,sans-serif;
- --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+ --font-display:"Bricolage Grotesque","Geist","Segoe UI",system-ui,sans-serif;
+ --font:"Geist",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 
  /* A wide scale: labels are genuinely small, statements are genuinely large.
@@ -99,12 +99,13 @@
  --t-display:clamp(2.25rem,1.6rem + 3.2vw,5.5rem);
 
  /*
-  * Labels are tracked wide enough to read as a caption rather than as small
-  * prose. Bebas is already condensed, so its headlines are tracked out a
-  * little instead of in — tightening a condensed face closes it up.
+  * A label is tracked just far enough to separate it from body prose, and no
+  * further. It used to be set at .22em in capitals, which is the width that
+  * makes every small piece of text read as a section marker whether or not it
+  * is one, and there were four hundred of them.
   */
- --track-label:.22em;
- --track-display:.02em;
+ --track-label:.04em;
+ --track-display:-.02em;
 
  /* ---- space ----------------------------------------------------------- */
  /* Generous by default. Air is the primary grouping device. */

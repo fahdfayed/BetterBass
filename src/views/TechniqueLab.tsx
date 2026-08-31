@@ -46,7 +46,7 @@ export default function TechniqueLab(){
  return (
   <div className="osScreen techniqueLab">
    <div className="screenIntro">
-    <span>THE HANDS</span>
+    <span>The hands</span>
     <h1 data-page-heading tabIndex={-1}>Whether you can play it, not what to play.</h1>
     <p>
      Theory tells you which note. It does not tell you how to reach it without the hand
@@ -90,11 +90,11 @@ export default function TechniqueLab(){
 
     <div className="techDiagnosis">
      <article className="myth">
-      <span>WHAT GOES WRONG</span>
+      <span>What goes wrong</span>
       <p>{open.trap}</p>
      </article>
      <article className="fix">
-      <span>HOW YOU KNOW IT IS RIGHT</span>
+      <span>How you know it is right</span>
       <p>{open.proof}</p>
      </article>
     </div>
@@ -102,7 +102,7 @@ export default function TechniqueLab(){
 
    <section className="techDrills">
     <header>
-     <span className="label">PUT IT UNDER THE FINGERS</span>
+     <span className="label">Put it under the fingers</span>
      <h2>Drills for the hand, not the ear.</h2>
      <p>
       These are written as frets and strings rather than as notes, because that is what

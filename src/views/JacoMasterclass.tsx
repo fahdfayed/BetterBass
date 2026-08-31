@@ -19,7 +19,7 @@ export default function JacoMasterclass(){
     <span className="label">Masterclass</span>
     <h1 className="display" data-page-heading tabIndex={-1}>Jaco Pastorius</h1>
     <p className="lead">
-     The hands, then the theory, then harmony, melody, rhythm and soloing — the syllabus of
+     The hands, then the theory, then harmony, melody, rhythm and soloing, the syllabus of
      Ray Peterson’s <i>Jaco Pastorius Bass Method</i>, in its own order.
     </p>
     <p className="dim measure">
@@ -44,7 +44,7 @@ export default function JacoMasterclass(){
         >
          <i className="figure" aria-hidden="true">{chapter.n}</i>
          <span className="chapterTitle">{chapter.title}</span>
-         <span className="chapterCount mono">{count||"—"}</span>
+         <span className="chapterCount mono">{count||"-"}</span>
         </button>
        </h2>
 

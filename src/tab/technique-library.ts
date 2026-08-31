@@ -76,7 +76,7 @@ export function crossingDrill(order:number[],position=5):TabExercise{
   id:`tech-cross-${orderName(order)}`,
   title:`Crossing on ${orderName(order)}`,
   brief:`The same fingers, a different string for every note: across, back, then outside-in `+
-        `and inside-out. Strict index–middle alternation in the right hand throughout.`,
+        `and inside-out. Strict index-middle alternation in the right hand throughout.`,
   pass:"No missed string, no doubled right-hand finger, and the tone identical on all four strings.",
   root:0,
   rootName:`Position ${position}`,
@@ -102,7 +102,7 @@ export function shiftDrill(distance:number,start=3):TabExercise{
   id:`tech-shift-${distance}`,
   title:`Shifting by ${distance} ${distance===1?"fret":"frets"}`,
   brief:`The same two-string shape moved by ${distance}. Look at the first position, then `+
-        `move without looking — the shift is a measured distance, not a search. Release the `+
+        `move without looking, the shift is a measured distance, not a search. Release the `+
         `thumb as the hand travels and let it land behind the new position.`,
   pass:`Four positions in time, each landing in shape, with the shift heard as movement rather than as a gap.`,
   root:0,

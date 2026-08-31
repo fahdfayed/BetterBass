@@ -28,13 +28,13 @@ type Place={place:string;beat:string};
 /** What each degree is, told as somewhere you can stand. */
 const PLACES:Place[]=[
  {place:"Home",beat:"Everything after this is measured from here."},
- {place:"The Near Gate",beat:"One semitone out — close enough that it feels like pressure on the door rather than distance."},
+ {place:"The Near Gate",beat:"One semitone out. Close enough that it feels like pressure on the door rather than distance."},
  {place:"The Rise",beat:"A whole step. Far enough to have left, near enough to fall back without trying."},
  {place:"The Grey Fork",beat:"The road turns minor here. Whatever happens next, it happens in the dark."},
  {place:"The Bright Fork",beat:"The road turns major here. This is the note that decided it."},
  {place:"The Ford",beat:"A crossing, not a place to stand. Over a major third it pulls down onto it."},
  {place:"The Tritone Bridge",beat:"Exactly half the octave. From here home is the same distance in either direction."},
- {place:"The Waystone",beat:"The most solid ground outside home, and it decides nothing — no major, no minor."},
+ {place:"The Waystone",beat:"The most solid ground outside home, and it decides nothing, no major, no minor."},
  {place:"The Long Shadow",beat:"It leans downward onto the fifth. This is the weight in a minor key."},
  {place:"The High Meadow",beat:"Bright, and it still has not changed whether the road is major or minor."},
  {place:"The Open Gate",beat:"No pull homeward at all. You could stay out here, and some music does."},
@@ -133,9 +133,9 @@ export function questFor(index:number):Quest{
   const isEnd=position===path.length-1;
   return {
    degree,
-   place:isFar?`${at.place} — the far point`:isEnd?"Home again":at.place,
+   place:isFar?`${at.place}, the far point`:isEnd?"Home again":at.place,
    beat:isFar
-    ?`${at.beat} This is the note the lesson is about — the reason for the whole walk.`
+    ?`${at.beat} This is the note the lesson is about, the reason for the whole walk.`
     :isEnd
      ?"Home, from the other side. It should sound like arriving rather than like stopping."
      :at.beat,

@@ -50,7 +50,7 @@ const SLAP:SlapSpec[]=[
   [n(0,4),r(4),n(0,4),r(4)],
   [n(0,2),r(2)],
  ]},
- {drill:"octave",title:"Root–octave handshake",brief:"Thumb the root, pop the octave. Matched volume, nothing in between.",pass:"Root and octave sit at the same volume.",root:A1,rootName:"A · root and octave",tempo:60,bars:[
+ {drill:"octave",title:"Root-octave handshake",brief:"Thumb the root, pop the octave. Matched volume, nothing in between.",pass:"Root and octave sit at the same volume.",root:A1,rootName:"A · root and octave",tempo:60,bars:[
   [n(0,4),n(12,4),n(0,4),n(12,4)],
   [n(0,8),n(12,8),n(0,4),n(12,2)],
   [n(0,4),n(12,4),n(0,8),n(12,8),n(0,4)],
@@ -74,12 +74,12 @@ const SLAP:SlapSpec[]=[
   run([0,3,5,7,5,3,0,0],8),
   [n(0,2),r(2)],
  ]},
- {drill:"four",title:"Four-stroke cell",brief:"Thumb down, thumb up, index pop, middle pop — one circular gesture, four attacks.",pass:"The four attacks feel like one motion, not four decisions.",root:A1,rootName:"A · four-stroke",tempo:52,bars:[
+ {drill:"four",title:"Four-stroke cell",brief:"Thumb down, thumb up, index pop, middle pop, one circular gesture, four attacks.",pass:"The four attacks feel like one motion, not four decisions.",root:A1,rootName:"A · four-stroke",tempo:52,bars:[
   [n(0,16),n(12,16),n(15,16),n(19,16),n(0,16),n(12,16),n(15,16),n(19,16),
    n(0,16),n(12,16),n(15,16),n(19,16),n(0,16),n(12,16),n(15,16),n(19,16)],
   [n(0,16),n(12,16),n(15,16),n(19,16),n(0,16),n(12,16),n(15,16),n(19,16),n(0,4),r(4)],
  ]},
- {drill:"ohp",title:"Open–hammer–pluck conversation",brief:"One plucking attack launches several fretting events: open string, hammer, then the pop above.",pass:"Three sounds from one attack, all even.",root:A1,rootName:"A · open-hammer-pluck",tempo:60,bars:[
+ {drill:"ohp",title:"Open-hammer-pluck conversation",brief:"One plucking attack launches several fretting events: open string, hammer, then the pop above.",pass:"Three sounds from one attack, all even.",root:A1,rootName:"A · open-hammer-pluck",tempo:60,bars:[
   [n(-5,8),n(0,8),n(12,4),n(-5,8),n(0,8),n(12,4)],
   [n(-5,8),n(3,8),n(15,4),n(-5,8),n(0,8),n(12,4)],
   [n(-5,8),n(0,8),n(12,8),n(10,8),n(7,4),n(0,4)],

@@ -43,8 +43,8 @@ export default function LiveSession(
   <div className="osScreen live">
    <div className="liveHead">
     <div>
-     <h1 className="k liveTitle" data-page-heading tabIndex={-1}>LIVE PRACTICE · A DORIAN COLOUR</h1>
-     <b className="livePitch">{pitch?pitch.n:"—"}<small>{pitch?pitch.oct:""}</small></b>
+     <h1 className="k liveTitle" data-page-heading tabIndex={-1}>Live practice · a dorian colour</h1>
+     <b className="livePitch">{pitch?pitch.n:"-"}<small>{pitch?pitch.oct:""}</small></b>
      <p>{
       pitch&&heard!==null
        ? `${labelFor(heard,harmony)} · ${SHORT_NAMES[(heard-ri+12)%12]} · ${pitch.cents>=0?"+":""}${pitch.cents} cents`
@@ -57,45 +57,45 @@ export default function LiveSession(
      {/* Clamped short of the ends so the needle stays visible when a note is
          badly out rather than disappearing past the edge. */}
      <i style={{left:`${pitch?Math.max(2,Math.min(98,50+pitch.cents)):50}%`}}/>
-     <span>♭</span><b>IN TUNE</b><span>♯</span>
+     <span>♭</span><b>In tune</b><span>♯</span>
     </div>
    </div>
 
    <div className="gps">
-    <span className="label">MUSICAL GPS</span>
-    <div><small>KEY CENTRE</small><b>{N[ri]}</b></div>
-    <div><small>CURRENT CHORD</small><b>{chord}</b></div>
-    <div><small>HOME SCALE</small><b>{N[ri]} {modeName}</b></div>
-    <div><small>CHORD TONES</small><b>{chordTones.map(n=>N[n]).join(" ")}</b></div>
-    <div className="colour"><small>CHARACTERISTIC</small><b>{N[color]} · {SHORT_NAMES[(color-ri+12)%12]}</b></div>
-    <div><small>RESOLVE TO</small><b>{chordTones.map(n=>N[n]).join(" / ")}</b></div>
+    <span className="label">Musical gps</span>
+    <div><small>Key centre</small><b>{N[ri]}</b></div>
+    <div><small>Current chord</small><b>{chord}</b></div>
+    <div><small>Home scale</small><b>{N[ri]} {modeName}</b></div>
+    <div><small>Chord tones</small><b>{chordTones.map(n=>N[n]).join(" ")}</b></div>
+    <div className="colour"><small>Characteristic</small><b>{N[color]} · {SHORT_NAMES[(color-ri+12)%12]}</b></div>
+    <div><small>Resolve to</small><b>{chordTones.map(n=>N[n]).join(" / ")}</b></div>
    </div>
 
    <div className="tensionMeter">
-    <span>HOME</span><span>COLOUR</span><span>TENSION</span><span>OUTSIDE</span><span>CHAOS</span>
+    <span>Home</span><span>Colour</span><span>Tension</span><span>Outside</span><span>Chaos</span>
     <i className={`p${heard!==null?tensionFor(heard,harmony):0}`}/>
    </div>
 
    <div className="liveGrid">
     <article className="mission">
-     <span>MISSION 02 / 06</span>
+     <span>Mission 02 / 06</span>
      <h2>Make it sound {modeName}.</h2>
      <p>Four bars. Do not run the scale. Feature <b>{N[color]}</b> at least twice, including once on a strong beat. Maintain your groove.</p>
      <div className="barTrack"><i className="done"/><i className="done"/><i/><i/></div>
      <button className={listening?"stop":connecting?"waiting":""}
              onClick={()=>{if(!connecting)onToggleListening()}}
              aria-disabled={connecting} aria-busy={connecting}>
-      {connecting?"ASKING FOR THE MICROPHONE…":listening?"PAUSE ANALYSIS":"START LISTENING"}
+      {connecting?"ASKING FOR THE MICROPHONE…":listening?"Pause analysis":"Start listening"}
      </button>
      {audioError&&<p className="audioError" role="alert">{audioError}</p>}
     </article>
     <article className="liveReport">
-     <span>LIVE NOTE REPORT</span>
-     <div><b>{report.inside}%</b><small>INSIDE</small></div>
+     <span>Live note report</span>
+     <div><b>{report.inside}%</b><small>Inside</small></div>
      <div><b>{report.color}</b><small>{N[color]} USES</small></div>
-     <div><b>{report.out}</b><small>OUTSIDE EVENTS</small></div>
+     <div><b>{report.out}</b><small>Outside events</small></div>
      <p>{report.msg}</p>
-     <button onClick={onClearTake}>CLEAR TAKE</button>
+     <button onClick={onClearTake}>Clear take</button>
     </article>
    </div>
   </div>

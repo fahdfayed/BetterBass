@@ -37,7 +37,7 @@ const PIPED=/^\s*([GDAE])\s*\|(.*)$/;
  * fret.
  */
 const BARE=/^\s*([GDAE])[ 	]+(.*)$/;
-const LANE_SHAPED=/^[\d\s|\-–hpbrsvx^~/\().*]*$/;
+const LANE_SHAPED=/^[\d\s|\--hpbrsvx^~/\().*]*$/;
 
 function laneOf(raw:string){
  const piped=PIPED.exec(raw);

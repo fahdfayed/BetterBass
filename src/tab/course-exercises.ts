@@ -46,17 +46,17 @@ const SPECS:Spec[]=[
   [n(3,4),n(0,4),n(10,4),n(0,4)],
   [n(0,2),r(2)],
  ]},
- {lesson:0,index:2,title:"Bass-led harmony",brief:"E, E♭, F♯ and B♭ underneath a C drone — major, minor, Lydian and Mixolydian in turn.",pass:"Name the perceived colour before replaying.",root:C2,rootName:"C drone",tempo:60,bars:[
+ {lesson:0,index:2,title:"Bass-led harmony",brief:"E, E♭, F♯ and B♭ underneath a C drone. Major, minor, Lydian and Mixolydian in turn.",pass:"Name the perceived colour before replaying.",root:C2,rootName:"C drone",tempo:60,bars:[
   [n(4,2),n(0,2)],[n(3,2),n(0,2)],[n(6,2),n(0,2)],[n(10,2),n(0,2)],
  ]},
 
  {lesson:1,index:0,title:"Sing before play",brief:"Sing each degree against the drone, then verify it. ♭2, 2, ♭3, 3, ♯4, 5, 6, ♭7, 7.",pass:"Exact, or corrected immediately without fishing.",root:A1,rootName:"A drone",tempo:56,bars:[
   nameIt(1),nameIt(2),nameIt(3),nameIt(4),nameIt(6),nameIt(7),nameIt(9),nameIt(10),nameIt(11),
  ]},
- {lesson:1,index:1,title:"Function sniper",brief:"On every click, the called interval — then say its note name and its function.",pass:"Inside two seconds, no silent searching.",root:A1,rootName:"A · random calls",tempo:50,bars:[
+ {lesson:1,index:1,title:"Function sniper",brief:"On every click, the called interval, then say its note name and its function.",pass:"Inside two seconds, no silent searching.",root:A1,rootName:"A · random calls",tempo:50,bars:[
   run([0,4,0,7]),run([0,9,0,10]),run([0,3,0,6]),run([0,11,0,0]),
  ]},
- {lesson:1,index:2,title:"One interval, three meanings",brief:"E stays fixed. It is the 3rd of C, the 5th of A and the 2nd of D — hear the function change, not the pitch.",pass:"Function, not fingering, drives each phrase.",root:C2,rootName:"C, A and D drones",tempo:56,bars:[
+ {lesson:1,index:2,title:"One interval, three meanings",brief:"E stays fixed. It is the 3rd of C, the 5th of A and the 2nd of D. Hear the function change, not the pitch.",pass:"Function, not fingering, drives each phrase.",root:C2,rootName:"C, A and D drones",tempo:56,bars:[
   [n(0,4),n(4,2),n(0,4)],
   [n(-3,4),n(4,2),n(-3,4)],
   [n(2,4),n(4,2),n(2,4)],
@@ -164,7 +164,7 @@ const SPECS:Spec[]=[
   [n(0,4),n(3,4),n(1,4),n(0,4)],
  ]},
 
- {lesson:7,index:0,title:"Scarcity study",brief:"D, F, A and B only. No scale runs — the natural 6 has to do the work.",pass:"Dorian is audible before bar 3.",root:D2,rootName:"D Dorian drone",tempo:72,bars:[
+ {lesson:7,index:0,title:"Scarcity study",brief:"D, F, A and B only. No scale runs, the natural 6 has to do the work.",pass:"Dorian is audible before bar 3.",root:D2,rootName:"D Dorian drone",tempo:72,bars:[
   [n(0,4),n(3,4),n(7,2)],
   [n(9,4),n(7,4),n(3,2)],
   [n(0,8),n(3,8),n(7,4),n(9,2)],
@@ -183,13 +183,13 @@ const SPECS:Spec[]=[
  ]},
 
  /* ---------------- Unit 3 · The Seven Modal Sounds ---------------- */
- {lesson:8,index:0,title:"Shell and colour",brief:"Bar 1 states C–E–G–B. Bar 2 adds F and resolves it into E.",pass:"Major quality stays clear and F has direction.",root:C2,rootName:"Cmaj7 drone",tempo:75,bars:[
+ {lesson:8,index:0,title:"Shell and colour",brief:"Bar 1 states C-E-G-B. Bar 2 adds F and resolves it into E.",pass:"Major quality stays clear and F has direction.",root:C2,rootName:"Cmaj7 drone",tempo:75,bars:[
   run([0,4,7,11],4),
   [n(5,4),n(4,2),r(4)],
   run([11,7,4,0],4),
   [n(0,2),r(2)],
  ]},
- {lesson:8,index:1,title:"Four-note Ionian",brief:"C, E, G and B — then G is swapped for F and the stability changes.",pass:"You can describe the change in stability.",root:C2,rootName:"C drone",tempo:70,bars:[
+ {lesson:8,index:1,title:"Four-note Ionian",brief:"C, E, G and B, then G is swapped for F and the stability changes.",pass:"You can describe the change in stability.",root:C2,rootName:"C drone",tempo:70,bars:[
   [n(0,4),n(4,4),n(7,4),n(11,4)],
   [n(11,4),n(7,4),n(4,2)],
   [n(0,4),n(4,4),n(5,4),n(11,4)],
@@ -217,13 +217,13 @@ const SPECS:Spec[]=[
   [n(7,4),n(3,4),n(0,2)],
  ]},
 
- {lesson:10,index:0,title:"Root–♭2 control",brief:"F→E as a 16th, an 8th, a quarter and a half. The rub gets longer each time.",pass:"You rank the four intensities accurately.",root:E1,rootName:"E drone",tempo:65,bars:[
+ {lesson:10,index:0,title:"Root-♭2 control",brief:"F→E as a 16th, an 8th, a quarter and a half. The rub gets longer each time.",pass:"You rank the four intensities accurately.",root:E1,rootName:"E drone",tempo:65,bars:[
   [n(1,16,{ghost:true}),n(0,16),n(0,8),n(0,2),r(4)],
   [n(1,8),n(0,8),n(0,2),r(4)],
   [n(1,4),n(0,2),r(4)],
   [n(1,2),n(0,2)],
  ]},
- {lesson:10,index:1,title:"Minor shell first",brief:"Four bars of E–G–B–D, then F once per bar. The minor centre must stay stronger than the rub.",pass:"Minor centre remains stronger than the ♭2.",root:E1,rootName:"Em7 vamp",tempo:70,bars:[
+ {lesson:10,index:1,title:"Minor shell first",brief:"Four bars of E-G-B-D, then F once per bar. The minor centre must stay stronger than the rub.",pass:"Minor centre remains stronger than the ♭2.",root:E1,rootName:"Em7 vamp",tempo:70,bars:[
   run([0,3,7,10],4),
   run([10,7,3,0],4),
   [n(0,4),n(3,4),n(1,4),n(0,4)],
@@ -268,7 +268,7 @@ const SPECS:Spec[]=[
   ...compare([11,7,4,0],11,10),
  ]},
 
- {lesson:13,index:0,title:"Aeolian descent",brief:"C–B–A and F–E cells. F→E is the sound of the mode.",pass:"♭6 falling to 5 is the clearest event in the phrase.",root:A1,rootName:"A drone",tempo:72,bars:[
+ {lesson:13,index:0,title:"Aeolian descent",brief:"C-B-A and F-E cells. F→E is the sound of the mode.",pass:"♭6 falling to 5 is the clearest event in the phrase.",root:A1,rootName:"A drone",tempo:72,bars:[
   [n(3,4),n(2,4),n(0,2)],
   [n(8,4),n(7,2),r(4)],
   [n(3,8),n(2,8),n(0,4),n(8,4),n(7,4)],
@@ -291,7 +291,7 @@ const SPECS:Spec[]=[
   [n(0,8),n(3,8),n(6,8),n(10,8),n(6,4),n(3,4)],
   [n(0,2),r(2)],
  ]},
- {lesson:14,index:1,title:"Locrian colour",brief:"C added to the shell — once short, once sustained. Compare what each placement costs.",pass:"You can say why one placement destabilises more.",root:B1,rootName:"Bm7♭5 vamp",tempo:70,bars:[
+ {lesson:14,index:1,title:"Locrian colour",brief:"C added to the shell. Once short, once sustained. Compare what each placement costs.",pass:"You can say why one placement destabilises more.",root:B1,rootName:"Bm7♭5 vamp",tempo:70,bars:[
   [n(0,4),n(1,8),n(3,8),n(6,4),n(3,4)],
   [n(0,4),n(1,2),n(3,4)],
   [n(6,4),n(3,4),n(0,2)],
@@ -315,7 +315,7 @@ const SPECS:Spec[]=[
   [n(0,4),n(9,4),n(7,4),n(3,4)],
   [n(0,4),n(3,4),n(9,4),n(7,4)],
  ]},
- {lesson:15,index:2,title:"Genre transfer",brief:"One Dorian groove, three feels. The theory never changes — only the rhythm and articulation.",pass:"Same notes read as three different genres.",root:D2,rootName:"D Dorian",tempo:92,bars:[
+ {lesson:15,index:2,title:"Genre transfer",brief:"One Dorian groove, three feels. The theory never changes, only the rhythm and articulation.",pass:"Same notes read as three different genres.",root:D2,rootName:"D Dorian",tempo:92,bars:[
   [n(0,8),n(0,16,{ghost:true}),n(0,16),n(3,8),n(7,8),n(9,8),n(7,8),n(3,4)],
   [n(0,4,{accent:true}),n(0,4),n(3,4),n(9,4)],
   [n(0,2),n(9,4),n(7,4)],
@@ -364,7 +364,7 @@ const SPECS:Spec[]=[
   [n(0,4),n(7,4),n(9,8),n(10,8),n(9,8),n(10,8)],
   [n(0,8),n(4,8),n(5,8),n(7,8),n(9,8),n(10,8),n(10,8),n(0,8)],
  ]},
- {lesson:18,index:1,title:"Three targets",brief:"D on beat 1, F on beat 3, B on &4 — one fill each, landing exactly.",pass:"Each target lands where it was aimed.",root:D2,rootName:"D Dorian",tempo:86,bars:[
+ {lesson:18,index:1,title:"Three targets",brief:"D on beat 1, F on beat 3, B on &4, one fill each, landing exactly.",pass:"Each target lands where it was aimed.",root:D2,rootName:"D Dorian",tempo:86,bars:[
   [n(10,8),n(0,4),r(8),r(2)],
   [n(0,4),n(2,8),n(3,8),n(3,4),r(4)],
   [n(0,4),n(7,4),n(10,8),n(9,8),n(9,4)],
@@ -392,7 +392,7 @@ const SPECS:Spec[]=[
  ]},
 
  /* ---------------- Unit 5 · Harmony in Motion ---------------- */
- {lesson:20,index:0,title:"Layered 16 bars",brief:"Chord tones, extensions, characteristic colour, melodic variation — four bars each.",pass:"The four sections are audibly different jobs.",root:D2,rootName:"Dm7 vamp",tempo:84,bars:[
+ {lesson:20,index:0,title:"Layered 16 bars",brief:"Chord tones, extensions, characteristic colour, melodic variation, four bars each.",pass:"The four sections are audibly different jobs.",root:D2,rootName:"Dm7 vamp",tempo:84,bars:[
   [n(0,4),n(3,4),n(7,4),n(10,4)],
   [n(10,4),n(7,4),n(3,2)],
   [n(0,4),n(2,4),n(5,4),n(7,4)],
@@ -427,7 +427,7 @@ const SPECS:Spec[]=[
   run([3,7,10,14],4),
   [n(5,4),n(9,4),n(3,2)],
  ]},
- {lesson:21,index:2,title:"Pentatonic overlay",brief:"D minor pentatonic, then E minor pentatonic, then both — targeting F and C.",pass:"The overlay lands on F or C, not just anywhere.",root:D2,rootName:"Dm7",tempo:84,bars:[
+ {lesson:21,index:2,title:"Pentatonic overlay",brief:"D minor pentatonic, then E minor pentatonic, then both. Targeting F and C.",pass:"The overlay lands on F or C, not just anywhere.",root:D2,rootName:"Dm7",tempo:84,bars:[
   run([0,3,5,7,10,7,5,3],8),
   run([2,5,7,9,12,9,7,5],8),
   [n(0,8),n(3,8),n(7,8),n(9,8),n(10,4),n(3,4)],
@@ -446,20 +446,20 @@ const SPECS:Spec[]=[
   [n(0,4),n(4,4),n(10,4),n(11,4)],
   [n(5,2),n(9,2)],
  ]},
- {lesson:22,index:2,title:"No scale chasing",brief:"ii–V–I with 3rds and 7ths only. Then one approach note before each destination.",pass:"The changes are readable from guide tones alone.",root:D2,rootName:"ii–V–I in C",tempo:80,bars:[
+ {lesson:22,index:2,title:"No scale chasing",brief:"ii-V-I with 3rds and 7ths only. Then one approach note before each destination.",pass:"The changes are readable from guide tones alone.",root:D2,rootName:"ii-V-I in C",tempo:80,bars:[
   [n(3,2),n(10,2)],
   [n(9,2),n(3,2)],
   [n(2,2),n(9,2)],
   [n(1,8),n(2,8),n(8,8),n(9,8),n(2,2)],
  ]},
 
- {lesson:23,index:0,title:"Guide-tone skeleton",brief:"F–C, then B–F, then E–B. Half notes, and sing every movement.",pass:"You sing each movement before you play it.",root:D2,rootName:"Dm7 → G7 → Cmaj7",tempo:66,bars:[
+ {lesson:23,index:0,title:"Guide-tone skeleton",brief:"F-C, then B-F, then E-B. Half notes, and sing every movement.",pass:"You sing each movement before you play it.",root:D2,rootName:"Dm7 → G7 → Cmaj7",tempo:66,bars:[
   [n(3,2),n(10,2)],
   [n(9,2),n(3,2)],
   [n(2,2),n(9,2)],
   [n(2,1)],
  ]},
- {lesson:23,index:1,title:"Nearest destination",brief:"Same progression, with fills — and no leap larger than a major 3rd anywhere.",pass:"No interval in the line exceeds a major 3rd.",root:D2,rootName:"Dm7 → G7 → Cmaj7",tempo:72,bars:[
+ {lesson:23,index:1,title:"Nearest destination",brief:"Same progression, with fills, and no leap larger than a major 3rd anywhere.",pass:"No interval in the line exceeds a major 3rd.",root:D2,rootName:"Dm7 → G7 → Cmaj7",tempo:72,bars:[
   [n(0,4),n(2,4),n(3,4),n(5,4)],
   [n(5,4),n(7,4),n(9,4),n(10,4)],
   [n(10,4),n(9,4),n(7,4),n(5,4)],
@@ -492,7 +492,7 @@ const SPECS:Spec[]=[
   [r(4),n(2,8),n(3,8),r(2)],
  ]},
 
- {lesson:25,index:0,title:"Enclose the shell",brief:"Upper–lower–target, then lower–upper–target, onto A, C, E and G.",pass:"Both orders are available on every chord tone.",root:A1,rootName:"Am7",tempo:72,bars:[
+ {lesson:25,index:0,title:"Enclose the shell",brief:"Upper-lower-target, then lower-upper-target, onto A, C, E and G.",pass:"Both orders are available on every chord tone.",root:A1,rootName:"Am7",tempo:72,bars:[
   [n(1,8),n(-1,8),n(0,4),n(4,8),n(2,8),n(3,4)],
   [n(-1,8),n(1,8),n(0,4),n(2,8),n(4,8),n(3,4)],
   [n(8,8),n(6,8),n(7,4),n(11,8),n(9,8),n(10,4)],
@@ -511,7 +511,7 @@ const SPECS:Spec[]=[
   [n(7,2),n(10,2)],
  ]},
 
- {lesson:26,index:0,title:"One-beat slip",brief:"A–C–D twice, then B♭–D♭–E♭ for one beat, then home to A/C/E/G.",pass:"The return is deliberate, not a scramble.",root:A1,rootName:"A Dorian",tempo:84,bars:[
+ {lesson:26,index:0,title:"One-beat slip",brief:"A-C-D twice, then B♭-D♭-E♭ for one beat, then home to A/C/E/G.",pass:"The return is deliberate, not a scramble.",root:A1,rootName:"A Dorian",tempo:84,bars:[
   [n(0,8),n(3,8),n(5,8),n(3,8),n(0,8),n(3,8),n(5,8),n(3,8)],
   [n(1,8),n(4,8),n(6,8),n(4,8),n(0,4),n(3,4)],
   [n(7,4),n(10,4),n(0,2)],
@@ -544,7 +544,7 @@ const SPECS:Spec[]=[
   [n(0,4),n(6,8),n(7,8),n(3,4),n(0,4)],
   [n(1,8),n(4,8),n(6,4),n(3,4),n(0,4)],
  ]},
- {lesson:27,index:2,title:"Full rehearsal",brief:"Groove, identity, motif, space, approach, enclosure, side-slip, return — in one pass.",pass:"Every device appears once and the return is convincing.",root:A1,rootName:"Evolving form",tempo:80,bars:[
+ {lesson:27,index:2,title:"Full rehearsal",brief:"Groove, identity, motif, space, approach, enclosure, side-slip, return, in one pass.",pass:"Every device appears once and the return is convincing.",root:A1,rootName:"Evolving form",tempo:80,bars:[
   [n(0,4),n(7,4),n(0,8),n(3,8),n(7,4)],
   [n(0,4),n(9,4),n(7,2)],
   [n(0,8),n(3,8),n(5,4),r(2)],

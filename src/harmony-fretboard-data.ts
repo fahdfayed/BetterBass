@@ -15,7 +15,7 @@ function has(source:string,pattern:RegExp){return pattern.test(source)}
 
 export function parseChord(raw:string):ParsedChord{
  const original=raw.trim()||"C";
- const normalized=original.replaceAll("♯","#").replaceAll("♭","b").replaceAll("Δ","maj").replaceAll("ø","m7b5").replaceAll("°","dim").replaceAll("−","m").replaceAll("–","m");
+ const normalized=original.replaceAll("♯","#").replaceAll("♭","b").replaceAll("Δ","maj").replaceAll("ø","m7b5").replaceAll("°","dim").replaceAll("−","m").replaceAll("-","m");
  let symbol=normalized.replace(/[(),\s]/g,"");
  const bassMatch=symbol.match(/\/([A-Ga-g](?:#|b)?)$/),bassToken=bassMatch?.[1];
  if(bassMatch)symbol=symbol.slice(0,-bassMatch[0].length);
@@ -66,11 +66,11 @@ export type ScaleDef={id:string;name:string;formula:string;intervals:number[];ch
 export const SCALE_LIBRARY:ScaleDef[]=[
  {id:"ionian",name:"Ionian",formula:"1 2 3 4 5 6 7",intervals:[0,2,4,5,7,9,11],character:[4,11],use:"Clear major-key stability.",watch:"The natural 4 can obscure the major 3 when sustained."},
  {id:"dorian",name:"Dorian",formula:"1 2 ♭3 4 5 6 ♭7",intervals:[0,2,3,5,7,9,10],character:[9],use:"Minor with a natural-6 lift; strong for modal minor and funk.",watch:"Feature 6 against ♭3; otherwise it can sound like generic minor."},
- {id:"phrygian",name:"Phrygian",formula:"1 ♭2 ♭3 4 5 ♭6 ♭7",intervals:[0,1,3,5,7,8,10],character:[1],use:"Dark minor with an exposed root–♭2 identity.",watch:"The ♭2 needs deliberate duration and return."},
+ {id:"phrygian",name:"Phrygian",formula:"1 ♭2 ♭3 4 5 ♭6 ♭7",intervals:[0,1,3,5,7,8,10],character:[1],use:"Dark minor with an exposed root-♭2 identity.",watch:"The ♭2 needs deliberate duration and return."},
  {id:"lydian",name:"Lydian",formula:"1 2 3 ♯4 5 6 7",intervals:[0,2,4,6,7,9,11],character:[6],use:"Open major sound; natural fit for maj7♯11.",watch:"Make ♯4 audible without turning it into an accidental passing note."},
  {id:"mixolydian",name:"Mixolydian",formula:"1 2 3 4 5 6 ♭7",intervals:[0,2,4,5,7,9,10],character:[10],use:"Default unaltered dominant, rock, blues and funk field.",watch:"Natural 4 rubs the major 3; pass, suspend or resolve it."},
  {id:"aeolian",name:"Aeolian",formula:"1 2 ♭3 4 5 ♭6 ♭7",intervals:[0,2,3,5,7,8,10],character:[8],use:"Natural-minor home and rock/grunge minor language.",watch:"♭6 strongly changes the colour; do not substitute it for Dorian 6 casually."},
- {id:"locrian",name:"Locrian",formula:"1 ♭2 ♭3 4 ♭5 ♭6 ♭7",intervals:[0,1,3,5,6,8,10],character:[1,6],use:"Literal diatonic match for half-diminished harmony.",watch:"♭2 is highly exposed; Locrian natural 2 is often smoother in minor ii–V."},
+ {id:"locrian",name:"Locrian",formula:"1 ♭2 ♭3 4 ♭5 ♭6 ♭7",intervals:[0,1,3,5,6,8,10],character:[1,6],use:"Literal diatonic match for half-diminished harmony.",watch:"♭2 is highly exposed; Locrian natural 2 is often smoother in minor ii-V."},
  {id:"melodic-minor",name:"Melodic minor",formula:"1 2 ♭3 4 5 6 7",intervals:[0,2,3,5,7,9,11],character:[9,11],use:"Tonic minor with natural 6 and major 7; modern minor gravity.",watch:"The major 7 must sound intentional against the minor 3."},
  {id:"dorian-b2",name:"Dorian ♭2",formula:"1 ♭2 ♭3 4 5 6 ♭7",intervals:[0,1,3,5,7,9,10],character:[1,9],use:"Dark sus/minor colour with a natural 6.",watch:"Separate ♭2 colour from an unintended root clash."},
  {id:"lydian-aug",name:"Lydian augmented",formula:"1 2 3 ♯4 ♯5 6 7",intervals:[0,2,4,6,8,9,11],character:[6,8],use:"Precise home for maj7♯5 and bright augmented harmony.",watch:"Both ♯4 and ♯5 need a clear upper-register context."},
@@ -81,8 +81,8 @@ export const SCALE_LIBRARY:ScaleDef[]=[
  {id:"harmonic-minor",name:"Harmonic minor",formula:"1 2 ♭3 4 5 ♭6 7",intervals:[0,2,3,5,7,8,11],character:[8,11],use:"Minor tonic with strong leading-tone pull.",watch:"The augmented second between ♭6 and 7 is a sound, not just a fingering gap."},
  {id:"phrygian-dominant",name:"Phrygian dominant",formula:"1 ♭2 3 4 5 ♭6 ♭7",intervals:[0,1,4,5,7,8,10],character:[1,4,8],use:"Dominant with ♭9 and ♭13; strong minor-key V colour.",watch:"Its cultural associations and phrasing are not reducible to this pitch list."},
  {id:"harmonic-major",name:"Harmonic major",formula:"1 2 3 4 5 ♭6 7",intervals:[0,2,4,5,7,8,11],character:[8,11],use:"Major tonic with a dark ♭6; useful for maj7♭6 colours.",watch:"The natural 4 and ♭6 both require careful placement."},
- {id:"half-whole",name:"Half–whole diminished",formula:"1 ♭9 ♯9 3 ♯11 5 13 ♭7",intervals:[0,1,3,4,6,7,9,10],character:[1,3,6,9],use:"Dominant ♭9/♯9 tension while retaining natural 5 and 13.",watch:"Its symmetry can sound like an exercise unless targets and rhythm lead."},
- {id:"whole-half",name:"Whole–half diminished",formula:"1 2 ♭3 4 ♭5 ♭6 𝄫7 7",intervals:[0,2,3,5,6,8,9,11],character:[3,6,9],use:"Complete symmetrical field for fully diminished seventh chords.",watch:"Any chord tone can act as a temporary root; keep the destination clear."},
+ {id:"half-whole",name:"Half-whole diminished",formula:"1 ♭9 ♯9 3 ♯11 5 13 ♭7",intervals:[0,1,3,4,6,7,9,10],character:[1,3,6,9],use:"Dominant ♭9/♯9 tension while retaining natural 5 and 13.",watch:"Its symmetry can sound like an exercise unless targets and rhythm lead."},
+ {id:"whole-half",name:"Whole-half diminished",formula:"1 2 ♭3 4 ♭5 ♭6 𝄫7 7",intervals:[0,2,3,5,6,8,9,11],character:[3,6,9],use:"Complete symmetrical field for fully diminished seventh chords.",watch:"Any chord tone can act as a temporary root; keep the destination clear."},
  {id:"whole-tone",name:"Whole tone",formula:"1 2 3 ♯4 ♯5 ♭7",intervals:[0,2,4,6,8,10],character:[6,8],use:"Floating augmented dominant colour with no perfect 5.",watch:"With no semitone hierarchy, rhythm and destination must create direction."},
  {id:"major-pent",name:"Major pentatonic",formula:"1 2 3 5 6",intervals:[0,2,4,7,9],character:[2,9],use:"Open major line with fewer collision points.",watch:"It omits the 7, so it may not state maj7 harmony completely."},
  {id:"minor-pent",name:"Minor pentatonic",formula:"1 ♭3 4 5 ♭7",intervals:[0,3,5,7,10],character:[3,10],use:"Portable minor, blues, rock and funk vocabulary.",watch:"It can blur chord changes unless guide tones are restored."},
@@ -111,8 +111,8 @@ export const MODES:Mode[]=SCALE_LIBRARY.slice(0,7).map(scale=>({
 export type ProgressionPreset={id:string;name:string;brief:string;center:number;homeMode:number;lens:"functional"|"modal"|"modern";chords:string[]};
 export const PROGRESSION_PRESETS:ProgressionPreset[]=[
  {id:"dorian",name:"Dorian pocket",brief:"Static minor centre with IV dominant colour.",center:9,homeMode:1,lens:"modal",chords:["Am9","D13","Am9","E7sus4"]},
- {id:"major-251",name:"Extended major ii–V–I",brief:"Guide-tone gravity through 9th and 13th chords.",center:0,homeMode:0,lens:"functional",chords:["Dm9","G13","Cmaj9","C6/9"]},
- {id:"minor-251",name:"Minor iiø–V–i",brief:"Half-diminished preparation, altered dominant, minor arrival.",center:9,homeMode:5,lens:"functional",chords:["Bm7b5","E7b9","AmMaj9","Am6/9"]},
+ {id:"major-251",name:"Extended major ii-V-I",brief:"Guide-tone gravity through 9th and 13th chords.",center:0,homeMode:0,lens:"functional",chords:["Dm9","G13","Cmaj9","C6/9"]},
+ {id:"minor-251",name:"Minor iiø-V-i",brief:"Half-diminished preparation, altered dominant, minor arrival.",center:9,homeMode:5,lens:"functional",chords:["Bm7b5","E7b9","AmMaj9","Am6/9"]},
  {id:"neo-soul",name:"Neo-soul turn",brief:"Chromatic dominant and soft extended voice leading.",center:5,homeMode:0,lens:"modern",chords:["Fmaj9","E7#9","Am9","Gm9","C13"]},
  {id:"altered-turn",name:"Altered turnaround",brief:"Lydian tonic colour into altered and diminished dominant options.",center:0,homeMode:0,lens:"modern",chords:["Cmaj7#11","A7alt","Dm11","G13b9"]},
  {id:"fusion",name:"Fusion cycle",brief:"Extended minor, Lydian dominant and altered secondary dominant.",center:2,homeMode:0,lens:"modern",chords:["Em11","A13#11","Dmaj9","B7alt"]},

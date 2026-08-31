@@ -37,7 +37,7 @@ export default class ErrorBoundary extends Component<Props,State>{
   if(!error)return this.props.children;
   return (
    <main className="appCrash" role="alert">
-    <span>BASS LAB</span>
+    <span>Bass lab</span>
     <h1>Something in the interface stopped responding.</h1>
     <p>Your practice history is stored in this browser and is still there. Reloading fixes most cases; if the same screen returns, clearing the saved progress for this site will get you back in.</p>
     <pre>{error.message}</pre>

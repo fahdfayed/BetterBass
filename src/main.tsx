@@ -7,6 +7,7 @@ import NodeRuntimeShell from "./NodeRuntimeShell";
 import {initTheme} from "./theme";
 
 // Design tokens first: every sheet below reads these custom properties.
+import "./styles/fonts.css";
 import "./styles/tokens.css";
 
 // Original stylesheets, still serving the views that have not been rebuilt yet.

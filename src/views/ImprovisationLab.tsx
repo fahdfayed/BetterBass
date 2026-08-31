@@ -29,11 +29,11 @@ const CURVE_STEPS=["HOME","COLOUR","TENSION","OUTSIDE","CLIMAX"];
 const TENSION_COST=[0,0,1,2,4];
 
 const HARMONY_CASES=[
- {p:"Dm7 for 16 bars",a:"MODAL",
+ {p:"Dm7 for 16 bars",a:"Modal",
   why:"Static harmony gives one tonal field enough time for Dorian colour, motif and register development."},
- {p:"Dm7 → G7 → Cmaj7",a:"FUNCTIONAL",
+ {p:"Dm7 → G7 → Cmaj7",a:"Functional",
   why:"The chords create dominant direction. Guide tones and destinations matter more than assigning a new scale shape."},
- {p:"Am7 | D7 | Am7 | D7",a:"HYBRID",
+ {p:"Am7 | D7 | Am7 | D7",a:"Hybrid",
   why:"A recurring modal centre coexists with functional dominant colour. Track A as home while respecting F♯ and C on D7."},
 ];
 
@@ -114,7 +114,7 @@ export default function ImprovisationLab(
  return (
   <div className="osScreen advancedScreen">
    <div className="screenIntro">
-    <span>PHASE 5 · ADVANCED IMPROVISATION LABORATORY</span>
+    <span>Phase 5 · advanced improvisation laboratory</span>
     <h1 data-page-heading tabIndex={-1}>Design tension.<br/>Then survive it.</h1>
     <p>These laboratories turn advanced vocabulary into controlled musical behavior: preserve an idea, displace it, manage a budget, follow harmonic gravity and return on purpose.</p>
    </div>
@@ -129,7 +129,7 @@ export default function ImprovisationLab(
    {labMode==="motif"&&(
     <div className="labWorkspace">
      <article className="labBrief">
-      <span>01 · CAPTURE → MUTATE → RESOLVE</span>
+      <span>CAPTURE → MUTATE → RESOLVE</span>
       <h2>One idea. Many lives.</h2>
       <p>The most recent four detected notes become your source motif. Preserve enough contour or rhythm that the listener recognizes it after transformation.</p>
       <div className="motifNotes">
@@ -141,7 +141,7 @@ export default function ImprovisationLab(
       </button>
      </article>
      <article className="mutationPanel">
-      <span>MUTATION ENGINE</span>
+      <span>Mutation engine</span>
       <div>{MUTATIONS.map(name=>(
        <button className={mutation===name?"active":""} key={name}
                onClick={()=>setMutation(name)}>{name}</button>
@@ -151,7 +151,7 @@ export default function ImprovisationLab(
       </div>
       <button className={`labPrimary ${playing==="mutation"?"sounding":""}`}
               onClick={()=>play("mutation",[...mutated,ri])} aria-busy={playing==="mutation"}>
-       {playing==="mutation"?"♪ SOUNDING":"HEAR MUTATION + RETURN →"}
+       {playing==="mutation"?"♪ SOUNDING":"HEAR MUTATION + RETURN"}
       </button>
       <p><b>MISSION:</b> original twice → mutation twice → alter final note → resolve to {N[ri]} without changing the pocket.</p>
      </article>
@@ -161,7 +161,7 @@ export default function ImprovisationLab(
    {labMode==="slip"&&(
     <div className="labWorkspace">
      <article className="labBrief">
-      <span>02 · CONTROL TIME AWAY</span>
+      <span>Control time away</span>
       <h2>Side-slip machine.</h2>
       <p>Displace the entire home idea by semitone while its rhythmic identity remains intact. The longer the displacement, the stronger the return must be.</p>
       <div className="slipControls">
@@ -186,14 +186,14 @@ export default function ImprovisationLab(
       </button>
      </article>
      <article className="slipTimeline">
-      <span>HARMONIC ROUTE</span>
-      <div><b>HOME</b><small>{N[ri]} {modeName}</small></div>
+      <span>Harmonic route</span>
+      <div><b>Home</b><small>{N[ri]} {modeName}</small></div>
       <i>→</i>
       <div className="away"><b>{slip>0?"+1":"−1"}</b><small>{N[(ri+slip+12)%12]} {modeName}</small></div>
       <i>→</i>
-      <div><b>HOME</b><small>Land: {chordTones.map(n=>N[n]).join(" / ")}</small></div>
+      <div><b>Home</b><small>Land: {chordTones.map(n=>N[n]).join(" / ")}</small></div>
       <p>Departure window: <b>{SLIP_WINDOWS[slipLength]}</b>. Keep articulation and motif rhythm unchanged.</p>
-      <button className="labPrimary" onClick={()=>onLoadIntoBand(slip)}>LOAD INTO RESPONSIVE BAND →</button>
+      <button className="labPrimary" onClick={()=>onLoadIntoBand(slip)}>Load into responsive band</button>
      </article>
     </div>
    )}
@@ -201,7 +201,7 @@ export default function ImprovisationLab(
    {labMode==="enclose"&&(
     <div className="labWorkspace">
      <article className="labBrief">
-      <span>03 · TARGET FIRST</span>
+      <span>Target first</span>
       <h2>Enclosure generator.</h2>
       <p>Choose the destination before the decoration. Every path below surrounds a structural chord tone and lands it on the strong beat.</p>
       <div className="targetPicker">
@@ -234,7 +234,7 @@ export default function ImprovisationLab(
    {labMode==="voice"&&(
     <div className="voiceLab">
      <article>
-      <span>04 · LOCAL GRAVITY</span>
+      <span>Local gravity</span>
       <h2>Dm7 → G7 → Cmaj7</h2>
       <p>Build the destination skeleton first. Chromaticism is allowed only after the shortest meaningful paths are audible.</p>
      </article>
@@ -264,10 +264,10 @@ export default function ImprovisationLab(
    {labMode==="tension"&&(
     <div className="tensionLab">
      <article className="labBrief">
-      <span>05 · TENSION CURVE DESIGNER</span>
+      <span>Tension curve designer</span>
       <h2>Draw the story before you play it.</h2>
       <p>Click each bar to set harmonic intensity. Then record a take and compare the planned architecture with detected tension events.</p>
-      <label className="budgetControl">TENSION BUDGET <b>{tensionBudget} POINTS</b>
+      <label className="budgetControl">Tension budget <b>{tensionBudget} POINTS</b>
        <input type="range" min="4" max="40" value={tensionBudget}
               onChange={e=>setTensionBudget(+e.target.value)}/>
       </label>
@@ -282,32 +282,32 @@ export default function ImprovisationLab(
       ))}
      </div>
      <div className="budgetReadout">
-      <div><small>PLANNED PEAK</small><b>{Math.max(...curve)===4?"CLIMAX":"CONTROLLED"}</b></div>
-      <div><small>TAKE COST</small><b className={spent>tensionBudget?"over":""}>{spent} / {tensionBudget}</b></div>
-      <div><small>EVENTS CAPTURED</small><b>{events.length}</b></div>
+      <div><small>Planned peak</small><b>{Math.max(...curve)===4?"Climax":"Controlled"}</b></div>
+      <div><small>Take cost</small><b className={spent>tensionBudget?"over":""}>{spent} / {tensionBudget}</b></div>
+      <div><small>Events captured</small><b>{events.length}</b></div>
       <button className="labPrimary" onClick={recording?onEndTake:onBeginTake}>
        {recording?"■ END & SCORE":"● RECORD TENSION ARC"}
       </button>
      </div>
-     <p className="tensionLegend">HOME 0 · COLOUR 1 · MILD TENSION 2 · OUTSIDE 4. Budget is not a value judgment—it trains deliberate density.</p>
+     <p className="tensionLegend">HOME 0 · COLOUR 1 · MILD TENSION 2 · OUTSIDE 4. Budget is not a value judgment, it trains deliberate density.</p>
     </div>
    )}
 
    {labMode==="diagnose"&&(()=>{
     const situation=HARMONY_CASES[harmonyQuiz];
     const answer=(choice:string)=>setFeedback(
-     situation.a===choice?`CORRECT — ${situation.why}`:`NOT THIS TIME — ${situation.why}`
+     situation.a===choice?`CORRECT, ${situation.why}`:`NOT THIS TIME, ${situation.why}`
     );
     return (
      <div className="diagnosisLab">
       <article>
-       <span>06 · SHOULD I THINK MODALLY?</span>
+       <span>SHOULD I THINK MODALLY?</span>
        <h2>{situation.p}</h2>
        <p>Diagnose the harmonic situation before improvising. The right mental model changes what counts as home, movement and resolution.</p>
        <div>
-        <button onClick={()=>answer("MODAL")}>MODAL</button>
-        <button onClick={()=>answer("FUNCTIONAL")}>FUNCTIONAL</button>
-        <button onClick={()=>answer("HYBRID")}>HYBRID</button>
+        <button onClick={()=>answer("MODAL")}>Modal</button>
+        <button onClick={()=>answer("FUNCTIONAL")}>Functional</button>
+        <button onClick={()=>answer("HYBRID")}>Hybrid</button>
        </div>
        {feedback&&<p className={feedback.startsWith("CORRECT")?"correct":""}>{feedback}</p>}
        <button className="nextCase"
@@ -316,10 +316,10 @@ export default function ImprovisationLab(
        </button>
       </article>
       <aside>
-       <span>DECISION LENS</span>
-       <div><b>STATIC</b><p>Develop mode, colour, rhythm and motif over one centre.</p></div>
-       <div><b>DIRECTIONAL</b><p>Track guide tones, dominant pull and nearest destinations.</p></div>
-       <div><b>MIXED</b><p>Preserve a larger home while honoring temporary chord gravity.</p></div>
+       <span>Decision lens</span>
+       <div><b>Static</b><p>Develop mode, colour, rhythm and motif over one centre.</p></div>
+       <div><b>Directional</b><p>Track guide tones, dominant pull and nearest destinations.</p></div>
+       <div><b>Mixed</b><p>Preserve a larger home while honoring temporary chord gravity.</p></div>
       </aside>
      </div>
     );

@@ -61,24 +61,24 @@ export default function ChromaticGym(){
  return (
   <div className="osScreen chromaticGym">
    <div className="screenIntro">
-    <span>CHROMATIC GYM</span>
+    <span>Chromatic gym</span>
     <h1 data-page-heading tabIndex={-1}>Every approach, every chord tone, every key.</h1>
     <p>
-     A chromatic device is a way of arriving at a note, not a tune — so these are
+     A chromatic device is a way of arriving at a note, not a tune, so these are
      generated from the devices themselves. Pick how you want to arrive, what you
      are arriving at, and the studies are written out for you in any of the twelve keys.
     </p>
    </div>
 
    <div className="gymCount">
-    <div><b className="mono">{DEVICES.length}</b><span>DEVICES</span></div>
-    <div><b className="mono">{QUALITIES.length}</b><span>CHORD QUALITIES</span></div>
-    <div><b className="mono">{total}</b><span>STUDIES</span></div>
-    <div><b className="mono">12</b><span>KEYS EACH</span></div>
+    <div><b className="mono">{DEVICES.length}</b><span>Devices</span></div>
+    <div><b className="mono">{QUALITIES.length}</b><span>Chord qualities</span></div>
+    <div><b className="mono">{total}</b><span>Studies</span></div>
+    <div><b className="mono">12</b><span>Keys each</span></div>
    </div>
 
    <section className="gymPick">
-    <header><span className="label">01 · HOW YOU ARRIVE</span></header>
+    <header><span className="label">How you arrive</span></header>
     <div className="gymDevices">
      {DEVICES.map(item=>(
       <button
@@ -100,7 +100,7 @@ export default function ChromaticGym(){
    </section>
 
    <section className="gymPick">
-    <header><span className="label">02 · WHAT YOU ARE ARRIVING AT</span></header>
+    <header><span className="label">What you are arriving at</span></header>
     <div className="gymQualities">
      {QUALITIES.map(item=>(
       <button
@@ -118,7 +118,7 @@ export default function ChromaticGym(){
    </section>
 
    <section className="gymPick">
-    <header><span className="label">03 · HOW YOU WANT TO DRILL IT</span></header>
+    <header><span className="label">How you want to drill it</span></header>
     <div className="gymKinds">
      {STUDY_KINDS.map(item=>(
       <button
@@ -137,7 +137,7 @@ export default function ChromaticGym(){
 
    {kind==="line"&&(
     <section className="gymPick">
-     <header><span className="label">04 · OVER WHAT HARMONY</span></header>
+     <header><span className="label">Over what harmony</span></header>
      <div className="gymDevices">
       {PROGRESSIONS.map(item=>(
        <button
@@ -157,7 +157,7 @@ export default function ChromaticGym(){
       <p className="dim">
        <span className="label">Which guide tone the line starts on</span>{" "}
        The third and the seventh are what carry a chord&rsquo;s quality, and round the
-       cycle they connect by a step — the third of ii is the seventh of V. Start on
+       cycle they connect by a step, the third of ii is the seventh of V. Start on
        either and the line takes whichever is nearer from then on.
       </p>
      </div>

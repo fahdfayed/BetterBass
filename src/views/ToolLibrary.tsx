@@ -6,13 +6,13 @@
  * want to work on and would rather not walk the curriculum to reach it.
  */
 const TOOLS=[
- {id:"runtime",icon:"practice",tag:"PLAY",title:"Backing band",desc:"Choose a style, tempo and progression, then practise over a responsive four-bar band."},
+ {id:"runtime",icon:"practice",tag:"Play",title:"Backing band",desc:"Choose a style, tempo and progression, then practise over a responsive four-bar band."},
  {id:"fret",icon:"course",tag:"SEE",title:"Harmony fretboard",desc:"See chord tones, modal colour and tension across the full neck in the current key."},
- {id:"engine",icon:"coach",tag:"LISTEN",title:"Record and analyse",desc:"Let the site hear a take and explain timing, note function, tension and resolution."},
- {id:"advanced",icon:"slap",tag:"CREATE",title:"Improvisation lab",desc:"Work on motifs, enclosures, side-slips, voice leading and deliberate outside playing."},
- {id:"progression",icon:"course",tag:"READ",title:"Progression reader",desc:"Type a progression and read what it is doing — key, Roman numerals, function, and which chords are borrowed rather than merely outside."},
- {id:"reference",icon:"library",tag:"UNDERSTAND",title:"Theory reference",desc:"Look up the exact concept you need without leaving the lesson or starting another course."},
- {id:"adaptive",icon:"progress",tag:"PLAN",title:"Adaptive training plan",desc:"Turn your weakest key, skill and overdue review into one focused practice route."},
+ {id:"engine",icon:"coach",tag:"Listen",title:"Record and analyse",desc:"Let the site hear a take and explain timing, note function, tension and resolution."},
+ {id:"advanced",icon:"slap",tag:"Create",title:"Improvisation lab",desc:"Work on motifs, enclosures, side-slips, voice leading and deliberate outside playing."},
+ {id:"progression",icon:"course",tag:"Read",title:"Progression reader",desc:"Type a progression and read what it is doing. Key, Roman numerals, function, and which chords are borrowed rather than merely outside."},
+ {id:"reference",icon:"library",tag:"Understand",title:"Theory reference",desc:"Look up the exact concept you need without leaving the lesson or starting another course."},
+ {id:"adaptive",icon:"progress",tag:"Plan",title:"Adaptive training plan",desc:"Turn your weakest key, skill and overdue review into one focused practice route."},
 ];
 
 const PATHS:Record<string,string[]>={
@@ -39,7 +39,7 @@ export default function ToolLibrary({onOpen}:{onOpen:(view:string)=>void}){
   <div className="osScreen toolLibraryPage">
    <header>
     <div>
-     <span>TOOL LIBRARY</span>
+     <span>Tool library</span>
      <h1 data-page-heading tabIndex={-1}>Find the right tool.<br/>Get back to playing.</h1>
      <p>These are the same focused labs already inside the course, now organized by what you need to do.</p>
     </div>

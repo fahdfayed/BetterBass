@@ -277,7 +277,7 @@ test("the coach names the first thing that is actually wrong with a take",()=>{
  assert.equal(colourless.heading,
   "Technically inside, but Dorian identity is weak: its 6 barely appears.");
  assert.equal(colourless.advice,
-  "Feature F♯ — the major 6th — twice, including once on beat 1 or 3. Avoid adding more notes.");
+  "Feature the major 6th (F♯) twice, including once on beat 1 or 3. Avoid adding more notes.");
 
  // Two uses of the characteristic tone is the threshold, not three.
  const heard=verdict([note({midi:54}),note({midi:66})],dorian,characteristic);

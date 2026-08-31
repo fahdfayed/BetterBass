@@ -63,14 +63,14 @@ export default function NoteQuest({
  return (
   <div className="osScreen noteQuest">
    <div className="screenIntro">
-    <span>THE LONG WAY HOME</span>
+    <span>The long way home</span>
     <h1 data-page-heading tabIndex={-1}>{quest.rootName} {quest.modeName}, one note at a time.</h1>
     <p>{quest.premise}</p>
    </div>
 
    <div className="questLesson">
     <label>
-     <span className="label">WALKING</span>
+     <span className="label">Walking</span>
      <select value={lesson} onChange={event=>onPickLesson(Number(event.target.value))}>
       {COURSE_LESSONS.map((item,index)=>(
        <option key={item.title} value={index}>
@@ -80,13 +80,13 @@ export default function NoteQuest({
      </select>
     </label>
     <span className="questProgress mono" role="status">
-     {done?"ARRIVED":`${at} / ${quest.steps.length - 1} STEPS`}
+     {done?"Arrived":`${at} / ${quest.steps.length - 1} STEPS`}
     </span>
     <span className={`questLives mono ${spent?"spent":""}`}>
      {Array.from({length:MISSES_ALLOWED},(_,index)=>(
       <i key={index} aria-hidden="true" className={index<misses?"gone":""}>◆</i>
      ))}
-     <small>{spent?"LOST THE ROAD":`${MISSES_ALLOWED-misses} WRONG TURNS LEFT`}</small>
+     <small>{spent?"Lost the road":`${MISSES_ALLOWED-misses} WRONG TURNS LEFT`}</small>
     </span>
    </div>
 
@@ -105,7 +105,7 @@ export default function NoteQuest({
    <section className={`questTarget ${wrong?"missed":""} ${done?"arrived":""}`} aria-live="polite">
     {done?(
      <>
-      <span className="label">ARRIVED</span>
+      <span className="label">Arrived</span>
       <h2>Home, from the other side.</h2>
       <p>
        You walked {quest.steps.length - 1} steps of {quest.rootName} {quest.modeName}
@@ -116,18 +116,18 @@ export default function NoteQuest({
      </>
     ):spent?(
      <>
-      <span className="label">LOST THE ROAD</span>
+      <span className="label">Lost the road</span>
       <h2>Three wrong turns. Start from home.</h2>
       <p>
        The path has not changed and neither has the key. Sound each target before you
-       reach for it — the ear finds the note faster than the hand searching for it does.
+       reach for it, the ear finds the note faster than the hand searching for it does.
       </p>
       <button type="button" className="action action-primary" onClick={reset}>Back to the start</button>
      </>
     ):(
      <>
       <span className="label">
-       {at===0?"SET OFF FROM":"NEXT"} · STEP {at+1} OF {quest.steps.length}
+       {at===0?"Set off from":"Next"} · STEP {at+1} OF {quest.steps.length}
       </span>
       <h2>{target.place}</h2>
       <div className="questNote">
@@ -149,7 +149,7 @@ export default function NoteQuest({
    </section>
 
    <section className="questRoad">
-    <header><span className="label">WHAT EACH PLACE IS</span></header>
+    <header><span className="label">What each place is</span></header>
     <ol>
      {quest.steps.map((place,index)=>{
       const walked=index<at||done;
@@ -157,7 +157,7 @@ export default function NoteQuest({
       return (
        <li key={index} className={`${walked?"walked":""} ${here?"here":""} ${place.checkpoint?"checkpoint":""}`}>
         <i className="mono" aria-hidden="true">{shortName(place.degree)}</i>
-        <b>{walked||here?place.place:"—"}</b>
+        <b>{walked||here?place.place:"-"}</b>
         {walked&&<p>{place.beat}</p>}
        </li>
       );

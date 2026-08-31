@@ -14,8 +14,8 @@ import {MODES,PITCH_NAMES,PROGRESSION_PRESETS,recommendScales} from "../harmony-
  */
 
 const JOB_LABEL:Record<ChordFunction,string>={
- tonic:"HOME",predominant:"DEPARTURE",dominant:"RETURN",
- chromatic:"OUTSIDE",modal:"COLOUR",
+ tonic:"Home",predominant:"Departure",dominant:"Return",
+ chromatic:"Outside",modal:"Colour",
 };
 
 const MODE_INDEX:Record<string,number>={
@@ -54,14 +54,14 @@ export default function ProgressionAnalyser({audition,onSendToFretboard}:Props){
  return (
   <div className="osScreen progressionReader">
    <div className="screenIntro">
-    <span>READ A PROGRESSION</span>
+    <span>Read a progression</span>
     <h1 data-page-heading tabIndex={-1}>What is it doing?</h1>
     <p>Type a progression and it will say which key it is in, what each chord is called there, and what job it holds. Bars, arrows or plain spaces all work.</p>
    </div>
 
    <div className="progInput">
     <label>
-     <span className="label">PROGRESSION</span>
+     <span className="label">Progression</span>
      <input value={text} onChange={event=>setText(event.target.value)} spellCheck={false}
             placeholder="Dm7 G7 Cmaj7" aria-describedby="progHelp"/>
     </label>
@@ -72,7 +72,7 @@ export default function ProgressionAnalyser({audition,onSendToFretboard}:Props){
    </div>
 
    <div className="progPresets">
-    <span className="label">OR START FROM ONE OF THESE</span>
+    <span className="label">Or start from one of these</span>
     <div>{PROGRESSION_PRESETS.map(preset=>(
      <button type="button" key={preset.id} onClick={()=>setText(preset.chords.join(" "))}>
       {preset.name}
@@ -88,7 +88,7 @@ export default function ProgressionAnalyser({audition,onSendToFretboard}:Props){
     <>
      <section className="progVerdict">
       <div>
-       <span className="label">READS AS</span>
+       <span className="label">Reads as</span>
        <h2>{key.modal?key.modal.name:key.name}</h2>
        {key.modal
         ?<p>The {key.modal.collection} collection, heard from {PITCH_NAMES[key.centre]}. The notes belong to {key.modal.collection}; home does not.</p>
@@ -96,12 +96,12 @@ export default function ProgressionAnalyser({audition,onSendToFretboard}:Props){
       </div>
       <div className="progConfidence">
        <b className="mono">{key.confidence}%</b>
-       <small>HOW SURE</small>
+       <small>How sure</small>
        {/* A number nobody can act on is worse than no number, so it says what
            low confidence means rather than leaving it to be guessed at. */}
        <p>{key.confidence>=80?"The progression settles this beyond argument."
           :key.confidence>=45?"Likely, but the progression leaves room for another reading."
-          :"Not enough here to be sure — these chords live in several keys."}</p>
+          :"Not enough here to be sure, these chords live in several keys."}</p>
       </div>
      </section>
 
@@ -120,7 +120,7 @@ export default function ProgressionAnalyser({audition,onSendToFretboard}:Props){
           <button type="button" aria-busy={playing===`scale${index}`}
                   className={`progScale ${playing===`scale${index}`?"sounding":""}`}
                   onClick={()=>play(`scale${index}`,scale.scale.intervals.map(iv=>(chord.root+iv)%12),.28)}>
-           <small>PLAY IT OVER</small>
+           <small>Play it over</small>
            <b>{PITCH_NAMES[chord.root]} {scale.scale.name}</b>
            <em>{playing===`scale${index}`?"♪ sounding":"▶ hear the scale"}</em>
           </button>
@@ -132,7 +132,7 @@ export default function ProgressionAnalyser({audition,onSendToFretboard}:Props){
 
      {observations.length>0&&(
       <section className="progObservations">
-       <span className="label">WHAT HAPPENS</span>
+       <span className="label">What happens</span>
        <ul>{observations.map(line=><li key={line}>{line}</li>)}</ul>
       </section>
      )}

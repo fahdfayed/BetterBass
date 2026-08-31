@@ -113,7 +113,6 @@
  padding:0 .35rem var(--s2);
  font-size:var(--t-micro);
  letter-spacing:var(--track-label);
- text-transform:uppercase;
  color:var(--ink-3);
  white-space:nowrap;
  opacity:0;

@@ -291,7 +291,7 @@ const FUNCTION_NOTE:Record<ChordFunction,string>={
  predominant:"Leaves home and prepares the dominant.",
  dominant:"Points back at the tonic and asks to be resolved.",
  chromatic:"Outside the key as written.",
- modal:"A degree of the mode — colour around one centre, not a step in a cadence.",
+ modal:"A degree of the mode. Colour around one centre, not a step in a cadence.",
 };
 
 /**
@@ -362,7 +362,7 @@ export function analyseProgression(text:string):ProgressionReading{
    const parallelQuality=key.mode==="major"?MINOR_QUALITY:MAJOR_QUALITY;
    if(parallel.includes(offset)&&parallelQuality[offset]?.includes(chord.family)){
     reading.borrowed=true;
-    reading.note=`Borrowed from ${PITCH_NAMES[key.tonic]} ${key.mode==="major"?"minor":"major"} — the parallel key, not a change of key.`;
+    reading.note=`Borrowed from ${PITCH_NAMES[key.tonic]} ${key.mode==="major"?"minor":"major"}, the parallel key, not a change of key.`;
    }else if(degrees.includes(offset)){
     reading.note="On a scale degree of the key, but not the quality the key builds there.";
    }
@@ -379,7 +379,7 @@ export function analyseProgression(text:string):ProgressionReading{
   if(landsOnHome&&mod(here.root-there.root)===7)
    observations.push(`${here.numeral} → ${there.numeral}: an authentic cadence, the strongest close in the key.`);
   else if(target===9&&key!.mode==="major")
-   observations.push(`${here.numeral} → ${there.numeral}: a deceptive cadence — the dominant lands on vi and the tonic is denied.`);
+   observations.push(`${here.numeral} → ${there.numeral}: a deceptive cadence, the dominant lands on vi and the tonic is denied.`);
   else if(target===4&&key!.mode==="major")
    observations.push(`${here.numeral} → ${there.numeral}: the dominant is evaded, stepping to iii instead of home.`);
   else if(landsOnHome)

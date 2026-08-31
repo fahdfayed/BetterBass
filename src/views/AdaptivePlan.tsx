@@ -4,23 +4,23 @@ const AXES=["HEAR","SEE","KNOW","PLAY","CREATE"];
 
 /** The five baseline questions, one per axis, in AXES order. */
 const DIAGNOSTIC=[
- {domain:"HEAR",ask:"Can you identify function before seeing the fretboard?",
+ {domain:"Hear",ask:"Can you identify function before seeing the fretboard?",
   how:"An A drone sounds. Imagine ten random tones: identify inside/outside, interval and best destination."},
- {domain:"KNOW",ask:"Can you explain why tension resolves?",
+ {domain:"Know",ask:"Can you explain why tension resolves?",
   how:"Over Am7, classify D♯ as an approach, enclosure component, side-slip colour or unresolved tension according to context."},
  {domain:"SEE",ask:"Can you locate functions across the entire neck?",
   how:"Find the ♭3, 6 and ♭7 of three random roots below fret 5 and above fret 12."},
- {domain:"PLAY",ask:"Can you preserve time while harmony changes?",
-  how:"Play 16 bars: chord tones, modal colour, chromatic approach, then home—without changing the pocket."},
- {domain:"CREATE",ask:"Can you create rather than run a memorized shape?",
+ {domain:"Play",ask:"Can you preserve time while harmony changes?",
+  how:"Play 16 bars: chord tones, modal colour, chromatic approach, then home, without changing the pocket."},
+ {domain:"Create",ask:"Can you create rather than run a memorized shape?",
   how:"Develop one three-note motif, displace it rhythmically, move it outside by semitone and resolve it."},
 ];
 
 /** What each honest answer is worth, and what it is called. */
 const SELF_REPORT:[string,string,number][]=[
  ["NOT RELIABLE","Below 60%",45],
- ["USABLE","60–75%",68],
- ["STRONG","76–89%",82],
+ ["USABLE","60-75%",68],
+ ["STRONG","76-89%",82],
  ["AUTOMATIC","90%+",94],
 ];
 
@@ -86,7 +86,7 @@ export default function AdaptivePlan(
  return (
   <div className="osScreen">
    <div className="screenIntro">
-    <span>PHASE 4 · PERSONAL CURRICULUM ENGINE</span>
+    <span>Phase 4 · personal curriculum engine</span>
     <h1 data-page-heading tabIndex={-1}>Train the player<br/>who showed up.</h1>
     <p>The curriculum preserves the manual’s 28-week spine, but today’s route is rebuilt from current evidence: recorded takes, neglected keys, mastery decay, recurring habits and jury scores.</p>
    </div>
@@ -94,7 +94,7 @@ export default function AdaptivePlan(
    {!ready ? (
     <div className="diagnosticFlow">
      <div className="diagProgress">
-      <span>BASELINE DIAGNOSTIC</span>
+      <span>Baseline diagnostic</span>
       {DIAGNOSTIC.map((_,i)=><i className={i<step?"done":i===step?"active":""} key={i}/>)}
      </div>
      <article>
@@ -113,7 +113,7 @@ export default function AdaptivePlan(
     <>
      <div className="adaptiveOverview">
       <article className="computedFreedom">
-       <span>COMPUTED FREEDOM SCORE</span>
+       <span>Computed freedom score</span>
        <div>{AXES.map((axis,i)=>(
         <div key={axis}>
          <b>{freedom[i]}</b><span>{axis}</span>
@@ -123,29 +123,29 @@ export default function AdaptivePlan(
        <p>Primary bottleneck: <b>{BOTTLENECKS[weakest]}</b>. This receives the largest block today.</p>
       </article>
       <article className="readiness">
-       <span>PLAYER STAGE</span>
+       <span>Player stage</span>
        <h2>{stage}</h2>
-       <div><b>{Math.round(freedom.reduce((a,b)=>a+b,0)/AXES.length)}</b><small>OVERALL</small></div>
-       <p>Scores are calculated from diagnostic evidence, take analysis and cross-key transfer—not hours practiced.</p>
+       <div><b>{Math.round(freedom.reduce((a,b)=>a+b,0)/AXES.length)}</b><small>Overall</small></div>
+       <p>Scores are calculated from diagnostic evidence, take analysis and cross-key transfer, not hours practiced.</p>
       </article>
      </div>
 
      <div className="adaptGrid">
       <article className="practiceDebt">
-       <span>PRACTICE DEBT · AUTO-SCHEDULED</span>
+       <span>Practice debt · auto-scheduled</span>
        {DEBT.map(([skill,held],i)=>{
         const days=reviewDays[i];
         return (
          <div key={skill}>
           <span className={days>REVIEW_DUE?"urgent":""}>{days}d</span>
           <div><b>{skill}</b><i><em style={{width:`${held}%`}}/></i></div>
-          <small>{days>REVIEW_DUE?"REVIEW DUE":"MAINTAIN"}</small>
+          <small>{days>REVIEW_DUE?"Review due":"Maintain"}</small>
          </div>
         );
        })}
       </article>
       <article className="masteryLadder">
-       <span>MASTERY IS NOT COMPLETE / INCOMPLETE</span>
+       <span>Mastery is not complete / incomplete</span>
        {LADDER.map(([skill,level,held])=>(
         <div key={skill}>
          <b>{skill}</b><i><em style={{width:`${held}%`}}/></i><span>{level}</span>
@@ -165,7 +165,7 @@ export default function AdaptivePlan(
          <b>{note}</b>
          {/* Never fully transparent: a key at zero still has to be readable. */}
          <span style={{opacity:.35+keyMatrix[i]/150}}>{keyMatrix[i]}</span>
-         <small>{keyMatrix[i]>=80?"STRONG":keyMatrix[i]>=60?"USABLE":"DEBT"}</small>
+         <small>{keyMatrix[i]>=80?"Strong":keyMatrix[i]>=60?"Usable":"Debt"}</small>
         </button>
        ))}
       </div>
@@ -180,17 +180,17 @@ export default function AdaptivePlan(
       <label>
        <input type="checkbox" checked={antiHabit} onChange={e=>onAntiHabit(e.target.checked)}/>
        <i/>
-       <span>{antiHabit?"ACTIVE — comfort rules banned":"ACTIVATE ANTI-HABIT MODE"}</span>
+       <span>{antiHabit?"ACTIVE, comfort rules banned":"Activate anti-habit mode"}</span>
       </label>
      </div>
 
      <div className="adaptiveAction">
       <div>
-       <span>NEXT SESSION LOGIC</span>
+       <span>Next session logic</span>
        <p>Weakest Freedom axis + weakest key + oldest debt + one anti-habit + five-minute boss fight.</p>
       </div>
-      <button onClick={onGenerate}>GENERATE TODAY FROM EVIDENCE →</button>
-      <button onClick={onRetake}>RETAKE DIAGNOSTIC</button>
+      <button onClick={onGenerate}>Generate today from evidence</button>
+      <button onClick={onRetake}>Retake diagnostic</button>
      </div>
     </>
    )}

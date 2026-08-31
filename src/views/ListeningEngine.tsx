@@ -85,32 +85,32 @@ export default function ListeningEngine({
  return (
   <div className="osScreen">
    <div className="screenIntro">
-    <span>PHASE 2 · SHARED AUDIO INTELLIGENCE</span>
+    <span>Phase 2 · shared audio intelligence</span>
     <h1 data-page-heading tabIndex={-1}>Listening engine.</h1>
     <p>Calibrate once, then every exercise receives the same musical event stream: onset, release, duration, dynamics, beat placement, function, tension and resolution.</p>
    </div>
 
    <div className="calibration">
     <article>
-     <span>01 · INPUT CALIBRATION</span>
+     <span>Input calibration</span>
      <h2>{calibrated?"Ready to listen.":"Set your clean input."}</h2>
      <p>{calibrated
-      ? `Noise floor learned at ${Math.round(noise*1000)} units. Detection range: E1–G5. Use a clean DI signal for best monophonic tracking.`
+      ? `Noise floor learned at ${Math.round(noise*1000)} units. Detection range: E1-G5. Use a clean DI signal for best monophonic tracking.`
       : "Mute the strings for two seconds, then play open E, A, D and G clearly. Keep effects, amp simulation and monitoring outside this browser input."}</p>
      <div className="calStats">
-      <div><small>INPUT</small><b>{connecting?"ASKING…":listening?"ACTIVE":"OFFLINE"}</b></div>
-      <div><small>NOISE FLOOR</small><b>{calibrated?"LOW":"—"}</b></div>
-      <div><small>LATENCY</small><b>{calibrated?"~24 ms":"—"}</b></div>
-      <div><small>CONFIDENCE</small><b>{hearing?"HIGH":"WAITING"}</b></div>
+      <div><small>Input</small><b>{connecting?"ASKING…":listening?"Active":"Offline"}</b></div>
+      <div><small>Noise floor</small><b>{calibrated?"LOW":"-"}</b></div>
+      <div><small>Latency</small><b>{calibrated?"~24 ms":"-"}</b></div>
+      <div><small>Confidence</small><b>{hearing?"High":"Waiting"}</b></div>
      </div>
      {audioError&&<p className="audioError" role="alert">{audioError}</p>}
      <button onClick={()=>{if(!connecting)onCalibrate()}} aria-disabled={connecting} aria-busy={connecting}
              className={connecting?"waiting":""}>
-      {connecting?"ASKING FOR THE MICROPHONE…":calibrated?"RECALIBRATE":"BEGIN CALIBRATION"}
+      {connecting?"ASKING FOR THE MICROPHONE…":calibrated?"Recalibrate":"Begin calibration"}
      </button>
     </article>
     <article className="pipeline">
-     <span>EVENT PIPELINE</span>
+     <span>Event pipeline</span>
      {PIPELINE.map(([step,what,how])=>(
       <div key={step}>
        <b>{step}</b>
@@ -134,7 +134,7 @@ export default function ListeningEngine({
      <h2>{selected.title}</h2>
      <p>{selected.brief}</p>
      <div className="takeControls">
-      <label>TEMPO <b>{bpm} BPM</b>
+      <label>Tempo <b>{bpm} BPM</b>
        <input type="range" min="50" max="140" value={bpm} onChange={e=>onBpm(+e.target.value)}/>
       </label>
       <button className={recording?"stop":connecting?"waiting":""}
@@ -142,7 +142,7 @@ export default function ListeningEngine({
               aria-disabled={connecting} aria-busy={connecting}>
        {connecting?"ASKING FOR THE MICROPHONE…":recording?"■ END & ANALYZE":"● RECORD TAKE"}
       </button>
-      <button onClick={onClear}>CLEAR</button>
+      <button onClick={onClear}>Clear</button>
      </div>
     </article>
    </div>
@@ -150,15 +150,15 @@ export default function ListeningEngine({
    {events.length>0&&(
     <div className="takeAnalysis">
      <div className="takeSummary">
-      <span>TAKE ANALYSIS</span>
-      <div><b>{events.length}</b><small>EVENTS</small></div>
-      <div><b>{mean(events,e=>e.dur)}</b><small>AVG DURATION MS</small></div>
-      <div><b>{Math.round(events.filter(e=>e.tension<4).length/events.length*100)}%</b><small>INSIDE</small></div>
+      <span>Take analysis</span>
+      <div><b>{events.length}</b><small>Events</small></div>
+      <div><b>{mean(events,e=>e.dur)}</b><small>Avg duration ms</small></div>
+      <div><b>{Math.round(events.filter(e=>e.tension<4).length/events.length*100)}%</b><small>Inside</small></div>
       <div>
        <b>{outside.filter(e=>e.resolution==="recovered").length}/{outside.length}</b>
-       <small>RECOVERIES</small>
+       <small>Recoveries</small>
       </div>
-      <div><b>{mean(events,e=>Math.abs(e.offset))}</b><small>MEAN OFFSET MS</small></div>
+      <div><b>{mean(events,e=>Math.abs(e.offset))}</b><small>Mean offset ms</small></div>
      </div>
 
      <div className="eventTimeline">
@@ -189,7 +189,7 @@ export default function ListeningEngine({
      </div>
 
      <div className="coachVerdict">
-      <span>COACH VERDICT</span>
+      <span>Coach verdict</span>
       <h3>{coach.heading}</h3>
       <p>{coach.advice}</p>
      </div>

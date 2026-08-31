@@ -46,11 +46,11 @@ export default function RescueGames({root,heard,listening,connecting,onListen,au
  return (
   <div className="osScreen">
    <div className="screenIntro">
-    <span>PLAY IT TO PASS IT</span>
+    <span>Play it to pass it</span>
     <h1 data-page-heading tabIndex={-1}>Eight games. All answered on the bass.</h1>
     <p>
      Each one asks for something specific, listens for it, and keeps score. There are
-     no multiple-choice buttons here — if the instrument is not connected, nothing can
+     no multiple-choice buttons here, if the instrument is not connected, nothing can
      be checked.
     </p>
    </div>
@@ -62,10 +62,10 @@ export default function RescueGames({root,heard,listening,connecting,onListen,au
       <b>{drill.title}</b>
       <p>{drill.desc}</p>
       <small className="gameMeta mono">
-       {drill.timed?"WITH A CLICK":"NO CLICK"}
+       {drill.timed?"With a click":"No click"}
        {drill.session>0?` · ${drill.session}s`:" · OPEN ENDED"}
       </small>
-      <button onClick={()=>setOpenId(drill.id)}>PLAY →</button>
+      <button onClick={()=>setOpenId(drill.id)}>Play</button>
      </article>
     ))}
    </div>

@@ -11,10 +11,10 @@ const WEATHER=["Stable","Darkening","Ambiguous","Increasing tension","Release"];
 const SAFE_LANDINGS=[0,3,7,10];
 
 const MISSIONS:[string,string][]=[
- ["BARS 1–4","Chord tones only. State the pocket."],
- ["BARS 5–8","Add modal colour without changing rhythm."],
- ["BARS 9–12","One chromatic approach per bar."],
- ["BARS 13–16","Climax, then resolve completely home."],
+ ["BARS 1-4","Chord tones only. State the pocket."],
+ ["BARS 5-8","Add modal colour without changing rhythm."],
+ ["BARS 9-12","One chromatic approach per bar."],
+ ["BARS 13-16","Climax, then resolve completely home."],
 ];
 
 type Props={
@@ -62,7 +62,7 @@ export default function BackingBand({
  return (
   <div className="osScreen">
    <div className="screenIntro">
-    <span>PHASE 3 · MUSICAL RUNTIME</span>
+    <span>Phase 3 · musical runtime</span>
     <h1 data-page-heading tabIndex={-1}>Your responsive band.</h1>
     <p>Generate a musical environment, hear the harmony move and practice against a shared sample-accurate clock. The Musical GPS follows every chord change.</p>
    </div>
@@ -70,10 +70,10 @@ export default function BackingBand({
    <div className="runtimeHero">
     <div className="transport">
      <div className={`pulse ${playing?"playing":""}`}>
-      <b>{beat}</b><span>BEAT</span><i>{bar}</i><small>BAR</small>
+      <b>{beat}</b><span>Beat</span><i>{bar}</i><small>BAR</small>
      </div>
      <div>
-      <span>HARMONIC WEATHER</span>
+      <span>Harmonic weather</span>
       <h2>{weather}</h2>
       <p>{style} · {meter}/4 · {bpm} BPM</p>
      </div>
@@ -83,10 +83,10 @@ export default function BackingBand({
     </div>
     <div className="runtimeGps">
      <div><small>NOW</small><b>{at(nowOffset)}m7</b></div>
-     <div><small>HOME</small><b>{N[root]} {MODES[mode].n}</b></div>
+     <div><small>Home</small><b>{N[root]} {MODES[mode].n}</b></div>
      {/* The bar counter is one-based, so bar%4 is already the next one. */}
-     <div><small>NEXT</small><b>{at(progression[bar%4])}m7</b></div>
-     <div><small>SAFE LANDINGS</small>
+     <div><small>Next</small><b>{at(progression[bar%4])}m7</b></div>
+     <div><small>Safe landings</small>
       <b>{SAFE_LANDINGS.map(x=>at(nowOffset+x)).join(" · ")}</b>
      </div>
     </div>
@@ -94,7 +94,7 @@ export default function BackingBand({
 
    <div className="runtimeGrid">
     <article className="bandSettings">
-     <span>JAM CONFIGURATION</span>
+     <span>Jam configuration</span>
      <div className="controlGrid">
       <label>STYLE
        <select value={style} onChange={e=>onStyle(e.target.value)}>
@@ -118,30 +118,30 @@ export default function BackingBand({
       </label>
      </div>
 
-     <label className="tempoControl">TEMPO <b>{bpm} BPM</b>
+     <label className="tempoControl">Tempo <b>{bpm} BPM</b>
       <input type="range" min="45" max="160" value={bpm} onChange={e=>onBpm(+e.target.value)}/>
      </label>
 
      <div className="progressionBuilder">
-      <span>FOUR-BAR HARMONY</span>
+      <span>Four-bar harmony</span>
       {progression.map((offset,i)=>(
        <button className={bar===i+1?"active":""} key={i}>
         <small>BAR {i+1}</small>
         <b>{at(offset)}m7</b>
-        <em>{offset===0?"HOME":offset>0?`+${offset} SEMITONES`:`${offset} SEMITONES`}</em>
+        <em>{offset===0?"Home":offset>0?`+${offset} SEMITONES`:`${offset} SEMITONES`}</em>
        </button>
       ))}
      </div>
 
      <div className="runtimeActions">
       <button onClick={onRandomise}>⚄ RANDOMIZE MISSION</button>
-      <button onClick={()=>onProgression([0,0,0,0])}>STATIC VAMP</button>
-      <button onClick={()=>onProgression([0,1,0,0])}>SIDE-SLIP CURVEBALL</button>
+      <button onClick={()=>onProgression([0,0,0,0])}>Static vamp</button>
+      <button onClick={()=>onProgression([0,1,0,0])}>Side-slip curveball</button>
      </div>
     </article>
 
     <article className="mixer">
-     <span>BAND MIXER</span>
+     <span>Band mixer</span>
      {([["DRONE","Root + fifth",78],["HARMONY","Electric keys",54],
         ["DRUMS",`${style} kit`,68],["CLICK",clickMode,72]] as [string,string,number][])
       .map(([name,detail,level])=>(
@@ -153,7 +153,7 @@ export default function BackingBand({
        </div>
      ))}
      <div className="weatherMap">
-      <span>HARMONIC WEATHER</span>
+      <span>Harmonic weather</span>
       {WEATHER.map((name,i)=>(
        <button className={weather===name?"active":""} key={name} onClick={()=>onWeather(name)}>
         <i style={{height:`${20+i*14}px`}}/>
@@ -165,7 +165,7 @@ export default function BackingBand({
    </div>
 
    <div className="runtimeMissions">
-    <span>LIVE IMPROVISATION MISSION</span>
+    <span>Live improvisation mission</span>
     {MISSIONS.map(([bars,brief])=><div key={bars}><b>{bars}</b><p>{brief}</p></div>)}
    </div>
   </div>

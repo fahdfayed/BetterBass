@@ -56,7 +56,7 @@ export const NAV:NavGroup[]=[
    {view:"technique",label:"The hands",blurb:"Position, tension, muting and how to practise",icon:"outside",keywords:["technique","hands","posture","ergonomics","injury","tension","left hand","right hand","muting","shifting","fingering","practice","warm up","independence"]},
    {view:"progression",label:"Progression reader",blurb:"Type a progression and read what it is doing",icon:"course",keywords:["progression","chords","roman numerals","numerals","key","function","analyse","analyze","ii-v-i","changes","borrowed"]},
    {view:"chromatic",label:"Chromatic gym",blurb:"Every approach, chord tone and key",icon:"outside",keywords:["chromatic","approach","enclosure","bebop","target","drill","exercises","lines","jazz"]},
-   {view:"games",label:"Training games",blurb:"Rescue a wrong note, snipe an interval — by ear",icon:"games",keywords:["game","ear","quiz","drill","interval","sniper","rescue","recovery","recall","by ear","listen"]},
+   {view:"games",label:"Training games",blurb:"Rescue a wrong note, snipe an interval, by ear",icon:"games",keywords:["game","ear","quiz","drill","interval","sniper","rescue","recovery","recall","by ear","listen"]},
    {view:"tabs",label:"Tab studio",blurb:"Open a Guitar Pro file, or write your own",icon:"tabs",keywords:["tab","tabs","guitar pro","gp5","gp4","gpx","musicxml","import","upload","notation","songsterr","write"]},
   ]},
  ]},

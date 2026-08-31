@@ -1,0 +1,37 @@
+/*
+ * The typefaces, served from this origin.
+ *
+ * They were loaded from Google Fonts by a <link> until now, which meant the
+ * page depended on a third party being reachable to look like itself. It also
+ * meant the fonts never arrived at all in some contexts, and a fallback stack
+ * is very hard to notice: the layout is identical, the letters are simply
+ * somebody else's. Three files, 136KB, and the question stops existing.
+ *
+ * All three are SIL Open Font License 1.1, which permits this. See LICENSE
+ * alongside the files.
+ */
+
+@font-face{
+ font-family:"Bricolage Grotesque";
+ src:url("/fonts/bricolage-grotesque.woff2") format("woff2");
+ /* One variable file spans the whole range, so a weight is a number, not a download. */
+ font-weight:400 800;
+ font-style:normal;
+ font-display:swap;
+}
+
+@font-face{
+ font-family:"Geist";
+ src:url("/fonts/geist.woff2") format("woff2");
+ font-weight:300 700;
+ font-style:normal;
+ font-display:swap;
+}
+
+@font-face{
+ font-family:"JetBrains Mono";
+ src:url("/fonts/jetbrains-mono.woff2") format("woff2");
+ font-weight:400 700;
+ font-style:normal;
+ font-display:swap;
+}

@@ -28,7 +28,7 @@ export function verdict(events:NoteEvent[],mode:number,colour:number){
   const characteristic=degreeAt(MODES[mode].s[MODES[mode].c]);
   return {
    heading:`Technically inside, but ${MODES[mode].n} identity is weak: its ${characteristic.names[0]} barely appears.`,
-   advice:`Feature ${NOTE_NAMES[colour]} — the ${characteristic.label} — twice, including once on beat 1 or 3. Avoid adding more notes.`,
+   advice:`Feature the ${characteristic.label} (${NOTE_NAMES[colour]}) twice, including once on beat 1 or 3. Avoid adding more notes.`,
   };
  }
 

@@ -254,15 +254,15 @@ const at=(degree:number,quality:string,label:string):Step=>({degree,quality,labe
  * in every key without being written twice.
  */
 export const PROGRESSIONS:Progression[]=[
- {id:"ii-v-i",name:"ii–V–I major",blurb:"The cadence most jazz harmony is assembled from.",
+ {id:"ii-v-i",name:"ii-V-I major",blurb:"The cadence most jazz harmony is assembled from.",
   steps:[at(2,"m7","ii"),at(7,"dom7","V"),at(0,"maj7","I")]},
- {id:"ii-v-i-minor",name:"ii–V–i minor",blurb:"The same motion into a minor tonic; the ii is half diminished.",
+ {id:"ii-v-i-minor",name:"ii-V-i minor",blurb:"The same motion into a minor tonic; the ii is half diminished.",
   steps:[at(2,"m7b5","iiø"),at(7,"dom7","V"),at(0,"m7","i")]},
- {id:"turnaround",name:"I–vi–ii–V turnaround",blurb:"The four bars that send a chorus back to its own beginning.",
+ {id:"turnaround",name:"I-vi-ii-V turnaround",blurb:"The four bars that send a chorus back to its own beginning.",
   steps:[at(0,"maj7","I"),at(9,"m7","vi"),at(2,"m7","ii"),at(7,"dom7","V")]},
- {id:"iii-vi-ii-v",name:"iii–vi–ii–V",blurb:"The longer turnaround, descending the cycle a chord earlier.",
+ {id:"iii-vi-ii-v",name:"iii-vi-ii-V",blurb:"The longer turnaround, descending the cycle a chord earlier.",
   steps:[at(4,"m7","iii"),at(9,"m7","vi"),at(2,"m7","ii"),at(7,"dom7","V")]},
- {id:"backdoor",name:"Backdoor ii–V",blurb:"iv and ♭VII resolving to the major tonic from underneath.",
+ {id:"backdoor",name:"Backdoor ii-V",blurb:"iv and ♭VII resolving to the major tonic from underneath.",
   steps:[at(5,"m7","iv"),at(10,"dom7","♭VII"),at(0,"maj7","I")]},
  {id:"tritone",name:"Tritone substitute V",blurb:"The V replaced by the dominant a semitone above the tonic, so the bass descends by step.",
   steps:[at(2,"m7","ii"),at(1,"dom7","♭II7"),at(0,"maj7","I")]},
@@ -270,7 +270,7 @@ export const PROGRESSIONS:Progression[]=[
   steps:[at(0,"dom7","I7"),at(5,"dom7","IV7"),at(0,"dom7","I7"),at(0,"dom7","I7")]},
  {id:"blues-turn",name:"Blues, last four bars",blurb:"Where a blues chorus decides whether it is ending or going round again.",
   steps:[at(7,"dom7","V7"),at(5,"dom7","IV7"),at(0,"dom7","I7"),at(7,"dom7","V7")]},
- {id:"rhythm-a",name:"Rhythm changes, first four",blurb:"I–vi–ii–V at speed, where the chords move faster than the hand wants to.",
+ {id:"rhythm-a",name:"Rhythm changes, first four",blurb:"I-vi-ii-V at speed, where the chords move faster than the hand wants to.",
   steps:[at(0,"maj7","I"),at(9,"m7","vi"),at(2,"m7","ii"),at(7,"dom7","V")]},
  {id:"cycle",name:"Cycle of dominants",blurb:"Four dominants resolving down a fifth each time, which is the engine under most turnarounds.",
   steps:[at(2,"dom7","II7"),at(7,"dom7","V7"),at(0,"dom7","I7"),at(5,"dom7","IV7")]},
@@ -435,7 +435,7 @@ export function cycleStudy(device:Device,quality:Quality,targetIndex=1):TabExerc
   title:`${quality.symbol} round the cycle · ${device.name}`,
   brief:`The same approach into the ${TARGET_NAMES[targetIndex]} of ${quality.symbol}, twelve times, `+
         `with the root rising a fourth each bar until it arrives back where it began. `+
-        `A fourth is one string across, so the shape barely moves — only the position does.`,
+        `A fourth is one string across, so the shape barely moves, only the position does.`,
   pass:"Twelve bars at one tempo with no bar taken more slowly than the others, and the last one leading back into the first.",
   root:STUDY_ROOT,
   rootName:`${KEY_SPELLING[STUDY_ROOT%12]}${quality.symbol} · cycle of fourths`,

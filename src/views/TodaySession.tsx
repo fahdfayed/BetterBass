@@ -22,13 +22,13 @@ export default function TodaySession({plan,freedom,onStart}:Props){
   <div className="osScreen">
    <div className="todayHero">
     <div>
-     <span className="k">TUESDAY · ADAPTIVE SESSION 12</span>
-     <h1 data-page-heading tabIndex={-1}>TODAY’S<br/><em>SESSION</em></h1>
-     <p>Built from your weak modes, neglected keys, register bias and tension-control history—not from a fixed lesson order.</p>
-     <button className="mega" onClick={onStart}>START PRACTICE <b>→</b></button>
+     <span className="k">Tuesday · adaptive session 12</span>
+     <h1 data-page-heading tabIndex={-1}>Today’s<br/><em>Session</em></h1>
+     <p>Built from your weak modes, neglected keys, register bias and tension-control history, not from a fixed lesson order.</p>
+     <button className="mega" onClick={onStart}>Start practice <b>→</b></button>
     </div>
     <div className="weakness">
-     <span>PRIMARY BOTTLENECK</span>
+     <span>Primary bottleneck</span>
      <h2>Dorian → Mixolydian recognition</h2>
      <div><b>67%</b><i><em style={{width:"67%"}}/></i></div>
      <ul>
@@ -56,7 +56,7 @@ export default function TodaySession({plan,freedom,onStart}:Props){
 
    <div className="freedomMini">
     <div>
-     <span>FREEDOM SCORE</span>
+     <span>Freedom score</span>
      <h3>Tension-aware player</h3>
      <p>Next threshold: free improviser</p>
     </div>

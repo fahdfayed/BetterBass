@@ -39,7 +39,7 @@ export default function CourseProgress(
  return (
   <div className="osScreen courseProgressPage">
    <header>
-    <span>COURSE PROGRESS</span>
+    <span>Course progress</span>
     <h1 data-page-heading tabIndex={-1}>What can you<br/>actually do now?</h1>
     <p>Progress is tied to passed performance standards, not browsing time.</p>
    </header>
@@ -47,14 +47,14 @@ export default function CourseProgress(
    <section className="progressHero">
     <div>
      <b>{percent}%</b>
-     <span>COURSE COMPLETE</span>
+     <span>Course complete</span>
      <i><em style={{width:`${percent}%`}}/></i>
     </div>
     <article>
-     <small>CURRENT POSITION</small>
+     <small>Current position</small>
      <h2>Unit {unitNumber}: {unitTitle}</h2>
      <p>Lesson {lessonIndex+1}: {lessonTitle}</p>
-     <button onClick={onContinue}>CONTINUE COURSE →</button>
+     <button onClick={onContinue}>Continue course</button>
     </article>
    </section>
 
@@ -77,7 +77,7 @@ export default function CourseProgress(
    </div>
 
    <section className="abilities">
-    <span>EARNED ABILITIES</span>
+    <span>Earned abilities</span>
     {/* An ability is claimed every third passed lesson, so the list stays
         ahead of the player without ever running out. */}
     {ABILITIES.map((ability,i)=>(
