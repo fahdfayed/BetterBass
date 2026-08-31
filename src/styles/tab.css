@@ -11,6 +11,19 @@
 /* Holds the score and the string names in one coordinate space, so the names
    stay on their lines while the viewport scrolls. */
 .tabStage{position:relative;width:max-content;min-width:100%}
+/*
+ * The stage is the one place min-width is load-bearing.
+ *
+ * It is width:max-content so a score wider than the viewport can scroll, and
+ * min-width:100% so a narrower one still fills it. legacy-views.css sets
+ * `.page .osScreen * {min-width:0}` to stop old layouts overflowing, which
+ * beats the line above and collapses the stage to nothing — and since
+ * max-content of an unrendered score is zero, alphaTab then refuses to draw
+ * ("skipped rendering because of width=0"), which is what stopped it ever
+ * producing a width. The reader worked only on screens that were not
+ * .osScreen; every exercise inside one showed “Setting the score…” for ever.
+ */
+.page .osScreen .tabStage{min-width:100%}
 .tabStrings{position:absolute;inset:0;pointer-events:none}
 .tabStrings span{position:absolute;transform:translate(-1.15em,-50%);
  font-size:var(--t-tiny);line-height:1;font-weight:500;color:var(--ink-3);font-variant-numeric:tabular-nums}
