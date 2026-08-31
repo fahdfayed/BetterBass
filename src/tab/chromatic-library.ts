@@ -457,4 +457,3 @@ export const CHROMATIC_STUDIES:TabExercise[]=[
   (["3-7","7-3"] as Chain[]).map(chain=>progressionLine(device,progression,chain)))),
 ];
 
-export const chromaticStudy=(id:string)=>CHROMATIC_STUDIES.find(study=>study.id===id);

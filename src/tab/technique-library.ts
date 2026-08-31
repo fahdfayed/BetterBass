@@ -148,4 +148,3 @@ export const TECHNIQUE_DRILLS:TabExercise[]=[
  ...[1,2,3,4].map(finger=>anchorDrill(finger)),
 ];
 
-export const techniqueDrill=(id:string)=>TECHNIQUE_DRILLS.find(drill=>drill.id===id);

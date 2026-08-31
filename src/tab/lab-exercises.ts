@@ -35,8 +35,6 @@ export const BEAST_TABS:TabExercise[]=PASSAGES.flatMap(passage=>{
 });
 
 export const beastTab=(id:string)=>BEAST_TABS.find(tab=>tab.id===id);
-/** Every tab written for one passage, including its variants. */
-export const beastTabsFor=(passageId:string)=>BEAST_TABS.filter(tab=>tab.id===passageId||tab.id.startsWith(`${passageId}-`));
 
 /* ---------------- The slap ladder ---------------- */
 

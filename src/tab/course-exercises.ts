@@ -715,8 +715,6 @@ export const COURSE_TABS:Record<string,TabExercise>=Object.fromEntries(
  } satisfies TabExercise]),
 );
 
-/** The tab for one of a lesson's exercises, if it has been written yet. */
-export const courseTab=(lesson:number,index:number):TabExercise|undefined=>COURSE_TABS[key(lesson,index)];
 
 /** Every tab belonging to a lesson, in the order the lesson lists them. */
 export const courseTabsFor=(lesson:number):TabExercise[]=>

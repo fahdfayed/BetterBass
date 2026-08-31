@@ -880,4 +880,3 @@ export const JACO_CHAPTERS:Chapter[]=[
 
 export const JACO_SECTIONS:Section[]=JACO_CHAPTERS.flatMap(chapter=>chapter.sections);
 export const JACO_EXERCISES:TabExercise[]=JACO_SECTIONS.flatMap(section=>section.exercises);
-export const jacoChapter=(id:string)=>JACO_CHAPTERS.find(chapter=>chapter.id===id);

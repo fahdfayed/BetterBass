@@ -34,7 +34,7 @@ export const NAV:NavGroup[]=[
  {label:"Practice",items:[
   {view:"practice",label:"Practice studio",blurb:"Build and run a hands-free routine",icon:"practice",keywords:["routine","session","timer","hands free"],children:[
    {view:"today",label:"Today's plan",blurb:"The blocks scheduled for this session",icon:"practice",keywords:["plan","blocks","schedule"]},
-   {view:"live",label:"Live session",blurb:"Run the routine with spoken cues",icon:"practice",keywords:["run","start","cues"]},
+   {view:"live",label:"Live session",blurb:"Spoken cues, live analysis and a tuner",icon:"practice",keywords:["run","start","cues","tuner","tuning","in tune","cents","pitch","intonation","sharp","flat"]},
   ]},
   {view:"coach",label:"Live coach",blurb:"Listen, detect and correct your playing",icon:"coach",keywords:["listen","feedback","microphone","correct"],children:[
    {view:"adaptive",label:"Adaptive plan",blurb:"A route built from your weakest areas",icon:"progress",keywords:["personal","weakness","diagnostic"]},
@@ -52,10 +52,11 @@ export const NAV:NavGroup[]=[
    {view:"engine",label:"Record & analyze",blurb:"Capture a take and inspect every note",icon:"analyze",keywords:["record","take","analysis","timing"]},
    {view:"advanced",label:"Outside lab",blurb:"Motif, enclosure and side-slip work",icon:"outside",keywords:["outside","tension","chromatic","motif"]},
    {view:"reference",label:"Theory reference",blurb:"Look up a scale, mode or chord",icon:"theory",keywords:["theory","scales","modes","chords","reference"]},
-   {view:"quest",label:"The long way home",blurb:"Play the lesson note by note; wrong notes cost ground",icon:"games",keywords:["game","quest","play","bass input","listen","note","story","journey","adventure","checkpoint","lives"]},
+   {view:"quest",label:"The long way home",blurb:"Play the lesson note by note; wrong notes cost ground",icon:"games",keywords:["game","quest","play","bass input","listen","note","story","journey","walk","adventure","checkpoint","lives","map"]},
    {view:"technique",label:"The hands",blurb:"Position, tension, muting and how to practise",icon:"outside",keywords:["technique","hands","posture","ergonomics","injury","tension","left hand","right hand","muting","shifting","fingering","practice","warm up","independence"]},
+   {view:"progression",label:"Progression reader",blurb:"Type a progression and read what it is doing",icon:"course",keywords:["progression","chords","roman numerals","numerals","key","function","analyse","analyze","ii-v-i","changes","borrowed"]},
    {view:"chromatic",label:"Chromatic gym",blurb:"Every approach, chord tone and key",icon:"outside",keywords:["chromatic","approach","enclosure","bebop","target","drill","exercises","lines","jazz"]},
-   {view:"games",label:"Training games",blurb:"Ear, interval and target recall",icon:"games",keywords:["game","ear","quiz","drill"]},
+   {view:"games",label:"Training games",blurb:"Rescue a wrong note, snipe an interval — by ear",icon:"games",keywords:["game","ear","quiz","drill","interval","sniper","rescue","recovery","recall","by ear","listen"]},
    {view:"tabs",label:"Tab studio",blurb:"Open a Guitar Pro file, or write your own",icon:"tabs",keywords:["tab","tabs","guitar pro","gp5","gp4","gpx","musicxml","import","upload","notation","songsterr","write"]},
   ]},
  ]},
