@@ -1,5 +1,18 @@
 /* Outside In 2.0 — learner-first interface */
 :root{
+ /*
+  * Text on an accent-coloured background.
+  *
+  * Rules that paint a button with --lime were setting dark text on it, which
+  * assumed lime is light. It is not: in the cream theme it resolves to a deep
+  * violet, so --ink-4 on it came out at 1.43:1, and in the dark theme the
+  * accent is light and the same pairing gave 3.29:1. Both fail.
+  *
+  * --bg is the one value guaranteed to be the opposite lightness to the
+  * accent in either theme, which is exactly what is wanted here.
+  */
+ --on-accent:var(--bg);
+
  --bg:#0d0f14;
  --panel:#171a22;
  --panel2:#1e222c;
@@ -23,7 +36,7 @@ body{background:transparent;font-size:0.9375rem;line-height:1.55}
 button,select,input{font-family:inherit}
 button{transition:background-color .16s ease,border-color .16s ease,color .16s ease,transform .16s ease,opacity .16s ease}
 button:not(:disabled):active{transform:translateY(1px)}
-::selection{background:var(--lime);color:var(--ink-4)}
+::selection{background:var(--lime);color:var(--on-accent)}
 
 /* Application shell */
 
@@ -67,7 +80,7 @@ button:not(:disabled):active{transform:translateY(1px)}
 .libraryHint>.navIcon{width:45px;height:45px;border-radius:12px;background:rgba(185,238,120,.12);color:var(--lime)}
 .libraryHint b{display:block;font-size:0.875rem}
 .libraryHint p{margin:3px 0 0!important;color:var(--ink-3)}
-.libraryHint>button{padding:11px 14px;border:0;border-radius:9px;background:var(--lime);color:var(--ink-4);font-weight:800}
+.libraryHint>button{padding:11px 14px;border:0;border-radius:9px;background:var(--lime);color:var(--on-accent);font-weight:800}
 
 /* Make every existing workspace readable and calmer */
 .screenIntro{grid-template-columns:1fr minmax(260px,.55fr);gap:35px;align-items:end;margin:0 0 28px;padding:29px 31px;border:1px solid var(--line);border-radius:var(--radius-lg);background:transparent}
