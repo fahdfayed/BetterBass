@@ -17,23 +17,58 @@ import type {Bar,Duration,Event,TabExercise} from "./notation.ts";
 // Written top to bottom the way tab is read, which is highest string first.
 const STRING_FOR_LABEL:Record<string,number>={G:1,D:2,A:3,E:4};
 
+/** The highest fret a written number can mean before it must be two notes. */
+const MAX_FRET=24;
+
 type Hit={column:number;width:number;string:number;fret:number};
 
-const TAB_LINE=/^\s*([GDAE])\s*\|(.*)$/;
+const PIPED=/^\s*([GDAE])\s*\|(.*)$/;
+
+/*
+ * The same tab without the pipe, which is what most exported and hand-written
+ * tab actually looks like:
+ *
+ *     G                    1        11 3 2
+ *     D        30     0 13
+ *
+ * A bare letter followed by text is far too easy to match by accident — a
+ * sentence beginning "A " would become a string — so the rest of the line has
+ * to consist only of the characters tab is made of, and contain at least one
+ * fret.
+ */
+const BARE=/^\s*([GDAE])[ 	]+(.*)$/;
+const LANE_SHAPED=/^[\d\s|\-–hpbrsvx^~/\().*]*$/;
+
+function laneOf(raw:string){
+ const piped=PIPED.exec(raw);
+ if(piped)return {string:piped[1],lane:piped[2]};
+ const bare=BARE.exec(raw);
+ if(bare&&/\d/.test(bare[2])&&LANE_SHAPED.test(bare[2]))return {string:bare[1],lane:bare[2]};
+ return null;
+}
 
 function hits(tab:string):Hit[]{
  const found:Hit[]=[];
  for(const raw of tab.split("\n")){
-  const match=TAB_LINE.exec(raw);
-  if(!match)continue;
-  const string=STRING_FOR_LABEL[match[1]];
-  const lane=match[2].replace(/\|\s*$/,"");
-  for(let i=0;i<lane.length;i++){
-   if(!/\d/.test(lane[i]))continue;
-   // Only the first digit of a number starts a note; "10" is one note, not two.
-   if(i>0&&/\d/.test(lane[i-1]))continue;
-   const digits=/^\d+/.exec(lane.slice(i))![0];
+  const read=laneOf(raw);
+  if(!read)continue;
+  const string=STRING_FOR_LABEL[read.string];
+  const lane=read.lane.replace(/\|\s*$/,"");
+  for(let i=0;i<lane.length;){
+   if(!/\d/.test(lane[i])){i++;continue}
+   /*
+    * A fret is at most two digits, and reading further invents notes that do
+    * not exist: proportionally spaced tab packs neighbouring notes together
+    * with no dash between them, so "0134" is four notes rather than fret 134.
+    * Two digits are taken when they name a real fret and one when they do not,
+    * which keeps "10" a single note and splits "34" into two. A pair only
+    * counts when it starts with 1 or 2, because frets under ten are written as
+    * one digit — so "0134" is 0, 1, 3, 4 rather than fret 1 followed by 34.
+    */
+   const pair=lane.slice(i,i+2);
+   const digits=/^[12]\d$/.test(pair)&&Number(pair)<=MAX_FRET?pair:lane[i];
    found.push({column:i,width:digits.length,string,fret:Number(digits)});
+   i+=digits.length;
   }
  }
  return found.sort((a,b)=>a.column-b.column||b.string-a.string);

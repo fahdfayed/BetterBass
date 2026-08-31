@@ -172,3 +172,6 @@
 }
 .tabLoopRange i{font-style:normal;font-size:var(--t-small);color:var(--ink-3)}
 .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* Read, but check it — a warning about material that still rendered. */
+.tabError.tabWarn{color:var(--ink-2);border-left:3px solid var(--violet);padding-left:var(--s3)}
