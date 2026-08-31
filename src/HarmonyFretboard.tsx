@@ -1,5 +1,6 @@
 "use client";
 import {useCallback,useEffect,useMemo,useRef,useState} from "react";
+import {positionKeys} from "./fretboard-positions";
 import {NOTE_ROLES,PITCH_NAMES,PROGRESSION_PRESETS,buildChordVoicing,classifyNote,commonTones,intervalLabel,parseChord,parseProgression,recommendScales,spellChordNote,voiceLeadingPaths,type ChordFamily,type ParsedChord} from "./harmony-fretboard-data";
 import {degreeAt} from "./theory/degrees";
 
@@ -23,6 +24,15 @@ type Props={
   */
  centre?:number;
  /**
+  * What the microphone is hearing, when the page is listening.
+  *
+  * The neck is the one screen where seeing the note you are playing is the
+  * whole point, and it was the loudest of the screens that ignored the input
+  * entirely — the site asked you to connect a bass and then drew a diagram.
+  */
+ livePitch?:{midi:number;cents:number}|null;
+ listening?:boolean;
+ /**
   * A progression handed over from somewhere else, to load and read here.
   *
   * The progression reader's "open this on the fretboard" set a root on the
@@ -36,7 +46,12 @@ type Props={
  onDisplayMode:(mode:string)=>void;onFog:(level:number)=>void;onSelectPc:(pc:number|null)=>void;
  onAudition:(notes:number[],hold?:number,droneRoot?:number)=>void;
 };
-const STRINGS=[{name:"G",open:7},{name:"D",open:2},{name:"A",open:9},{name:"E",open:4}],FRETS=Array.from({length:21},(_,i)=>i),mod=(n:number)=>((n%12)+12)%12;
+/*
+ * The board works in pitch classes, but a heard note arrives as a real pitch,
+ * so each string also carries where it actually starts. That is the difference
+ * between lighting every E on the neck and lighting the one under the finger.
+ */
+const STRINGS=[{name:"G",open:7,midi:43},{name:"D",open:2,midi:38},{name:"A",open:9,midi:33},{name:"E",open:4,midi:28}],FRETS=Array.from({length:21},(_,i)=>i),mod=(n:number)=>((n%12)+12)%12;
 type NeckRange="low"|"middle"|"high"|"full";
 const HOME_FIELDS=["Ionian / major","Dorian","Phrygian","Lydian","Mixolydian","Aeolian / minor","Locrian"];
 const FAMILY_NAMES:Record<ChordFamily,string>={major:"MAJOR",minor:"MINOR","minor-major":"MINOR–MAJOR",dominant:"DOMINANT",suspended:"SUSPENDED","half-diminished":"HALF-DIMINISHED",diminished:"DIMINISHED",augmented:"AUGMENTED"};
@@ -106,10 +121,21 @@ function familyJob(family:ChordFamily){
  return jobs[family];
 }
 
-export default function HarmonyFretboard({embedded=false,centre:givenCentre,progression:givenProgression,homeMode,displayMode,fog,selectedPc,onSetRoot,onSetMode,onSetChord,onDisplayMode,onFog,onSelectPc,onAudition}:Props){
+export default function HarmonyFretboard({embedded=false,centre:givenCentre,progression:givenProgression,livePitch,listening=false,homeMode,displayMode,fog,selectedPc,onSetRoot,onSetMode,onSetChord,onDisplayMode,onFog,onSelectPc,onAudition}:Props){
  const initial=PROGRESSION_PRESETS[0];
  const [presetId,setPresetId]=useState(initial.id),[draft,setDraft]=useState(initial.chords.join(" | ")),[applied,setApplied]=useState(initial.chords.join(" | ")),[centre,setCentre]=useState(initial.center),[lens,setLens]=useState<string>(initial.lens),[active,setActive]=useState(0),[choice,setChoice]=useState<{key:string;scale:string}|null>(null),[applyError,setApplyError]=useState(""),[autoFollow,setAutoFollow]=useState(false),[countIn,setCountIn]=useState(false),[tempo,setTempo]=useState(80),[barsPerChord,setBarsPerChord]=useState(2),[harmonyLevel,setHarmonyLevel]=useState(46),[bandStyle,setBandStyle]=useState<BandStyleId>("pocket"),[bandMix,setBandMix]=useState<BandMix>({drums:true,keys:true,guitar:true,cue:true});
  const [neckRange,setNeckRange]=useState<NeckRange>("low");
+
+ /*
+  * Every place the heard note could be fretted. A pitch sits on up to four
+  * strings, and the board cannot know which finger produced it — so all of them
+  * are marked rather than guessing one and being wrong three times in four.
+  */
+ const heardPc=livePitch?((livePitch.midi%12)+12)%12:null;
+ const heardAt=useMemo(
+  ()=>livePitch&&listening?positionKeys(livePitch.midi):new Set<string>(),
+  [livePitch,listening],
+ );
 
  // A centre handed in from outside replaces the board's own, when it moves.
  useEffect(()=>{if(givenCentre!==undefined)setCentre(givenCentre)},[givenCentre]);
@@ -237,7 +263,30 @@ export default function HarmonyFretboard({embedded=false,centre:givenCentre,prog
   <section className={`hfNeckSection ${filter===4?"blind":""}`}>
    <header><div><span>{"04 · THE NECK RE-RANKED FOR THIS MOMENT"}</span><h2 dir="ltr">{current.symbol} → {next.symbol}</h2></div><p>{"Low register: bass/root/5. Middle register: guide tones and voice leading. Upper register: written tensions and modal colour. The same pitch class can have a different practical weight in each register."}</p></header>
    <div className="hfLegend">{(["bass","root","guide","chord","specified","voice","colour","available","context","approach","outside"] as const).map(id=><span className={`role-${id}`} key={id}><i/>{NOTE_ROLES[id].short}</span>)}</div>
-   <div className="hfBoardWrap"><div className="hfBoard" style={{minWidth:`${Math.max(780,visibleFrets.length*72+70)}px`}}><div className="hfFretNumbers" style={{gridTemplateColumns:`58px repeat(${visibleFrets.length}, minmax(64px, 1fr))`}}><b>{"STRING"}</b>{visibleFrets.map(f=><span className={[3,5,7,9,12,15,17,19].includes(f)?"marked":""} key={f}>{f}<i/></span>)}</div>{STRINGS.map((string,stringIndex)=><div className={`hfString string-${stringIndex}`} style={{gridTemplateColumns:`58px repeat(${visibleFrets.length}, minmax(64px, 1fr))`}} key={string.name}><b>{string.name}<small>{"STRING"}</small></b>{visibleFrets.map(fret=>{const pc=mod(string.open+fret),role=classifyNote(pc,current,selectedScale,next),show=visible(role),picked=selected===pc,destination=selectedDestination===pc;return <button type="button" aria-pressed={picked} aria-label={`${string.name} string fret ${fret}: ${PITCH_NAMES[pc]}, ${role.label}`} onClick={()=>onSelectPc(pc)} className={`role-${role.id} ${show?"visible":"hidden"} ${picked?"picked":""} ${destination?"destination":""}`} key={fret}><i/><b dir="ltr">{filter===4?"?":cellText(pc,role)}</b><small dir="ltr">{filter===4?"":PITCH_NAMES[pc]}</small></button>})}</div>)}</div></div>
+   {listening&&<div className={`hfLive ${livePitch?"hearing":""}`} aria-live="off">
+   {livePitch?(()=>{
+    const pc=((livePitch.midi%12)+12)%12;
+    const role=classifyNote(pc,current,selectedScale,next);
+    const inTune=Math.abs(livePitch.cents)<=5;
+    return <>
+     <div className="hfLiveNote">
+      <b dir="ltr">{PITCH_NAMES[pc]}</b>
+      <small>{intervalLabel(mod(pc-current.root),current)} of {current.symbol}</small>
+     </div>
+     {/* A tuner, on the screen where the neck already is. */}
+     <div className="hfTuner">
+      <i className={`hfNeedle ${inTune?"lit":""}`}
+         style={{left:`${Math.max(2,Math.min(98,50+livePitch.cents))}%`}}/>
+      <span>♭</span>
+      <b className={inTune?"lit":""}>{inTune?"IN TUNE":`${livePitch.cents>0?"+":""}${livePitch.cents}`}</b>
+      <span>♯</span>
+     </div>
+     <div className={`hfLiveRole role-${role.id}`}><i className="hfDot"/><span>{role.short}</span></div>
+    </>;
+   })():<span className="hfLiveIdle">Listening — play a note and the neck will show where you are.</span>}
+  </div>}
+
+  <div className="hfBoardWrap"><div className="hfBoard" style={{minWidth:`${Math.max(780,visibleFrets.length*72+70)}px`}}><div className="hfFretNumbers" style={{gridTemplateColumns:`58px repeat(${visibleFrets.length}, minmax(64px, 1fr))`}}><b>{"STRING"}</b>{visibleFrets.map(f=><span className={[3,5,7,9,12,15,17,19].includes(f)?"marked":""} key={f}>{f}<i/></span>)}</div>{STRINGS.map((string,stringIndex)=><div className={`hfString string-${stringIndex}`} style={{gridTemplateColumns:`58px repeat(${visibleFrets.length}, minmax(64px, 1fr))`}} key={string.name}><b>{string.name}<small>{"STRING"}</small></b>{visibleFrets.map(fret=>{const pc=mod(string.open+fret),role=classifyNote(pc,current,selectedScale,next),show=visible(role),picked=selected===pc,destination=selectedDestination===pc;const under=heardAt.has(`${stringIndex}:${fret}`),sounding=heardPc===pc&&!under;return <button type="button" aria-pressed={picked} aria-label={`${string.name} string fret ${fret}: ${PITCH_NAMES[pc]}, ${role.label}${under?", playing now":""}`} onClick={()=>onSelectPc(pc)} className={`role-${role.id} ${show?"visible":"hidden"} ${picked?"picked":""} ${destination?"destination":""} ${under?"under":""} ${sounding?"sounding":""}`} key={fret}><i/><b dir="ltr">{filter===4?"?":cellText(pc,role)}</b><small dir="ltr">{filter===4?"":PITCH_NAMES[pc]}</small></button>})}</div>)}</div></div>
   </section>
 
   <section className="hfNoteTutor">

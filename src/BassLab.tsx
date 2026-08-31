@@ -277,7 +277,7 @@ export default function BassLab(){
   chord={chord} modeName={MODES[mode].n} report={A} connecting={connecting} audioError={audioError}
   onToggleListening={startAudio} onClearTake={()=>setHistory([])}/>}
 
- {view==="fret"&&<Suspense fallback={<ToolLoading/>}><HarmonyFretboard centre={fretCentre} progression={sentToFretboard} homeMode={mode} displayMode={fbView} fog={fog} selectedPc={picked} onSetRoot={setRoot} onSetMode={setMode} onSetChord={setChord} onDisplayMode={setFbView} onFog={setFog} onSelectPc={setPicked} onAudition={audition}/></Suspense>} 
+ {view==="fret"&&<Suspense fallback={<ToolLoading/>}><HarmonyFretboard centre={fretCentre} progression={sentToFretboard} livePitch={pitch} listening={listening} homeMode={mode} displayMode={fbView} fog={fog} selectedPc={picked} onSetRoot={setRoot} onSetMode={setMode} onSetChord={setChord} onDisplayMode={setFbView} onFog={setFog} onSelectPc={setPicked} onAudition={audition}/></Suspense>} 
 
 
  {view==="games"&&<RescueGames root={ri}
@@ -342,7 +342,7 @@ export default function BassLab(){
   hasPrev={courseIndex>0}
   hasNext={courseIndex+1<=courseCompleted&&courseIndex+1<COURSE_LESSONS.length}
   workspaceLabel={WORKSPACE_LABELS[courseStep]}
-  workspace={<LessonTools stage={courseStep} bridge={{
+  workspace={<LessonTools stage={courseStep} bridge={{livePitch:pitch,
    root,mode,fbView,fog,picked,setRoot,setMode,setChord,setFbView,setFog,setPicked,audition,
    playing,startRuntime,bpm,setBpm,bar,beat,
    recording,beginTake:()=>void beginTake(),endTake,eventCount:events.length,listening,

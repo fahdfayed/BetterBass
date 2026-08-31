@@ -1045,3 +1045,32 @@
  color:var(--ink-3);letter-spacing:.04em;
 }
 .hfWorking em.short{color:var(--wrong)}
+
+/* What the microphone is hearing, on the board it belongs to. */
+.hfLive{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s5);
+ border:1px solid var(--line);padding:var(--s4) var(--s5);margin-bottom:var(--s4);min-height:74px}
+.hfLiveIdle{font:var(--t-micro) var(--mono);letter-spacing:.08em;color:var(--ink-3)}
+.hfLiveNote b{font-size:var(--t-h1);line-height:1;color:var(--lime)}
+.hfLiveNote small{display:block;font:var(--t-micro) var(--mono);color:var(--ink-3);margin-top:var(--s1)}
+.hfTuner{position:relative;flex:1 1 260px;min-width:220px;display:flex;align-items:center;
+ justify-content:space-between;border-top:2px solid var(--line);padding-top:var(--s4)}
+.page .osScreen .hfTuner .hfNeedle{position:absolute;top:-9px;width:3px;height:18px;
+ background:var(--ink);transition:left .12s linear}
+.page .osScreen .hfTuner .hfNeedle.lit{background:var(--lime)}
+.hfTuner span,.hfTuner b{font:var(--t-micro) var(--mono);color:var(--ink-3)}
+.hfTuner b.lit{color:var(--lime)}
+.hfLiveRole{display:flex;align-items:center;gap:var(--s2);font:var(--t-micro) var(--mono);letter-spacing:.1em}
+.page .osScreen .hfLiveRole .hfDot{width:10px;height:10px;border-radius:50%;background:var(--role,var(--ink-2))}
+
+/*
+ * The note under the finger, and the same note everywhere else on the neck.
+ *
+ * These cannot be told apart by colour: --lime and --violet resolve to the same
+ * value in the cream theme, so a hue for each made them identical. The one
+ * being played is filled; the others are outlined and dashed.
+ */
+.hfBoard button.sounding{outline:2px dashed var(--violet);outline-offset:-3px}
+.hfBoard button.under{outline:3px solid var(--lime);outline-offset:-3px;z-index:1}
+.hfBoard button.under b,.hfBoard button.under small{color:var(--on-accent)}
+.hfBoard button.under i{background:var(--lime)!important;opacity:1}
+@media(prefers-reduced-motion:reduce){.hfTuner .hfNeedle{transition:none}}

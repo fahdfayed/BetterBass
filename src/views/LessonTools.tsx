@@ -32,6 +32,8 @@ export type ToolBridge={
  endTake:()=>void;
  eventCount:number;
  listening:boolean;
+ /** What the microphone is hearing, for the panes that can show it. */
+ livePitch:{midi:number;cents:number}|null;
  /** Which lesson this is, so its written exercises can be found. */
  lessonIndex:number;
  /** The lesson's characteristic tones, for the ear pad. */
@@ -93,6 +95,7 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
     onSetRoot={bridge.setRoot} onSetMode={bridge.setMode} onSetChord={bridge.setChord}
     onDisplayMode={bridge.setFbView} onFog={bridge.setFog} onSelectPc={bridge.setPicked}
     onAudition={bridge.audition}
+    livePitch={bridge.livePitch} listening={bridge.listening}
    />
   </Suspense>
  );
