@@ -224,3 +224,37 @@
 @media(prefers-reduced-motion:reduce){
  .questWalker,.questMark circle,.questRidgeWalked{transition:none}
 }
+
+/* The rescue game listening for its answer. */
+.rescueEar{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);
+ font:var(--t-micro) var(--mono);color:var(--ink-2);margin:0 0 var(--s4)}
+.rescueEar i{width:9px;height:9px;border-radius:50%;background:var(--lime);flex:none;
+ animation:rescuePulse 1.6s ease-in-out infinite}
+.rescueEar.off{flex-direction:column;align-items:flex-start}
+.rescueEar.off span{color:var(--ink-3)}
+.choose>div button.heard{border-color:var(--lime);color:var(--lime)}
+@keyframes rescuePulse{0%,100%{opacity:1}50%{opacity:.35}}
+@media(prefers-reduced-motion:reduce){.rescueEar i{animation:none}}
+
+/* Interval sniper — the degree is named, the note never is. */
+.sniper{border:1px solid var(--line);padding:clamp(20px,3vw,32px);margin:var(--s6) 0}
+.sniper>header{max-width:820px;margin-bottom:var(--s5)}
+.sniper>header .label{font:var(--t-micro) var(--mono);letter-spacing:.12em;color:var(--violet)}
+.sniper>header h2{font-size:var(--t-h2);margin:var(--s2) 0 var(--s3)}
+.sniper>header p{font-size:var(--t-micro);line-height:1.65;margin:0;color:var(--ink-2)}
+.sniperRungs{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:var(--s3);margin-bottom:var(--s5)}
+.sniperRound{display:grid;grid-template-columns:minmax(180px,.7fr) 1.6fr minmax(140px,.7fr);
+ gap:var(--s5);align-items:center;border-top:1px solid var(--line);padding-top:var(--s5)}
+.sniperAsk small{display:block;font:var(--t-micro) var(--mono);letter-spacing:.1em;color:var(--ink-3)}
+.sniperAsk b{display:block;font-size:var(--t-display);line-height:1;color:var(--lime);margin:var(--s2) 0 var(--s3)}
+.sniperState p{font-size:var(--t-small);line-height:1.6;margin:0 0 var(--s3)}
+.sniperWaiting{display:flex;align-items:center;gap:var(--s3);color:var(--ink-2)}
+.sniperWaiting i{width:9px;height:9px;border-radius:50%;background:var(--lime);flex:none;
+ animation:rescuePulse 1.6s ease-in-out infinite}
+.sniperHit{color:var(--lime)!important}
+.sniperMiss{color:var(--red)!important}
+.sniperScore{display:flex;gap:var(--s5)}
+.sniperScore b{display:block;font-size:var(--t-h1);line-height:1;color:var(--ink)}
+.sniperScore small{display:block;font:var(--t-micro) var(--mono);letter-spacing:.1em;color:var(--ink-3);margin-top:var(--s1)}
+@media(max-width:820px){.sniperRound{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.sniperWaiting i{animation:none}}

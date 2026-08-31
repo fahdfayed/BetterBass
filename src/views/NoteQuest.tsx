@@ -1,6 +1,7 @@
-import {useEffect,useMemo,useRef,useState} from "react";
+import {useEffect,useMemo,useState} from "react";
 import {MISSES_ALLOWED,questFor,startWalk,step,targetPitchOf,type Walk} from "../quest-data";
 import QuestScene from "./QuestScene";
+import {type Heard,useHeardNote} from "../useHeardNote";
 import {COURSE_LESSONS} from "../course-data";
 import {PITCH_NAMES} from "../harmony-fretboard-data";
 import {shortName} from "../theory/degrees";
@@ -24,7 +25,7 @@ type Props={
  /** The lesson to walk. */
  lesson:number;
  /** The last note the microphone committed, including repeats after a gap. */
- heard:{midi:number;at:number}|null;
+ heard:Heard;
  listening:boolean;
  connecting:boolean;
  onListen:()=>void;
@@ -42,29 +43,20 @@ export default function NoteQuest({
  const [wrong,setWrong]=useState<{played:number;wanted:number}|null>(null);
  const {at,misses,best,done}=walk;
 
- // Notes heard before the walk started are not answers to it.
- const consumed=useRef(heard?.at??0);
- useEffect(()=>{consumed.current=heard?.at??0},[lesson]);
-
- const reset=()=>{
-  setWalk(startWalk());setWrong(null);
-  consumed.current=heard?.at??performance.now();
- };
- useEffect(()=>{setWalk(startWalk());setWrong(null)},[lesson]);
-
  const target=quest.steps[Math.min(at,quest.steps.length-1)];
  const targetPitch=targetPitchOf(quest,walk);
 
- useEffect(()=>{
-  if(!heard||done||heard.at<=consumed.current)return;
-  consumed.current=heard.at;
-  const played=((heard.midi%12)+12)%12;
+ // Notes played before a walk began are not answers to it.
+ const ignorePast=useHeardNote(heard,played=>{
   setWalk(current=>{
    const next=step(quest,current,played);
    setWrong(next.hit?null:{played,wanted:targetPitchOf(quest,current)});
    return next;
   });
- },[heard,done,quest]);
+ },!done);
+
+ const reset=()=>{setWalk(startWalk());setWrong(null);ignorePast()};
+ useEffect(()=>{setWalk(startWalk());setWrong(null);ignorePast()},[lesson,ignorePast]);
 
  const spent=misses>=MISSES_ALLOWED;
 

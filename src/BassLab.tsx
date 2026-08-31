@@ -270,6 +270,7 @@ export default function BassLab(){
 
 
  {view==="games"&&<RescueGames chord={chord} root={ri} forced={rescueNote}
+   heard={heard} listening={listening} connecting={connecting} onListen={()=>void startAudio()} audition={audition}
   verdict={lastRescue} onRescue={rescueMove} onLaunch={launchGame}/>}
 
 
