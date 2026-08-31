@@ -92,3 +92,44 @@
 .gymExplain p{font-size:var(--t-micro);line-height:1.65;margin:0 0 var(--s2)}
 .gymExplain p:last-child{margin-bottom:0}
 .gymChain{margin-top:var(--s4)}
+
+/* The hands — technique areas and their drills. */
+.techAreas{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:var(--s2);margin:0 0 var(--s6)}
+.techTab{display:block;text-align:left;border:1px solid var(--line);background:transparent;
+ color:var(--ink);padding:var(--s4);border-radius:var(--r-control);cursor:pointer}
+.techTab:hover{border-color:var(--violet)}
+.techTab i{display:block;font:var(--t-micro) var(--mono);font-style:normal;color:var(--ink-4)}
+.techTab b{display:block;font-size:var(--t-micro);line-height:1.4;margin-top:var(--s1)}
+.techTab.on{border-color:var(--lime);background:var(--wash)}
+.techTab.on b{color:var(--lime)}
+
+.techArea{margin:0 0 var(--s7)}
+.techArea>header{max-width:860px;margin-bottom:var(--s5)}
+.techArea>header .label{font:var(--t-micro) var(--mono);letter-spacing:.12em;color:var(--violet)}
+.techArea>header h2{font-size:var(--t-h2);margin:var(--s2) 0 var(--s3)}
+.techArea>header p{font-size:var(--t-small);line-height:1.65;margin:0}
+
+.techRules{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:var(--s3)}
+.techRules article{position:relative;border:1px solid var(--line);padding:var(--s5)}
+.techRules article i{font:var(--t-h3) var(--mono);font-style:normal;color:var(--ink-4)}
+.techRules article b{display:block;font-size:var(--t-small);color:var(--ink);margin:var(--s3) 0 var(--s2)}
+.techRules article p{font-size:var(--t-micro);line-height:1.6;margin:0;color:var(--ink-2)}
+
+.techDiagnosis{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);margin-top:var(--s5)}
+.techDiagnosis article{border:1px solid var(--line);padding:var(--s5)}
+.techDiagnosis article>span{font:var(--t-micro) var(--mono);letter-spacing:.1em}
+.techDiagnosis article p{font-size:var(--t-micro);line-height:1.6;margin:var(--s3) 0 0}
+.techDiagnosis .myth{border-color:#4b302c}
+.techDiagnosis .myth>span{color:var(--red)}
+.techDiagnosis .fix{border-color:#4c5a31}
+.techDiagnosis .fix>span{color:var(--lime)}
+
+.techDrills{border-top:1px solid var(--line);padding-top:var(--s6)}
+.techDrills>header{max-width:860px;margin-bottom:var(--s5)}
+.techDrills>header .label{font:var(--t-micro) var(--mono);letter-spacing:.12em;color:var(--violet)}
+.techDrills>header h2{font-size:var(--t-h2);margin:var(--s2) 0 var(--s3)}
+.techDrills>header p{font-size:var(--t-micro);margin:0}
+.techSets{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s3);margin-bottom:var(--s5)}
+.techOrders{margin-bottom:var(--s5)}
+.techOrderRow{display:flex;flex-wrap:wrap;gap:var(--s2);margin:var(--s2) 0}
+@media(max-width:720px){.techDiagnosis{grid-template-columns:1fr}}

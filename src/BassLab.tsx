@@ -11,6 +11,7 @@ import LessonWorkspace from "./views/LessonWorkspace";
 import LessonTools,{WORKSPACE_LABELS} from "./views/LessonTools";
 import PacedReader from "./views/PacedReader";
 import ChromaticGym from "./views/ChromaticGym";
+import TechniqueLab from "./views/TechniqueLab";
 import ToolLibrary from "./views/ToolLibrary";
 import CourseProgress from "./views/CourseProgress";
 import TodaySession from "./views/TodaySession";
@@ -56,7 +57,7 @@ const VIEW_META:Record<string,{eyebrow:string,title:string}>={
  course:{eyebrow:"YOUR LEARNING PATH",title:"Home"},courseLesson:{eyebrow:"GUIDED COURSE",title:"Current lesson"},roadmap:{eyebrow:"28-LESSON CURRICULUM",title:"Full course"},
  practice:{eyebrow:"HANDS-FREE TRAINING",title:"Practice studio"},coach:{eyebrow:"LISTENING + FEEDBACK",title:"Live coach"},maqam:{eyebrow:"ARABIC MUSIC",title:"Maqam lab"},slap:{eyebrow:"TECHNIQUE + GROOVE",title:"Slap bass"},
  tools:{eyebrow:"ALL EXISTING TOOLS",title:"Tool library"},courseProgress:{eyebrow:"YOUR DEVELOPMENT",title:"Progress"},fret:{eyebrow:"HARMONY TOOL",title:"Fretboard map"},runtime:{eyebrow:"PLAY WITH A BAND",title:"Backing band"},
- engine:{eyebrow:"RECORD + UNDERSTAND",title:"Take analysis"},advanced:{eyebrow:"CONTROLLED TENSION",title:"Improvisation lab"},chromatic:{eyebrow:"APPROACH AND ARRIVE",title:"Chromatic gym"},reference:{eyebrow:"LOOK SOMETHING UP",title:"Theory reference"},adaptive:{eyebrow:"PERSONAL CURRICULUM",title:"Adaptive plan"},
+ engine:{eyebrow:"RECORD + UNDERSTAND",title:"Take analysis"},advanced:{eyebrow:"CONTROLLED TENSION",title:"Improvisation lab"},chromatic:{eyebrow:"APPROACH AND ARRIVE",title:"Chromatic gym"},technique:{eyebrow:"BEFORE THE NOTES",title:"The hands"},reference:{eyebrow:"LOOK SOMETHING UP",title:"Theory reference"},adaptive:{eyebrow:"PERSONAL CURRICULUM",title:"Adaptive plan"},
  progression:{eyebrow:"READ A PROGRESSION",title:"Progression reader"},
  today:{eyebrow:"TODAY'S TRAINING",title:"Practice plan"},live:{eyebrow:"REAL-TIME PRACTICE",title:"Live session"},games:{eyebrow:"EAR + FRETBOARD",title:"Training games"},
 };
@@ -294,6 +295,7 @@ export default function BassLab(){
  />}
 
  {view==="chromatic"&&<ChromaticGym/>}
+ {view==="technique"&&<TechniqueLab/>}
  {view==="tools"&&<ToolLibrary onOpen={setView}/>}
 
  {view==="courseLesson"&&<LessonWorkspace
