@@ -52,6 +52,7 @@ export const NAV:NavGroup[]=[
    {view:"engine",label:"Record & analyze",blurb:"Capture a take and inspect every note",icon:"analyze",keywords:["record","take","analysis","timing"]},
    {view:"advanced",label:"Outside lab",blurb:"Motif, enclosure and side-slip work",icon:"outside",keywords:["outside","tension","chromatic","motif"]},
    {view:"reference",label:"Theory reference",blurb:"Look up a scale, mode or chord",icon:"theory",keywords:["theory","scales","modes","chords","reference"]},
+   {view:"chromatic",label:"Chromatic gym",blurb:"Every approach, chord tone and key",icon:"outside",keywords:["chromatic","approach","enclosure","bebop","target","drill","exercises","lines","jazz"]},
    {view:"games",label:"Training games",blurb:"Ear, interval and target recall",icon:"games",keywords:["game","ear","quiz","drill"]},
    {view:"tabs",label:"Tab studio",blurb:"Open a Guitar Pro file, or write your own",icon:"tabs",keywords:["tab","tabs","guitar pro","gp5","gp4","gpx","musicxml","import","upload","notation","songsterr","write"]},
   ]},

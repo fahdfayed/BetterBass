@@ -1,0 +1,130 @@
+import {useMemo,useState} from "react";
+import ExerciseTabs from "../tab/ExerciseTabs";
+import {DEVICES,QUALITIES,cadenceLine,deviceStudy,targetStudy} from "../tab/chromatic-library";
+
+/**
+ * Drill the chromatic devices, rather than only read about them.
+ *
+ * The course explains chromatic approaches, enclosures and side-slipping across
+ * three lessons carrying four exercises each. That is enough material to
+ * understand the devices and far too little to own them: they are hand skills,
+ * and hand skills need the same shape aimed at every chord tone of every
+ * quality, in every key.
+ *
+ * The studies are generated from the devices rather than written out, so what
+ * this page offers is the whole grid — nine ways of arriving at a note, seven
+ * chord qualities, four targets, twelve keys — instead of a fixed selection
+ * somebody had time to typeset.
+ */
+
+const STUDY_KINDS=[
+ {id:"chord",label:"Across the chord",
+  blurb:"One device aimed at each chord tone in turn. Four bars, and the device changes meaning as the target moves."},
+ {id:"target",label:"One target, two registers",
+  blurb:"The same approach into one chord tone, low then an octave up, so it stops being a shape and becomes a sound."},
+ {id:"line",label:"Through a ii–V–I",
+  blurb:"The device placed where the harmony actually changes, aimed at the third of each chord."},
+] as const;
+
+type Kind=typeof STUDY_KINDS[number]["id"];
+
+export default function ChromaticGym(){
+ const [deviceId,setDeviceId]=useState(DEVICES[0].id);
+ const [qualityId,setQualityId]=useState(QUALITIES[0].id);
+ const [kind,setKind]=useState<Kind>("chord");
+
+ const device=DEVICES.find(d=>d.id===deviceId)!;
+ const quality=QUALITIES.find(q=>q.id===qualityId)!;
+
+ const exercises=useMemo(()=>{
+  if(kind==="line")return [cadenceLine(device)];
+  if(kind==="target")
+   return quality.tones.map((_,index)=>targetStudy(device,quality,index));
+  return [deviceStudy(device,quality)];
+ },[device,quality,kind]);
+
+ // The count is the argument for the page existing, so it is stated rather
+ // than left to be discovered.
+ const total=DEVICES.length*QUALITIES.length*(1+quality.tones.length)+DEVICES.length;
+
+ return (
+  <div className="osScreen chromaticGym">
+   <div className="screenIntro">
+    <span>CHROMATIC GYM</span>
+    <h1 data-page-heading tabIndex={-1}>Every approach, every chord tone, every key.</h1>
+    <p>
+     A chromatic device is a way of arriving at a note, not a tune — so these are
+     generated from the devices themselves. Pick how you want to arrive, what you
+     are arriving at, and the studies are written out for you in any of the twelve keys.
+    </p>
+   </div>
+
+   <div className="gymCount">
+    <div><b className="mono">{DEVICES.length}</b><span>DEVICES</span></div>
+    <div><b className="mono">{QUALITIES.length}</b><span>CHORD QUALITIES</span></div>
+    <div><b className="mono">{total}</b><span>STUDIES</span></div>
+    <div><b className="mono">12</b><span>KEYS EACH</span></div>
+   </div>
+
+   <section className="gymPick">
+    <header><span className="label">01 · HOW YOU ARRIVE</span></header>
+    <div className="gymDevices">
+     {DEVICES.map(item=>(
+      <button
+       key={item.id}
+       type="button"
+       className={`gymChip ${item.id===deviceId?"on":""}`}
+       aria-pressed={item.id===deviceId}
+       onClick={()=>setDeviceId(item.id)}
+      >
+       <b>{item.name}</b>
+       <small className="mono">{item.offsets.slice(0,-1).map(o=>(o>0?`+${o}`:`${o}`)).join(" ")} → 0</small>
+      </button>
+     ))}
+    </div>
+    <div className="gymExplain">
+     <p>{device.explain}</p>
+     <p className="dim"><span className="label">Where it earns its place</span> {device.use}</p>
+    </div>
+   </section>
+
+   <section className="gymPick">
+    <header><span className="label">02 · WHAT YOU ARE ARRIVING AT</span></header>
+    <div className="gymQualities">
+     {QUALITIES.map(item=>(
+      <button
+       key={item.id}
+       type="button"
+       className={`gymChip ${item.id===qualityId?"on":""}`}
+       aria-pressed={item.id===qualityId}
+       onClick={()=>setQualityId(item.id)}
+      >
+       <b>{item.symbol}</b>
+       <small>{item.name}</small>
+      </button>
+     ))}
+    </div>
+   </section>
+
+   <section className="gymPick">
+    <header><span className="label">03 · HOW YOU WANT TO DRILL IT</span></header>
+    <div className="gymKinds">
+     {STUDY_KINDS.map(item=>(
+      <button
+       key={item.id}
+       type="button"
+       className={`gymChip wide ${item.id===kind?"on":""}`}
+       aria-pressed={item.id===kind}
+       onClick={()=>setKind(item.id)}
+      >
+       <b>{item.label}</b>
+       <small>{item.blurb}</small>
+      </button>
+     ))}
+    </div>
+   </section>
+
+   <ExerciseTabs exercises={exercises} label="Chromatic studies"/>
+  </div>
+ );
+}

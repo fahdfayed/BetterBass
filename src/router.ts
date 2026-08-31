@@ -38,6 +38,7 @@ const ROUTES:Pattern[]=[
  {path:"/labs/outside",view:"advanced"},
  {path:"/labs/theory",view:"reference"},
  {path:"/labs/progression",view:"progression"},
+ {path:"/labs/chromatic",view:"chromatic"},
  {path:"/labs/games",view:"games"},
  {path:"/labs/tabs",view:"tabs"},
  {path:"/progress",view:"courseProgress"},
