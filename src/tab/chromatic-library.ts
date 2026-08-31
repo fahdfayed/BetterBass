@@ -76,6 +76,16 @@ export const QUALITIES:Quality[]=[
 const TARGET_NAMES=["root","3rd","5th","7th"];
 
 /**
+ * How far under its own root a bar may reach.
+ *
+ * Not a musical limit but a transposing one. A study is moved to a new key by
+ * finding a root of the right pitch class between 28 and 45, so a bar that digs
+ * nine semitones below its root needs a root of at least 37 and can only reach
+ * the nine keys above that. Holding the floor at six keeps all twelve.
+ */
+const FLOOR=-6;
+
+/**
  * One bar: reach the target on beat 3, from the chord tones below it.
  *
  * Beats 1 and 2 are four eighths — chord tones, then the approach, so the
@@ -90,9 +100,30 @@ function approachBar(tones:number[],targetIndex:number,device:Device):Bar{
  const target=tones[targetIndex];
  const approach=device.offsets.slice(0,-1).map(offset=>target+offset);
 
- // Chord tones ahead of the approach, ascending from the root.
+ /*
+  * Chord tones climbing into the approach.
+  *
+  * Reading them from the bottom of the chord instead put the opening of the bar
+  * an octave under its own target whenever the chord was voiced low — the bar
+  * leapt internally before the device even started. These are the chord tones
+  * directly beneath the approach, so the whole bar walks upward into the
+  * target and the harmony is still stated before it is decorated.
+  */
  const leadCount=4-approach.length;
- const lead=Array.from({length:leadCount},(_,i)=>tones[i%tones.length]);
+ const ceiling=approach[0]??target;
+ const lead=[...tones,...tones.map(tone=>tone-12)]
+  .filter(tone=>tone<ceiling&&tone>=ceiling-7&&tone>=FLOOR)
+  .sort((a,b)=>b-a)
+  .slice(0,leadCount)
+  .reverse();
+ /*
+  * Within a fifth there is not always a chord tone per beat — aiming at a root
+  * leaves only the seventh and fifth beneath it. Repeating the lowest at the
+  * start of the bar is what a bass line does anyway, and reaching a full octave
+  * down instead needed a span of thirty-seven semitones from an instrument
+  * that has thirty-five.
+  */
+ while(lead.length<leadCount)lead.unshift(lead[0]??target);
 
  /*
   * Two chord tones under the target, descending. Taking them from the octave
@@ -101,9 +132,17 @@ function approachBar(tones:number[],targetIndex:number,device:Device):Bar{
   * the same note down three times and reached below the low E.
   */
  const tail=[...tones,...tones.map(tone=>tone-12)]
-  .filter(tone=>tone<target)
+  .filter(tone=>tone<target&&tone>=FLOOR)
   .sort((a,b)=>b-a)
   .slice(0,2);
+ /*
+  * Nothing below the target that the floor allows — a chord voiced at the
+  * bottom of the register aiming at its own root. Continue upward through the
+  * chord instead of downward, which keeps the bar four beats long and is what a
+  * line does when it has run out of room underneath.
+  */
+ const above=tones.filter(tone=>tone>target).sort((a,b)=>a-b);
+ for(let i=0;tail.length<2;i++)tail.push(above[i%Math.max(1,above.length)]??target);
 
  return [
   ...lead.map(deg=>n(deg,8)),
@@ -116,9 +155,9 @@ function approachBar(tones:number[],targetIndex:number,device:Device):Bar{
 /**
  * Where the studies are written before they are transposed.
  *
- * Bounded at both ends: the tail reaches six semitones under the root, and the
- * upper-octave target studies reach twenty-five above it, against a neck that
- * runs from 28 to 63. That leaves 34 to 38, and C2 sits in the middle of it.
+ * A bar reaches {@link FLOOR} under its root and the upper-octave target
+ * studies reach twenty-five above it, against a neck running from 28 to 63.
+ * C2 clears both ends.
  */
 const STUDY_ROOT=36; // C2
 
@@ -169,37 +208,146 @@ export function targetStudy(device:Device,quality:Quality,targetIndex:number):Ta
  };
 }
 
+/** A chord in a progression: how far above the tonic, and what quality. */
+export type Step={degree:number;quality:string;label:string};
+
+export type Progression={id:string;name:string;blurb:string;steps:Step[]};
+
+const at=(degree:number,quality:string,label:string):Step=>({degree,quality,label});
+
 /**
- * The device carried through a ii–V–I.
+ * The harmony the devices get practised against.
+ *
+ * Static chords build the hand; changes build the ear. These are the sequences
+ * a bassist actually meets, written as degrees above a tonic so each one exists
+ * in every key without being written twice.
+ */
+export const PROGRESSIONS:Progression[]=[
+ {id:"ii-v-i",name:"ii–V–I major",blurb:"The cadence most jazz harmony is assembled from.",
+  steps:[at(2,"m7","ii"),at(7,"dom7","V"),at(0,"maj7","I")]},
+ {id:"ii-v-i-minor",name:"ii–V–i minor",blurb:"The same motion into a minor tonic; the ii is half diminished.",
+  steps:[at(2,"m7b5","iiø"),at(7,"dom7","V"),at(0,"m7","i")]},
+ {id:"turnaround",name:"I–vi–ii–V turnaround",blurb:"The four bars that send a chorus back to its own beginning.",
+  steps:[at(0,"maj7","I"),at(9,"m7","vi"),at(2,"m7","ii"),at(7,"dom7","V")]},
+ {id:"iii-vi-ii-v",name:"iii–vi–ii–V",blurb:"The longer turnaround, descending the cycle a chord earlier.",
+  steps:[at(4,"m7","iii"),at(9,"m7","vi"),at(2,"m7","ii"),at(7,"dom7","V")]},
+ {id:"backdoor",name:"Backdoor ii–V",blurb:"iv and ♭VII resolving to the major tonic from underneath.",
+  steps:[at(5,"m7","iv"),at(10,"dom7","♭VII"),at(0,"maj7","I")]},
+ {id:"tritone",name:"Tritone substitute V",blurb:"The V replaced by the dominant a semitone above the tonic, so the bass descends by step.",
+  steps:[at(2,"m7","ii"),at(1,"dom7","♭II7"),at(0,"maj7","I")]},
+ {id:"blues-head",name:"Blues, first four bars",blurb:"The quick change: I to IV and back, all dominant.",
+  steps:[at(0,"dom7","I7"),at(5,"dom7","IV7"),at(0,"dom7","I7"),at(0,"dom7","I7")]},
+ {id:"blues-turn",name:"Blues, last four bars",blurb:"Where a blues chorus decides whether it is ending or going round again.",
+  steps:[at(7,"dom7","V7"),at(5,"dom7","IV7"),at(0,"dom7","I7"),at(7,"dom7","V7")]},
+ {id:"rhythm-a",name:"Rhythm changes, first four",blurb:"I–vi–ii–V at speed, where the chords move faster than the hand wants to.",
+  steps:[at(0,"maj7","I"),at(9,"m7","vi"),at(2,"m7","ii"),at(7,"dom7","V")]},
+ {id:"cycle",name:"Cycle of dominants",blurb:"Four dominants resolving down a fifth each time, which is the engine under most turnarounds.",
+  steps:[at(2,"dom7","II7"),at(7,"dom7","V7"),at(0,"dom7","I7"),at(5,"dom7","IV7")]},
+];
+
+/**
+ * Which guide tone each bar aims at.
+ *
+ * The third and the seventh are what carry a chord's quality, and they connect
+ * by a semitone or less around the cycle — the third of ii is the seventh of V,
+ * and the third of V is the seventh of I. Aiming at them alternately is what
+ * makes a line state the changes rather than merely survive them; the two
+ * chains are the two places that alternation can start.
+ */
+export type Chain="3-7"|"7-3";
+
+const CHAIN_LABEL:Record<Chain,string>={
+ "3-7":"third first",
+ "7-3":"seventh first",
+};
+
+/**
+ * The device carried through a progression.
  *
  * Devices practised on one static chord are a technique; the same devices
- * placed where the harmony changes are a line. Each bar aims at the guide tone
- * that states its own chord — the third of ii, the third of V, the third of I —
- * because that is the note the change is actually made of.
+ * placed where the harmony changes are a line.
  */
-export function cadenceLine(device:Device):TabExercise{
- // Relative to the tonic: ii is a whole tone up, V is a fifth up.
- const ii=2,V=7;
- const shift=(tones:number[],by:number)=>tones.map(tone=>tone+by);
- const m7=QUALITIES.find(q=>q.id==="m7")!.tones;
- const dom=QUALITIES.find(q=>q.id==="dom7")!.tones;
- const maj=QUALITIES.find(q=>q.id==="maj7")!.tones;
+export function progressionLine(device:Device,progression:Progression,chain:Chain):TabExercise{
+ const start=chain==="3-7"?1:3;
 
+ /*
+  * Keep the whole line in one register.
+  *
+  * Built straight up from its degree, a V chord starts a fifth above the key
+  * and its seventh lands an eleventh up, so the line jumped an octave whenever
+  * the harmony moved. Folding the root down helps and is not enough on its own,
+  * because a target can sit anywhere from a root to a seventh above it: aiming
+  * at the seventh of ii and then the third of V still crosses an octave.
+  *
+  * So each chord is voiced in whichever octave puts its target nearest the
+  * previous one, which is what a player does without thinking about it. The
+  * pitch classes are unchanged; only the register the line sits in is chosen.
+  */
+ let previous:number|null=null;
+
+ const bars=progression.steps.map((step,index)=>{
+  const quality=QUALITIES.find(q=>q.id===step.quality)!;
+  const folded=step.degree>6?step.degree-12:step.degree;
+
+  /*
+   * After the first chord, take whichever guide tone is nearest.
+   *
+   * Alternating third and seventh strictly is right while the roots move by
+   * fourths, and wrong the moment they do not. A tritone substitute shares its
+   * third with the chord it replaces — the third of ii and the third of ♭II7
+   * are the same note — so the alternation sent the line across a tritone to
+   * reach a seventh when the note it wanted was already under the finger.
+   * Choosing by distance produces the alternation round the cycle by itself,
+   * and does the right thing everywhere else.
+   */
+  const options=previous===null
+   ?[{index:start,base:folded}]
+   :[1,3].flatMap(targetIndex=>
+     [folded-12,folded,folded+12]
+      // Nearest-neighbour choices compound: over the four chords of a blues
+      // turnaround each one reached slightly lower than the last until the bar
+      // fell off the bottom of the neck. The band is what stops it walking.
+      // Low enough that the bar clears FLOOR, high enough that a chord can be
+      // voiced above the tonic when that is where its guide tone lives — the
+      // seventh-first chain needs the V an octave up to reach the third of I
+      // by a semitone rather than by a fifth.
+      .filter(base=>base>=FLOOR&&base<=7)
+      .map(base=>({index:targetIndex,base})));
+
+  /*
+   * Which guide tone first, which octave second.
+   *
+   * Judging candidates on written distance alone let register decide the note:
+   * where the neck could not fit the right guide tone nearby, the line took the
+   * wrong one in a convenient octave. The connection is a pitch-class
+   * relationship — the seventh of iii really is a step from the third of vi —
+   * so that is scored first, and the octave only breaks the tie.
+   */
+  const best=options.reduce((chosen,option)=>{
+   if(previous===null)return chosen;
+   const score=(o:typeof option)=>{
+    const pitch=o.base+quality.tones[o.index];
+    const apart=Math.abs(((pitch-previous!)%12+12)%12);
+    return Math.min(apart,12-apart)*100+Math.abs(pitch-previous!);
+   };
+   return score(option)<score(chosen)?option:chosen;
+  });
+
+  previous=best.base+quality.tones[best.index];
+  return approachBar(quality.tones.map(tone=>tone+best.base),best.index,device);
+ });
+
+ const names=progression.steps.map(step=>step.label).join(" ");
  return {
-  id:`chrom-line-${device.id}`,
-  title:`ii–V–I line · ${device.name}`,
-  brief:`One device through a full cadence, aimed at the third of each chord. `+
-        `Bar 1 is ii, bar 2 is V, bar 3 is I, bar 4 lets it settle.`,
-  pass:"The third of each chord lands on beat 3 and the cadence is audible without accompaniment.",
+  id:`chrom-line-${progression.id}-${device.id}-${chain}`,
+  title:`${progression.name} · ${device.name}`,
+  brief:`${progression.blurb} One bar per chord (${names}), aimed at the guide tones, `+
+        `${CHAIN_LABEL[chain]}. Every target lands on beat 3 and the approach is the beat before it.`,
+  pass:"The changes are audible with nothing accompanying you, and no target is hunted for.",
   root:STUDY_ROOT,
   rootName:KEY_SPELLING[STUDY_ROOT%12],
   tempo:84,
-  bars:[
-   approachBar(shift(m7,ii),1,device),
-   approachBar(shift(dom,V),1,device),
-   approachBar(maj,1,device),
-   [n(0,1)],
-  ],
+  bars,
   loop:true,
  };
 }
@@ -209,7 +357,8 @@ export const CHROMATIC_STUDIES:TabExercise[]=[
  ...DEVICES.flatMap(device=>QUALITIES.map(quality=>deviceStudy(device,quality))),
  ...DEVICES.flatMap(device=>QUALITIES.flatMap(quality=>
   quality.tones.map((_,index)=>targetStudy(device,quality,index)))),
- ...DEVICES.map(cadenceLine),
+ ...DEVICES.flatMap(device=>PROGRESSIONS.flatMap(progression=>
+  (["3-7","7-3"] as Chain[]).map(chain=>progressionLine(device,progression,chain)))),
 ];
 
 export const chromaticStudy=(id:string)=>CHROMATIC_STUDIES.find(study=>study.id===id);

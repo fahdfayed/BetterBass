@@ -91,3 +91,4 @@
 .gymExplain{border-left:3px solid var(--violet);padding:var(--s3) var(--s5);margin-top:var(--s4);max-width:820px}
 .gymExplain p{font-size:var(--t-micro);line-height:1.65;margin:0 0 var(--s2)}
 .gymExplain p:last-child{margin-bottom:0}
+.gymChain{margin-top:var(--s4)}

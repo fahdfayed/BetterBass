@@ -1,6 +1,7 @@
 import {useMemo,useState} from "react";
 import ExerciseTabs from "../tab/ExerciseTabs";
-import {DEVICES,QUALITIES,cadenceLine,deviceStudy,targetStudy} from "../tab/chromatic-library";
+import {type Chain,DEVICES,PROGRESSIONS,QUALITIES,deviceStudy,progressionLine,targetStudy}
+ from "../tab/chromatic-library";
 
 /**
  * Drill the chromatic devices, rather than only read about them.
@@ -23,7 +24,7 @@ const STUDY_KINDS=[
  {id:"target",label:"One target, two registers",
   blurb:"The same approach into one chord tone, low then an octave up, so it stops being a shape and becomes a sound."},
  {id:"line",label:"Through a ii–V–I",
-  blurb:"The device placed where the harmony actually changes, aimed at the third of each chord."},
+  blurb:"The device placed where the harmony actually changes, aimed at the guide tones that carry it."},
 ] as const;
 
 type Kind=typeof STUDY_KINDS[number]["id"];
@@ -32,20 +33,24 @@ export default function ChromaticGym(){
  const [deviceId,setDeviceId]=useState(DEVICES[0].id);
  const [qualityId,setQualityId]=useState(QUALITIES[0].id);
  const [kind,setKind]=useState<Kind>("chord");
+ const [progressionId,setProgressionId]=useState(PROGRESSIONS[0].id);
+ const [chain,setChain]=useState<Chain>("3-7");
 
  const device=DEVICES.find(d=>d.id===deviceId)!;
  const quality=QUALITIES.find(q=>q.id===qualityId)!;
+ const progression=PROGRESSIONS.find(p=>p.id===progressionId)!;
 
  const exercises=useMemo(()=>{
-  if(kind==="line")return [cadenceLine(device)];
+  if(kind==="line")return [progressionLine(device,progression,chain)];
   if(kind==="target")
    return quality.tones.map((_,index)=>targetStudy(device,quality,index));
   return [deviceStudy(device,quality)];
- },[device,quality,kind]);
+ },[device,quality,kind,progression,chain]);
 
  // The count is the argument for the page existing, so it is stated rather
  // than left to be discovered.
- const total=DEVICES.length*QUALITIES.length*(1+quality.tones.length)+DEVICES.length;
+ const total=DEVICES.length*QUALITIES.length*(1+quality.tones.length)
+  +DEVICES.length*PROGRESSIONS.length*2;
 
  return (
   <div className="osScreen chromaticGym">
@@ -123,6 +128,48 @@ export default function ChromaticGym(){
      ))}
     </div>
    </section>
+
+   {kind==="line"&&(
+    <section className="gymPick">
+     <header><span className="label">04 · OVER WHAT HARMONY</span></header>
+     <div className="gymDevices">
+      {PROGRESSIONS.map(item=>(
+       <button
+        key={item.id}
+        type="button"
+        className={`gymChip ${item.id===progressionId?"on":""}`}
+        aria-pressed={item.id===progressionId}
+        onClick={()=>setProgressionId(item.id)}
+       >
+        <b>{item.name}</b>
+        <small className="mono">{item.steps.map(step=>step.label).join(" · ")}</small>
+       </button>
+      ))}
+     </div>
+     <div className="gymExplain">
+      <p>{progression.blurb}</p>
+      <p className="dim">
+       <span className="label">Which guide tone the line starts on</span>{" "}
+       The third and the seventh are what carry a chord&rsquo;s quality, and round the
+       cycle they connect by a step — the third of ii is the seventh of V. Start on
+       either and the line takes whichever is nearer from then on.
+      </p>
+     </div>
+     <div className="gymKinds gymChain">
+      {([["3-7","Start on the third"],["7-3","Start on the seventh"]] as const).map(([id,label])=>(
+       <button
+        key={id}
+        type="button"
+        className={`gymChip ${id===chain?"on":""}`}
+        aria-pressed={id===chain}
+        onClick={()=>setChain(id)}
+       >
+        <b>{label}</b>
+       </button>
+      ))}
+     </div>
+    </section>
+   )}
 
    <ExerciseTabs exercises={exercises} label="Chromatic studies"/>
   </div>
