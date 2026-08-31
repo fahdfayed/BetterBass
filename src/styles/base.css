@@ -260,77 +260,82 @@ small{font-size:max(var(--t-micro),.85em)}
  letter-spacing:.06em;text-transform:uppercase}
 .degreeMeaning>span{flex:1 1 16rem;color:var(--ink-2)}
 
-/* ===================================================== application chrome ==
+/* ================================================================== voice ==
 
-   The controls of a desktop application: a raised face with a light top edge
-   and a dark bottom one, pressed in on click. Nothing here is a soft pill on a
-   flat plane, because this language groups by bordering a region rather than by
-   leaving air around it.
+   Headlines are set in the condensed face at a size the grotesque can carry.
+   Bebas has capitals only, so uppercase is not a stylistic choice here — it is
+   the alphabet the face has, and setting it any other way just makes the
+   browser synthesise letters that do not exist.
    ======================================================================== */
 
-.action-primary,
-.action-quiet,
-button.mega,
-.gymChip,
-.techTab,
-.exerciseChip,
-.keyChip,
-.degreeChip{
- border-radius:var(--r-control);
- box-shadow:var(--raise);
- background:var(--panel-face);
- color:var(--ink);
- padding:var(--s3) var(--s5);
- font-size:var(--t-small);
- line-height:1.35;
- transition:none;
+h1,h2,.osScreen h1,.osScreen h2,
+.screenIntro h1,[data-page-heading]{
+ font-family:var(--font-display);
+ font-weight:400;
+ text-transform:uppercase;
+ letter-spacing:var(--track-display);
+ line-height:.92;
 }
-.action-primary{
- background:var(--accent-fill);
- color:var(--accent-ink);
- font-weight:700;
-}
-.action-primary:hover,.action-quiet:hover,.gymChip:hover,.techTab:hover,
-.exerciseChip:hover,.keyChip:hover,.degreeChip:hover{
- background:var(--bg-lift);
- color:var(--ink);
- transform:none;
-}
-.action-primary:hover{background:var(--accent-fill);color:var(--accent-ink);filter:brightness(1.12)}
+h3,h4{font-family:var(--font);font-weight:600;letter-spacing:-.01em;text-transform:none}
 
-/* Pressed, which on a bevelled control means the bevel inverts. */
-.action-primary:not(:disabled):active,
-.action-quiet:not(:disabled):active,
-.gymChip:not(:disabled):active,
-.techTab:not(:disabled):active,
-.exerciseChip:not(:disabled):active,
-.keyChip:not(:disabled):active,
-.degreeChip:not(:disabled):active{
- box-shadow:var(--sink);
- transform:none;
- padding-top:calc(var(--s3) + 1px);
- padding-bottom:calc(var(--s3) - 1px);
+/* A label is mono, small, and tracked far enough out to read as a caption. */
+.label,.screenIntro>span,.osScreen>section>header>span:first-child{
+ font-family:var(--font-mono);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
 }
 
-/* A selected control stays pressed. */
-.gymChip.on,.techTab.on,.exerciseChip.on,.keyChip.on,.degreeChip.on,
-[aria-pressed="true"].gymChip,[aria-pressed="true"].keyChip{
- box-shadow:var(--sink);
- background:var(--wash);
- color:var(--ink);
+/* ================================================================= motion ==
+
+   One curve, leaving fast and settling slowly, and long enough that the eye
+   follows the thing instead of noticing that something moved. Colour runs on
+   its own shorter clock so a hover feels immediate even while the thing it is
+   attached to is still travelling.
+   ======================================================================== */
+
+a,button{
+ transition:color var(--t-colour) ease,
+            background-color var(--t-colour) ease,
+            border-color var(--t-colour) ease,
+            transform var(--t-base) var(--ease),
+            opacity var(--t-base) var(--ease);
 }
 
-/* Text you type into is sunken and white, like every field of the era. */
-input[type="text"],input[type="search"],input:not([type]),textarea,select{
- background:var(--well);
- color:var(--ink);
- border:0;
- border-radius:var(--r-control);
- box-shadow:var(--sink);
- padding:var(--s2) var(--s3);
- font-size:var(--t-small);
+/* Something arriving: it comes from slightly below and slightly transparent. */
+@keyframes riseIn{
+ from{opacity:0;transform:translateY(14px)}
+ to{opacity:1;transform:none}
 }
-input:focus-visible,textarea:focus-visible,select:focus-visible{
- outline:1px dotted var(--ink);
- outline-offset:-3px;
+.osScreen>section,.osScreen>article,.screenIntro{
+ animation:riseIn var(--t-slow) var(--ease) both;
+}
+/* Staggered, so a screen assembles rather than appearing all at once. */
+.osScreen>*:nth-child(1){animation-delay:0ms}
+.osScreen>*:nth-child(2){animation-delay:60ms}
+.osScreen>*:nth-child(3){animation-delay:120ms}
+.osScreen>*:nth-child(4){animation-delay:180ms}
+.osScreen>*:nth-child(n+5){animation-delay:240ms}
+
+/*
+ * A band of text that never stops moving, which is the one piece of decoration
+ * this language allows itself. Two of them running opposite ways at slightly
+ * different speeds reads as motion rather than as a loop.
+ */
+@keyframes marqueeLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes marqueeRight{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.marquee{overflow:hidden;white-space:nowrap;border-block:1px solid var(--rule);padding:var(--s3) 0}
+.marquee>span{display:inline-block;animation:marqueeLeft 30s linear infinite}
+.marquee.back>span{animation-name:marqueeRight;animation-duration:35s}
+.marquee b{font-family:var(--font-display);font-size:var(--t-h2);letter-spacing:var(--track-display);
+ text-transform:uppercase;color:var(--ink-4);padding:0 var(--s5)}
+.marquee b.lit{color:var(--accent)}
+
+/* A hint that there is more below, breathing rather than blinking. */
+@keyframes pulseArrow{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:.8;transform:translateY(8px)}}
+.scrollHint{animation:pulseArrow 2s ease-in-out infinite;color:var(--ink-3)}
+
+@media (prefers-reduced-motion:reduce){
+ .osScreen>section,.osScreen>article,.screenIntro{animation:none}
+ .marquee>span,.scrollHint{animation:none}
 }

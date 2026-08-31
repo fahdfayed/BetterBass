@@ -20,17 +20,14 @@
     file, so it has to be re-asserted here or the ground reverts to #0d0f14.
     The cream theme still wins over this: :root[data-theme="cream"] carries an
     attribute selector and therefore outranks a bare :root. */
- --bg:#08080a;
+ --bg:#0c0c12;
 
  /* Every other legacy variable is expressed in terms of the new tokens rather
     than a literal, so the whole legacy surface follows the theme. */
- /* Panels are panels again. The previous language dissolved them to make one
-    flat plane; this one groups by bordering a region, so they have to be real
-    surfaces with an edge. */
- --panel:var(--panel-face);
- --panel2:var(--bg-lift);
- --surface-soft:var(--well);
- --surface-raised:var(--bg-lift);
+ --panel:transparent;
+ --panel2:var(--wash);
+ --surface-soft:transparent;
+ --surface-raised:var(--wash);
 
  /* Borders become hairline separators. */
  --line:var(--rule);
@@ -47,15 +44,15 @@
  --red:var(--wrong);
 
  /* One radius family instead of 11px/12px/13px/14px/15px/17px/18px/24px. */
- --radius-md:2px;
- --radius-lg:2px;
- --radius-xl:2px;
+ --radius-md:.5rem;
+ --radius-lg:.5rem;
+ --radius-xl:.75rem;
 
  /* Nothing floats, so nothing casts. */
  --shadow:none;
 
- --sans:var(--font);
- --mono:var(--font-mono);
+ --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+ --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
 
 /**
