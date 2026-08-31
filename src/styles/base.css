@@ -302,20 +302,67 @@ a,button{
             opacity var(--t-base) var(--ease);
 }
 
-/* Something arriving: it comes from slightly below and slightly transparent. */
+/*
+ * Something arriving, as you reach it.
+ *
+ * The whole screen used to play its entrance on load, so anything below the
+ * fold had finished moving before it was looked at. Sections now rise the
+ * first time they come into view.
+ *
+ * Only hidden while the root carries .reveal-ready, which src/reveal.ts sets
+ * and nothing else does. If that script never runs, none of this applies and
+ * every section is simply visible.
+ */
+/*
+ * Hiding is written as the absence of .revealed rather than as a state the
+ * revealed rule then has to beat. Written the other way the hiding selector
+ * carried a type and the reveal did not, so it outranked it and a section that
+ * had arrived stayed invisible.
+ */
+.reveal-ready .osScreen>section,
+.reveal-ready .osScreen>article,
+.reveal-ready .osScreen>.gameShelf>article,
+.reveal-ready .screenIntro,
+.reveal-ready .runner,
+.reveal-ready .sniper,
+.reveal-ready .techArea,
+.reveal-ready .techDrills{
+ /* Transform and opacity only: both composite, neither reflows. */
+ transition:opacity var(--t-slow) var(--ease),transform var(--t-slow) var(--ease);
+}
+/*
+ * Written out one selector at a time rather than through :is().
+ *
+ * `:is(a>b, ...):not(.revealed)` is valid and matches correctly when handed
+ * straight to the browser, but the stylesheet transform in this build drops
+ * the :not() from it — the rule arrives as the bare :is() and hides sections
+ * that have already been revealed. Longhand is duller and survives the trip.
+ */
+.reveal-ready .osScreen>section:not(.revealed),
+.reveal-ready .osScreen>article:not(.revealed),
+.reveal-ready .osScreen>.gameShelf>article:not(.revealed),
+.reveal-ready .screenIntro:not(.revealed),
+.reveal-ready .runner:not(.revealed),
+.reveal-ready .sniper:not(.revealed),
+.reveal-ready .techArea:not(.revealed),
+.reveal-ready .techDrills:not(.revealed){
+ opacity:0;
+ transform:translateY(18px);
+ /* Only worth the hint while the thing still has somewhere to travel. */
+ will-change:transform,opacity;
+}
+
+/* Children of a revealed block follow it, so a panel assembles rather than
+   appearing whole. */
+.reveal-ready .revealed>*{animation:riseIn var(--t-base) var(--ease) both}
+.reveal-ready .revealed>*:nth-child(1){animation-delay:40ms}
+.reveal-ready .revealed>*:nth-child(2){animation-delay:90ms}
+.reveal-ready .revealed>*:nth-child(3){animation-delay:140ms}
+.reveal-ready .revealed>*:nth-child(n+4){animation-delay:180ms}
 @keyframes riseIn{
- from{opacity:0;transform:translateY(14px)}
+ from{opacity:0;transform:translateY(8px)}
  to{opacity:1;transform:none}
 }
-.osScreen>section,.osScreen>article,.screenIntro{
- animation:riseIn var(--t-slow) var(--ease) both;
-}
-/* Staggered, so a screen assembles rather than appearing all at once. */
-.osScreen>*:nth-child(1){animation-delay:0ms}
-.osScreen>*:nth-child(2){animation-delay:60ms}
-.osScreen>*:nth-child(3){animation-delay:120ms}
-.osScreen>*:nth-child(4){animation-delay:180ms}
-.osScreen>*:nth-child(n+5){animation-delay:240ms}
 
 /*
  * A band of text that never stops moving, which is the one piece of decoration
@@ -336,6 +383,8 @@ a,button{
 .scrollHint{animation:pulseArrow 2s ease-in-out infinite;color:var(--ink-3)}
 
 @media (prefers-reduced-motion:reduce){
- .osScreen>section,.osScreen>article,.screenIntro{animation:none}
+ /* reveal.ts declines to run at all here, so nothing is hidden; this is only
+    for the decorative loops, which are declared unconditionally. */
  .marquee>span,.scrollHint{animation:none}
+ .reveal-ready .revealed>*{animation:none}
 }

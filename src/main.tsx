@@ -1,5 +1,6 @@
 import {StrictMode} from "react";
 import {createRoot} from "react-dom/client";
+import {startReveals} from "./reveal";
 import BassLab from "./BassLab";
 import ErrorBoundary from "./ErrorBoundary";
 import NodeRuntimeShell from "./NodeRuntimeShell";
@@ -58,3 +59,10 @@ createRoot(root).render(
   <ErrorBoundary><NodeRuntimeShell><BassLab/></NodeRuntimeShell></ErrorBoundary>
  </StrictMode>,
 );
+
+/*
+ * After the first render, so the observer has something to watch. Nothing is
+ * hidden until this runs, which is what keeps a failure here from emptying the
+ * page rather than merely leaving it still.
+ */
+startReveals();
