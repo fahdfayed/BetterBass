@@ -127,3 +127,68 @@ test("a lesson's prerequisites come from before it, not from itself",()=>{
  const lydian=LESSON_DETAILS[11].prerequisites.join(" ");
  assert.match(lydian,/major third|major seventh/);
 });
+
+test("the course explains more where the material is harder",()=>{
+ /*
+  * Every lesson used to carry exactly three concept paragraphs, so the
+  * 75-minute capstone on tension architecture was explained at the same depth
+  * as the 35-minute lesson on what a tonal centre is — and, by word count,
+  * slightly less.
+  */
+ const depth=COURSE_LESSONS.map(l=>l.concept.length);
+ assert.ok(Math.min(...depth)>=4,"no lesson should be back down to three");
+ assert.ok(new Set(depth).size>=3,"depth that never varies is not depth");
+
+ // The last unit is the hardest material in the course.
+ const early=COURSE_LESSONS.slice(0,4),late=COURSE_LESSONS.slice(24);
+ const mean=list=>list.reduce((sum,l)=>sum+l.concept.join(" ").length,0)/list.length;
+ assert.ok(mean(late)>mean(early),
+  `unit 6 averages ${Math.round(mean(late))} characters against unit 1's ${Math.round(mean(early))}`);
+
+ // and the capstone should be the deepest thing in the course
+ assert.equal(Math.max(...depth),depth[depth.length-1]);
+});
+
+test("every lesson says what goes wrong, why, and what to change",()=>{
+ for(let i=0;i<LESSON_DETAILS.length;i++){
+  const {commonErrors}=LESSON_DETAILS[i];
+  assert.ok(commonErrors.length>=3,`lesson ${i} needs at least three`);
+  for(const {symptom,cause,fix} of commonErrors){
+   for(const [field,value] of Object.entries({symptom,cause,fix}))
+    assert.ok(value?.length>15,`lesson ${i} has a thin ${field}: "${value}"`);
+
+   // A fix that restates the symptom tells the player nothing they did not
+   // already know from hearing it.
+   assert.notEqual(fix,symptom);
+   assert.notEqual(cause,symptom);
+  }
+  // Symptoms have to be distinguishable or the table cannot be scanned.
+  assert.equal(new Set(commonErrors.map(e=>e.symptom)).size,commonErrors.length,
+   `lesson ${i} lists the same symptom twice`);
+ }
+});
+
+test("listening references are complete wherever they are given",()=>{
+ /*
+  * The field is optional on purpose: a lesson with no canonical recording gets
+  * none, rather than a padded list carrying a wrong attribution.
+  */
+ let withRefs=0;
+ for(let i=0;i<LESSON_DETAILS.length;i++){
+  const {listening}=LESSON_DETAILS[i];
+  if(!listening)continue;
+  withRefs++;
+  assert.ok(listening.length>0,`lesson ${i} has an empty listening list`);
+  for(const {title,artist,hear} of listening){
+   assert.ok(title?.length>1,`lesson ${i} has a reference with no title`);
+   assert.ok(artist?.length>1,`"${title}" has no artist`);
+   // The point is what to listen for, not that the track exists.
+   assert.ok(hear?.length>40,`"${title}" does not say what to listen for`);
+  }
+ }
+ // The seven mode lessons are the ones that most need a real example.
+ for(let i=8;i<=14;i++)
+  assert.ok(LESSON_DETAILS[i].listening?.length,
+   `the mode lesson at ${i} should point at a recording`);
+ assert.ok(withRefs>=15,`only ${withRefs} lessons carry references`);
+});

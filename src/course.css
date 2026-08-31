@@ -78,3 +78,24 @@
 /* The lesson's own outcomes, judged at the jury beside the five areas. */
 .lessonOutcomes{max-width:1050px;margin:var(--s5) 0}
 .lessonOutcomes>header>span{font:var(--t-micro) var(--mono);letter-spacing:.12em;color:var(--lime)}
+
+/* Symptom / cause / fix. Shares the worked example's table shell; the fix
+   column is the one being read, so it carries the emphasis. */
+.troubleshooting{grid-column:1/-1;margin-top:var(--s6);border-top:1px solid var(--line);padding-top:28px}
+.troubleshooting>header{max-width:900px}
+.troubleshooting>header>span{font:var(--t-micro) var(--mono);letter-spacing:.12em;color:var(--red)}
+.troubleshooting td:first-child{color:var(--ink)}
+.troubleshooting td:last-child{color:var(--lime)}
+.troubleshooting td:first-child,.troubleshooting td:nth-child(2){font-family:inherit}
+
+/* Listening references, at the stage where the player is already listening. */
+.listeningList{margin-top:var(--s6);border-top:1px solid var(--line);padding-top:28px}
+.listeningList>header{max-width:900px;margin-bottom:var(--s5)}
+.listeningList>header>span{font:var(--t-micro) var(--mono);letter-spacing:.12em;color:var(--violet)}
+.listeningList>header h2{font-size:var(--t-h2);margin:10px 0}
+.listeningList>header p{font-size:var(--t-micro);margin:0}
+.listeningList>div{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--s3)}
+.listeningList article{border:1px solid var(--line);padding:22px}
+.listeningList article b{display:block;font-size:var(--t-small);color:var(--ink)}
+.listeningList article small{display:block;font:var(--t-micro) var(--mono);color:var(--violet);margin:var(--s1) 0 var(--s3)}
+.listeningList article p{font-size:var(--t-micro);line-height:1.6;margin:0;color:var(--ink-2)}
