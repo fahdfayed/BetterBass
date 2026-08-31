@@ -99,3 +99,12 @@
 .listeningList article b{display:block;font-size:var(--t-small);color:var(--ink)}
 .listeningList article small{display:block;font:var(--t-micro) var(--mono);color:var(--violet);margin:var(--s1) 0 var(--s3)}
 .listeningList article p{font-size:var(--t-micro);line-height:1.6;margin:0;color:var(--ink-2)}
+
+/* A way into the note-by-note walk from the lesson it belongs to. */
+.questLaunch{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+ gap:var(--s5);border:1px solid var(--line);border-left:3px solid var(--violet);
+ padding:var(--s5);margin:var(--s5) 0;max-width:1000px}
+.questLaunch>div{flex:1 1 320px;min-width:0}
+.questLaunch span{display:block;font:var(--t-micro) var(--mono);letter-spacing:.12em;color:var(--violet)}
+.questLaunch b{display:block;font-size:var(--t-h3);margin:var(--s2) 0}
+.questLaunch p{font-size:var(--t-micro);line-height:1.6;margin:0;color:var(--ink-2);max-width:60ch}

@@ -133,3 +133,48 @@
 .techOrders{margin-bottom:var(--s5)}
 .techOrderRow{display:flex;flex-wrap:wrap;gap:var(--s2);margin:var(--s2) 0}
 @media(max-width:720px){.techDiagnosis{grid-template-columns:1fr}}
+
+/* The long way home — a lesson walked one note at a time. */
+.questLesson{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s5);margin:0 0 var(--s5)}
+.questLesson label{display:flex;flex-direction:column;gap:var(--s1);flex:1 1 320px;min-width:0}
+.questLesson select{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-control);
+ background:var(--wash);color:var(--ink);font:var(--t-micro) var(--mono)}
+.questProgress{font-size:var(--t-micro);letter-spacing:.12em;color:var(--ink-3)}
+.questLives{display:flex;align-items:center;gap:var(--s2)}
+.questLives i{font-style:normal;color:var(--lime)}
+.questLives i.gone{color:var(--ink-4)}
+.questLives small{font:var(--t-micro) var(--mono);letter-spacing:.1em;color:var(--ink-3)}
+.questLives.spent small{color:var(--red)}
+
+.questConnect{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s5);
+ border:1px solid var(--line);padding:var(--s5);margin-bottom:var(--s5)}
+.questConnect p{margin:0;font-size:var(--t-micro);color:var(--ink-2)}
+
+.questTarget{border:1px solid var(--line);padding:clamp(20px,3vw,34px);margin-bottom:var(--s6);max-width:900px}
+.questTarget>.label{font:var(--t-micro) var(--mono);letter-spacing:.12em;color:var(--violet)}
+.questTarget h2{font-size:var(--t-h1);margin:var(--s3) 0}
+.questTarget p{font-size:var(--t-small);line-height:1.65;margin:0;max-width:62ch}
+.questTarget.missed{border-color:#4b302c}
+.questTarget.missed>.label{color:var(--red)}
+.questTarget.arrived{border-color:#56662f}
+.questTarget.arrived>.label{color:var(--lime)}
+.questTarget .action{margin-top:var(--s4)}
+.questNote{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s4);margin:0 0 var(--s4)}
+.questNote b{font-size:var(--t-display);line-height:1;color:var(--lime)}
+.questNote i{font-style:normal;font-size:var(--t-h2);color:var(--ink-3)}
+.questMiss{color:var(--red)!important}
+
+.questRoad>header{margin-bottom:var(--s4)}
+.questRoad>header .label{font:var(--t-micro) var(--mono);letter-spacing:.12em;color:var(--ink-3)}
+.questRoad ol{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.questRoad li{display:grid;grid-template-columns:56px 1fr;gap:var(--s4);align-items:baseline;
+ padding:var(--s3) 0;border-top:1px solid var(--rule)}
+.questRoad li i{font-style:normal;font:var(--t-micro) var(--mono);color:var(--ink-4)}
+.questRoad li b{font-size:var(--t-small);color:var(--ink-4)}
+.questRoad li p{grid-column:2;font-size:var(--t-micro);line-height:1.6;color:var(--ink-3);margin:var(--s1) 0 0}
+.questRoad li.walked b{color:var(--ink-2)}
+.questRoad li.walked i{color:var(--lime)}
+.questRoad li.here{border-left:3px solid var(--violet);padding-left:var(--s3)}
+.questRoad li.here b{color:var(--ink)}
+.questRoad li.checkpoint i::after{content:" ⚑";color:var(--violet)}
+.questBest{font-size:var(--t-micro);margin-top:var(--s4)}

@@ -12,6 +12,7 @@ import LessonTools,{WORKSPACE_LABELS} from "./views/LessonTools";
 import PacedReader from "./views/PacedReader";
 import ChromaticGym from "./views/ChromaticGym";
 import TechniqueLab from "./views/TechniqueLab";
+import NoteQuest from "./views/NoteQuest";
 import ToolLibrary from "./views/ToolLibrary";
 import CourseProgress from "./views/CourseProgress";
 import TodaySession from "./views/TodaySession";
@@ -57,7 +58,7 @@ const VIEW_META:Record<string,{eyebrow:string,title:string}>={
  course:{eyebrow:"YOUR LEARNING PATH",title:"Home"},courseLesson:{eyebrow:"GUIDED COURSE",title:"Current lesson"},roadmap:{eyebrow:"28-LESSON CURRICULUM",title:"Full course"},
  practice:{eyebrow:"HANDS-FREE TRAINING",title:"Practice studio"},coach:{eyebrow:"LISTENING + FEEDBACK",title:"Live coach"},maqam:{eyebrow:"ARABIC MUSIC",title:"Maqam lab"},slap:{eyebrow:"TECHNIQUE + GROOVE",title:"Slap bass"},
  tools:{eyebrow:"ALL EXISTING TOOLS",title:"Tool library"},courseProgress:{eyebrow:"YOUR DEVELOPMENT",title:"Progress"},fret:{eyebrow:"HARMONY TOOL",title:"Fretboard map"},runtime:{eyebrow:"PLAY WITH A BAND",title:"Backing band"},
- engine:{eyebrow:"RECORD + UNDERSTAND",title:"Take analysis"},advanced:{eyebrow:"CONTROLLED TENSION",title:"Improvisation lab"},chromatic:{eyebrow:"APPROACH AND ARRIVE",title:"Chromatic gym"},technique:{eyebrow:"BEFORE THE NOTES",title:"The hands"},reference:{eyebrow:"LOOK SOMETHING UP",title:"Theory reference"},adaptive:{eyebrow:"PERSONAL CURRICULUM",title:"Adaptive plan"},
+ engine:{eyebrow:"RECORD + UNDERSTAND",title:"Take analysis"},advanced:{eyebrow:"CONTROLLED TENSION",title:"Improvisation lab"},chromatic:{eyebrow:"APPROACH AND ARRIVE",title:"Chromatic gym"},technique:{eyebrow:"BEFORE THE NOTES",title:"The hands"},quest:{eyebrow:"PLAY IT TO PASS IT",title:"The long way home"},reference:{eyebrow:"LOOK SOMETHING UP",title:"Theory reference"},adaptive:{eyebrow:"PERSONAL CURRICULUM",title:"Adaptive plan"},
  progression:{eyebrow:"READ A PROGRESSION",title:"Progression reader"},
  today:{eyebrow:"TODAY'S TRAINING",title:"Practice plan"},live:{eyebrow:"REAL-TIME PRACTICE",title:"Live session"},games:{eyebrow:"EAR + FRETBOARD",title:"Training games"},
 };
@@ -107,6 +108,16 @@ export default function BassLab(){
  // The microphone loop and the backing band both outlive the render that starts
  // them, so anything they read has to come from a ref. Reading the state values
  // directly would freeze them at whatever they were when playback began.
+ /*
+  * The last note the microphone committed, as an event rather than a value.
+  *
+  * `history` is deduplicated — it only appends when the pitch changes — so a
+  * note played twice in a row appears once, and anything waiting on it would
+  * sit there while the player repeated themselves. This fires on every onset,
+  * counting a repeat after silence as a new one.
+  */
+ const [heard,setHeard]=useState<{midi:number;at:number}|null>(null);
+ const heardRef=useRef(-1);
  const takeStartRef=useRef(0),bpmRef=useRef(bpm),noiseRef=useRef(noise),calibrationRef=useRef<{until:number,samples:number[]}|null>(null);
  const runtimeSettingsRef=useRef({bpm,meter,style,clickMode,density,progression,ri});
  const harmonyRef=useRef<Harmony>({ri,chordTones,color,scale});
@@ -125,7 +136,7 @@ export default function BassLab(){
  const startAudio=async()=>{if(listening){finishEvent(performance.now());if(audio.current){cancelAnimationFrame(audio.current.raf);audio.current.stream.getTracks().forEach(t=>t.stop());audio.current.ctx.close();audio.current=null}setListening(false);return false}setConnecting(true);try{const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}),ctx=new AudioContext(),src=ctx.createMediaStreamSource(stream),an=ctx.createAnalyser();an.fftSize=4096;an.smoothingTimeConstant=.15;src.connect(an);const b=new Float32Array(an.fftSize);let stable=-1,frames=0,silence=0;const tick=()=>{an.getFloatTimeDomainData(b);let rms=0;for(const x of b)rms+=x*x;rms=Math.sqrt(rms/b.length);
   const measuring=calibrationRef.current;
   if(measuring){measuring.samples.push(rms);if(performance.now()>=measuring.until){calibrationRef.current=null;const sorted=[...measuring.samples].sort((a,z)=>a-z),floor=sorted[Math.floor(sorted.length*.9)]??0;setNoise(floor);setCalibrated(true)}if(audio.current)audio.current.raf=requestAnimationFrame(tick);return}
-  const hz=autoCorrelate(b,ctx.sampleRate);if(hz>PITCH_MIN_HZ&&hz<PITCH_MAX_HZ&&rms>Math.max(PITCH_RMS_GATE,noiseRef.current*1.8)){silence=0;const p=centsToNote(hz);setPitch(p);if(p.midi===stable)frames++;else{stable=p.midi;frames=1}if(frames===3){if(eventRef.current&&eventRef.current.midi!==p.midi)finishEvent(performance.now());if(!eventRef.current)eventRef.current={midi:p.midi,start:performance.now(),amp:rms};setHistory(h=>h[h.length-1]===p.midi?h:[...h.slice(-63),p.midi])}}else if(++silence>5&&eventRef.current){finishEvent(performance.now());stable=-1;frames=0}if(audio.current)audio.current.raf=requestAnimationFrame(tick)};audio.current={ctx,stream,raf:requestAnimationFrame(tick)};setAudioError("");setConnecting(false);setListening(true);return true}catch(error){setConnecting(false);setPitch(null);setListening(false);setAudioError(error instanceof DOMException&&(error.name==="NotAllowedError"||error.name==="SecurityError")?"Microphone access was blocked. Allow it for this site, then choose your audio-interface input and try again.":"The audio input could not start. Check that an input device is connected and free, then try again.");return false}};
+  const hz=autoCorrelate(b,ctx.sampleRate);if(hz>PITCH_MIN_HZ&&hz<PITCH_MAX_HZ&&rms>Math.max(PITCH_RMS_GATE,noiseRef.current*1.8)){silence=0;const p=centsToNote(hz);setPitch(p);if(p.midi===stable)frames++;else{stable=p.midi;frames=1}if(frames===3){if(eventRef.current&&eventRef.current.midi!==p.midi)finishEvent(performance.now());if(!eventRef.current)eventRef.current={midi:p.midi,start:performance.now(),amp:rms};setHistory(h=>h[h.length-1]===p.midi?h:[...h.slice(-63),p.midi]);if(heardRef.current!==p.midi){heardRef.current=p.midi;setHeard({midi:p.midi,at:performance.now()})}}}else if(++silence>5&&eventRef.current){finishEvent(performance.now());stable=-1;frames=0}if(silence>5)heardRef.current=-1;if(audio.current)audio.current.raf=requestAnimationFrame(tick)};audio.current={ctx,stream,raf:requestAnimationFrame(tick)};setAudioError("");setConnecting(false);setListening(true);return true}catch(error){setConnecting(false);setPitch(null);setListening(false);setAudioError(error instanceof DOMException&&(error.name==="NotAllowedError"||error.name==="SecurityError")?"Microphone access was blocked. Allow it for this site, then choose your audio-interface input and try again.":"The audio input could not start. Check that an input device is connected and free, then try again.");return false}};
  // Measure the real noise floor from the running input. The previous fixed .006
  // sat below the detector's own gate, so calibrating changed nothing at all.
  const calibrate=async()=>{if(!listening){const started=await startAudio();if(!started)return}setCalibrated(false);calibrationRef.current={until:performance.now()+1800,samples:[]}};
@@ -296,6 +307,9 @@ export default function BassLab(){
 
  {view==="chromatic"&&<ChromaticGym/>}
  {view==="technique"&&<TechniqueLab/>}
+ {view==="quest"&&<NoteQuest lesson={courseIndex} heard={heard} listening={listening}
+   connecting={connecting} onListen={()=>void startAudio()}
+   onPickLesson={setCourseIndex} audition={audition}/>}
  {view==="tools"&&<ToolLibrary onOpen={setView}/>}
 
  {view==="courseLesson"&&<LessonWorkspace
@@ -350,7 +364,7 @@ export default function BassLab(){
     <section className="routeAssignments"><article><i>01</i><b>VERTICAL BOX</b><p>Stay between frets 5–9. Play only the structural tones first; add defining colour on the second pass.</p><small>PASS · 3 clean phrases without leaving position</small></article><article><i>02</i><b>HORIZONTAL LINE</b><p>Choose one string. Travel from the lowest available lesson tone to fret 15 while naming every degree.</p><small>PASS · no pause longer than one beat</small></article><article><i>03</i><b>DIAGONAL ROUTE</b><p>Begin below fret 5 and end above fret 12 using at least three strings and no audible position panic.</p><small>PASS · 3 different smooth routes</small></article><article><i>04</i><b>TRANSFER</b><p>{courseDetail.transfer}</p><small>PASS · sound and function survive the new key</small></article></section>
     <div className="mapProtocol"><b>FOG-OF-WAR PROTOCOL</b><span>Round 1: all notes visible</span><span>Round 2: roots only</span><span>Round 3: defining colour only</span><span>Round 4: blank neck</span></div>
    </PacedReader>}
-   {courseStep===3&&<PacedReader className="practiceStage" revealAll={courseIndex<courseCompleted}><header><span>GUIDED PRACTICE</span><h2>Exact work. Measurable passes.</h2><p>Practice is ordered from preparation to controlled execution to musical use. Advance only after three clean repetitions—not after one lucky attempt.</p></header>
+   {courseStep===3&&<PacedReader className="practiceStage" revealAll={courseIndex<courseCompleted}><header><span>GUIDED PRACTICE</span><h2>Exact work. Measurable passes.</h2><p>Practice is ordered from preparation to controlled execution to musical use. Advance only after three clean repetitions—not after one lucky attempt.</p></header><aside className="questLaunch"><div><span>PROVE IT ON THE INSTRUMENT</span><b>Walk this lesson one note at a time.</b><p>The path asks for a note, listens, and does not move until it hears the right one. A wrong turn costs ground back to the last place worth standing.</p></div><button type="button" className="action action-primary" onClick={()=>setView("quest")}>Open the walk <span aria-hidden="true">→</span></button></aside>
     <section className="sessionRecipe"><article><b>05</b><span>MIN · PREPARE</span><p>Sing targets, clap the rhythm and play the structural skeleton without a track.</p></article><article><b>10</b><span>MIN · SLOW CONTROL</span><p>Work below performance tempo. Stop only to name the cause of an error.</p></article><article><b>10</b><span>MIN · MUSICAL CONTEXT</span><p>Add the vamp, dynamics, rests and phrase shape while preserving the task.</p></article><article><b>05</b><span>MIN · RECORD</span><p>Capture one uninterrupted take and write one evidence-based correction.</p></article></section>
     <section className="tempoLadder"><header><div><span>TEMPO LADDER</span><h3>{practiceTempo} BPM</h3></div><p>Pass the exercise three times at one tempo. A failed third attempt resets the count; reduce 10 BPM if technique changes the groove.</p></header><div>{[0,10,20,30,40].map((add,i)=>{const tempo=55+course.unit*5+add;return <button className={practiceTempo===tempo?"active":""} key={tempo} onClick={()=>setPracticeTempo(tempo)}><i>{i+1}</i><b>{tempo}</b><span>BPM</span></button>})}</div></section>
     <div className="exerciseGrid">{course.exercises.map((x,i)=><article key={x.name}><i>{String(i+1).padStart(2,"0")}</i><span>EXERCISE {i+1} · {practiceTempo} BPM</span><h3>{x.name}</h3><dl><div><dt>SETUP</dt><dd>{x.setup}</dd></div><div><dt>TASK</dt><dd>{x.task}</dd></div><div><dt>DOSE</dt><dd>{x.dose}</dd></div><div><dt>PASS</dt><dd>{x.pass}</dd></div></dl><label className="practiceLog"><input type="checkbox"/><span>3 CLEAN PASSES LOGGED</span></label><button onClick={()=>openCourseTool(course.tools[Math.min(i,course.tools.length-1)])}>OPEN RECOMMENDED TOOL →</button></article>)}</div>
