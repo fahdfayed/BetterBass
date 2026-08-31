@@ -76,7 +76,12 @@
 .exerciseTimeline>div{display:grid;grid-template-columns:58px 28px 1fr;gap:13px;align-items:start;padding:14px var(--s4);border-bottom:1px solid #252a22}.exerciseTimeline>div:last-child{border-bottom:0}.exerciseTimeline time{font:var(--t-micro) var(--mono);color:var(--lime)}.exerciseTimeline>div>i{width:22px;height:22px;border:1px solid #465035;border-radius:50%;display:grid;place-items:center;font:var(--t-micro) var(--mono);font-style:normal;color:var(--ink-3)}.exerciseTimeline p{margin:0}.exerciseTimeline p b,.exerciseTimeline p span{display:block}.exerciseTimeline p b{font-size:var(--t-micro);color:var(--ink-2);margin-bottom:6px}.exerciseTimeline p span{font-size:var(--t-micro);line-height:1.6;color:var(--ink-3)}
 .listenGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:0 0 22px}.listenGrid>section{border:1px solid #31372d;background:transparent;padding:18px}.listenGrid section>span{display:block;margin-bottom:13px}.listenGrid p{font-size:var(--t-micro);line-height:1.55;color:var(--ink-3);margin:7px 0}.listenGrid>section:last-child{border-color:#4e5932;background:transparent}.listenGrid>section:last-child p{font-size:var(--t-micro);color:var(--ink-2)}
 
-.handsFreeRunner{position:fixed;inset:0;z-index:9999;background:transparent;color:var(--ink);display:grid;grid-template-rows:auto auto 1fr auto;overflow:auto}
+/*
+ * Sits above the shell it takes over — the head is 20 and the rail 40 — and
+ * below the command palette at 100, which stays reachable. It was 9999, a
+ * number chosen to win an argument rather than to place a layer.
+ */
+.handsFreeRunner{position:fixed;inset:0;z-index:60;background:transparent;color:var(--ink);display:grid;grid-template-rows:auto auto 1fr auto;overflow:auto}
 .handsFreeRunner>header{display:grid;grid-template-columns:1fr auto auto;gap:30px;align-items:center;padding:20px 28px;border-bottom:1px solid #3b432f;background:transparent}
 .handsFreeRunner>header>div:first-child span,.handsFreeRunner>header>div:first-child b{display:block}.handsFreeRunner>header>div:first-child b{font:var(--t-body) var(--mono);margin-top:var(--s2)}
 .runnerInput{display:grid;grid-template-columns:12px auto;gap:10px;align-items:center}.runnerInput i{width:9px;height:9px;border-radius:50%;background:#773c34;box-shadow:none}.runnerInput i.online{background:var(--lime);box-shadow:none;color:var(--on-accent)}.runnerInput span,.runnerInput small{display:block}.runnerInput span{font:var(--t-micro) var(--mono);color:var(--ink-2)}.runnerInput small{font-size:var(--t-micro);color:var(--ink-3);margin-top:5px}

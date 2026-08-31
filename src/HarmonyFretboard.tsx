@@ -1,5 +1,5 @@
 "use client";
-import {useCallback,useEffect,useMemo,useRef,useState} from "react";
+import {type CSSProperties,useCallback,useEffect,useMemo,useRef,useState} from "react";
 import {positionKeys} from "./fretboard-positions";
 import {NOTE_ROLES,PITCH_NAMES,PROGRESSION_PRESETS,buildChordVoicing,classifyNote,commonTones,intervalLabel,parseChord,parseProgression,recommendScales,spellChordNote,voiceLeadingPaths,type ChordFamily,type ParsedChord} from "./harmony-fretboard-data";
 import {degreeAt} from "./theory/degrees";
@@ -276,7 +276,7 @@ export default function HarmonyFretboard({embedded=false,centre:givenCentre,prog
      {/* A tuner, on the screen where the neck already is. */}
      <div className="hfTuner">
       <i className={`hfNeedle ${inTune?"lit":""}`}
-         style={{left:`${Math.max(2,Math.min(98,50+livePitch.cents))}%`}}/>
+         style={{"--at":Math.max(2,Math.min(98,50+livePitch.cents))} as CSSProperties}/>
       <span>♭</span>
       <b className={inTune?"lit":""}>{inTune?"IN TUNE":`${livePitch.cents>0?"+":""}${livePitch.cents}`}</b>
       <span>♯</span>

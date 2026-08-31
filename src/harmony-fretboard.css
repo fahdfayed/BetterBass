@@ -1054,8 +1054,20 @@
 .hfLiveNote small{display:block;font:var(--t-micro) var(--mono);color:var(--ink-3);margin-top:var(--s1)}
 .hfTuner{position:relative;flex:1 1 260px;min-width:220px;display:flex;align-items:center;
  justify-content:space-between;border-top:2px solid var(--line);padding-top:var(--s4)}
-.page .osScreen .hfTuner .hfNeedle{position:absolute;top:-9px;width:3px;height:18px;
- background:var(--ink);transition:left .12s linear}
+/*
+ * The needle moves by transform rather than by `left`.
+ *
+ * It tracks the pitch continuously for as long as the microphone is on, and
+ * animating a layout property does that at sixty frames a second on the main
+ * thread. Container query units let a percentage of the *track* be expressed
+ * as a length, which translateX can take — a plain translateX percentage is
+ * relative to the needle's own three pixels and would go nowhere.
+ */
+.page .osScreen .hfTuner{container-type:inline-size}
+.page .osScreen .hfTuner .hfNeedle{position:absolute;top:-9px;left:0;width:3px;height:18px;
+ background:var(--ink);will-change:transform;
+ transform:translateX(calc(var(--at,50) * 1cqw));
+ transition:transform .12s linear}
 .page .osScreen .hfTuner .hfNeedle.lit{background:var(--lime)}
 .hfTuner span,.hfTuner b{font:var(--t-micro) var(--mono);color:var(--ink-3)}
 .hfTuner b.lit{color:var(--lime)}
