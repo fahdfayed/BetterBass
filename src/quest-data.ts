@@ -147,7 +147,8 @@ export function questFor(index:number):Quest{
  return {
   lesson:safe,
   title:lesson.title,
-  premise:`Leave ${PITCH_NAMES[root]}, climb as far as the path goes${far?`, by way of the `+
+  premise:`Leave ${PITCH_NAMES[root]}, climb as far as the path goes${far?`, by way of `+
+          // the place names carry their own article
           `${PLACES[mod(far)].place.toLowerCase()}`:""}, and find a different way home. `+
           `Nothing moves until the bass plays the right note.`,
   root,mode,
