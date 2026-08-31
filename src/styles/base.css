@@ -259,3 +259,78 @@ small{font-size:max(var(--t-micro),.85em)}
 .degreeMeaning i{font-style:normal;color:var(--ink-3);font-size:var(--t-tiny);
  letter-spacing:.06em;text-transform:uppercase}
 .degreeMeaning>span{flex:1 1 16rem;color:var(--ink-2)}
+
+/* ===================================================== application chrome ==
+
+   The controls of a desktop application: a raised face with a light top edge
+   and a dark bottom one, pressed in on click. Nothing here is a soft pill on a
+   flat plane, because this language groups by bordering a region rather than by
+   leaving air around it.
+   ======================================================================== */
+
+.action-primary,
+.action-quiet,
+button.mega,
+.gymChip,
+.techTab,
+.exerciseChip,
+.keyChip,
+.degreeChip{
+ border-radius:var(--r-control);
+ box-shadow:var(--raise);
+ background:var(--panel-face);
+ color:var(--ink);
+ padding:var(--s3) var(--s5);
+ font-size:var(--t-small);
+ line-height:1.35;
+ transition:none;
+}
+.action-primary{
+ background:var(--accent-fill);
+ color:var(--accent-ink);
+ font-weight:700;
+}
+.action-primary:hover,.action-quiet:hover,.gymChip:hover,.techTab:hover,
+.exerciseChip:hover,.keyChip:hover,.degreeChip:hover{
+ background:var(--bg-lift);
+ color:var(--ink);
+ transform:none;
+}
+.action-primary:hover{background:var(--accent-fill);color:var(--accent-ink);filter:brightness(1.12)}
+
+/* Pressed, which on a bevelled control means the bevel inverts. */
+.action-primary:not(:disabled):active,
+.action-quiet:not(:disabled):active,
+.gymChip:not(:disabled):active,
+.techTab:not(:disabled):active,
+.exerciseChip:not(:disabled):active,
+.keyChip:not(:disabled):active,
+.degreeChip:not(:disabled):active{
+ box-shadow:var(--sink);
+ transform:none;
+ padding-top:calc(var(--s3) + 1px);
+ padding-bottom:calc(var(--s3) - 1px);
+}
+
+/* A selected control stays pressed. */
+.gymChip.on,.techTab.on,.exerciseChip.on,.keyChip.on,.degreeChip.on,
+[aria-pressed="true"].gymChip,[aria-pressed="true"].keyChip{
+ box-shadow:var(--sink);
+ background:var(--wash);
+ color:var(--ink);
+}
+
+/* Text you type into is sunken and white, like every field of the era. */
+input[type="text"],input[type="search"],input:not([type]),textarea,select{
+ background:var(--well);
+ color:var(--ink);
+ border:0;
+ border-radius:var(--r-control);
+ box-shadow:var(--sink);
+ padding:var(--s2) var(--s3);
+ font-size:var(--t-small);
+}
+input:focus-visible,textarea:focus-visible,select:focus-visible{
+ outline:1px dotted var(--ink);
+ outline-offset:-3px;
+}
