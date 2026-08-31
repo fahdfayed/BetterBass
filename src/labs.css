@@ -178,3 +178,49 @@
 .questRoad li.here b{color:var(--ink)}
 .questRoad li.checkpoint i::after{content:" ⚑";color:var(--violet)}
 .questBest{font-size:var(--t-micro);margin-top:var(--s4)}
+
+/* The walk, drawn. Height is pitch, so the skyline is the phrase. */
+.questScene{
+ --quest-fill-top:color-mix(in srgb,var(--violet) 16%,transparent);
+ --quest-fill-bottom:color-mix(in srgb,var(--violet) 2%,transparent);
+ border:1px solid var(--line);margin:0 0 var(--s6);padding:var(--s4) var(--s3) var(--s3);
+ max-width:1100px;overflow:hidden}
+.questScene svg{display:block;width:100%;height:auto}
+
+.questRules line{stroke:var(--rule);stroke-width:1}
+.questRules text{font:10px var(--mono);fill:var(--ink-4)}
+
+.questGroundFill{fill:url(#questGround);stroke:none}
+.questRidge{fill:none;stroke:var(--ink-4);stroke-width:2;stroke-linecap:round;opacity:.55}
+.questRidgeWalked{fill:none;stroke:var(--lime);stroke-width:3;stroke-linecap:round;
+ transition:stroke-dasharray .4s ease}
+
+.questMark circle{fill:var(--bg);stroke:var(--ink-4);stroke-width:2;transition:.25s ease}
+.questMark text{font:10px var(--mono);fill:var(--ink-4)}
+.questMark.crossed circle{fill:var(--lime);stroke:var(--lime)}
+.questMark.crossed text{fill:var(--ink-2)}
+.questMark.standing circle{stroke:var(--violet);stroke-width:3;r:9}
+.questMark.landmark circle{stroke-dasharray:3 3}
+.questFlag line{stroke:var(--ink-4);stroke-width:1.5}
+.questFlag path{fill:var(--violet);stroke:none}
+
+.questWalker{transition:transform .45s cubic-bezier(.34,1.2,.4,1)}
+.questWalker line{stroke:var(--ink);stroke-width:2.5;stroke-linecap:round}
+.questWalker .questHead{fill:var(--ink);stroke:none}
+.questScene.stumbled .questWalker line{stroke:var(--red)}
+.questScene.stumbled .questWalker .questHead{fill:var(--red)}
+.questScene.arrived .questWalker line{stroke:var(--lime)}
+.questScene.arrived .questWalker .questHead{fill:var(--lime)}
+.questScene.arrived{border-color:#56662f}
+.questScene.stumbled{border-color:#4b302c}
+
+.questSceneKey{display:flex;flex-wrap:wrap;gap:var(--s5);margin:var(--s3) 0 0;
+ font:var(--t-micro) var(--mono);color:var(--ink-3)}
+.questSceneKey span{display:flex;align-items:center;gap:var(--s2)}
+.questKeyDot{width:9px;height:9px;border-radius:50%;background:var(--lime);flex:none}
+.questKeyFlag{width:0;height:0;border-left:9px solid var(--violet);
+ border-top:5px solid transparent;border-bottom:5px solid transparent;flex:none}
+
+@media(prefers-reduced-motion:reduce){
+ .questWalker,.questMark circle,.questRidgeWalked{transition:none}
+}

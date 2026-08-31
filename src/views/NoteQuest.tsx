@@ -1,5 +1,6 @@
 import {useEffect,useMemo,useRef,useState} from "react";
 import {MISSES_ALLOWED,questFor,startWalk,step,targetPitchOf,type Walk} from "../quest-data";
+import QuestScene from "./QuestScene";
 import {COURSE_LESSONS} from "../course-data";
 import {PITCH_NAMES} from "../harmony-fretboard-data";
 import {shortName} from "../theory/degrees";
@@ -106,6 +107,9 @@ export default function NoteQuest({
     </div>
    )}
 
+   <QuestScene quest={quest} at={at} done={done} missed={!!wrong}
+               misses={misses} allowed={MISSES_ALLOWED}/>
+
    <section className={`questTarget ${wrong?"missed":""} ${done?"arrived":""}`} aria-live="polite">
     {done?(
      <>
@@ -153,7 +157,7 @@ export default function NoteQuest({
    </section>
 
    <section className="questRoad">
-    <header><span className="label">THE ROAD SO FAR</span></header>
+    <header><span className="label">WHAT EACH PLACE IS</span></header>
     <ol>
      {quest.steps.map((place,index)=>{
       const walked=index<at||done;
