@@ -65,9 +65,11 @@ type Props={
 
 /**
  * Reading routes hold a music system's measure; workspaces take the sheet.
- * Listing the narrow ones is the shorter and more stable list.
+ * Listing the narrow ones is the shorter and more stable list. The map is a
+ * spatial training surface, not a reading document, so it deliberately takes
+ * the wide measure.
  */
-const READING_VIEWS=new Set(["course","roadmap","map","courseProgress"]);
+const READING_VIEWS=new Set(["course","roadmap","courseProgress"]);
 
 /**
  * What the centre pill lists: the sections themselves, named by the section.
@@ -120,11 +122,6 @@ export default function AppShell({course,chart,input,onToggleInput,inputBusy,act
     <a className="sr" href="#main">Skip to content</a>
 
     {/* ------------------------------------------------------------ the nav */}
-    {/*
-      * Floating, not bolted. The mark on the left, the sections centred in a
-      * glass pill, and the actions right. It sits over the content rather than
-      * pushing it down, which is what lets a full-bleed image run under it.
-      */}
     <nav className="navBar" aria-label="Main">
      <button type="button" className="navMark" onClick={()=>goToView("course")}>
       <svg viewBox="0 0 256 256" width="24" height="24" aria-hidden="true" fill="currentColor">
@@ -148,11 +145,6 @@ export default function AppShell({course,chart,input,onToggleInput,inputBusy,act
 
      <div className="navRight">
       {actions}
-      {/*
-        * The contents. Everything the pill does not list lives here, and below
-        * the pill's breakpoint this is the whole navigation. Visible rather
-        * than only a shortcut, because the audience arrives cold.
-        */}
       <button
        type="button"
        className="navMenu"
