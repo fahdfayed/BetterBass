@@ -9,7 +9,8 @@
 :root{
  --score-divider-line:color-mix(in oklab,var(--ink) 34%,transparent);
  --score-divider-strong:color-mix(in oklab,var(--ink) 58%,transparent);
- --score-system-height:calc((var(--staff) * 4) + var(--rastral));
+ --score-system-step:var(--staff);
+ --score-system-height:calc((var(--score-system-step) * 4) + var(--rastral));
 }
 
 /* ========================================================= staff systems = */
@@ -41,7 +42,7 @@
   repeating-linear-gradient(
    to bottom,
    var(--score-divider-line) 0 var(--rastral),
-   transparent var(--rastral) var(--staff)
+   transparent var(--rastral) var(--score-system-step)
   );
  pointer-events:none;
 }
@@ -59,19 +60,14 @@
   repeating-linear-gradient(
    to bottom,
    var(--score-divider-line) 0 var(--rastral),
-   transparent var(--rastral) var(--staff)
+   transparent var(--rastral) var(--score-system-step)
   );
  background-size:100% var(--score-system-height),100% var(--score-system-height);
  background-repeat:no-repeat;
  background-position:left bottom;
 }
 
-.stageTab{
- padding-bottom:var(--s2);
-}
-.stageTab.active::after{
- bottom:calc(var(--score-system-height) + var(--s3) - 1px);
-}
+.stageTab{padding-bottom:var(--s2)}
 
 .stageTab .rehearsalMark{
  min-width:calc(var(--staff) * 3.25);
@@ -172,7 +168,7 @@
 /* ============================================================ responsive = */
 
 @media (max-width:52rem){
- :root{--staff:.42rem}
+ :root{--score-system-step:.42rem}
  .lessonRead>.stageIntro + *,
  .lessonRead>div:not(.stageIntro)>*+*,
  .band + .band{
