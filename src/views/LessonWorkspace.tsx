@@ -23,6 +23,10 @@ type Props={
  workspaceLabel:string;
 };
 
+function rehearsalLetter(index:number){
+ return String.fromCharCode(65+(index%26));
+}
+
 /**
  * The lesson as a workspace rather than a document.
  *
@@ -58,8 +62,9 @@ export default function LessonWorkspace({
        aria-current={index===stageIndex?"step":undefined}
        onClick={()=>onStage(index)}
       >
-       <i aria-hidden="true">{index<stageReached?"✓":index+1}</i>
+       <i className="stageRehearsal" aria-hidden="true">{rehearsalLetter(index)}</i>
        <span>{name}</span>
+       {index<stageReached&&<em className="stagePassed" aria-hidden="true">✓</em>}
       </button>
      );
     })}
@@ -68,7 +73,10 @@ export default function LessonWorkspace({
    <div className="lessonSplit">
     <section className="lessonRead stageSwap" key={stageIndex} aria-label="Instruction">
      <div className="stageIntro">
-      <span className="label">{stageNames[stageIndex]}</span>
+      <div className="stageKicker">
+       <span className="scoreRehearsal" aria-hidden="true">{rehearsalLetter(stageIndex)}</span>
+       <span className="label">{stageNames[stageIndex]}</span>
+      </div>
       <h2>{guide.title}</h2>
       <p className="dim">{guide.body}</p>
      </div>
