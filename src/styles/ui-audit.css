@@ -283,5 +283,5 @@
 @media (max-width:700px){.sheet{padding-top:var(--s4)}}
 
 @media (prefers-reduced-motion:reduce){
- .productHeroVisual{animation:none;transform:rotate(-3deg)}
+ .productHeroVisual,.rise,.d1,.d2,.d3,.d4{animation:none !important;transform:none !important;opacity:1 !important}
 }
