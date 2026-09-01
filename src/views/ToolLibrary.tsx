@@ -39,7 +39,6 @@ export default function ToolLibrary({onOpen}:{onOpen:(view:string)=>void}){
   <div className="osScreen toolLibraryPage">
    <header>
     <div>
-     <span>Tool library</span>
      <h1 data-page-heading tabIndex={-1}>Find the right tool.<br/>Get back to playing.</h1>
      <p>These are the same focused labs already inside the course, now organized by what you need to do.</p>
     </div>
@@ -50,7 +49,6 @@ export default function ToolLibrary({onOpen}:{onOpen:(view:string)=>void}){
     {TOOLS.map(tool=>(
      <button onClick={()=>onOpen(tool.id)} key={tool.id}>
       <UiIcon name={tool.icon}/>
-      <span>{tool.tag}</span>
       <h2>{tool.title}</h2>
       <p>{tool.desc}</p>
       <b>Open tool <i>→</i></b>

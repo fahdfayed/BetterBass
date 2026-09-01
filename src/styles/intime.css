@@ -1,0 +1,108 @@
+/**
+ * The interface in time.
+ *
+ * Loaded last, because it re-times everything above it.
+ *
+ * While the transport runs, the motion constants stop being milliseconds
+ * somebody chose and become musical values read from the live clock. A press
+ * is a thirty-second note, a panel is a sixteenth, a sweep is an eighth. At
+ * 84bpm those land almost exactly on the hardware timings this system already
+ * used, which is the point: nothing looks different at rest, and then the whole
+ * interface speeds up when you count it in faster.
+ *
+ * At 50bpm the room is slow and heavy. At 160 it is urgent and clipped. Same
+ * interface, different tempo, which is what happens to a band.
+ *
+ * Stopped, none of this applies. The variables fall back to the fixed hardware
+ * values, nothing pulses, and nothing waits. A beat indicator that keeps
+ * blinking with no clock running is decoration, and this system does not spend
+ * motion on decoration.
+ */
+
+:root[data-running="true"]{
+ --m-click:var(--thirtysecond-ms,120ms);
+ --m-panel:var(--sixteenth-ms,200ms);
+ --m-sweep:var(--eighth-ms,300ms);
+}
+
+/* ========================================================= the downbeat == */
+
+/*
+ * One accent, on beat one, and only where it means something: the module you
+ * currently have loaded. The rail's index mark is already oxide, so the
+ * downbeat brightens it for the length of a thirty-second note and lets it
+ * fall back over the rest of the beat.
+ *
+ * The asymmetry is deliberate. A pulse that rises and falls evenly reads as a
+ * throb; one that snaps up and decays reads as a hit, which is what a beat is.
+ */
+:root[data-running="true"] .railLink[aria-current="page"]{
+ box-shadow:inset 3px 0 0 var(--oxide),var(--depth-well);
+ transition:box-shadow var(--beat-ms,714ms) var(--ease-mech);
+}
+:root[data-running="true"][data-downbeat="true"] .railLink[aria-current="page"]{
+ box-shadow:inset 3px 0 0 var(--oxide-ink),var(--depth-well),
+            inset 0 0 24px -14px var(--oxide);
+ transition:box-shadow var(--thirtysecond-ms,90ms) var(--ease-snap);
+}
+
+/*
+ * The bar line on the transport: a hairline that brightens on one and fades
+ * across the bar, the way the top edge of a sequencer does. It is the chassis
+ * edge that already exists, lit rather than added.
+ */
+:root[data-running="true"] .transport{
+ transition:box-shadow var(--beat-ms,714ms) var(--ease-mech);
+}
+:root[data-running="true"][data-downbeat="true"] .transport{
+ box-shadow:0 -1px 0 var(--oxide),0 -6px 14px -8px rgba(0,0,0,.7);
+ transition:box-shadow var(--thirtysecond-ms,90ms) var(--ease-snap);
+}
+
+/*
+ * The tempo readout is the one number that is the clock rather than reporting
+ * on it, so it takes the accent too.
+ */
+:root[data-running="true"] .tTempoValue{
+ transition:color var(--beat-ms,714ms) var(--ease-mech);
+}
+:root[data-running="true"][data-downbeat="true"] .tTempoValue{
+ color:var(--oxide-ink);
+ transition:color var(--thirtysecond-ms,90ms) var(--ease-snap);
+}
+
+/* ===================================================== arriving in time == */
+
+/*
+ * A screen that arrives on the beat should also settle in musical values
+ * rather than in a designer's round numbers. The stagger steps a sixteenth at
+ * a time, so a page assembles itself in rhythm instead of on a ramp.
+ */
+:root[data-running="true"] .reveal-ready .revealed>*{
+ animation-duration:var(--eighth-ms,300ms);
+}
+:root[data-running="true"] .reveal-ready .revealed>*:nth-child(1){animation-delay:0ms}
+:root[data-running="true"] .reveal-ready .revealed>*:nth-child(2){animation-delay:var(--sixteenth-ms,180ms)}
+:root[data-running="true"] .reveal-ready .revealed>*:nth-child(3){animation-delay:calc(var(--sixteenth-ms,180ms) * 2)}
+:root[data-running="true"] .reveal-ready .revealed>*:nth-child(n+4){animation-delay:calc(var(--sixteenth-ms,180ms) * 3)}
+
+/* ========================================================== reduced motion */
+
+/*
+ * Time feel is still motion. Somebody who has asked for less of it keeps the
+ * clock, the sound and every state change, and loses only the accents.
+ */
+@media (prefers-reduced-motion:reduce){
+ :root[data-running="true"][data-downbeat="true"] .railLink[aria-current="page"],
+ :root[data-running="true"][data-downbeat="true"] .transport,
+ :root[data-running="true"][data-downbeat="true"] .tTempoValue{
+  box-shadow:none;
+  color:inherit;
+ }
+ :root[data-running="true"] .railLink[aria-current="page"]{
+  box-shadow:inset 3px 0 0 var(--oxide),var(--depth-well);
+ }
+ :root[data-running="true"] .transport{
+  box-shadow:var(--depth-chassis);
+ }
+}

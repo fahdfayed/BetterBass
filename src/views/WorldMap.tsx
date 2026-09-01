@@ -23,7 +23,6 @@ export default function WorldMap({territories,lessonTitles,currentLesson,onOpenL
   <>
    <header className="mapHead rise">
     <div>
-     <span className="label">The route</span>
      <h1 className="display" data-page-heading tabIndex={-1}>
       Six <span className="gradientText">territories</span>.
      </h1>
@@ -94,7 +93,6 @@ export default function WorldMap({territories,lessonTitles,currentLesson,onOpenL
     <section className="territoryPanel rise d2" style={{"--accent":`var(--unit-${selected.id})`} as React.CSSProperties}>
      <header>
       <div>
-       <span className="label">Territory {selected.id}</span>
        <h2>{selected.name}</h2>
        <p className="dim">{selected.subtitle}</p>
       </div>

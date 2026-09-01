@@ -19,8 +19,13 @@
  /* globals.css and redesign.css both define --bg, and both load after the token
     file, so it has to be re-asserted here or the ground reverts to #0d0f14.
     The cream theme still wins over this: :root[data-theme="cream"] carries an
-    attribute selector and therefore outranks a bare :root. */
- --bg:#0c0c12;
+    attribute selector and therefore outranks a bare :root.
+
+    It follows --rack rather than carrying a literal. Written as a hex it was
+    still the previous world's blue-black long after the ground had become warm
+    charcoal, and the whole point of this file is that legacy views follow the
+    current language rather than a snapshot of an old one. */
+ --bg:var(--rack);
 
  /* Every other legacy variable is expressed in terms of the new tokens rather
     than a literal, so the whole legacy surface follows the theme. */
@@ -38,21 +43,36 @@
 
  /* The old palette had four competing accent hues. They all collapse onto the
     single accent, except where a colour genuinely carried state. */
- --lime:var(--accent);
- --violet:var(--accent);
+ /*
+  * These four carry text far more often than fill in the old sheets: --lime
+  * alone sets type 205 times against 89 backgrounds. Pointed at the saturated
+  * lamps they failed AA on every one of those, so they follow the text-safe
+  * variants instead. The fills come out slightly lighter, which still reads
+  * correctly with the dark ink that sits on them, and is the right side of the
+  * trade at two to one.
+  */
+ --lime:var(--oxide-ink);
+ --violet:var(--oxide-ink);
  --blue:var(--ink-3);
- --red:var(--wrong);
+ --red:var(--alert-ink);
 
- /* One radius family instead of 11px/12px/13px/14px/15px/17px/18px/24px. */
- --radius-md:.5rem;
- --radius-lg:.5rem;
- --radius-xl:.75rem;
+ /* One radius family instead of 11px/12px/13px/14px/15px/17px/18px/24px, and
+    that family is now the milled corner rather than a soft one: 8px and 12px
+    belonged to the rounded world this replaced. */
+ --radius-md:var(--r);
+ --radius-lg:var(--r-well);
+ --radius-xl:var(--r-well);
 
  /* Nothing floats, so nothing casts. */
  --shadow:none;
 
- --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
- --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+ /* Both follow the current stacks. Left as literals these silently outranked
+    the type system for every legacy view: --sans still named Inter, which the
+    design system bans outright, and --mono still named JetBrains, so ninety-four
+    elements rendered in the old monospace beside a hundred and sixty-six in the
+    new one. Two monos in one interface is not a preference, it is a bug. */
+ --sans:var(--font);
+ --mono:var(--font-mono);
 }
 
 /**

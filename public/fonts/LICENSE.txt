@@ -1,12 +1,10 @@
-Bricolage Grotesque, Geist and JetBrains Mono are each licensed under the
-SIL Open Font License, Version 1.1, which permits redistribution and use with
-or alongside this software.
+Inter and Playfair Display are each licensed under the SIL Open Font License,
+Version 1.1, which permits redistribution and use with or alongside this
+software.
 
-  Bricolage Grotesque  Copyright (c) 2023 The Bricolage Project Authors
-                       https://github.com/ateliertriay/bricolage
-  Geist                Copyright (c) 2023 Vercel, Inc.
-                       https://github.com/vercel/geist-font
-  JetBrains Mono       Copyright (c) 2020 The JetBrains Mono Project Authors
-                       https://github.com/JetBrains/JetBrainsMono
+  Inter             Copyright (c) 2016 The Inter Project Authors
+                    https://github.com/rsms/inter
+  Playfair Display  Copyright (c) 2017 The Playfair Display Project Authors
+                    https://github.com/clauseggers/Playfair-Display
 
 Full licence text: https://openfontlicense.org/open-font-license-official-text/

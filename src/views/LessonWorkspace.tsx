@@ -44,7 +44,6 @@ export default function LessonWorkspace({
    <header className="missionBar">
     <button className="action action-quiet" onClick={onPrevLesson} disabled={!hasPrev} aria-label="Previous lesson">←</button>
     <div className="missionId">
-     <span className="label">Unit {lesson.unit} · Lesson {lesson.index+1} of {lesson.total}</span>
      <h1 data-page-heading tabIndex={-1}>{lesson.title}</h1>
     </div>
     <span className="chip mono">{lesson.duration} min</span>
@@ -71,7 +70,6 @@ export default function LessonWorkspace({
    <div className="lessonSplit" ref={frame} style={{gridTemplateColumns:`minmax(0,${split}fr) auto minmax(0,${100-split}fr)`}}>
     <section className="lessonRead stageSwap" key={stageIndex} aria-label="Instruction">
      <div className="stageIntro">
-      <span className="label">{stageNames[stageIndex]}</span>
       <h2>{guide.title}</h2>
       <p className="dim">{guide.body}</p>
      </div>
@@ -109,7 +107,7 @@ export default function LessonWorkspace({
     <div className="checkAction">
      {!canAdvance&&blockedReason&&<span className="checkBlocked">{blockedReason}</span>}
      <button className="action-primary" onClick={onAdvance} disabled={!canAdvance}>
-      {advanceLabel} <span className="arrow">→</span>
+      {advanceLabel} <svg className="caret" viewBox="0 0 12 12" width="9" height="9" aria-hidden="true"><path d="M2 1 10 6 2 11Z" fill="currentColor"/></svg>
      </button>
     </div>
    </footer>

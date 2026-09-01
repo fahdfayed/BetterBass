@@ -1,0 +1,434 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-01T07:34:08.845Z",
+  "title": "Design System: Outside In Bass Lab",
+  "extensions": {
+    "colorMeta": {
+      "rack": {
+        "role": "neutral",
+        "displayName": "Rack",
+        "purpose": "Behind everything; the gap between units.",
+        "canonical": "oklch(18.3% 0.009 84.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.009 84.6)",
+          "oklch(26.4% 0.009 84.6)",
+          "oklch(37.9% 0.009 84.6)",
+          "oklch(49.3% 0.009 84.6)",
+          "oklch(60.7% 0.009 84.6)",
+          "oklch(72.1% 0.009 84.6)",
+          "oklch(83.6% 0.009 84.6)",
+          "oklch(95.0% 0.009 84.6)"
+        ]
+      },
+      "face": {
+        "role": "neutral",
+        "displayName": "Face",
+        "purpose": "A faceplate. The working surface of a screen.",
+        "canonical": "oklch(24.1% 0.012 84.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.012 84.6)",
+          "oklch(26.4% 0.012 84.6)",
+          "oklch(37.9% 0.012 84.6)",
+          "oklch(49.3% 0.012 84.6)",
+          "oklch(60.7% 0.012 84.6)",
+          "oklch(72.1% 0.012 84.6)",
+          "oklch(83.6% 0.012 84.6)",
+          "oklch(95.0% 0.012 84.6)"
+        ]
+      },
+      "face-2": {
+        "role": "neutral",
+        "displayName": "Face 2",
+        "purpose": "A module raised off the plate: head and transport.",
+        "canonical": "oklch(27.5% 0.014 81.7)",
+        "tonalRamp": [
+          "oklch(15.0% 0.014 81.7)",
+          "oklch(26.4% 0.014 81.7)",
+          "oklch(37.9% 0.014 81.7)",
+          "oklch(49.3% 0.014 81.7)",
+          "oklch(60.7% 0.014 81.7)",
+          "oklch(72.1% 0.014 81.7)",
+          "oklch(83.6% 0.014 81.7)",
+          "oklch(95.0% 0.014 81.7)"
+        ]
+      },
+      "well": {
+        "role": "neutral",
+        "displayName": "Well",
+        "purpose": "Milled out. Readouts, neck, tab, tables, fields.",
+        "canonical": "oklch(16.3% 0.008 95.5)",
+        "tonalRamp": [
+          "oklch(15.0% 0.008 95.5)",
+          "oklch(26.4% 0.008 95.5)",
+          "oklch(37.9% 0.008 95.5)",
+          "oklch(49.3% 0.008 95.5)",
+          "oklch(60.7% 0.008 95.5)",
+          "oklch(72.1% 0.008 95.5)",
+          "oklch(83.6% 0.008 95.5)",
+          "oklch(95.0% 0.008 95.5)"
+        ]
+      },
+      "bone": {
+        "role": "neutral",
+        "displayName": "Bone",
+        "purpose": "Silkscreen. Four steps of printing hierarchy.",
+        "canonical": "oklch(91.3% 0.022 89.8)",
+        "tonalRamp": [
+          "oklch(15.0% 0.022 89.8)",
+          "oklch(26.4% 0.022 89.8)",
+          "oklch(37.9% 0.022 89.8)",
+          "oklch(49.3% 0.022 89.8)",
+          "oklch(60.7% 0.022 89.8)",
+          "oklch(72.1% 0.022 89.8)",
+          "oklch(83.6% 0.022 89.8)",
+          "oklch(95.0% 0.022 89.8)"
+        ]
+      },
+      "oxide": {
+        "role": "primary",
+        "displayName": "Oxide",
+        "purpose": "The next move. One per screen, or none.",
+        "canonical": "oklch(59.7% 0.155 43.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.155 43.6)",
+          "oklch(26.4% 0.155 43.6)",
+          "oklch(37.9% 0.155 43.6)",
+          "oklch(49.3% 0.155 43.6)",
+          "oklch(60.7% 0.155 43.6)",
+          "oklch(72.1% 0.155 43.6)",
+          "oklch(83.6% 0.155 43.6)",
+          "oklch(95.0% 0.155 43.6)"
+        ]
+      },
+      "signal": {
+        "role": "secondary",
+        "displayName": "Signal",
+        "purpose": "Amplifier green. Present, correct, in key, passed.",
+        "canonical": "oklch(66.6% 0.119 128.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.119 128.6)",
+          "oklch(26.4% 0.119 128.6)",
+          "oklch(37.9% 0.119 128.6)",
+          "oklch(49.3% 0.119 128.6)",
+          "oklch(60.7% 0.119 128.6)",
+          "oklch(72.1% 0.119 128.6)",
+          "oklch(83.6% 0.119 128.6)",
+          "oklch(95.0% 0.119 128.6)"
+        ]
+      },
+      "alert": {
+        "role": "tertiary",
+        "displayName": "Alert",
+        "purpose": "Missed, avoid, outside, out of tolerance.",
+        "canonical": "oklch(53.0% 0.166 29.5)",
+        "tonalRamp": [
+          "oklch(15.0% 0.166 29.5)",
+          "oklch(26.4% 0.166 29.5)",
+          "oklch(37.9% 0.166 29.5)",
+          "oklch(49.3% 0.166 29.5)",
+          "oklch(60.7% 0.166 29.5)",
+          "oklch(72.1% 0.166 29.5)",
+          "oklch(83.6% 0.166 29.5)",
+          "oklch(95.0% 0.166 29.5)"
+        ]
+      },
+      "tobacco": {
+        "role": "tertiary",
+        "displayName": "Tobacco",
+        "purpose": "Secondary quantities and tape labels.",
+        "canonical": "oklch(58.6% 0.082 72.6)",
+        "tonalRamp": [
+          "oklch(15.0% 0.082 72.6)",
+          "oklch(26.4% 0.082 72.6)",
+          "oklch(37.9% 0.082 72.6)",
+          "oklch(49.3% 0.082 72.6)",
+          "oklch(60.7% 0.082 72.6)",
+          "oklch(72.1% 0.082 72.6)",
+          "oklch(83.6% 0.082 72.6)",
+          "oklch(95.0% 0.082 72.6)"
+        ]
+      },
+      "olive": {
+        "role": "tertiary",
+        "displayName": "Olive",
+        "purpose": "Tertiary marks and meter minor ticks.",
+        "canonical": "oklch(53.4% 0.058 109.4)",
+        "tonalRamp": [
+          "oklch(15.0% 0.058 109.4)",
+          "oklch(26.4% 0.058 109.4)",
+          "oklch(37.9% 0.058 109.4)",
+          "oklch(49.3% 0.058 109.4)",
+          "oklch(60.7% 0.058 109.4)",
+          "oklch(72.1% 0.058 109.4)",
+          "oklch(83.6% 0.058 109.4)",
+          "oklch(95.0% 0.058 109.4)"
+        ]
+      },
+      "steel": {
+        "role": "tertiary",
+        "displayName": "Steel",
+        "purpose": "Inactive hardware, dividers, scrollbar thumbs.",
+        "canonical": "oklch(66.1% 0.008 151.8)",
+        "tonalRamp": [
+          "oklch(15.0% 0.008 151.8)",
+          "oklch(26.4% 0.008 151.8)",
+          "oklch(37.9% 0.008 151.8)",
+          "oklch(49.3% 0.008 151.8)",
+          "oklch(60.7% 0.008 151.8)",
+          "oklch(72.1% 0.008 151.8)",
+          "oklch(83.6% 0.008 151.8)",
+          "oklch(95.0% 0.008 151.8)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The one statement at the top of a screen. Barlow Condensed 700."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section headings, written as statements rather than labels."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Barlow, capped at a 38rem measure inside any workspace width."
+      },
+      "label": {
+        "displayName": "Legend",
+        "purpose": "Nomenclature above a control. Never above a heading."
+      },
+      "readout": {
+        "displayName": "Readout",
+        "purpose": "Azeret Mono, tabular. Every quantity on the instrument."
+      }
+    },
+    "shadows": [
+      {
+        "name": "depth-panel",
+        "value": "inset 0 1px 0 var(--edge-lit), inset 0 -1px 0 var(--edge-dark)",
+        "purpose": "A faceplate: lit on top, shadowed under. Bolted, not floating."
+      },
+      {
+        "name": "depth-well",
+        "value": "inset 0 1px 2px rgba(0,0,0,.55), inset 0 -1px 0 var(--groove-lip)",
+        "purpose": "Milled out. Readouts, fields, tables, the neck."
+      },
+      {
+        "name": "depth-press",
+        "value": "inset 0 2px 3px rgba(0,0,0,.6), inset 0 -1px 0 var(--groove-lip)",
+        "purpose": "A switch pressed in; the light moves to the bottom lip."
+      },
+      {
+        "name": "depth-go",
+        "value": "inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.45)",
+        "purpose": "The oxide committing control."
+      },
+      {
+        "name": "depth-chassis",
+        "value": "0 -1px 0 var(--edge-lit), 0 -6px 14px -8px rgba(0,0,0,.7)",
+        "purpose": "The only outer shadow: where the transport meets the plate."
+      },
+      {
+        "name": "bezel",
+        "value": "inset 0 0 0 1px rgba(0,0,0,.5)",
+        "purpose": "The ring a seated lamp or screw sits in."
+      },
+      {
+        "name": "lamp-lit",
+        "value": "0 0 6px -1px <lamp colour>",
+        "purpose": "A tight bleed onto the paint. Never a bloom."
+      }
+    ],
+    "motion": [
+      {
+        "name": "m-click",
+        "value": "120ms",
+        "purpose": "Switch throw, key press, lamp on."
+      },
+      {
+        "name": "m-panel",
+        "value": "200ms",
+        "purpose": "Drawer, disclosure, rail reveal."
+      },
+      {
+        "name": "m-sweep",
+        "value": "300ms",
+        "purpose": "Needle travel, progression change, note reseat."
+      },
+      {
+        "name": "ease-mech",
+        "value": "cubic-bezier(.2,.8,.3,1)",
+        "purpose": "Mechanical settle. Fast off the mark, no overshoot: a detent, not a spring."
+      },
+      {
+        "name": "ease-snap",
+        "value": "cubic-bezier(.35,0,.2,1)",
+        "purpose": "State changes on controls."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "all durations collapse to 1ms",
+        "purpose": "Non-negotiable, honoured across the system."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone",
+        "value": "768px"
+      },
+      {
+        "name": "wide-phone",
+        "value": "820px"
+      },
+      {
+        "name": "tablet",
+        "value": "1024px"
+      },
+      {
+        "name": "landscape-short",
+        "value": "520px tall"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Rocker",
+      "kind": "button",
+      "refersTo": "rocker",
+      "description": "The switch. Default state of every control that is not the one next action.",
+      "html": "<button class=\"ds-rocker\">Loop</button><button class=\"ds-rocker\" aria-pressed=\"true\">Count in</button>",
+      "css": ".ds-rocker{font-family:\"Barlow Condensed\",system-ui,sans-serif;font-weight:600;font-size:.875rem;letter-spacing:.08em;text-transform:uppercase;color:#918b7c;background:#2b2720;border:0;border-radius:2px;padding:.5rem 1rem;min-height:2.25rem;margin-right:.5rem;cursor:pointer;box-shadow:inset 0 1px 0 rgba(232,226,210,.085),inset 0 -1px 0 rgba(0,0,0,.62);transition:color 120ms cubic-bezier(.35,0,.2,1),background 120ms cubic-bezier(.35,0,.2,1),box-shadow 120ms cubic-bezier(.35,0,.2,1),transform 120ms cubic-bezier(.35,0,.2,1)}.ds-rocker:hover{color:#e8e2d2}.ds-rocker[aria-pressed=\"true\"]{color:#e8e2d2;background:#0f0e0a;box-shadow:inset 0 2px 3px rgba(0,0,0,.6),inset 0 -1px 0 rgba(232,226,210,.06)}.ds-rocker:active{transform:translateY(1px)}.ds-rocker:focus-visible{outline:2px solid #c85a24;outline-offset:2px}"
+    },
+    {
+      "name": "Go Rocker",
+      "kind": "button",
+      "refersTo": "rocker-go",
+      "description": "The one committing control. Oxide, one per screen, none when there is no next action.",
+      "html": "<button class=\"ds-go\">Begin <svg viewBox=\"0 0 12 12\" width=\"9\" height=\"9\" aria-hidden=\"true\"><path d=\"M2 1 10 6 2 11Z\" fill=\"currentColor\"/></svg></button>",
+      "css": ".ds-go{display:inline-flex;align-items:center;gap:.5rem;font-family:\"Barlow Condensed\",system-ui,sans-serif;font-weight:600;font-size:.875rem;letter-spacing:.08em;text-transform:uppercase;background:#c85a24;color:#17130f;border:0;border-radius:2px;padding:.5rem 1rem;min-height:2.25rem;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.45);transition:background 120ms cubic-bezier(.35,0,.2,1),transform 120ms cubic-bezier(.35,0,.2,1)}.ds-go:hover{background:#d4682f}.ds-go:active{transform:translateY(1px)}.ds-go svg{transition:transform 120ms cubic-bezier(.35,0,.2,1)}.ds-go:hover svg{transform:translateX(2px)}.ds-go:focus-visible{outline:2px solid #c85a24;outline-offset:2px}"
+    },
+    {
+      "name": "Lamp Row",
+      "kind": "custom",
+      "refersTo": "lamp-lit",
+      "description": "Indicator lamps. An unlit lamp is still visibly a lamp, because a panel with none and a panel with one dark are different objects.",
+      "html": "<div class=\"ds-lamps\"><i class=\"ds-lamp\" data-on=\"true\"></i><i class=\"ds-lamp\"></i><i class=\"ds-lamp\"></i><i class=\"ds-lamp\"></i></div>",
+      "css": ".ds-lamps{display:flex;gap:.375rem;align-items:center;padding:.5rem;background:#221f19;border-radius:2px}.ds-lamp{width:8px;height:8px;border-radius:50%;background:#41562a;box-shadow:inset 0 0 0 1px rgba(0,0,0,.5);transition:background 120ms cubic-bezier(.35,0,.2,1),box-shadow 120ms cubic-bezier(.35,0,.2,1)}.ds-lamp[data-on=\"true\"]{background:#7ea24f;box-shadow:inset 0 0 0 1px rgba(0,0,0,.4),0 0 6px -1px #7ea24f}"
+    },
+    {
+      "name": "Well Readout",
+      "kind": "custom",
+      "refersTo": "well-readout",
+      "description": "A quantity milled into the plate. Tabular so a changing number never shifts its neighbours.",
+      "html": "<div class=\"ds-readouts\"><div><span class=\"ds-legend\">Tempo</span><b class=\"ds-well\">84</b><span class=\"ds-fine\">BPM</span></div><div><span class=\"ds-legend\">Bar</span><b class=\"ds-well\">07</b></div></div>",
+      "css": ".ds-readouts{display:flex;gap:2rem;padding:.75rem;background:#221f19;border-radius:2px}.ds-readouts>div{display:flex;flex-direction:column;gap:2px;align-items:flex-start}.ds-legend{font-family:\"Barlow Condensed\",system-ui,sans-serif;font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#918b7c}.ds-well{font-family:\"Azeret Mono\",monospace;font-variant-numeric:tabular-nums;font-weight:500;font-size:1.5rem;color:#e8e2d2;background:#0f0e0a;border-radius:3px;padding:.125rem .5rem;box-shadow:inset 0 1px 2px rgba(0,0,0,.55),inset 0 -1px 0 rgba(232,226,210,.06)}.ds-fine{font-family:\"Azeret Mono\",monospace;font-size:11px;color:#6d6759}"
+    },
+    {
+      "name": "Engraved Section",
+      "kind": "custom",
+      "refersTo": "typography.title",
+      "description": "The system signature: one plate, sections divided by a routed groove. Not a card, and no kicker above the heading.",
+      "html": "<div class=\"ds-plate\"><h2 class=\"ds-h\">Several can be correct. Their jobs are different.</h2><p class=\"ds-p\">The board is driven by where the harmony is going, not by a scale you selected.</p><hr class=\"ds-groove\"/><h2 class=\"ds-h\">Progression first. Scale second.</h2></div>",
+      "css": ".ds-plate{background:#221f19;padding:1.5rem;border-radius:2px;box-shadow:inset 0 1px 0 rgba(232,226,210,.085),inset 0 -1px 0 rgba(0,0,0,.62)}.ds-h{font-family:\"Barlow Condensed\",system-ui,sans-serif;font-weight:700;font-size:1.75rem;line-height:1.1;letter-spacing:.005em;color:#e8e2d2;margin:0 0 .5rem}.ds-p{font-family:\"Barlow\",system-ui,sans-serif;font-size:1rem;line-height:1.5;color:#bdb7a6;margin:0;max-width:38rem}.ds-groove{height:2px;border:0;margin:1.5rem 0;background:linear-gradient(rgba(0,0,0,.5) 0 1px,rgba(232,226,210,.06) 1px 2px)}"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "well-readout",
+      "description": "A slot cut in the plate. Recessed rather than raised; the hairline strengthens on hover.",
+      "html": "<input class=\"ds-field\" type=\"text\" value=\"Dm9 | G13 | Cmaj9\" aria-label=\"Chord progression\" />",
+      "css": ".ds-field{background:#0f0e0a;color:#e8e2d2;border:0;border-radius:3px;font-family:\"Azeret Mono\",monospace;font-size:.9375rem;padding:.5rem .75rem;width:100%;box-shadow:inset 0 1px 2px rgba(0,0,0,.55),inset 0 -1px 0 rgba(232,226,210,.06)}.ds-field:focus-visible{outline:2px solid #c85a24;outline-offset:2px}"
+    },
+    {
+      "name": "Note Role Marker",
+      "kind": "custom",
+      "refersTo": "colors.oxide",
+      "description": "From the harmony fretboard. Role is carried by ink level and outline as much as by colour; only the current position takes oxide.",
+      "html": "<div class=\"ds-neck\"><span class=\"ds-note ds-now\">F&sharp;</span><span class=\"ds-note ds-guide\">A</span><span class=\"ds-note ds-chord\">D</span><span class=\"ds-note ds-avail\">G</span><span class=\"ds-note ds-out\">E&flat;</span></div>",
+      "css": ".ds-neck{display:flex;gap:.375rem;padding:.75rem;background:#0f0e0a;border-radius:3px;box-shadow:inset 0 1px 2px rgba(0,0,0,.55)}.ds-note{font-family:\"Azeret Mono\",monospace;font-size:.875rem;width:2.25rem;height:2.25rem;display:grid;place-items:center;border-radius:2px;box-shadow:inset 0 0 0 1px rgba(232,226,210,.09)}.ds-now{background:#c85a24;color:#17130f;box-shadow:none}.ds-guide{color:#7ea24f;box-shadow:inset 0 0 0 1px #41562a}.ds-chord{color:#e8e2d2}.ds-avail{color:#918b7c}.ds-out{color:#b8392c;box-shadow:inset 0 0 0 1px rgba(184,57,44,.4)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Rack Unit",
+    "overview": "This is a piece of equipment, not a page about one. Warm charcoal faceplates under tungsten, aged bone nomenclature silkscreened onto them, wells milled out where a quantity has to be read, and lamps that are either lit or not. A screen is a single faceplate with its sections engraved into it, not a stack of tiles. Depth comes from one inversion: a panel catches light on its top edge, a well catches it on the bottom lip, and that difference carries every relationship in the interface. Colour is a signal path. Green reports present and correct, oxide says this is the next move, red says a miss.",
+    "keyCharacteristics": [
+      "One faceplate per screen, divided by engraved grooves rather than by gaps.",
+      "Two depths only: bolted panel, milled well. Nothing floats.",
+      "Colour is a lamp. Green correct, oxide next, red missed.",
+      "Square corners at 2px, the radius a router bit actually leaves.",
+      "Condensed nomenclature, upright prose, mono for every measurement.",
+      "Hardware time: nothing moves for longer than 300ms."
+    ],
+    "rules": [
+      {
+        "name": "The One Oxide Rule",
+        "body": "A screen has one oxide element, and none when there is no next action. Two oxide elements means one of them is wrong.",
+        "section": "colors"
+      },
+      {
+        "name": "The Lamp Rule",
+        "body": "Colour reports state. If an element is not telling the player something true right now, it is bone or unpainted.",
+        "section": "colors"
+      },
+      {
+        "name": "The Warm Ground Rule",
+        "body": "Every neutral carries the olive-brown cast. A cool grey or blue-black reads as a screen instead of painted steel.",
+        "section": "colors"
+      },
+      {
+        "name": "The Legend Rule",
+        "body": "A legend names a control or a readout. It never sits above a section heading. Kickers are banned outright.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Every quantity is mono with tabular figures. A tempo that shifts its neighbours going from 99 to 100 is a broken instrument.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Plate Rule",
+        "body": "A screen is one faceplate with grooves cut across it. Sections are separated by a routed line, never by a gap between boxes.",
+        "section": "layout"
+      },
+      {
+        "name": "The Transport Never Hides",
+        "body": "The strip may drop labels as width shrinks, but never a function. A player mid-take cannot go looking for stop.",
+        "section": "layout"
+      },
+      {
+        "name": "The Two Depths Rule",
+        "body": "Bolted or milled. A third elevation, a floating card, or a resting drop shadow does not exist in this system.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Milled Corner Rule",
+        "body": "2px everywhere, 3px in a well. A pill or a 12px card radius belongs to a different object.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do treat a screen as one faceplate with grooves cut across it.",
+      "Do keep one oxide control per screen, and none when there is no next action.",
+      "Do mill a well for anything that reports a quantity, and only for that.",
+      "Do set every number in Azeret Mono with tabular figures.",
+      "Do put a legend above a control and nowhere else.",
+      "Do keep motion between 120ms and 300ms, on transform and opacity.",
+      "Do self-host any new face as WOFF2 under /fonts with its licence.",
+      "Do clear 44px on every target under a coarse pointer.",
+      "Do collapse all motion to 1ms under prefers-reduced-motion."
+    ],
+    "donts": [
+      "Don't give a section its own background, border and padding. That is the card layout in costume.",
+      "Don't add a resting drop shadow, a third elevation, or a radius above 3px.",
+      "Don't put a kicker above a heading. This one has no exception.",
+      "Don't use a text arrow as an icon. Transport and caret glyphs are drawn.",
+      "Don't colour anything that is not reporting state.",
+      "Don't introduce a cool grey or a blue-black; every neutral is warm.",
+      "Don't use a bounce or elastic easing. Mechanisms have detents, not springs.",
+      "Don't link a font, script or stylesheet from a third-party CDN.",
+      "Don't hide a transport function to save width. Drop the label instead.",
+      "Don't number a section in its heading, or use an em-dash in visible text."
+    ]
+  }
+}

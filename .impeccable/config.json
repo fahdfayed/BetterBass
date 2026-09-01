@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-09-01T12:39:56.715Z",
+        "reason": "user pinned it: the design brief specifies 'Body/UI font: Inter' and 'Inter + Playfair Display' by name, and a brief-pinned face outranks a saturated-pattern warning"
+      }
+    ]
+  }
+}

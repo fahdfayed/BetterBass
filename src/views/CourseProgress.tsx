@@ -39,7 +39,6 @@ export default function CourseProgress(
  return (
   <div className="osScreen courseProgressPage">
    <header>
-    <span>Course progress</span>
     <h1 data-page-heading tabIndex={-1}>What can you<br/>actually do now?</h1>
     <p>Progress is tied to passed performance standards, not browsing time.</p>
    </header>
@@ -51,7 +50,7 @@ export default function CourseProgress(
      <i><em style={{width:`${percent}%`}}/></i>
     </div>
     <article>
-     <small>Current position</small>
+     
      <h2>Unit {unitNumber}: {unitTitle}</h2>
      <p>Lesson {lessonIndex+1}: {lessonTitle}</p>
      <button onClick={onContinue}>Continue course</button>

@@ -62,7 +62,6 @@ export default function BackingBand({
  return (
   <div className="osScreen">
    <div className="screenIntro">
-    <span>Phase 3 · musical runtime</span>
     <h1 data-page-heading tabIndex={-1}>Your responsive band.</h1>
     <p>Generate a musical environment, hear the harmony move and practice against a shared sample-accurate clock. The Musical GPS follows every chord change.</p>
    </div>
@@ -73,7 +72,6 @@ export default function BackingBand({
       <b>{beat}</b><span>Beat</span><i>{bar}</i><small>BAR</small>
      </div>
      <div>
-      <span>Harmonic weather</span>
       <h2>{weather}</h2>
       <p>{style} · {meter}/4 · {bpm} BPM</p>
      </div>

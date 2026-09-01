@@ -16,7 +16,6 @@ export default function JacoMasterclass(){
  return (
   <>
    <header className="lede-block">
-    <span className="label">Masterclass</span>
     <h1 className="display" data-page-heading tabIndex={-1}>Jaco Pastorius</h1>
     <p className="lead">
      The hands, then the theory, then harmony, melody, rhythm and soloing, the syllabus of

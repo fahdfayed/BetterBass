@@ -1,0 +1,287 @@
+/**
+ * The score register.
+ *
+ * Two languages live in this application and they do not mix. The chrome is a
+ * workspace: pills, glass, Inter set hard and tight, and it stays exactly as it
+ * was. Everything that is *music* is engraved instead, and this file is that
+ * second language.
+ *
+ * The rule for which is which is not decorative. If a player would find the
+ * thing on paper in a rehearsal room, it is engraved: chord symbols, tempo
+ * marks, section letters, bar numbers, repeats, the coda. If it is software
+ * furniture, a button or a field or a nav, it is chrome. Nothing gets a musical
+ * costume for being nearby.
+ *
+ * THE UNIT. Engravers measure everything in staff spaces, the distance between
+ * two lines of the staff, and every other dimension on the page is a multiple
+ * of it. `--staff` is that unit here, and the marks below are sized and spaced
+ * from it rather than from the interface's own spacing scale. It is the reason
+ * a real score looks metrically calm: one measurement generates the page.
+ */
+
+:root{
+ /** The engraver's unit: one staff space. */
+ --staff:0.5rem;
+ /** Staff lines and barlines are hairlines, and they are the same hairline. */
+ --rastral:1px;
+}
+
+/* ================================================================ glyphs = */
+
+/*
+ * The face comes from the register, never from this rule, so the same glyph is
+ * Leland in a lesson and Petaluma in a jam room.
+ */
+.glyph{
+ font-family:var(--smufl);
+ font-weight:400;
+ font-style:normal;
+ line-height:1;
+ /* Notation glyphs carry their own sidebearings; letter-spacing fights them. */
+ letter-spacing:0;
+ /* SMuFL glyphs are drawn around the staff midline, not the text baseline. */
+ vertical-align:-0.08em;
+}
+
+/* ======================================================== rehearsal mark = */
+
+/*
+ * A letter in a box above the system, which is how a conductor says "from A".
+ * It is square on purpose. The radius scale in this design makes every control
+ * a pill, and a rehearsal mark is not a control: it is a label engravers have
+ * drawn as a rectangle for a century, and rounding it would be the one place
+ * the interface overrode the score.
+ */
+.rehearsalMark{
+ display:inline-grid;
+ place-items:center;
+ min-width:calc(var(--staff) * 4);
+ height:calc(var(--staff) * 4);
+ padding-inline:calc(var(--staff) * 0.75);
+ border:1.5px solid var(--ink-2);
+ border-radius:0;
+ font-family:var(--font);
+ font-size:var(--t-small);
+ font-weight:700;
+ letter-spacing:0.02em;
+ font-variant-numeric:tabular-nums;
+ color:var(--ink);
+ background:none;
+}
+.rehearsalMark[data-current="true"]{border-color:var(--flame);color:var(--flame)}
+.rehearsalMark[data-done="true"]{border-color:var(--hairline-2);color:var(--ink-3)}
+
+/* ============================================================ tempo mark = */
+
+/*
+ * The traditional marking, not a badge: a metronome quarter note, an equals
+ * sign and a number. Engravers set the number in the text face, not the music
+ * face, so only the note comes from the notation font.
+ */
+.tempoMark{
+ display:inline-flex;
+ align-items:baseline;
+ gap:calc(var(--staff) * 0.6);
+ font-family:var(--font);
+ font-variant-numeric:tabular-nums;
+ letter-spacing:var(--track);
+ color:var(--ink);
+ white-space:nowrap;
+}
+.tempoMark .glyph{font-size:1.35em;vertical-align:-0.14em}
+.tempoMark b{font-weight:500}
+.tempoMark .tempoEq{color:var(--ink-3);padding-inline:0.1em}
+
+/* ============================================================== barlines = */
+
+/*
+ * A staff rule, not a divider. One hairline where a section changes, a thin
+ * double where a movement does, and the thick-thin final at the end of a chart.
+ */
+.staffRule{height:var(--rastral);border:0;margin:0;background:var(--hairline-2)}
+.staffRule--double{
+ height:calc(var(--rastral) * 3);
+ background:linear-gradient(var(--hairline-2) 0 1px,transparent 1px 2px,var(--hairline-2) 2px 3px);
+}
+.staffRule--final{
+ height:calc(var(--rastral) * 4);
+ background:linear-gradient(var(--ink-3) 0 1px,transparent 1px 2px,var(--ink) 2px 4px);
+}
+
+/* ============================================================ bar number = */
+
+/*
+ * Small, above the line, and never in the reading weight. On paper the bar
+ * number is the quietest thing on the system and it is still always findable,
+ * which is exactly the job a list index has in an interface.
+ */
+.barNumber{
+ font-family:var(--font);
+ font-size:var(--t-micro);
+ font-weight:500;
+ font-variant-numeric:tabular-nums;
+ letter-spacing:0.04em;
+ color:var(--ink-4);
+ line-height:1;
+}
+
+/* ========================================================== repeat count = */
+
+/*
+ * How a chart says do it again: the repeat barline and the count, not the word.
+ */
+.repeatCount{
+ display:inline-flex;
+ align-items:center;
+ gap:calc(var(--staff) * 0.5);
+ font-family:var(--font);
+ font-size:var(--t-small);
+ font-variant-numeric:tabular-nums;
+ color:var(--ink-2);
+ white-space:nowrap;
+}
+.repeatCount .glyph{font-size:1.5em;color:var(--ink-3)}
+.repeatCount .times{color:var(--ink-3)}
+
+/* =========================================================== chord symbol = */
+
+/*
+ * Compact, and the accidental is a real one. A flat sign in a chord symbol set
+ * in the text font is a lowercase b wearing a hat; the engraved flat sits at
+ * the right height and the right weight against the letter beside it.
+ */
+.chordSymbol{
+ font-family:var(--script);
+ font-size:var(--t-h3);
+ font-weight:500;
+ letter-spacing:var(--track);
+ color:var(--ink);
+ line-height:1.1;
+ white-space:nowrap;
+}
+.chordSymbol .glyph{font-size:0.86em;vertical-align:-0.02em;padding-inline:0.02em}
+/* The quality and extensions ride smaller and higher, as they are engraved. */
+.chordSymbol sup{
+ font-size:0.62em;
+ vertical-align:0.42em;
+ letter-spacing:0;
+ margin-left:0.04em;
+}
+
+/* ========================================================== margin note == */
+
+/*
+ * The pencil in the margin. Slightly off the vertical, quiet, and set in the
+ * register's handwriting face, so it reads as something a player added rather
+ * than something the software printed.
+ */
+.marginNote{
+ font-family:var(--script);
+ font-size:var(--t-small);
+ line-height:1.45;
+ color:var(--ink-3);
+ border-left:var(--rastral) solid var(--hairline-2);
+ padding-left:calc(var(--staff) * 1.5);
+ transform:rotate(-0.4deg);
+ transform-origin:left center;
+ max-width:34ch;
+}
+
+/* ================================================================= coda == */
+
+/*
+ * Reserved for the last thing. On paper the coda is where the chart finally
+ * resolves, and it earns a mark nothing else on the page is allowed to use.
+ */
+.coda{
+ display:flex;
+ align-items:center;
+ gap:calc(var(--staff) * 2);
+ padding-block:calc(var(--staff) * 3);
+ border-top:calc(var(--rastral) * 2) solid var(--ink-3);
+}
+.coda .glyph{font-size:2.4em;color:var(--flame);line-height:1}
+.codaLabel{
+ font-family:var(--font);
+ font-size:var(--t-micro);
+ text-transform:uppercase;
+ letter-spacing:var(--track-label);
+ color:var(--ink-3);
+}
+.codaTitle{
+ font-family:var(--font);
+ font-size:var(--t-h3);
+ font-weight:500;
+ letter-spacing:var(--track-sans);
+ color:var(--ink);
+ margin:0;
+}
+
+/* ============================================================== systems == */
+
+/*
+ * A system is a run of staves read as one. Here it is a content block that
+ * carries a rehearsal letter in its left margin and rules rather than a border,
+ * which is the alternative to boxing everything in a rounded card.
+ */
+.system{
+ display:grid;
+ grid-template-columns:calc(var(--staff) * 6) minmax(0,1fr);
+ gap:0 calc(var(--staff) * 2);
+ align-items:start;
+ padding-block:calc(var(--staff) * 3);
+ border-top:var(--rastral) solid var(--hairline);
+}
+.system:first-of-type{border-top:0}
+.systemMark{grid-column:1;justify-self:start}
+.systemBody{grid-column:2;min-width:0}
+.systemBody>h3{
+ font-family:var(--font);
+ font-size:var(--t-h3);
+ font-weight:500;
+ letter-spacing:var(--track-sans);
+ color:var(--ink);
+ margin:0 0 calc(var(--staff) * 1) 0;
+}
+
+@media (max-width:600px){
+ .system{grid-template-columns:calc(var(--staff) * 5)}
+ .marginNote{transform:none}
+}
+
+/* =========================================================== chart rows == */
+
+/*
+ * A session, read as a chart. No cards: a rehearsal letter in the margin, a
+ * hairline where each system begins, and the duration engraved as a repeat.
+ */
+.chartRows{list-style:none;margin:0;padding:0}
+
+.chartRow{
+ display:flex;
+ align-items:baseline;
+ justify-content:space-between;
+ gap:calc(var(--staff) * 3);
+ width:100%;
+ background:none;
+ border:0;
+ border-radius:0;
+ padding:0;
+ text-align:left;
+ cursor:pointer;
+ color:var(--ink-2);
+ transition:color var(--m-click) var(--ease-out-expo);
+}
+.chartRow:hover{color:var(--ink)}
+.chartRowMain{display:flex;flex-direction:column;gap:calc(var(--staff) * 0.75);min-width:0}
+.chartRowMain b{
+ font-family:var(--font);
+ font-size:var(--t-body);
+ font-weight:500;
+ letter-spacing:var(--track);
+ color:var(--ink);
+}
+.chartRow.is-current .chartRowMain b{color:var(--flame)}
+.chartRow.is-done .chartRowMain b{color:var(--ink-3)}
+/* The pencil note does not tilt inside a row; it would fight the baseline. */
+.chartRow .marginNote{transform:none;border-left:0;padding-left:0;max-width:52ch}

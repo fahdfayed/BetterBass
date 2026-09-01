@@ -24,7 +24,7 @@
 
 .rise{animation:riseIn var(--t-slow) var(--ease-out) both}
 .fade{animation:fadeIn var(--t-slow) var(--ease) both}
-.pop{animation:scaleIn var(--t-slow) var(--ease-spring) both}
+.pop{animation:scaleIn var(--t-slow) var(--ease) both}
 
 /* Depth steps for staggering a section's children. */
 .d1{animation-delay:60ms}
@@ -55,10 +55,6 @@
 
 /* ---- ambient ---------------------------------------------------------- */
 
-@keyframes pulseGlow{
- 0%,100%{opacity:.5}
- 50%{opacity:1}
-}
 @keyframes shimmer{
  from{transform:translateX(-100%)}
  to{transform:translateX(100%)}
@@ -67,7 +63,6 @@
  to{transform:rotate(360deg)}
 }
 
-.pulse{animation:pulseGlow 2.4s var(--ease) infinite}
 
 @media (prefers-reduced-motion:reduce){
  .reveal.revealArmed{opacity:1;transform:none}

@@ -1,0 +1,383 @@
+/**
+ * The shell: floating nav, full-bleed content, instrument docked.
+ *
+ * The architecture from the previous pass is kept, because it was the part
+ * that was right: there is no sidebar, and the instrument lives in a dock at
+ * the bottom rather than in a column at the side. What changes is that the
+ * chrome stops being a bar bolted across the top and becomes something
+ * floating over the content, which is what this design does.
+ *
+ * The nav detaches from the edge, centres its links in a glass pill, and lets
+ * the page run underneath it edge to edge. Nothing is inset to make room for
+ * chrome.
+ */
+
+/* ================================================================== hero = */
+
+/*
+ * A full-bleed section with two stacked images and the light between them.
+ * 100dvh rather than 100vh, so mobile browser chrome does not crop it.
+ */
+.spotHero{
+ position:relative;
+ width:100%;
+ min-height:100dvh;
+ overflow:hidden;
+ background:var(--ground);
+ isolation:isolate;
+}
+.spotBase,.spotReveal{
+ position:absolute;
+ inset:0;
+ background-position:center;
+ background-size:cover;
+ background-repeat:no-repeat;
+ pointer-events:none;
+}
+.spotBase{z-index:1}
+.spotReveal{z-index:2}
+
+/*
+ * A scrim under the type. A photograph is not a background: without this the
+ * copy is legible over the dark half of an image and invisible over the light
+ * half, which is the most common way a hero like this ships broken.
+ */
+.spotHero::after{
+ content:"";
+ position:absolute;
+ inset:0;
+ z-index:3;
+ pointer-events:none;
+ background:var(--scrim);
+}
+/*
+ * Raise the content above the scrim, and only that. Setting position here as
+ * well overrode the absolute positioning on every block in the hero, so the
+ * headline, the note and the call to action all collapsed into a pile in the
+ * top left corner.
+ */
+.spotHero>*:not(.spotBase):not(.spotReveal){z-index:5}
+
+/* Corner-anchored copy, rather than one centred stack. */
+.heroHead{
+ position:absolute;
+ top:14%;
+ left:0;right:0;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ text-align:center;
+ padding:0 var(--s5);
+ pointer-events:none;
+}
+.heroHead h1{line-height:.95;color:var(--on-image);margin:0}
+.heroLineSerif{
+ display:block;
+ font-family:var(--font-accent);
+ font-style:italic;
+ font-weight:400;
+ letter-spacing:var(--track-serif);
+ font-size:var(--t-display);
+}
+.heroLineSans{
+ display:block;
+ font-family:var(--font);
+ font-weight:400;
+ letter-spacing:var(--track-sans);
+ font-size:var(--t-display);
+ margin-top:-.06em;
+}
+
+.heroNoteLeft{
+ position:absolute;
+ bottom:3.5rem;
+ left:var(--s7);
+ max-width:260px;
+}
+.heroNoteRight{
+ position:absolute;
+ bottom:var(--s7);
+ left:var(--s5);right:var(--s5);
+ display:flex;
+ flex-direction:column;
+ align-items:flex-start;
+ gap:var(--s4);
+}
+.heroNoteLeft p,.heroNoteRight p{
+ font-size:var(--t-small);
+ color:var(--on-image-2);
+ line-height:1.6;
+ margin:0;
+}
+@media (min-width:640px){
+ .heroNoteRight{bottom:6rem;left:auto;right:var(--s7);max-width:260px}
+}
+@media (max-width:639px){.heroNoteLeft{display:none}}
+
+/* ================================================================== nav == */
+
+/*
+ * Floating, not bolted. It sits over the content with the page running
+ * underneath, and its centre section is a glass pill: the one place in this
+ * interface where blur is used, and it is fixed, so it never repaints a
+ * scrolling region.
+ */
+.navBar{
+ position:fixed;
+ top:0;left:0;right:0;
+ z-index:100;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:var(--s4);
+ padding:var(--s4);
+ pointer-events:none;
+}
+.navBar>*{pointer-events:auto}
+
+.navMark{
+ display:inline-flex;
+ align-items:center;
+ gap:var(--s3);
+ background:none;
+ border:0;
+ padding:0;
+ cursor:pointer;
+ color:var(--ink);
+}
+.navMarkWord{
+ font-family:var(--font-accent);
+ font-style:italic;
+ font-size:1.5rem;
+ letter-spacing:var(--track-serif);
+ color:var(--ink);
+}
+
+.navPill{
+ position:absolute;
+ left:50%;
+ transform:translateX(-50%);
+ display:none;
+ align-items:center;
+ gap:2px;
+ padding:var(--s2);
+ background:var(--glass);
+ backdrop-filter:var(--blur);
+ -webkit-backdrop-filter:var(--blur);
+ border:1px solid var(--glass-line);
+ border-radius:var(--r);
+}
+@media (min-width:900px){.navPill{display:flex}}
+
+.navPill button{
+ font-family:var(--font);
+ font-size:var(--t-small);
+ font-weight:500;
+ letter-spacing:var(--track);
+ color:var(--ink-2);
+ background:transparent;
+ border:0;
+ border-radius:var(--r);
+ padding:var(--s2) var(--s5);
+ cursor:pointer;
+ white-space:nowrap;
+ transition:color var(--m-click) var(--ease-out-expo),
+            background var(--m-click) var(--ease-out-expo);
+}
+.navPill button:hover{background:var(--lift-2);color:var(--ink)}
+.navPill button[aria-current="page"]{color:var(--ink);font-weight:600}
+
+/*
+ * Over a photograph, the nav stops taking its colour from the theme.
+ *
+ * These tokens are white in both grounds, which is right on the hero and wrong
+ * everywhere else: the bar floats over ordinary pages too, and on the cream
+ * ground white type on a white sheet is simply missing. The hero is the
+ * exception, so the page is the default and `:has` names the exception. Any
+ * screen that grows a hero later inherits this without being told.
+ */
+.stand:has(.spotHero) .navPill button{color:var(--on-image-2)}
+.stand:has(.spotHero) .navPill button:hover{background:var(--on-image-glass);color:var(--on-image)}
+.stand:has(.spotHero) .navPill button[aria-current="page"]{color:var(--on-image)}
+.stand:has(.spotHero) .navMenuKey{color:var(--on-image-3);border-color:var(--on-image-line)}
+/*
+ * The mark and the contents control take the same treatment. They are ink by
+ * default like everything else, and on the cream ground that ink is dark, which
+ * over a dark photograph leaves the wordmark almost invisible. Everything the
+ * bar draws over the hero belongs to the image, not to the theme.
+ */
+.stand:has(.spotHero) .navMark,
+.stand:has(.spotHero) .navMarkWord,
+.stand:has(.spotHero) .navMenu{color:var(--on-image)}
+.stand:has(.spotHero) .navMenu{border-color:var(--on-image-line)}
+.stand:has(.spotHero) .navMenu:hover{background:var(--on-image-glass)}
+
+.navRight{display:flex;align-items:center;gap:var(--s3)}
+.navSignUp{display:none}
+@media (min-width:900px){.navSignUp{display:inline-flex}}
+
+/*
+ * The contents control. This is how navigation is reached below the pill's
+ * breakpoint, and on any width for everything the pill does not list.
+ */
+.navMenu{
+ display:inline-flex;
+ align-items:center;
+ gap:var(--s3);
+ background:var(--glass);
+ backdrop-filter:var(--blur);
+ -webkit-backdrop-filter:var(--blur);
+ border:1px solid var(--glass-line);
+ border-radius:var(--r);
+ color:var(--ink);
+ font-family:var(--font);
+ font-size:var(--t-small);
+ font-weight:500;
+ padding:var(--s2) var(--s4);
+ min-height:2.5rem;
+ cursor:pointer;
+ transition:background var(--m-click) var(--ease-out-expo);
+}
+.navMenu:hover{background:var(--on-image-line)}
+.navMenuKey{
+ font-family:var(--font);
+ font-size:var(--t-micro);
+ color:var(--ink-3);
+ border:1px solid var(--hairline-2);
+ border-radius:var(--r);
+ padding:0 .4em;
+}
+@media (max-width:520px){.navMenuLabel,.navMenuKey{display:none}}
+
+/* ================================================================ stand == */
+
+.stand{
+ min-height:100dvh;
+ padding-bottom:var(--dock);
+ background:var(--ground);
+}
+
+/*
+ * Working routes clear the floating nav; the hero does not, because the whole
+ * point of the nav floating is that a full-bleed image runs under it.
+ */
+.sheet{
+ width:100%;
+ margin-inline:auto;
+ padding:calc(var(--nav) + var(--s7)) var(--s7) var(--s9);
+ display:flex;
+ flex-direction:column;
+ gap:var(--s7);
+ min-width:0;
+ background:var(--ground);
+}
+.sheet.reading{max-width:var(--measure)}
+.sheet.wide{max-width:var(--measure-wide)}
+.sheet:has(.spotHero){padding:0;max-width:none}
+
+/* ================================================================= dock == */
+
+/*
+ * Two zones: the instrument, then everywhere else you can go. The transport
+ * sizes to its own controls instead of spanning the bar, which leaves the rest
+ * of the width for the section dock.
+ */
+.dock{
+ position:fixed;
+ inset:auto 0 0 0;
+ z-index:90;
+ display:flex;
+ align-items:center;
+ background:color-mix(in oklab,var(--ground-2) 72%,transparent);
+ backdrop-filter:var(--blur);
+ -webkit-backdrop-filter:var(--blur);
+ border-top:1px solid var(--hairline);
+}
+.dock .transport{
+ position:static;
+ flex:0 1 auto;
+ min-width:0;
+ height:var(--dock);
+ padding:0 var(--s5);
+ background:transparent;
+ border-top:0;
+ box-shadow:none;
+}
+
+/* ============================================================== headings = */
+
+/*
+ * The two-voice heading is the signature, so an <em> inside a page title is
+ * the Playfair italic clause and everything around it is Inter, tight. A
+ * screen that supplies one plain string still gets the sans, set hard.
+ */
+.osScreen h1,[data-page-heading],.display{
+ font-family:var(--font);
+ font-weight:400;
+ font-size:var(--t-h1);
+ letter-spacing:var(--track-sans);
+ line-height:1;
+ color:var(--ink);
+ margin:0;
+ text-transform:none;
+ max-width:22ch;
+}
+.osScreen h1 em,[data-page-heading] em,.display em{
+ font-family:var(--font-accent);
+ font-style:italic;
+ font-weight:400;
+ letter-spacing:var(--track-serif);
+}
+.osScreen h2{
+ font-family:var(--font);
+ font-weight:500;
+ font-size:var(--t-h2);
+ letter-spacing:var(--track-sans);
+ line-height:1.05;
+ color:var(--ink);
+}
+.osScreen h3,.osScreen h4{
+ font-family:var(--font);
+ font-weight:500;
+ font-size:var(--t-h3);
+ letter-spacing:var(--track);
+ color:var(--ink);
+}
+.osScreen p,.lead{max-width:var(--measure-text);color:var(--ink-2)}
+.lead{font-size:var(--t-lead)}
+
+/* ============================================================= sections == */
+
+/*
+ * A section is separated by space and a hairline, never by a box. The panes in
+ * this design float over imagery; a stack of bordered cards on a flat ground
+ * is precisely the thing it is not.
+ */
+.osScreen>section,.osScreen>article,.sheet>section,.sheet>article{
+ background:none;
+ border:0;
+ border-radius:0;
+ box-shadow:none;
+ padding-block:var(--s7) var(--s6);
+}
+.osScreen>section+section,.osScreen>article+article,
+.osScreen>section+article,.osScreen>article+section{
+ border-top:1px solid var(--hairline);
+}
+
+/* ============================================================ responsive = */
+
+@media (max-width:900px){
+ .sheet{padding:calc(var(--nav) + var(--s5)) var(--s5) var(--s8)}
+}
+@media (max-width:700px){
+ .sheet{padding:calc(var(--nav) + var(--s4)) var(--s4) var(--s8)}
+ :root{--dock:3.75rem}
+ .heroNoteRight{gap:var(--s3)}
+}
+@media (max-height:520px) and (orientation:landscape){
+ :root{--dock:3.25rem;--nav:3.25rem}
+ .heroHead{top:8%}
+}
+
+html,body{overflow-x:hidden;max-width:100%}

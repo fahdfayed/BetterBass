@@ -126,7 +126,6 @@ export default function TabStudio(){
  return (
   <>
    <header className="lede-block">
-    <span className="label">Tab studio</span>
     <h1 className="h2" data-page-heading tabIndex={-1}>Your own tabs</h1>
     <p className="lead">Paste plain tab, open a Guitar Pro file, or write an exercise, then play it back at any tempo.</p>
    </header>

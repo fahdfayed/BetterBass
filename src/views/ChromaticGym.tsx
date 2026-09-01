@@ -61,7 +61,6 @@ export default function ChromaticGym(){
  return (
   <div className="osScreen chromaticGym">
    <div className="screenIntro">
-    <span>Chromatic gym</span>
     <h1 data-page-heading tabIndex={-1}>Every approach, every chord tone, every key.</h1>
     <p>
      A chromatic device is a way of arriving at a note, not a tune, so these are

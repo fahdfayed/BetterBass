@@ -28,7 +28,6 @@ export default function TodaySession({plan,freedom,onStart}:Props){
      <button className="mega" onClick={onStart}>Start practice <b>→</b></button>
     </div>
     <div className="weakness">
-     <span>Primary bottleneck</span>
      <h2>Dorian → Mixolydian recognition</h2>
      <div><b>67%</b><i><em style={{width:"67%"}}/></i></div>
      <ul>
@@ -56,7 +55,6 @@ export default function TodaySession({plan,freedom,onStart}:Props){
 
    <div className="freedomMini">
     <div>
-     <span>Freedom score</span>
      <h3>Tension-aware player</h3>
      <p>Next threshold: free improviser</p>
     </div>

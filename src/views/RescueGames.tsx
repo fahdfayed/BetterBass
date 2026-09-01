@@ -46,7 +46,6 @@ export default function RescueGames({root,heard,listening,connecting,onListen,au
  return (
   <div className="osScreen">
    <div className="screenIntro">
-    <span>Play it to pass it</span>
     <h1 data-page-heading tabIndex={-1}>Eight games. All answered on the bass.</h1>
     <p>
      Each one asks for something specific, listens for it, and keeps score. There are

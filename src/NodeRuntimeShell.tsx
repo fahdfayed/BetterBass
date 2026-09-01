@@ -90,6 +90,6 @@ export default function NodeRuntimeShell({children}:{children:ReactNode}){
   return()=>{disposed=true;window.clearInterval(timer);window.clearTimeout(debounce);window.removeEventListener(LEARNING_STATE_EVENT,schedule);window.removeEventListener("pagehide",flush);document.removeEventListener("visibilitychange",onVisibility)};
  },[apiBase,id,ready]);
 
- if(!ready)return <main className="nodeBoot" aria-live="polite"><i/><span>Node · express</span><h1>Loading your Bass Lab…</h1><p>Restoring this learner’s course, practice and performance state.</p></main>;
+ if(!ready)return <main className="nodeBoot" aria-live="polite"><i/><h1>Loading your Bass Lab…</h1><p>Restoring this learner’s course, practice and performance state.</p></main>;
  return <><div className={`nodeRuntimeStatus ${status}`} role="status" aria-live="polite"><i/><span>Node api</span><b>{status==="connecting"?"Connecting":status==="saving"?"Saving":status==="offline"?"Local fallback":"Synced"}</b></div>{children}</>;
 }

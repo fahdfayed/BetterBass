@@ -99,7 +99,7 @@
 
 /* A value that has just changed gets one pulse, so a score moving is noticed
    without the reader having to be watching that corner of the screen. */
-.tick{animation:tickPop 420ms var(--ease-spring) both}
+.tick{animation:tickPop 420ms var(--ease) both}
 @keyframes tickPop{
  0%{transform:scale(1)}
  40%{transform:scale(1.14)}

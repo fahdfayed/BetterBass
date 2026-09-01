@@ -1,0 +1,517 @@
+/**
+ * The harmony fretboard, as the workstation's central instrument.
+ *
+ * It was the sixth section of a vertical stack: you scrolled past an
+ * introduction, a progression builder, a chord panel, a scale panel and a row
+ * of filters before reaching the neck. On a product whose whole claim is that
+ * the neck answers "what does this note do here", the neck was below the fold.
+ *
+ * Nothing is rewritten to fix that. The sections are placed into a grid by
+ * name, so every handler, every piece of state and every data flow is
+ * untouched: the neck takes the top of the work column, the controls that act
+ * on it sit directly beneath, and the panels that describe the current harmony
+ * move into a context column on the right where they can be read without
+ * leaving the instrument.
+ */
+
+/* ============================================================== layout == */
+
+/*
+ * One column, at every width.
+ *
+ * This used to be a neck beside a 20rem context column, dropping to a single
+ * column only under 1180px. That column was the last surviving sidebar in the
+ * app, and it was costing the instrument more than it was worth: on a 1440
+ * screen the neck was squeezed to 960px against a board that needs 1006px, so
+ * the fretboard, the one thing on this screen the player actually aims at,
+ * arrived clipped and horizontally scrolling on a display with room to spare.
+ *
+ * The arrangement below the breakpoint was already the right one. It is now
+ * the only one: neck first at full width, then what the current chord wants as
+ * a band underneath, then the progression builder.
+ */
+.harmonyFretboard{
+ display:flex;
+ flex-direction:column;
+ gap:var(--s6);
+}
+.harmonyFretboard>.hfIntro{grid-column:1/-1;padding-block:0 var(--s3)}
+.harmonyFretboard>.hfIntro p{max-width:var(--measure-text);color:var(--bone-3)}
+
+/* Each column flows on its own, so a tall panel on one side cannot push the
+   other side down the page. */
+.hfWork,.hfContext{display:flex;flex-direction:column;gap:var(--s6);min-width:0}
+
+/*
+ * The context column is one bolted plate with grooves between its sections,
+ * not four stacked cards. It follows the player down the page, because the
+ * whole point of it is being readable without leaving the neck.
+ */
+.hfContext{
+ background:var(--face-2);
+ border-radius:var(--r);
+ box-shadow:var(--depth-panel);
+ padding:var(--s5);
+ gap:0;
+ /*
+  * Not sticky and not scrolling on its own. A panel that follows the player
+  * down the page made sense beside the neck; under it, it is simply the next
+  * thing on the page, and a nested scroller inside a scrolling page is a trap
+  * for anyone using a wheel or a trackpad.
+  */
+}
+.hfContext>section{padding-block:var(--s5)}
+.hfContext>section:first-child{padding-top:0}
+.hfContext>section+section{
+ border-top:2px solid transparent;
+ border-image:linear-gradient(var(--groove) 0 1px,var(--groove-lip) 1px 2px) 1;
+}
+
+/* ================================================================ neck == */
+
+/*
+ * The neck is milled into the plate: a well, with the fretboard drawn inside
+ * it. The wrap scrolls horizontally on narrow screens rather than shrinking
+ * the frets, because a neck at half scale is not playable and not readable.
+ */
+.hfBoardWrap{
+ background:var(--well);
+ border-radius:var(--r-well);
+ box-shadow:var(--depth-well);
+ padding:var(--s4);
+ overflow-x:auto;
+ overscroll-behavior-x:contain;
+}
+.hfBoardWrap::-webkit-scrollbar{height:8px}
+
+/* Fret numbers read as engraved into the top edge of the board. */
+.hfFretNumbers{
+ display:grid;
+ align-items:center;
+ padding-bottom:var(--s2);
+}
+.hfFretNumbers>b,.hfFretNumbers>span{
+ font-family:var(--font-mono);
+ font-size:var(--t-micro);
+ font-variant-numeric:tabular-nums;
+ color:var(--bone-4);
+ text-align:center;
+}
+.hfFretNumbers>b{text-align:left;font-family:var(--font-display);letter-spacing:var(--track-legend);text-transform:uppercase}
+/* The inlay positions carry a real dot, the way a neck does. */
+.hfFretNumbers>span.marked{color:var(--bone-2)}
+.hfFretNumbers>span.marked i{
+ display:block;width:5px;height:5px;border-radius:50%;
+ background:var(--bone-4);margin:3px auto 0;
+}
+.hfFretNumbers>span:not(.marked) i{display:block;height:8px}
+
+/* A string row. The name sits on the nut; the frets run right from it. */
+.hfString{
+ display:grid;
+ align-items:stretch;
+ border-top:1px solid var(--groove);
+}
+.hfString>b{
+ display:flex;flex-direction:column;justify-content:center;
+ font-family:var(--font-mono);
+ font-size:var(--t-small);
+ color:var(--bone-2);
+ padding-right:var(--s3);
+}
+.hfString>b small{
+ font-family:var(--font-display);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-legend);
+ text-transform:uppercase;
+ color:var(--bone-4);
+}
+/*
+ * String gauge. The low E is a visibly heavier line than the G, which is the
+ * cheapest possible cue that this is an instrument and not a table, and it
+ * costs one gradient per row.
+ */
+.hfString.string-0{--gauge:1px}
+.hfString.string-1{--gauge:1.5px}
+.hfString.string-2{--gauge:2px}
+.hfString.string-3{--gauge:2.5px}
+
+/* ============================================================ note pad == */
+
+/*
+ * Every fret is a pad seated in the neck. Role is carried by fill, outline and
+ * shape together, never by colour alone: a player who cannot separate the
+ * green from the orange still has an unmistakably different pad.
+ */
+.hfString button{
+ position:relative;
+ min-height:2.75rem;
+ display:grid;
+ place-items:center;
+ gap:0;
+ border:0;
+ border-left:1px solid var(--groove);
+ border-radius:0;
+ background:none;
+ color:var(--bone-4);
+ cursor:pointer;
+ transition:background var(--m-click) var(--ease-snap),
+            color var(--m-click) var(--ease-snap),
+            box-shadow var(--m-click) var(--ease-snap),
+            transform var(--m-click) var(--ease-snap);
+}
+/* The string itself, drawn through the pad. */
+.hfString button>i{
+ position:absolute;left:0;right:0;top:50%;
+ height:var(--gauge,1.5px);
+ transform:translateY(-50%);
+ background:linear-gradient(var(--steel),var(--bone-4));
+ opacity:.32;
+ pointer-events:none;
+}
+.hfString button>b{
+ font-family:var(--font-mono);
+ font-size:var(--t-small);
+ font-variant-numeric:tabular-nums;
+ line-height:1;
+ z-index:1;
+}
+.hfString button>small{
+ font-family:var(--font-mono);
+ font-size:var(--t-micro);
+ color:var(--bone-4);
+ line-height:1;
+ margin-top:2px;
+ z-index:1;
+}
+.hfString button:hover{background:var(--groove-lip);color:var(--bone-2)}
+
+/* Hidden by the current filter: still present, still an anchor, not shouting. */
+.hfString button.hidden>b,.hfString button.hidden>small{opacity:.14}
+
+/* -- roles ------------------------------------------------------------- */
+/*
+ * Five distinguishable treatments, not eleven. Rank collapses into: the
+ * target, the notes that state the change, the notes that belong, the notes
+ * merely available, and the notes outside. Shape and outline carry as much of
+ * that as colour does.
+ */
+.hfString button.role-root>b,
+.hfString button.role-bass>b{color:var(--oxide-ink);font-weight:700}
+.hfString button.role-root::after{
+ content:"";position:absolute;inset:15% 10%;
+ border-radius:var(--r);
+ box-shadow:inset 0 0 0 1.5px var(--oxide);
+ pointer-events:none;
+}
+.hfString button.role-guide>b{color:var(--signal);font-weight:600}
+.hfString button.role-guide::after{
+ content:"";position:absolute;inset:18% 14%;
+ border-radius:50%;
+ box-shadow:inset 0 0 0 1.5px var(--signal-dim);
+ pointer-events:none;
+}
+.hfString button.role-chord>b,
+.hfString button.role-specified>b,
+.hfString button.role-written>b{color:var(--bone)}
+.hfString button.role-colour>b,
+.hfString button.role-voice>b{color:var(--tobacco-ink)}
+.hfString button.role-available>b,
+.hfString button.role-context>b{color:var(--bone-3)}
+/* Outside and approach are dashed: a different texture, not just a hue. */
+.hfString button.role-outside>b,
+.hfString button.role-approach>b{color:var(--alert-ink)}
+.hfString button.role-outside::after,
+.hfString button.role-approach::after{
+ content:"";position:absolute;inset:18% 14%;
+ border:1px dashed color-mix(in oklab,var(--alert) 55%,transparent);
+ border-radius:var(--r);
+ pointer-events:none;
+}
+
+/* -- states ------------------------------------------------------------ */
+
+/* Selected by the player: pressed into the neck. */
+.hfString button.picked{
+ background:var(--oxide-wash);
+ box-shadow:var(--depth-press);
+}
+.hfString button.picked>b{color:var(--oxide-ink)}
+
+/*
+ * Where the line has to arrive next.
+ *
+ * A ring, because that is what a player draws around a note they have to hit.
+ * It was a 2px rounded rectangle, which was the milled corner of the panel
+ * world and belongs to a different material; on a chart the mark is an ellipse
+ * drawn by hand. The gap inside it is the neck's own stock, so the ring reads
+ * as drawn on the page rather than cut out of it.
+ */
+.hfString button.destination::before{
+ content:"";position:absolute;inset:8% 4%;
+ border-radius:var(--r-lamp);
+ box-shadow:inset 0 0 0 1px var(--ink-blue),inset 0 0 0 3px var(--stock-2);
+ pointer-events:none;
+}
+
+/*
+ * Under the finger right now. This is the one moment the interface is allowed
+ * to light up: the pad presses in and the lamp comes on, once, in 120ms. It
+ * does not pulse afterwards, because a note that keeps flashing while you hold
+ * it is telling you something has changed when nothing has.
+ */
+.hfString button.under{
+ background:var(--signal-wash);
+ box-shadow:var(--depth-press),0 0 8px -2px var(--signal);
+ transform:translateY(1px);
+}
+.hfString button.under>b{color:var(--signal);font-weight:700}
+
+/* The same pitch class elsewhere on the neck, so the player can see the note
+   they are playing in its other positions without those competing. */
+.hfString button.sounding>b{color:var(--signal)}
+.hfString button.sounding::after{
+ content:"";position:absolute;inset:30% 28%;
+ border-radius:50%;
+ box-shadow:inset 0 0 0 1px var(--signal-dim);
+ pointer-events:none;
+}
+
+/* ================================================== progression timeline = */
+
+/*
+ * The chord rail is the sequence in time. Each chord is a step with its own
+ * lamp; the one currently sounding is lit and pressed in.
+ */
+.hfChordRail{
+ display:flex;
+ gap:var(--s2);
+ flex-wrap:wrap;
+ padding:var(--s3);
+ background:var(--well);
+ border-radius:var(--r-well);
+ box-shadow:var(--depth-well);
+}
+.hfChordRail button{
+ font-family:var(--font-mono);
+ font-size:var(--t-small);
+ font-variant-numeric:tabular-nums;
+ color:var(--bone-3);
+ background:var(--face-2);
+ border:0;
+ border-radius:var(--r);
+ padding:var(--s3) var(--s4);
+ min-height:2.25rem;
+ cursor:pointer;
+ box-shadow:var(--depth-panel);
+ transition:color var(--m-click) var(--ease-snap),
+            background var(--m-click) var(--ease-snap),
+            box-shadow var(--m-click) var(--ease-snap),
+            transform var(--m-click) var(--ease-snap);
+}
+.hfChordRail button:hover{color:var(--bone)}
+.hfChordRail button:active{transform:translateY(1px)}
+.hfChordRail button.active,.hfChordRail button[aria-current="true"]{
+ color:var(--oxide-ink);
+ background:var(--well);
+ box-shadow:var(--depth-press),inset 0 -2px 0 var(--oxide);
+}
+
+/* ============================================================== legend == */
+
+/*
+ * The legend is a printed key, so it is set as one: a strip of pads matching
+ * the neck exactly, with the role name beside each.
+ */
+.hfLegend{
+ display:flex;flex-wrap:wrap;gap:var(--s3) var(--s5);
+ padding:var(--s3) 0 0;
+}
+.hfLegend>*{
+ display:flex;align-items:center;gap:var(--s2);
+ font-family:var(--font-display);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-legend);
+ text-transform:uppercase;
+ color:var(--bone-3);
+}
+
+/* ========================================================= live readout == */
+
+/* What the microphone is hearing, in a well, beside the neck it refers to. */
+.hfLive{
+ background:var(--well);
+ border-radius:var(--r-well);
+ box-shadow:var(--depth-well);
+ padding:var(--s4);
+}
+.hfLiveNote{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.hfNeedle{transition:transform var(--m-sweep) var(--ease-mech)}
+.hfDot{width:8px;height:8px;border-radius:50%;background:var(--signal);box-shadow:var(--bezel-lit)}
+
+/* ========================================================== responsive == */
+
+/*
+ * Below the context column's own width there is no room for two columns, so
+ * the panels drop under the neck. The neck stays first in every arrangement:
+ * that is the whole point of the recomposition and it does not get traded
+ * away for a tidier stack.
+ */
+/*
+ * The neck stays first in every arrangement: that is the whole point of the
+ * recomposition and it does not get traded away for a tidier stack. What the
+ * current chord wants comes next, because it is more urgent than editing the
+ * sequence, and the progression builder follows.
+ */
+.hfWork{display:contents}
+.hfWork>.hfNeckSection{order:-2}
+.hfContext{order:-1}
+
+@media (max-width:768px){
+ .hfBoardWrap{
+  padding:var(--s3);
+  /* The neck runs to both edges of the phone, since every pixel of width is
+     another fret the player can actually see. */
+  margin-inline:calc(var(--s4) * -1);
+  border-radius:0;
+ }
+ .hfString button{min-height:44px}
+ .harmonyFretboard{gap:var(--s5)}
+}
+
+/* Landscape on a phone is the neck's best case: give it the screen. */
+@media (max-height:520px) and (orientation:landscape){
+ .harmonyFretboard>.hfIntro{display:none}
+ .hfBoardWrap{padding:var(--s2)}
+ .hfString button{min-height:38px}
+}
+
+/* ================================================ context column fixes == */
+
+/*
+ * The panels in here were built to sit at full page width and carry their own
+ * multi-column grids. In a 20rem column those grids collapse to ribbons of two
+ * words per line, so inside the context panel everything is a single column
+ * and the type steps down to match the measure.
+ */
+.hfContext :is(header,div,ul,ol,dl,article,footer){
+ grid-template-columns:1fr!important;
+ grid-template-areas:none!important;
+}
+/* Flex rows of prose collapse too; rows of switches are handled below. */
+.hfContext :is(header,section)>div{min-width:0}
+.hfContext *{min-width:0;max-width:100%}
+/* Nothing in a 20rem column may set its own floor wider than the column. */
+.hfContext :is(section,div,article,table,pre){min-width:0!important}
+.hfContext h2,.hfContext h3{
+ font-size:var(--t-h3);
+ line-height:1.15;
+ text-wrap:balance;
+}
+.hfContext p,.hfContext li,.hfContext small{
+ font-size:var(--t-small);
+ line-height:1.45;
+ color:var(--bone-3);
+ max-width:none;
+}
+.hfContext header p{margin-top:var(--s2)}
+
+/* Controls in the context panel are switches, and they wrap rather than
+   shrinking below a readable width. */
+.hfContext button{
+ font-family:var(--font-display);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-legend);
+ text-transform:uppercase;
+ color:var(--bone-3);
+ background:var(--face);
+ border:0;border-radius:var(--r);
+ padding:var(--s2) var(--s3);
+ min-height:2rem;
+ cursor:pointer;
+ box-shadow:var(--depth-panel);
+ transition:color var(--m-click) var(--ease-snap),
+            background var(--m-click) var(--ease-snap),
+            box-shadow var(--m-click) var(--ease-snap);
+}
+.hfContext button:hover{color:var(--bone)}
+.hfContext button.active,.hfContext button[aria-pressed="true"]{
+ color:var(--oxide-ink);
+ background:var(--well);
+ box-shadow:var(--depth-press);
+}
+.hfMapControls>div{display:flex;flex-wrap:wrap;gap:var(--s2);margin-bottom:var(--s4)}
+.hfMapControls>div>span{
+ flex:0 0 100%;
+ font-family:var(--font-display);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-legend);
+ text-transform:uppercase;
+ color:var(--bone-4);
+}
+
+/* ===================================================== pad label sizing == */
+
+/*
+ * A role name is up to seven characters and the cell is 54px wide, so at body
+ * size the label was being cut mid-word: WRITTEN arrived as WRITTI. The label
+ * steps down and is allowed to compress slightly rather than being clipped,
+ * because a truncated role name is worse than a small one.
+ */
+.hfString button>b{
+ font-size:var(--t-micro);
+ letter-spacing:-.02em;
+ max-width:100%;
+ overflow:hidden;
+ text-overflow:clip;
+ white-space:nowrap;
+}
+/*
+ * Note names and intervals are one or two characters, so those modes keep the
+ * readable size; only the role names need the smaller one.
+ */
+.hfBoard[data-labels="note"] .hfString button>b,
+.hfBoard[data-labels="degree"] .hfString button>b{
+ font-size:var(--t-small);
+ letter-spacing:var(--track-mono);
+}
+
+/*
+ * A row of badges that fits at full page width sums past a 20rem column while
+ * every individual badge still measures narrower than it. Nothing in here
+ * refuses to wrap.
+ */
+.hfContext :is(section,header,div,ul,footer){flex-wrap:wrap}
+.hfContext{overflow-x:hidden}
+
+/*
+ * The board carries an inline min-width, because a fret narrower than about
+ * 64px stops being readable. A flex or grid child defaults to min-width:auto,
+ * so that inner minimum propagated all the way up and made the whole neck
+ * section 1000px wide inside a 390px phone: the page did not scroll, it just
+ * clipped every heading and paragraph beside the board.
+ *
+ * Floored at zero, the section fits the screen and the board scrolls inside
+ * its own wrap, which is what the wrap was for.
+ */
+.harmonyFretboard>*,
+.hfWork>*,
+.hfContext>*,
+.hfNeckSection,
+.hfNeckSection>*{min-width:0}
+
+/*
+ * Cross-axis sizing in a column flex container.
+ *
+ * min-width:0 frees an item to shrink along the MAIN axis. In a column
+ * container the main axis is vertical, so it does nothing for width, and an
+ * item whose content is wider than the container simply overflows it: the neck
+ * section measured 1000px inside a 368px column with min-width already at
+ * zero, which is why flooring it twice changed nothing.
+ *
+ * An explicit width is what actually binds the cross axis, and then the board
+ * scrolls inside its own wrap the way it was always meant to.
+ */
+.harmonyFretboard>*,
+.hfWork>*,
+.hfContext>*{width:100%;max-width:100%;box-sizing:border-box}

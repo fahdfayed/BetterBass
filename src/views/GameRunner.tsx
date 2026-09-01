@@ -171,7 +171,6 @@ export default function GameRunner({
   <section className="runner">
    <header>
     <div>
-     <span className="label">{drill.title.toUpperCase()}</span>
      <h2>{drill.desc}</h2>
     </div>
     <button type="button" className="action action-quiet" onClick={onExit}>← All games</button>

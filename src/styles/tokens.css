@@ -1,209 +1,389 @@
 /**
- * Design tokens.
+ * Design tokens: Lithos.
  *
- * The language is deliberately spare: one ground plane, no raised surfaces, no
- * borders around content. Separation comes from space and hairlines. Type
- * carries the hierarchy. Colour is reserved almost entirely for the one thing
- * you should touch next — everything else is greyscale, so that one thing is
- * unmissable without shouting.
+ * Dark, full bleed, photographic. White type over imagery, one orange that
+ * means act, and glass where the interface floats over the picture rather than
+ * sitting beside it.
  *
- * There is no card. If a block needs to feel distinct it gets air, a rule, or a
- * change of type size. Not a box.
+ * Three things carry the look and all three are pinned by the brief.
+ *
+ * Type is two voices in one line. Playfair Display italic and Inter alternate
+ * inside a single heading, which is the signature move: the first line is set,
+ * the second is stated. Tracking is negative everywhere and hard negative on
+ * display, because that tightness is most of why it reads expensive.
+ *
+ * Everything interactive is a pill. This reverses the square rule of the world
+ * it replaces, deliberately and completely: a half-measure between the two
+ * would read as neither.
+ *
+ * And colour is almost absent. One orange, spent on the thing to press and
+ * nothing else. Every other distinction is white at four opacities, which is
+ * what lets the imagery stay the loudest thing on the screen.
  */
 
 :root{
- /* ---- ground ---------------------------------------------------------- */
- /*
-  * Near-black with a blue cast, and warm cream on top of it. That inversion is
-  * the point: a warm cream *page* is the house style of every assistant and
-  * every documentation site, and it is what this interface was mistaken for.
-  * The same warmth as ink on a cold ground reads as nothing of the sort.
+ /* ---- ground -----------------------------------------------------------
+  * True black behind the imagery, because the brief sets the section to black
+  * and a photograph over near-black looks washed. The lifted values are white
+  * at low alpha rather than lighter greys: glass over a picture, not a panel
+  * beside one.
   */
- --bg:#0c0c12;
- --bg-lift:#141420;      /* a section that lifts off the ground */
- --bg-raised:#1c1c2a;    /* menus, palettes, anything genuinely on top */
+ --ground:#000000;
+ --ground-2:#0a0a0b;
+ --lift:rgba(255,255,255,.06);
+ --lift-2:rgba(255,255,255,.10);
+ --glass:rgba(255,255,255,.20);
+ --glass-line:rgba(255,255,255,.30);
 
- /* Hairlines, in the ink's own colour so they stay warm too. */
- --rule:rgba(237,232,224,.09);
- --rule-strong:rgba(237,232,224,.22);
+ /* ---- ink --------------------------------------------------------------
+  * White and three steps down. The brief works almost entirely in white at
+  * eighty percent, so that is the body value rather than an afterthought.
+  */
+ --ink:#ffffff;
+ --ink-2:rgba(255,255,255,.80);
+ --ink-3:rgba(255,255,255,.62);
+ --ink-4:rgba(255,255,255,.46);
+ --hairline:rgba(255,255,255,.14);
+ --hairline-2:rgba(255,255,255,.26);
 
- --wash:rgba(237,232,224,.035);
+ /* ---- the one colour ---------------------------------------------------
+  * Oxide orange. It fills the thing to press, marks the current position, and
+  * appears nowhere else. Its wash lights an area; it never coats a surface.
+  */
+ --flame:#e8702a;
+ --flame-deep:#d2611f;
+ --flame-wash:rgba(232,112,42,.14);
+ --flame-glow:rgba(232,112,42,.30);
+ --on-flame:#1a0d04;
 
- /* ---- text ------------------------------------------------------------ */
- /* Four steps of emphasis. Most of the interface lives in the middle two. */
- --ink:#ede8e0;
- --ink-2:rgba(237,232,224,.80);
- --ink-3:rgba(237,232,224,.66);
- --ink-4:rgba(237,232,224,.54);
-
- /* ---- accent ---------------------------------------------------------- */
  /*
-  * Two roles, because a colour that reads well as text does not always read
-  * well as a fill, and the reverse. --accent is the mark: label text, the
-  * current position, a hairline. --accent-fill is the filled area: the primary
-  * action, the logo, an active toggle. --accent-ink is what sits on that fill.
+  * Ink that sits on a photograph.
   *
-  * On the dark ground both roles are the same violet. On cream they part
-  * company, which is the whole reason the split exists.
+  * The hero's copy is over an image, not over the theme's ground, so it stays
+  * white in both themes: flipping it with the theme would put dark type on a
+  * dark photo. Separate names because they answer to the picture rather than
+  * to the palette, and the scrim is what makes either survive an image whose
+  * bright half lands under the headline.
   */
+ --on-image:#ffffff;
+ --on-image-2:rgba(255,255,255,.80);
+ --on-image-3:rgba(255,255,255,.62);
+ --on-image-glass:rgba(255,255,255,.20);
+ --on-image-line:rgba(255,255,255,.30);
+ --scrim:linear-gradient(to bottom,
+  rgba(0,0,0,.55) 0%,rgba(0,0,0,.15) 38%,rgba(0,0,0,.25) 62%,rgba(0,0,0,.75) 100%);
+
+ /* The white pill, the second action shape in the system. */
+ --chalk:#ffffff;
+ --on-chalk:#111827;
+ --chalk-hover:#f3f4f6;
+
+ /* ---- type -------------------------------------------------------------
+  * Inter sets the interface; Playfair italic is the accent voice and is only
+  * ever italic, because that is the only cut this design uses.
+  */
+ --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+ --font-mono:"Inter",ui-monospace,SFMono-Regular,Menlo,monospace;
+
  /*
-  * Terracotta, warm enough to belong with the ink and saturated enough to be
-  * the only colour on a screen that means "do this next". Mint is the second
-  * voice and is reserved for something that has been completed or is correct.
+  * The accent voice, and it is opt-in.
+  *
+  * --font-display stays Inter on purpose. Fourteen stylesheets ask for it by
+  * name for every heading and half the labels, so pointing it at Playfair put
+  * the whole interface in italic serif: lesson titles, counters, the word
+  * PASSED. The italic is an accent, and an accent applied to everything is
+  * just a typeface.
+  *
+  * Playfair is reached only through --font-accent, which is spent on the
+  * wordmark, one line of a two-voice heading, and an <em> inside a title.
   */
- --accent:#ea9374;
- --accent-mark-ink:#0c0c12;
- --accent-fill:#ea9374;
- --accent-ink:#0c0c12;
- --accent-wash:rgba(234,147,116,.13);
+ --font-display:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+ --font-accent:"Playfair Display",Georgia,serif;
 
- /* State, used sparingly and never decoratively. */
- --done:#00d4a0;
- --warn:#e8b563;
- --wrong:#ff6b6b;
-
- /* Semantic hues for badges and curriculum markers. Restated per theme so each
-    stays legible against its own ground. */
- --hue-1:#6ee7b7;  /* green   */
- --hue-2:#7dd3fc;  /* navy    */
- --hue-3:#fda4af;  /* burgundy*/
- --hue-4:#c4b5fd;  /* purple  */
-
- /* Data marks. */
- --mark-now:#f4f4f6;
- --mark-past:rgba(255,255,255,.16);
-
- /* ---- type ------------------------------------------------------------ */
- /*
-  * Three voices. Bebas is a condensed grotesque with only capitals, which is
-  * why headlines set in it can be enormous without taking the room a normal
-  * face would — the size is the emphasis and the weight never changes. Inter
-  * sets everything meant to be read. JetBrains carries labels and anything
-  * musical that has to line up in a column.
-  */
- --font-display:"Bricolage Grotesque","Geist","Segoe UI",system-ui,sans-serif;
- --font:"Geist",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
- --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-
- /* A wide scale: labels are genuinely small, statements are genuinely large.
-    The gap between them is what replaces boxes as the grouping signal. */
- /* Never below 11px, whatever the root scale is doing: at the phone root a
-    plain .6875rem lands at 10.3px, which is where legibility gives out. */
  --t-micro:max(11px,.6875rem);
- --t-small:clamp(.8125rem,.79rem + .1vw,.875rem); /* secondary prose */
- --t-body:clamp(.9375rem,.9rem + .18vw,1rem);
- --t-lead:clamp(1.0625rem,1rem + .35vw,1.25rem);
- --t-h3:clamp(1.125rem,1.05rem + .4vw,1.375rem);
- --t-h2:clamp(1.375rem,1.25rem + .6vw,1.875rem);
- --t-h1:clamp(1.75rem,1.4rem + 1.8vw,3.25rem);
- --t-display:clamp(2.25rem,1.6rem + 3.2vw,5.5rem);
+ --t-small:clamp(.8125rem,.79rem + .1vw,.875rem);
+ --t-body:clamp(.875rem,.85rem + .15vw,.9375rem);
+ --t-lead:clamp(1rem,.95rem + .3vw,1.125rem);
+ --t-h3:clamp(1.125rem,1.05rem + .45vw,1.5rem);
+ --t-h2:clamp(1.5rem,1.2rem + 1.4vw,2.5rem);
+ --t-h1:clamp(2.25rem,1.5rem + 3.4vw,4.5rem);
+ --t-display:clamp(3rem,1.6rem + 6vw,8rem);
 
  /*
-  * A label is tracked just far enough to separate it from body prose, and no
-  * further. It used to be set at .22em in capitals, which is the width that
-  * makes every small piece of text read as a section marker whether or not it
-  * is one, and there were four hundred of them.
+  * The tracking is the design. Negative on everything, harder on display, and
+  * hardest on the Inter line of a two-voice heading: the brief sets the serif
+  * line looser than the sans line beneath it, and that difference is what
+  * makes the pair sit as one block instead of two.
   */
- --track-label:.04em;
- --track-display:-.02em;
+ --track:-.02em;
+ --track-serif:-.05em;
+ --track-sans:-.08em;
+ --track-label:.01em;
 
- /* ---- space ----------------------------------------------------------- */
- /* Generous by default. Air is the primary grouping device. */
- --s1:.25rem; --s2:.5rem; --s3:.75rem; --s4:1rem;
- --s5:1.5rem; --s6:2rem;  --s7:3rem;  --s8:4.5rem;
- --s9:7rem;   --s10:10rem;
+ /* ---- space ------------------------------------------------------------ */
+ --s1:.25rem; --s2:.5rem;  --s3:.75rem; --s4:1rem;
+ --s5:1.25rem;--s6:1.75rem;--s7:2.5rem; --s8:3.5rem;
+ --s9:5rem;   --s10:7rem;
 
- /* ---- shape ----------------------------------------------------------- */
- /* Square. Nothing here is a soft object, and a corner radius is the fastest
-    way to make an interface look like every other one. */
- --r-control:0;
- --r-pill:0;
-
- /* ---- motion ---------------------------------------------------------- */
+ /* ---- shape ------------------------------------------------------------
+  * Everything interactive is a pill. Surfaces take a large soft corner, which
+  * is what a floating glass panel wants.
+  */
+ /* ============================================================ notation = */
  /*
-  * One curve does nearly all of it: a hard exponential out, which leaves fast
-  * and settles slowly. Movement is unhurried — three to five tenths, not one —
-  * because at that length the eye follows the thing rather than noticing that
-  * something moved.
+  * Four registers, one attribute. `data-register` on any container picks both
+  * the symbol face and the handwriting face for everything inside it, so a
+  * chord chart and a theory reference can sit on the same page in different
+  * hands without either one leaking into the chrome.
+  *
+  * Every symbol stack ends in Bravura, which is the face actually present. A
+  * register whose first choice is missing loses its handwriting and keeps its
+  * engraving, rather than falling through to a text font that would draw a
+  * quarter note as a lowercase box.
   */
- --t-fast:180ms;
- --t-base:380ms;
- --t-slow:600ms;
- --t-page:520ms;
- --ease:cubic-bezier(.16,1,.3,1);
- --ease-out:cubic-bezier(.16,1,.3,1);
- --ease-spring:cubic-bezier(.34,1.4,.64,1);
- /* Colour moves on its own, shorter clock: a hover should feel immediate even
-    when whatever it is attached to is still travelling. */
- --t-colour:300ms;
+ --smufl:"Bravura";
+ --script:var(--font);
+ --font-notation:var(--smufl);
 
- /* ---- layout ---------------------------------------------------------- */
- --rail:4.5rem;          /* collapsed navigation */
- --rail-open:15.5rem;    /* expanded on hover or focus */
- --header:3.5rem;
- /* Two measures, because two kinds of page.
-    A reading column wants roughly seventy characters and should stop growing.
-    A workspace — the lesson split, the fretboard, the labs — is a tool, and on
-    a large screen it should use the screen rather than centring a narrow column
-    inside it and leaving the panes too tight to set text in. */
- --measure:76rem;        /* reading pages: home, library, map, progress */
- --measure-wide:118rem;  /* workspaces: lesson, labs, maqam, slap, coach */
- --measure-text:38rem;   /* prose only, kept short enough to read */
+ --r:9999px;
+ --r-surface:1.5rem;
+ --r-well:1rem;
+ --r-lamp:50%;
+
+ /* ---- depth ------------------------------------------------------------
+  * The design floats things over a photograph, so depth is glass and glow
+  * rather than a shadow cast onto a flat ground.
+  */
+ --depth-panel:none;
+ --depth-well:inset 0 0 0 1px var(--hairline);
+ --depth-press:inset 0 0 0 1px var(--hairline-2);
+ --depth-go:0 10px 30px -10px var(--flame-glow);
+ --depth-chassis:0 -1px 0 var(--hairline);
+ --depth-float:0 20px 60px -30px rgba(0,0,0,.9);
+ --blur:blur(12px);
+ --bezel:inset 0 0 0 1px var(--hairline);
+ --bezel-lit:inset 0 0 0 1px var(--hairline-2);
+ --edge-lit:var(--hairline);
+ --edge-dark:transparent;
+ --groove:var(--hairline);
+ --groove-lip:transparent;
+
+ /* ---- motion -----------------------------------------------------------
+  * One curve, the brief's: a hard exponential out. Entrances are long because
+  * they arrive out of blur; state changes are short because a control should
+  * answer immediately.
+  */
+ --ease-out-expo:cubic-bezier(.16,1,.3,1);
+ --ease-mech:cubic-bezier(.16,1,.3,1);
+ --ease-snap:cubic-bezier(.16,1,.3,1);
+ --m-click:180ms;
+ --m-panel:300ms;
+ --m-sweep:500ms;
+ --m-enter:1100ms;
+ --m-zoom:1800ms;
+
+ /* ---- layout ----------------------------------------------------------- */
+ --nav:4.5rem;
+ --dock:4.25rem;
+ --head:auto;
+ --spotlight:260px;
+ --measure:74rem;
+ --measure-wide:120rem;
+ --measure-text:34rem;
+}
+
+/* ============================================================== daylight ==
+ *
+ * The brief's root wrapper is white while its hero is black, so the design
+ * already contains both grounds. This is the lighter half, kept because a
+ * reader's stored theme should not be discarded to tidy a name.
+ *
+ * The orange barely moves. It is the one fixed point in the design, and it
+ * only darkens enough to carry as a letterform on white.
+ */
+:root[data-theme="cream"]{
+ --ground:#ffffff;
+ --ground-2:#f7f7f8;
+ --lift:rgba(17,24,39,.045);
+ --lift-2:rgba(17,24,39,.075);
+ --glass:rgba(17,24,39,.06);
+ --glass-line:rgba(17,24,39,.12);
+
+ --ink:#111827;
+ --ink-2:rgba(17,24,39,.78);
+ --ink-3:rgba(17,24,39,.60);
+ --ink-4:rgba(17,24,39,.61);
+ --hairline:rgba(17,24,39,.12);
+ --hairline-2:rgba(17,24,39,.24);
+
+ --flame:#c05411;
+ --on-flame:#ffffff;
+ --flame-deep:#a1450e;
+ --flame-wash:rgba(192,84,17,.10);
+ --flame-glow:rgba(192,84,17,.22);
+
+ --chalk:#111827;
+ --on-chalk:#ffffff;
+ --chalk-hover:#1f2937;
+
+ --depth-float:0 20px 60px -30px rgba(17,24,39,.35);
 }
 
 @media (prefers-reduced-motion:reduce){
- :root{--t-fast:1ms;--t-base:1ms;--t-slow:1ms;--t-page:1ms}
+ :root{--m-click:1ms;--m-panel:1ms;--m-sweep:1ms;--m-enter:1ms;--m-zoom:1ms}
  *,*::before,*::after{
   animation-duration:1ms !important;
   animation-iteration-count:1 !important;
   transition-duration:1ms !important;
+  scroll-behavior:auto !important;
  }
 }
 
-
-/* ============================================================== light ==== */
-
-/**
- * The same language with the ground turned over: warm paper, cold ink, and the
- * terracotta taken down until it carries on a light surface.
+/* ========================================================== migration ====
  *
- * Still reached by data-theme="cream" because that value is already stored in
- * every reader's browser, and resetting somebody's chosen theme to tidy a name
- * is a poor trade.
+ * The names the rest of the codebase already asks for, pointed at Lithos.
+ *
+ * Seven hundred and fifty-eight var() references across fourteen stylesheets
+ * predate this world. Aliasing is what lets all of them inherit it without
+ * being rewritten, and because var() resolves where it is used, one block
+ * serves both grounds.
  */
-:root[data-theme="cream"]{
- --bg:#f8f5f0;
- --bg-lift:#efeae2;
- --bg-raised:#ffffff;
- --wash:rgba(20,20,32,.04);
- --rule:rgba(20,20,32,.12);
- --rule-strong:rgba(20,20,32,.26);
+:root{
+ --bg:var(--ground);
+ --bg-lift:var(--lift);
+ --bg-raised:var(--lift-2);
+ --wash:var(--lift);
+ --text:var(--ink);
+ --muted:var(--ink-3);
+ --rule:var(--hairline);
+ --rule-strong:var(--hairline-2);
+ --rule-heavy:var(--ink);
+ --line:var(--hairline);
 
- --ink:#141420;
- --ink-2:#3a3a48;
- --ink-3:#54545f;
- --ink-4:#5f5f6a;
+ /* the paper world's names */
+ --stock:var(--ground);
+ --stock-2:var(--ground-2);
+ --stock-3:var(--lift);
+ --stock-edge:var(--ground);
+ --toner:var(--ink);
+ --toner-2:var(--ink-2);
+ --toner-3:var(--ink-3);
+ --toner-4:var(--ink-4);
+ --pencil:var(--flame);
+ --pencil-wash:var(--flame-wash);
+ --ink-blue:var(--ink-2);
+ --ink-blue-wash:var(--lift-2);
+ --graphite:var(--ink-3);
 
- /* #ea9374 is a fill on the dark ground and unreadable as a letterform here,
-    so the mark darkens and the fill keeps the hue with dark ink on it. */
- /* Deep enough to survive sitting on its own wash: an active control puts this
-    colour on --accent-wash, which tints the ground toward the text and cost
-    the lighter #a84420 its margin — 4.42:1 where this clears 5.5. */
- --accent:#9d3f1d;
- --accent-mark-ink:#ffffff;
- --accent-fill:#ea9374;
- --accent-ink:#141420;
- --accent-wash:rgba(157,63,29,.10);
+ /* the panel world's names */
+ --face:var(--ground);
+ --face-2:var(--ground-2);
+ --well:var(--lift);
+ --rack:var(--ground);
+ --bone:var(--ink);
+ --bone-2:var(--ink-2);
+ --bone-3:var(--ink-3);
+ --bone-4:var(--ink-4);
+ --oxide:var(--flame);
+ --oxide-ink:var(--flame);
+ --oxide-dim:var(--ink-4);
+ --oxide-wash:var(--flame-wash);
+ --signal:var(--ink);
+ --signal-dim:var(--ink-4);
+ --signal-wash:var(--lift-2);
+ --alert:var(--flame);
+ --alert-ink:var(--flame);
+ --alert-dim:var(--ink-4);
+ --alert-wash:var(--flame-wash);
+ --steel:var(--ink-3);
+ --tobacco:var(--ink-3);
+ --tobacco-ink:var(--ink-3);
+ --olive:var(--ink-4);
+ --olive-ink:var(--ink-4);
 
- --done:#00785c;
- --warn:#8a5a00;
- --wrong:#b3261e;
+ --accent:var(--flame);
+ --accent-fill:var(--flame);
+ --accent-ink:var(--on-flame);
+ --accent-mark-ink:var(--on-flame);
+ --on-accent:var(--on-flame);
+ --accent-wash:var(--flame-wash);
 
- --hue-1:#00785c;
- --hue-2:#1a4b8c;
- --hue-3:#8c1d3f;
- --hue-4:#5a3d8c;
+ --done:var(--ink);
+ --played:var(--ink);
+ --warn:var(--ink-3);
+ --wrong:var(--flame);
 
- --mark-now:#141420;
- --mark-past:rgba(20,20,32,.16);
+ /*
+  * Fretboard note roles under a one-colour design.
+  *
+  * The brief pins a single accent, so inventing a second and third hue for the
+  * neck would break the thing that makes this look expensive. Role is carried
+  * by white at four opacities plus fill and outline, and the orange is spent
+  * only on where the hand is going.
+  */
+ --hf-root:var(--flame);
+ --hf-bass:var(--flame);
+ --hf-guide:var(--ink);
+ --hf-chord:var(--ink-2);
+ --hf-written:var(--ink-2);
+ --hf-colour:var(--ink-3);
+ --hf-voice:var(--ink-3);
+ --hf-available:var(--ink-4);
+ --hf-context:var(--ink-4);
+ --hf-approach:var(--ink-3);
+ --hf-outside:var(--flame);
+
+ --violet:var(--flame);
+ --lime:var(--ink);
+ --acid:var(--ink);
+ --amber:var(--flame);
+ --orange:var(--flame);
+ --red:var(--flame);
+ --blue:var(--ink-2);
+ --cyan:var(--ink-2);
+ --mq-gold:var(--flame);
+ --mq-gold2:var(--ink-3);
+ --mq-teal:var(--ink-2);
+ --mq-line:var(--hairline);
+ --coach-panel:var(--lift);
+ --quest-fill-top:var(--lift-2);
+ --quest-fill-bottom:var(--ground);
+
+ --sans:var(--font);
+ --mono:var(--font);
+ --t-tiny:var(--t-micro);
+ --track-legend:var(--track-label);
+ --track-display:var(--track-serif);
+ --track-mono:var(--track);
+ --r-control:var(--r);
+ --r-pill:var(--r);
+ --radius-lg:var(--r-surface);
+
+ --t-fast:var(--m-click);
+ --t-colour:var(--m-click);
+ --t-base:var(--m-panel);
+ --t-page:var(--m-panel);
+ --t-slow:var(--m-sweep);
+ --ease:var(--ease-out-expo);
+ --ease-out:var(--ease-out-expo);
+ --ease-spring:var(--ease-out-expo);
+
+ --header:var(--nav);
+ --transport:var(--dock);
+ --context:20rem;
+ --rail:0rem;
+ --rail-open:0rem;
 }
+
+/* =============================================================== registers = */
+
+/*
+ * Engraved score: lessons, exercises, formal notation.
+ * Classical publishing: theory and reference, where the text voice is editorial.
+ * Real Book: jam rooms, improv missions, chord charts.
+ * Rehearsal chart: challenges, chord symbols, margin annotations.
+ */
+[data-register="engraved"]{--smufl:"Leland","Bravura";--script:var(--font)}
+[data-register="classical"]{--smufl:"Bravura";--script:var(--font-accent)}
+[data-register="jazz"]{--smufl:"Petaluma","Bravura";--script:"Petaluma Script",var(--font)}
+[data-register="chart"]{--smufl:"MuseJazz","Bravura";--script:"MuseJazz Text",var(--font)}

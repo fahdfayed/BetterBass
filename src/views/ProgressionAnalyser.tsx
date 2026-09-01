@@ -54,7 +54,6 @@ export default function ProgressionAnalyser({audition,onSendToFretboard}:Props){
  return (
   <div className="osScreen progressionReader">
    <div className="screenIntro">
-    <span>Read a progression</span>
     <h1 data-page-heading tabIndex={-1}>What is it doing?</h1>
     <p>Type a progression and it will say which key it is in, what each chord is called there, and what job it holds. Bars, arrows or plain spaces all work.</p>
    </div>
@@ -88,7 +87,6 @@ export default function ProgressionAnalyser({audition,onSendToFretboard}:Props){
     <>
      <section className="progVerdict">
       <div>
-       <span className="label">Reads as</span>
        <h2>{key.modal?key.modal.name:key.name}</h2>
        {key.modal
         ?<p>The {key.modal.collection} collection, heard from {PITCH_NAMES[key.centre]}. The notes belong to {key.modal.collection}; home does not.</p>

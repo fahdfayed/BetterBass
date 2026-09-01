@@ -78,7 +78,6 @@ export default function LiveSession(
 
    <div className="liveGrid">
     <article className="mission">
-     <span>Mission 02 / 06</span>
      <h2>Make it sound {modeName}.</h2>
      <p>Four bars. Do not run the scale. Feature <b>{N[color]}</b> at least twice, including once on a strong beat. Maintain your groove.</p>
      <div className="barTrack"><i className="done"/><i className="done"/><i/><i/></div>

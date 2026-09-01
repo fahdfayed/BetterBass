@@ -1,0 +1,149 @@
+/**
+ * The tilting panel on the landing screen.
+ *
+ * The reference ships a dark grey box with a four pixel mid-grey border, a
+ * thirty pixel radius and a six layer drop shadow. None of that survives here,
+ * because this design has one cast shadow in the whole system and it belongs to
+ * the flame pill. Depth is a lift and a hairline, so the panel is the same
+ * material as every other surface: it simply arrives at an angle.
+ */
+
+.tiltScroll{
+ padding-block:var(--s9) var(--s8);
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ gap:var(--s6);
+}
+
+.tiltHead{
+ max-width:34ch;
+ text-align:center;
+ /* Written by the frame loop; the loop is the easing. */
+ will-change:transform;
+}
+.tiltHead h2{
+ font-family:var(--font);
+ font-weight:400;
+ font-size:var(--t-h2);
+ letter-spacing:var(--track-sans);
+ line-height:1.05;
+ color:var(--ink);
+ margin:0;
+}
+.tiltHead h2 em{
+ font-family:var(--font-accent);
+ font-style:italic;
+ letter-spacing:var(--track-serif);
+}
+.tiltHead p{
+ margin:var(--s4) auto 0;
+ color:var(--ink-2);
+ font-size:var(--t-small);
+ max-width:46ch;
+}
+
+/*
+ * The perspective lives on the stage, not the card. Setting it on the element
+ * being rotated makes the rotation flat and the whole effect read as a squash
+ * rather than a tilt.
+ */
+.tiltStage{
+ width:100%;
+ max-width:var(--measure-wide);
+ perspective:1400px;
+}
+
+.tiltCard{
+ /*
+  * Hinged along the bottom edge, so the panel pitches up toward the reader
+  * rather than pivoting about its middle.
+  */
+ transform-origin:50% 100%;
+ transform:rotateX(18deg) scale(1.04);
+ will-change:transform;
+ background:var(--lift);
+ border:1px solid var(--hairline-2);
+ border-radius:var(--r-surface);
+ padding:var(--s4);
+}
+.tiltCardInner{
+ background:var(--ground-2);
+ border:1px solid var(--hairline);
+ border-radius:var(--r-well);
+ overflow:hidden;
+ padding:var(--s6);
+}
+
+/*
+ * The rested state is the correct state. If the loop never runs, because the
+ * browser reports reduced motion or because scripting failed, the panel is
+ * simply flat and readable.
+ */
+@media (prefers-reduced-motion:reduce){
+ .tiltCard{transform:none}
+ .tiltHead{transform:none}
+}
+
+@media (max-width:700px){
+ .tiltScroll{padding-block:var(--s8) var(--s7)}
+ .tiltCard{padding:var(--s3)}
+ .tiltCardInner{padding:var(--s4)}
+}
+
+/* ======================================================== neck preview == */
+
+/*
+ * What the panel holds: a real neck, showing what this product actually claims.
+ * Every other note diagram answers "is this note allowed". This one answers
+ * "what does this note do here", which is the whole positioning, so the panel
+ * shows roles rather than a scale shape.
+ */
+.neckPreview{display:flex;flex-direction:column;gap:var(--s4)}
+.neckPreviewChord{
+ display:flex;align-items:baseline;gap:var(--s3);
+ font-family:var(--font);letter-spacing:var(--track);
+}
+.neckPreviewChord b{font-size:var(--t-h3);font-weight:500;color:var(--ink)}
+.neckPreviewChord span{font-size:var(--t-micro);color:var(--ink-3);
+ text-transform:uppercase;letter-spacing:var(--track-label)}
+
+.neckGrid{
+ display:grid;
+ grid-template-columns:auto repeat(6,minmax(0,1fr));
+ gap:1px;
+ background:var(--hairline);
+ border:1px solid var(--hairline);
+ border-radius:var(--r-well);
+ overflow:hidden;
+}
+.neckGrid>*{background:var(--ground-2);display:grid;place-items:center;min-height:2.75rem}
+.neckGrid .neckFretNo{
+ min-height:1.75rem;font-size:var(--t-micro);color:var(--ink-4);
+ font-variant-numeric:tabular-nums;
+}
+.neckGrid .neckOpen{
+ font-size:var(--t-micro);color:var(--ink-3);padding-inline:var(--s3);
+ letter-spacing:var(--track-label);
+}
+
+.neckDot{
+ width:1.9rem;height:1.9rem;border-radius:var(--r);
+ display:grid;place-items:center;
+ font-size:var(--t-micro);font-weight:600;letter-spacing:0;
+ border:1px solid transparent;
+}
+/* The flame marks the root, which is the use it already has on the real neck. */
+.neckDot[data-role="root"]{background:var(--flame);color:var(--on-flame)}
+.neckDot[data-role="guide"]{border-color:var(--ink);color:var(--ink)}
+.neckDot[data-role="chord"]{border-color:var(--hairline-2);color:var(--ink-2)}
+.neckDot[data-role="colour"]{border-color:var(--hairline-2);color:var(--ink-3)}
+
+.neckKey{
+ display:flex;flex-wrap:wrap;gap:var(--s3) var(--s5);
+ font-size:var(--t-micro);color:var(--ink-3);
+}
+.neckKey span{display:inline-flex;align-items:center;gap:var(--s2)}
+.neckKey i{width:.6rem;height:.6rem;border-radius:var(--r);border:1px solid currentColor}
+.neckKey i.is-root{background:var(--flame);border-color:var(--flame)}
+.neckKey i.is-guide{border-color:var(--ink)}

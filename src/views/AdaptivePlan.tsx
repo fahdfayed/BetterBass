@@ -86,7 +86,6 @@ export default function AdaptivePlan(
  return (
   <div className="osScreen">
    <div className="screenIntro">
-    <span>Phase 4 · personal curriculum engine</span>
     <h1 data-page-heading tabIndex={-1}>Train the player<br/>who showed up.</h1>
     <p>The curriculum preserves the manual’s 28-week spine, but today’s route is rebuilt from current evidence: recorded takes, neglected keys, mastery decay, recurring habits and jury scores.</p>
    </div>
@@ -98,7 +97,6 @@ export default function AdaptivePlan(
       {DIAGNOSTIC.map((_,i)=><i className={i<step?"done":i===step?"active":""} key={i}/>)}
      </div>
      <article>
-      <span>DOMAIN {step+1} / {DIAGNOSTIC.length} · {question.domain}</span>
       <h2>{question.ask}</h2>
       <p>{question.how}</p>
       <div className="diagChoices">
@@ -123,7 +121,6 @@ export default function AdaptivePlan(
        <p>Primary bottleneck: <b>{BOTTLENECKS[weakest]}</b>. This receives the largest block today.</p>
       </article>
       <article className="readiness">
-       <span>Player stage</span>
        <h2>{stage}</h2>
        <div><b>{Math.round(freedom.reduce((a,b)=>a+b,0)/AXES.length)}</b><small>Overall</small></div>
        <p>Scores are calculated from diagnostic evidence, take analysis and cross-key transfer, not hours practiced.</p>
@@ -156,7 +153,7 @@ export default function AdaptivePlan(
 
      <div className="matrixBlock">
       <header>
-       <div><span>12-KEY MATRIX</span><h2>The truth about “I know this.”</h2></div>
+       <div><h2>The truth about “I know this.”</h2></div>
        <p>Outside-control transfer is strongest in A, G and C. F♯, D♭ and A♭ are automatically weighted into the next seven sessions.</p>
       </header>
       <div className="adaptiveMatrix">
@@ -173,7 +170,6 @@ export default function AdaptivePlan(
 
      <div className="antiHabit">
       <div>
-       <span>GROOVE DNA → ANTI-HABIT</span>
        <h2>Break the patterns you hide inside.</h2>
        <p>71% of phrases start on beat 1 · 63% begin on root · 84% of fills ascend · 79% E/A string bias.</p>
       </div>

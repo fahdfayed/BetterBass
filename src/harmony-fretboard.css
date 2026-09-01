@@ -328,7 +328,7 @@
   margin-top: var(--s2);
   border: 0;
   background: transparent;
-  color: white;
+  color:var(--ink);
   font: var(--t-body) var(--mono);
 }
 .hfTimingControls input:disabled,

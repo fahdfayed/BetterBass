@@ -114,7 +114,6 @@ export default function ImprovisationLab(
  return (
   <div className="osScreen advancedScreen">
    <div className="screenIntro">
-    <span>Phase 5 · advanced improvisation laboratory</span>
     <h1 data-page-heading tabIndex={-1}>Design tension.<br/>Then survive it.</h1>
     <p>These laboratories turn advanced vocabulary into controlled musical behavior: preserve an idea, displace it, manage a budget, follow harmonic gravity and return on purpose.</p>
    </div>
@@ -129,7 +128,6 @@ export default function ImprovisationLab(
    {labMode==="motif"&&(
     <div className="labWorkspace">
      <article className="labBrief">
-      <span>CAPTURE → MUTATE → RESOLVE</span>
       <h2>One idea. Many lives.</h2>
       <p>The most recent four detected notes become your source motif. Preserve enough contour or rhythm that the listener recognizes it after transformation.</p>
       <div className="motifNotes">
@@ -161,7 +159,6 @@ export default function ImprovisationLab(
    {labMode==="slip"&&(
     <div className="labWorkspace">
      <article className="labBrief">
-      <span>Control time away</span>
       <h2>Side-slip machine.</h2>
       <p>Displace the entire home idea by semitone while its rhythmic identity remains intact. The longer the displacement, the stronger the return must be.</p>
       <div className="slipControls">
@@ -201,7 +198,6 @@ export default function ImprovisationLab(
    {labMode==="enclose"&&(
     <div className="labWorkspace">
      <article className="labBrief">
-      <span>Target first</span>
       <h2>Enclosure generator.</h2>
       <p>Choose the destination before the decoration. Every path below surrounds a structural chord tone and lands it on the strong beat.</p>
       <div className="targetPicker">
@@ -234,7 +230,6 @@ export default function ImprovisationLab(
    {labMode==="voice"&&(
     <div className="voiceLab">
      <article>
-      <span>Local gravity</span>
       <h2>Dm7 → G7 → Cmaj7</h2>
       <p>Build the destination skeleton first. Chromaticism is allowed only after the shortest meaningful paths are audible.</p>
      </article>
@@ -264,7 +259,6 @@ export default function ImprovisationLab(
    {labMode==="tension"&&(
     <div className="tensionLab">
      <article className="labBrief">
-      <span>Tension curve designer</span>
       <h2>Draw the story before you play it.</h2>
       <p>Click each bar to set harmonic intensity. Then record a take and compare the planned architecture with detected tension events.</p>
       <label className="budgetControl">Tension budget <b>{tensionBudget} POINTS</b>
@@ -301,7 +295,6 @@ export default function ImprovisationLab(
     return (
      <div className="diagnosisLab">
       <article>
-       <span>SHOULD I THINK MODALLY?</span>
        <h2>{situation.p}</h2>
        <p>Diagnose the harmonic situation before improvising. The right mental model changes what counts as home, movement and resolution.</p>
        <div>

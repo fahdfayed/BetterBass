@@ -1,3 +1,4 @@
+import {inTime} from "./conductor";
 import {useSyncExternalStore} from "react";
 import {flushSync} from "react-dom";
 
@@ -101,11 +102,18 @@ function withTransition(update:()=>void){
 export function navigate(path:string,{replace=false}={}){
  if(typeof window==="undefined")return;
  if(path===window.location.pathname+window.location.search)return;
- withTransition(()=>{
+ /*
+  * Land in time.
+  *
+  * While the transport runs, a route change waits for the next eighth rather
+  * than happening at the arbitrary instant a finger moved. Musicians do not
+  * change at random moments. Stopped, this is immediate and costs nothing.
+  */
+ inTime(()=>withTransition(()=>{
   if(replace)window.history.replaceState({},"",path);
   else window.history.pushState({},"",path);
   window.dispatchEvent(new Event(ROUTE_EVENT));
- });
+ }));
 }
 
 /** Navigate by view id, keeping call sites free of URL strings. */

@@ -81,7 +81,6 @@ export default function CourseLibrary({lessons,units,completed,current,onOpen}:P
   <>
    <header className="libHead rise">
     <div>
-     <span className="label">{lessons.length}-lesson curriculum</span>
      <h1 className="display" data-page-heading tabIndex={-1}>
       From scales to <span className="gradientText">free improvisation</span>.
      </h1>
@@ -142,7 +141,6 @@ export default function CourseLibrary({lessons,units,completed,current,onOpen}:P
          <header className="libUnitHead">
           <i aria-hidden="true">{unit.n}</i>
           <div>
-           <span className="label">Unit {unit.n} · Weeks {unit.weeks}</span>
            <h2>{unit.title}</h2>
            <p className="dim">{unit.subtitle}</p>
           </div>

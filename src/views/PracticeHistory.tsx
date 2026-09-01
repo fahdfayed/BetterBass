@@ -46,7 +46,6 @@ export default function PracticeHistory({onRecord}:{onRecord:()=>void}){
 
  if(!sessions.length)return (
   <section className="takeHistory">
-   <span>Recorded evidence</span>
    <h2>Nothing recorded yet.</h2>
    <p>The listening engine scores every take it hears. Timing against the grid, how much stayed inside, and whether what left came back. Record one and it appears here.</p>
    <button type="button" className="action action-primary" onClick={onRecord}>Open the listening engine</button>
@@ -59,7 +58,6 @@ export default function PracticeHistory({onRecord}:{onRecord:()=>void}){
 
  return (
   <section className="takeHistory">
-   <span>Recorded evidence</span>
    <h2>{sessions.length===1?"One take":`${sessions.length} takes`}, scored as you played them.</h2>
 
    <div className="takeHeadline">

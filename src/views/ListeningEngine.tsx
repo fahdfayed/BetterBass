@@ -85,14 +85,12 @@ export default function ListeningEngine({
  return (
   <div className="osScreen">
    <div className="screenIntro">
-    <span>Phase 2 · shared audio intelligence</span>
     <h1 data-page-heading tabIndex={-1}>Listening engine.</h1>
     <p>Calibrate once, then every exercise receives the same musical event stream: onset, release, duration, dynamics, beat placement, function, tension and resolution.</p>
    </div>
 
    <div className="calibration">
     <article>
-     <span>Input calibration</span>
      <h2>{calibrated?"Ready to listen.":"Set your clean input."}</h2>
      <p>{calibrated
       ? `Noise floor learned at ${Math.round(noise*1000)} units. Detection range: E1-G5. Use a clean DI signal for best monophonic tracking.`
@@ -130,7 +128,6 @@ export default function ListeningEngine({
      ))}
     </div>
     <article className="exerciseStage">
-     <span>REFERENCE EXERCISE {exercise+1}/{EXERCISES.length}</span>
      <h2>{selected.title}</h2>
      <p>{selected.brief}</p>
      <div className="takeControls">
@@ -189,7 +186,6 @@ export default function ListeningEngine({
      </div>
 
      <div className="coachVerdict">
-      <span>Coach verdict</span>
       <h3>{coach.heading}</h3>
       <p>{coach.advice}</p>
      </div>

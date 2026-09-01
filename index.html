@@ -3,7 +3,7 @@
  <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0c0c12" />
+  <meta name="theme-color" content="#000000" />
   <meta name="description" content="A complete interactive bass-learning environment for harmony, time, fretboard command, Arabic maqamat, slap technique and guided practice." />
   <!--
    The faces are declared in src/styles/fonts.css and served from this origin.
@@ -11,16 +11,51 @@
    contexts and left the page silently wearing system-ui: the layout is
    identical when that happens, so it is easy to ship and never notice.
 
-   Bricolage carries the headlines, Geist the prose, and JetBrains anything
-   musical that has to line up in a column.
+   Inter carries everything, set hard and tracked tight. Playfair appears only
+   as an italic, for the second voice in a heading.
+
+   Preload only the two that render above the fold. The pair preloaded here
+   before this belonged to a design two worlds ago, and no @font-face declared
+   either of them, so the browser fetched both on every load and could not use
+   them for anything.
   -->
   <link rel="preload" as="font" type="font/woff2" crossorigin
-        href="/fonts/geist.woff2" />
+        href="/fonts/inter-400.woff2" />
   <link rel="preload" as="font" type="font/woff2" crossorigin
-        href="/fonts/bricolage-grotesque.woff2" />
+        href="/fonts/playfair-display-400-italic.woff2" />
   <title>Outside In: Bass Lab</title>
  </head>
  <body>
+  <!--
+   DIRECTION CONTRACT
+
+   THESIS: The instrument photographed, not diagrammed. It refuses the flat
+   working surface it replaces and the equipment panel before that: this is a
+   dark full-bleed image with the interface floating over it, and the loudest
+   thing on any screen is the picture rather than the chrome.
+
+   OWN-WORLD: True black under photography. White at four opacities carrying
+   every distinction, and one oxide orange spent on the single thing to press.
+   Inter set hard negative, with Playfair Display italic as an accent voice
+   used on a wordmark and one line of a two-voice heading and nowhere else.
+   Everything interactive is a pill. Glass and blur only where the interface
+   floats over the picture, never on a scrolling surface.
+
+   STORY: A player sees the neck lit, moves the light across it, and starts.
+
+   FIRST VIEWPORT: A full-height photograph with a cursor-following spotlight
+   revealing a second image inside a soft circle. The headline centred at
+   fourteen percent, set in two voices; a note bottom left; the lesson and its
+   orange call to action bottom right. Nav floating clear of the top edge with
+   the sections centred in a glass pill.
+
+   FORM: Lithos. Pinned by the brief, which supersedes the roll: the deal
+   assigned Dubplate (seed 73d2fa7c, index 4) and a pinned direction beats it.
+
+   FINISH: unreviewed and undocumented is unfinished; this build ends with the
+   finish review, the verdict, DESIGN.md, and every shipping raster carrying
+   its provenance.
+  -->
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
  </body>

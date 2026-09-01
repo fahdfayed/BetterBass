@@ -55,7 +55,7 @@ p{text-wrap:pretty}
    9.2px, which is smaller than anything on this site is allowed to be. */
 small{font-size:max(var(--t-micro),.85em)}
 
-:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:2px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:var(--r)}
 :focus:not(:focus-visible){outline:none}
 ::selection{background:var(--accent-wash);color:var(--ink)}
 
@@ -192,7 +192,7 @@ small{font-size:max(var(--t-micro),.85em)}
  width:100%;
  padding:var(--s4) var(--s3);
  border-top:1px solid var(--rule);
- transition:background var(--t-base) var(--ease),padding-left var(--t-base) var(--ease-out);
+ transition:background var(--t-base) var(--ease),transform var(--t-base) var(--ease-out);
 }
 .rows>*:last-child .row,.rows .row:last-child{border-bottom:1px solid var(--rule)}
 .row:hover:not([disabled]){background:var(--wash);padding-left:var(--s5)}
@@ -221,7 +221,10 @@ small{font-size:max(var(--t-micro),.85em)}
  height:100%;
  background:var(--accent);
  transform-origin:left;
- transition:width var(--t-slow) var(--ease-out);
+ width:100%;
+ /* Scaled, not widened. The origin was already here; only the animated
+    property was wrong, and width relayouts the bar on every frame. */
+ transition:transform var(--t-slow) var(--ease-out);
 }
 
 /* ---- utility ------------------------------------------------------------- */
@@ -242,7 +245,7 @@ small{font-size:max(var(--t-micro),.85em)}
 .formula{display:inline-flex;flex-direction:column;gap:var(--s2);align-items:flex-start}
 .formulaLine{display:inline}
 .degree{
- font:inherit;color:inherit;padding:0 .12em;border-radius:2px;
+ font:inherit;color:inherit;padding:0 .12em;border-radius:var(--r);
  border-bottom:1px dotted var(--ink-4);
  transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
 }
@@ -364,26 +367,9 @@ a,button{
  to{opacity:1;transform:none}
 }
 
-/*
- * A band of text that never stops moving, which is the one piece of decoration
- * this language allows itself. Two of them running opposite ways at slightly
- * different speeds reads as motion rather than as a loop.
- */
-@keyframes marqueeLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@keyframes marqueeRight{from{transform:translateX(-50%)}to{transform:translateX(0)}}
-.marquee{overflow:hidden;white-space:nowrap;border-block:1px solid var(--rule);padding:var(--s3) 0}
-.marquee>span{display:inline-block;animation:marqueeLeft 30s linear infinite}
-.marquee.back>span{animation-name:marqueeRight;animation-duration:35s}
-.marquee b{font-family:var(--font-display);font-size:var(--t-h2);letter-spacing:var(--track-display);color:var(--ink-4);padding:0 var(--s5)}
-.marquee b.lit{color:var(--accent)}
-
-/* A hint that there is more below, breathing rather than blinking. */
-@keyframes pulseArrow{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:.8;transform:translateY(8px)}}
-.scrollHint{animation:pulseArrow 2s ease-in-out infinite;color:var(--ink-3)}
 
 @media (prefers-reduced-motion:reduce){
  /* reveal.ts declines to run at all here, so nothing is hidden; this is only
     for the decorative loops, which are declared unconditionally. */
- .marquee>span,.scrollHint{animation:none}
  .reveal-ready .revealed>*{animation:none}
 }

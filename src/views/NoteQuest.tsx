@@ -63,7 +63,6 @@ export default function NoteQuest({
  return (
   <div className="osScreen noteQuest">
    <div className="screenIntro">
-    <span>The long way home</span>
     <h1 data-page-heading tabIndex={-1}>{quest.rootName} {quest.modeName}, one note at a time.</h1>
     <p>{quest.premise}</p>
    </div>
@@ -105,7 +104,6 @@ export default function NoteQuest({
    <section className={`questTarget ${wrong?"missed":""} ${done?"arrived":""}`} aria-live="polite">
     {done?(
      <>
-      <span className="label">Arrived</span>
       <h2>Home, from the other side.</h2>
       <p>
        You walked {quest.steps.length - 1} steps of {quest.rootName} {quest.modeName}
@@ -116,7 +114,6 @@ export default function NoteQuest({
      </>
     ):spent?(
      <>
-      <span className="label">Lost the road</span>
       <h2>Three wrong turns. Start from home.</h2>
       <p>
        The path has not changed and neither has the key. Sound each target before you
@@ -126,9 +123,6 @@ export default function NoteQuest({
      </>
     ):(
      <>
-      <span className="label">
-       {at===0?"Set off from":"Next"} · STEP {at+1} OF {quest.steps.length}
-      </span>
       <h2>{target.place}</h2>
       <div className="questNote">
        <b className="mono">{PITCH_NAMES[targetPitch]}</b>

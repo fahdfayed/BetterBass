@@ -84,6 +84,25 @@ export function sectionFor(view:string){
  return undefined;
 }
 
+/**
+ * Everywhere else you can go from where you are, for the dock at the foot of a
+ * section.
+ *
+ * A hub with tools under it answers with the hub and its tools, so that the
+ * fretboard map lists the other ten labs and the library itself. Anything else
+ * answers with the rest of its group, which is what "the other ones like this"
+ * means for a screen that has no children of its own. A group of one answers
+ * with nothing, and the dock does not render.
+ */
+export function peersFor(view:string):{label:string;items:Destination[]}|undefined{
+ const section=sectionFor(view);
+ if(!section)return undefined;
+ if(section.children?.length)return {label:section.label,items:[section,...section.children]};
+ const group=NAV.find(candidate=>candidate.items.includes(section));
+ if(!group||group.items.length<2)return undefined;
+ return {label:group.label,items:group.items};
+}
+
 export function breadcrumbFor(view:string){
  const section=sectionFor(view),here=destinationFor(view);
  const trail:Array<{label:string;path:string}>=[];
