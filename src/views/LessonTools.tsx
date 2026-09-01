@@ -117,12 +117,18 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
     <button className={bridge.playing?"action action-quiet":"action-primary"} onClick={bridge.startRuntime}>
      {bridge.playing?"■ Stop band":"▶ Start band"}
     </button>
-    <div className="barBeat mono" aria-live="off">
+    <div className="barBeat" aria-live="off" aria-label={`Bar ${bridge.bar}, beat ${bridge.beat}`}>
+     <span className="barNumber">bar</span>
      <b>{String(bridge.bar).padStart(2,"0")}</b><span>:</span><b>{bridge.beat}</b>
     </div>
    </div>
    <label className="tempoControl">
-    <span className="label">Tempo <b className="mono">{bridge.bpm} BPM</b></span>
+    <span className="label">Tempo</span>
+    <span className="tempoMark" aria-label={`${bridge.bpm} beats per minute`}>
+     <span className="tempoNote" aria-hidden="true">♩</span>
+     <span className="tempoEq" aria-hidden="true">=</span>
+     <b>{bridge.bpm}</b>
+    </span>
     <input type="range" min="50" max="140" value={bridge.bpm} onChange={event=>bridge.setBpm(+event.target.value)}/>
    </label>
    <p className="dim">The band follows the lesson's key and mode. Change tempo while it runs.</p>
