@@ -6,35 +6,72 @@
  * manuscript-page theme.
  */
 
+:root{
+ --score-divider-line:color-mix(in oklab,var(--ink) 34%,transparent);
+ --score-divider-strong:color-mix(in oklab,var(--ink) 58%,transparent);
+ --score-system-height:calc((var(--staff) * 4) + var(--rastral));
+}
+
 /* ========================================================= staff systems = */
 
-/* Major blocks in the lesson read like systems on a chart: five quiet staff
-   lines, closed by a single barline. Dense tables and controls keep ordinary
-   hairlines so the notation metaphor remains semantic rather than decorative. */
-.lessonRead>div>*+*{
+/*
+ * Five actual staff lines, with a closing barline at the right edge. This is
+ * deliberately more visible than the old generic hairline: a musical section
+ * boundary should read immediately as notation, not as faint UI chrome.
+ */
+.lessonRead>.stageIntro + *,
+.lessonRead>div:not(.stageIntro)>*+*,
+.band + .band{
  position:relative;
- padding-top:calc(var(--s6) + (var(--staff) * 4) + var(--rastral));
+ padding-top:calc(var(--s6) + var(--score-system-height));
  border-top:0;
 }
-.lessonRead>div>*+*::before{
+
+.lessonRead>.stageIntro + *::before,
+.lessonRead>div:not(.stageIntro)>*+*::before,
+.band + .band::before{
  content:"";
  position:absolute;
  top:0;
  left:0;
  right:0;
- height:calc((var(--staff) * 4) + var(--rastral));
+ height:var(--score-system-height);
  background:
-  linear-gradient(to right,transparent calc(100% - var(--rastral)),var(--hairline-2) calc(100% - var(--rastral))),
+  linear-gradient(to right,transparent calc(100% - 2px),var(--score-divider-strong) calc(100% - 2px)),
   repeating-linear-gradient(
    to bottom,
-   var(--hairline-2) 0 var(--rastral),
+   var(--score-divider-line) 0 var(--rastral),
    transparent var(--rastral) var(--staff)
   );
  pointer-events:none;
- opacity:.78;
 }
 
 /* ====================================================== rehearsal stages = */
+
+.stageTabs{
+ position:relative;
+ border-bottom:0;
+ /* Reserve a real system below the stage names instead of hiding it under the
+    old one-pixel tab rule. */
+ padding-bottom:calc(var(--s3) + var(--score-system-height));
+ background:
+  linear-gradient(to right,transparent calc(100% - 2px),var(--score-divider-strong) calc(100% - 2px)),
+  repeating-linear-gradient(
+   to bottom,
+   var(--score-divider-line) 0 var(--rastral),
+   transparent var(--rastral) var(--staff)
+  );
+ background-size:100% var(--score-system-height),100% var(--score-system-height);
+ background-repeat:no-repeat;
+ background-position:left bottom;
+}
+
+.stageTab{
+ padding-bottom:var(--s2);
+}
+.stageTab.active::after{
+ bottom:calc(var(--score-system-height) + var(--s3) - 1px);
+}
 
 .stageTab .rehearsalMark{
  min-width:calc(var(--staff) * 3.25);
@@ -53,6 +90,31 @@
  margin-bottom:calc(var(--staff) * .5);
 }
 .stageScoreHeading .label{color:var(--ink-3)}
+
+/* ========================================================= final barline = */
+
+/* The move-on criterion is the end of the current rehearsal section, so it
+   receives a proper thin/thick final bar rather than another generic border. */
+.checkBar{
+ position:sticky;
+ border-top:0;
+ padding-top:calc(var(--s5) + 5px);
+}
+.checkBar::before{
+ content:"";
+ position:absolute;
+ top:0;
+ left:0;
+ right:0;
+ height:5px;
+ background:linear-gradient(
+  to bottom,
+  var(--score-divider-line) 0 1px,
+  transparent 1px 3px,
+  var(--score-divider-strong) 3px 5px
+ );
+ pointer-events:none;
+}
 
 /* =========================================================== bar / tempo = */
 
@@ -110,9 +172,13 @@
 /* ============================================================ responsive = */
 
 @media (max-width:52rem){
- .lessonRead>div>*+*{
-  padding-top:calc(var(--s5) + (var(--staff) * 4) + var(--rastral));
+ :root{--staff:.42rem}
+ .lessonRead>.stageIntro + *,
+ .lessonRead>div:not(.stageIntro)>*+*,
+ .band + .band{
+  padding-top:calc(var(--s5) + var(--score-system-height));
  }
+ .stageTabs{padding-bottom:calc(var(--s2) + var(--score-system-height))}
  .stageTab .rehearsalMark{
   min-width:calc(var(--staff) * 3);
   height:calc(var(--staff) * 3);
