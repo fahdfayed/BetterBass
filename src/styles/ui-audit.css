@@ -159,11 +159,25 @@
 
 /* ================================================================ dock == */
 
-.dock{min-width:0;max-width:100vw;overflow:visible}
-.dock .transport{min-width:0;max-width:68vw}
+/* The fixed bottom strip is one horizontal scroller. Giving the transport a
+   viewport percentage and the destinations the remainder clipped the tempo or
+   input controls on phones. The whole strip scrolls instead, so every control
+   remains reachable and nothing has to disappear. */
+.dock{
+ min-width:0;
+ max-width:100vw;
+ overflow-x:auto;
+ overflow-y:visible;
+ overscroll-behavior-x:contain;
+ scrollbar-width:none;
+}
+.dock::-webkit-scrollbar{display:none}
+.dock .transport{flex:0 0 auto;min-width:max-content;max-width:none}
+.dockTabs{flex:0 0 auto;min-width:max-content}
 @media (max-width:52rem){
- .dock .transport{max-width:58vw;padding-inline:var(--s3)}
+ .dock .transport{padding-inline:var(--s3)}
  .dockTabs{padding-right:var(--s3)}
+ .tInputDetail{display:none}
 }
 
 /* =============================================================== home == */
