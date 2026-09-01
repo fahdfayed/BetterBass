@@ -58,6 +58,7 @@ import "./styles/intime.css";
 import "./styles/dock-tabs.css";
 import "./styles/container-scroll.css";
 import "./styles/score.css";
+import "./styles/score-integration.css";
 
 // Marks that scripting is available, so motion.css can hide reveal targets. If
 // this never runs the content stays visible rather than invisible.
