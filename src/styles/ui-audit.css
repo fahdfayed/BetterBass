@@ -173,7 +173,8 @@
 .productHero{
  position:relative;
  min-height:calc(100dvh - var(--nav));
- width:100%;
+ width:100vw;
+ margin-inline:calc(50% - 50vw);
  overflow:hidden;
  display:flex;
  align-items:center;
