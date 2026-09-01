@@ -1,0 +1,286 @@
+/**
+ * Cross-site UI audit corrections.
+ *
+ * This file deliberately loads after every legacy and Aurora stylesheet. It is
+ * not a second design system: it only resolves cascade collisions and layout
+ * assumptions found while auditing the live Aurora tree.
+ */
+
+/* =============================================================== shell == */
+
+/* Working pages were scrolling underneath fixed chrome. Keep the navigation in
+   normal flow and let it stick, so content never appears behind the wordmark or
+   centre navigation. */
+.navBar{
+ position:sticky;
+ top:0;
+ background:color-mix(in oklab,var(--ground) 88%,transparent);
+ border-bottom:1px solid var(--hairline);
+ backdrop-filter:var(--blur);
+ -webkit-backdrop-filter:var(--blur);
+}
+
+/* The nav now occupies its own height, so the sheet no longer needs to reserve
+   another nav-height of empty space. */
+.sheet{padding-top:var(--s7)}
+.sheet:has(.spotHero),.sheet:has(.productHero){padding-top:0}
+
+/* A five-link pill is too dense on small laptops. Contents and the dock already
+   provide complete navigation at these widths. */
+.navPill{display:none}
+@media (min-width:74rem){.navPill{display:flex}}
+
+/* The old photo-hero colour override was tied to whether a hero existed
+   anywhere on the page, not whether the nav was actually over it. With sticky,
+   opaque-enough chrome the nav always follows the active theme instead. */
+.stand:has(.spotHero) .navMark,
+.stand:has(.spotHero) .navMarkWord,
+.stand:has(.spotHero) .navMenu,
+.stand:has(.spotHero) .navPill button{color:var(--ink)}
+.stand:has(.spotHero) .navMenu{border-color:var(--glass-line)}
+.stand:has(.spotHero) .navMenuKey{color:var(--ink-3);border-color:var(--hairline-2)}
+
+[data-page-heading],.pacedBeat{scroll-margin-top:calc(var(--nav) + var(--s4))}
+
+/* ======================================================== legacy bridge == */
+
+/* legacy-views.css accidentally applied the maqam aside treatment to EVERY
+   aside in the application with !important. Reset it globally, then restore it
+   only where that historical treatment is actually intended. */
+.page aside{
+ border-left:0 !important;
+ padding-left:0 !important;
+}
+.maqamLab aside{
+ border-left:1px solid var(--rule) !important;
+ padding-left:var(--s5) !important;
+}
+
+/* The modern lesson workspace intentionally uses one vertical rule between its
+   two panes. It wins explicitly over the legacy reset above. */
+.page .lessonDo{
+ border-left:1px solid var(--rule) !important;
+ padding-left:var(--s7) !important;
+}
+.page .lessonRead aside{
+ border-left:0 !important;
+ padding-left:0 !important;
+}
+
+/* ============================================================== lesson == */
+
+/* These values used --header from the retired shell and did not reserve the
+   fixed instrument dock. The result was a sticky tool pane and completion bar
+   that could disappear behind chrome. */
+.lessonDo{
+ top:calc(var(--nav) + var(--s3));
+ max-height:calc(100dvh - var(--nav) - var(--dock) - var(--s7));
+}
+.checkBar{bottom:var(--dock)}
+
+/* The old course page put Learn into its own two-column page. Inside the new
+   half-width instruction pane that becomes a grid inside a grid. The workspace
+   already supplies the second pane, so Learn is a single reading column here. */
+.lessonRead .learnStage{
+ display:flex !important;
+ flex-direction:column;
+ gap:var(--s6);
+ grid-template-columns:none !important;
+}
+.lessonRead .learnStage>aside{
+ position:static !important;
+ top:auto !important;
+ width:auto !important;
+ max-width:none !important;
+}
+
+/* PacedReader had no composition of its own, so generic pill/button rules made
+   the Show all control become a large circular object and the three pieces
+   drift across the page. Give the reader one deliberate control row. */
+.lessonShell .pacedNext{
+ width:100%;
+ display:grid;
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+ align-items:center;
+ gap:var(--s5);
+ padding-block:var(--s6);
+ border-top:1px solid var(--hairline);
+}
+.lessonShell .pacedNext .action-primary{justify-self:end}
+.lessonShell .pacedCount{
+ justify-self:center;
+ margin:0;
+ text-align:center;
+ color:var(--ink-3);
+ font-size:var(--t-small);
+ white-space:nowrap;
+}
+.lessonShell .pacedNext .action-quiet{
+ justify-self:start;
+ width:auto;
+ min-width:0;
+ min-height:2.5rem;
+ padding:var(--s2) 0;
+ border:0;
+ border-radius:0;
+ background:none;
+ box-shadow:none;
+}
+.lessonShell .pacedNext .action-quiet:hover{background:none;color:var(--ink)}
+
+/* Half-width panes become cramped well before 68rem when a fretboard, table or
+   audio tool is on the right. Collapse while both sides can still breathe. */
+@media (max-width:80rem){
+ .lessonSplit{grid-template-columns:minmax(0,1fr) !important;gap:var(--s6)}
+ .splitter{display:none}
+ .page .lessonDo,.lessonDo{
+  position:static;
+  top:auto;
+  max-height:none;
+  padding-left:0 !important;
+  padding-top:var(--s6);
+  border-left:0 !important;
+  border-top:1px solid var(--rule);
+ }
+ .doBody{max-height:none}
+}
+
+@media (max-width:44rem){
+ .lessonShell .pacedNext{
+  grid-template-columns:minmax(0,1fr);
+  justify-items:start;
+  gap:var(--s3);
+ }
+ .lessonShell .pacedNext .action-primary,
+ .lessonShell .pacedCount,
+ .lessonShell .pacedNext .action-quiet{justify-self:start;text-align:left}
+ .lessonShell .pacedCount{white-space:normal}
+}
+
+/* ================================================================ dock == */
+
+.dock{min-width:0;max-width:100vw;overflow:visible}
+.dock .transport{min-width:0;max-width:68vw}
+@media (max-width:52rem){
+ .dock .transport{max-width:58vw;padding-inline:var(--s3)}
+ .dockTabs{padding-right:var(--s3)}
+}
+
+/* =============================================================== home == */
+
+/* A product-specific first viewport. The real fretboard-role visual is the
+   dominant plane; gradients and staff lines only build atmosphere behind it. */
+.productHero{
+ position:relative;
+ min-height:calc(100dvh - var(--nav));
+ width:100%;
+ overflow:hidden;
+ display:flex;
+ align-items:center;
+ padding:clamp(4rem,9vw,8rem) clamp(1.25rem,6vw,6rem);
+ background:
+  radial-gradient(circle at 72% 58%,var(--flame-wash),transparent 32%),
+  linear-gradient(115deg,var(--ground) 0%,var(--ground) 42%,color-mix(in oklab,var(--ground-2) 84%,var(--flame)) 100%);
+ isolation:isolate;
+}
+.productHero::before{
+ content:"";
+ position:absolute;
+ inset:0;
+ z-index:-1;
+ opacity:.35;
+ background:repeating-linear-gradient(
+  to bottom,
+  transparent 0 calc(var(--staff) - var(--rastral)),
+  var(--hairline) calc(var(--staff) - var(--rastral)) var(--staff)
+ );
+ mask-image:linear-gradient(to right,transparent 0%,black 50%,black 100%);
+ pointer-events:none;
+}
+.productHeroCopy{
+ position:relative;
+ z-index:2;
+ width:min(46rem,58vw);
+ display:flex;
+ flex-direction:column;
+ align-items:flex-start;
+ gap:var(--s5);
+}
+.productHeroBrand{
+ margin:0;
+ max-width:none !important;
+ font-family:var(--font-accent) !important;
+ font-style:italic;
+ font-size:clamp(4.5rem,10vw,10rem) !important;
+ font-weight:500 !important;
+ letter-spacing:var(--track-serif) !important;
+ line-height:.82 !important;
+ color:var(--ink) !important;
+}
+.productHeroThesis{
+ margin:var(--s2) 0 0;
+ font-size:clamp(1.35rem,2.5vw,2.6rem);
+ line-height:1.05;
+ letter-spacing:var(--track-sans);
+ color:var(--ink);
+ max-width:20ch;
+}
+.productHeroSupport{
+ max-width:34rem;
+ color:var(--ink-2);
+ font-size:var(--t-lead);
+ line-height:1.55;
+}
+.productHeroActions{display:flex;align-items:center;gap:var(--s4);margin-top:var(--s2)}
+.productHeroVisual{
+ position:absolute;
+ z-index:1;
+ right:-7vw;
+ bottom:8vh;
+ width:min(70vw,72rem);
+ transform:rotate(-3deg) translate3d(0,0,0);
+ transform-origin:center;
+ opacity:.92;
+ animation:heroInstrumentIn 1100ms var(--ease-out-expo) both;
+ pointer-events:none;
+}
+.productHeroVisual .neckPreview{gap:var(--s5)}
+.productHeroVisual .neckGrid{
+ border-radius:0;
+ border-color:var(--hairline-2);
+ background:var(--hairline-2);
+ box-shadow:0 35px 80px -55px rgba(0,0,0,.9);
+}
+.productHeroVisual .neckGrid>*{background:color-mix(in oklab,var(--ground-2) 78%,transparent)}
+.productHeroVisual .neckPreviewChord,.productHeroVisual .neckKey{opacity:.78}
+
+@keyframes heroInstrumentIn{
+ from{opacity:0;transform:rotate(-3deg) translate3d(7%,3%,0) scale(.97)}
+ to{opacity:.92;transform:rotate(-3deg) translate3d(0,0,0) scale(1)}
+}
+
+@media (max-width:62rem){
+ .productHero{align-items:flex-start;padding-top:var(--s9);padding-bottom:48vh}
+ .productHeroCopy{width:min(42rem,100%)}
+ .productHeroVisual{width:110vw;right:-35vw;bottom:7vh;opacity:.72}
+ .productHeroBrand{font-size:clamp(4rem,16vw,7rem) !important}
+}
+@media (max-width:42rem){
+ .productHero{min-height:calc(100svh - var(--nav));padding-inline:var(--s5);padding-bottom:42vh}
+ .productHeroThesis{font-size:clamp(1.35rem,7vw,2rem)}
+ .productHeroSupport{font-size:var(--t-body);max-width:30rem}
+ .productHeroVisual{width:145vw;right:-63vw;bottom:6vh}
+ .productHeroVisual .neckPreviewChord,.productHeroVisual .neckKey{display:none}
+}
+
+/* ========================================================== containment == */
+
+.page,.sheet,.lessonShell,.lessonSplit,.lessonRead,.lessonDo{min-width:0}
+.page img,.page video,.page canvas{max-width:100%;height:auto}
+
+@media (max-width:900px){.sheet{padding-top:var(--s5)}}
+@media (max-width:700px){.sheet{padding-top:var(--s4)}}
+
+@media (prefers-reduced-motion:reduce){
+ .productHeroVisual{animation:none;transform:rotate(-3deg)}
+}
