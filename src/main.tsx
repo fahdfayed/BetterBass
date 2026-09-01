@@ -60,6 +60,10 @@ import "./styles/container-scroll.css";
 import "./styles/score.css";
 import "./styles/score-integration.css";
 
+// Audit corrections are intentionally last: they resolve cross-generation
+// cascade collisions without introducing another visual language.
+import "./styles/ui-audit.css";
+
 // Marks that scripting is available, so motion.css can hide reveal targets. If
 // this never runs the content stays visible rather than invisible.
 document.documentElement.classList.add("js");
