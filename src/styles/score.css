@@ -4,7 +4,7 @@
  *
  * Normal navigation, controls and dense data rows keep their technical
  * hairlines. Musical section boundaries borrow the visual grammar of a score:
- * five-line staves, barlines, double bars and rehearsal marks.
+ * five-line staves, barlines, double bars, rehearsal marks and repeat signs.
  */
 
 :root{
@@ -14,39 +14,23 @@
  --score-staff-height:calc(var(--score-staff-step) * 4 + 1px);
 }
 
-/* ---- reusable notation primitives -------------------------------------- */
-
 .scoreStaff{
  position:relative;
  height:var(--score-staff-height);
  flex:none;
  background-image:
   linear-gradient(to right,transparent calc(100% - 1px),var(--score-line-strong) calc(100% - 1px)),
-  repeating-linear-gradient(
-   to bottom,
-   var(--score-line) 0,
-   var(--score-line) 1px,
-   transparent 1px,
-   transparent var(--score-staff-step)
-  );
+  repeating-linear-gradient(to bottom,var(--score-line) 0,var(--score-line) 1px,transparent 1px,transparent var(--score-staff-step));
  background-size:100% var(--score-staff-height),100% var(--score-staff-height);
  background-repeat:no-repeat;
 }
 
-/* End-of-section / final-bar treatment. */
 .scoreDoubleBar{
  height:4px;
  border:0;
- background:linear-gradient(
-  to bottom,
-  var(--score-line) 0 1px,
-  transparent 1px 2px,
-  var(--score-line-strong) 2px 4px
- );
+ background:linear-gradient(to bottom,var(--score-line) 0 1px,transparent 1px 2px,var(--score-line-strong) 2px 4px);
 }
 
-/* A word can be treated like a rehearsal mark without inventing a new badge
-   language. Useful for A/B/C sections, mission stages and named passages. */
 .scoreRehearsal{
  display:inline-flex;
  align-items:center;
@@ -66,112 +50,129 @@
  text-transform:uppercase;
 }
 
-/* ---- home / high-level musical sections -------------------------------- */
-
-/* Major bands are separated like systems in a score. The right edge receives
-   one barline; rows inside each band keep normal single hairlines for density. */
 .lede-block + .band,
 .band + .band{
  position:relative;
  padding-top:calc(var(--s6) + var(--score-staff-height));
  background-image:
   linear-gradient(to right,transparent calc(100% - 1px),var(--score-line-strong) calc(100% - 1px)),
-  repeating-linear-gradient(
-   to bottom,
-   var(--score-line) 0,
-   var(--score-line) 1px,
-   transparent 1px,
-   transparent var(--score-staff-step)
-  );
+  repeating-linear-gradient(to bottom,var(--score-line) 0,var(--score-line) 1px,transparent 1px,transparent var(--score-staff-step));
  background-size:100% var(--score-staff-height),100% var(--score-staff-height);
  background-repeat:no-repeat;
  background-position:left top;
 }
 
-/* ---- lesson document ---------------------------------------------------- */
-
-/* Replace the document's generic top borders with a true five-line system.
-   This only affects major instruction blocks, not every table row or control. */
 .lessonRead>div>*+*{
  position:relative;
  padding-top:calc(var(--s6) + var(--score-staff-height));
  border-top:0;
  background-image:
   linear-gradient(to right,transparent calc(100% - 1px),var(--score-line-strong) calc(100% - 1px)),
-  repeating-linear-gradient(
-   to bottom,
-   var(--score-line) 0,
-   var(--score-line) 1px,
-   transparent 1px,
-   transparent var(--score-staff-step)
-  );
+  repeating-linear-gradient(to bottom,var(--score-line) 0,var(--score-line) 1px,transparent 1px,transparent var(--score-staff-step));
  background-size:100% var(--score-staff-height),100% var(--score-staff-height);
  background-repeat:no-repeat;
  background-position:left top;
 }
 
-/* The stage name behaves like a rehearsal mark, while the heading below it
-   stays ordinary editorial typography. */
-.stageIntro>.label{
- align-self:flex-start;
- width:max-content;
- min-width:1.7rem;
- min-height:1.7rem;
- display:inline-flex;
- align-items:center;
- justify-content:center;
- padding:.15rem .42rem;
- border:1px solid var(--score-line-strong);
- border-radius:0;
- background:var(--bg);
- color:var(--ink-2);
- letter-spacing:.08em;
- line-height:1;
-}
+.stageKicker{display:flex;align-items:center;gap:var(--s3);flex-wrap:wrap}
+.stageKicker>.label{color:var(--ink-3)}
 
-/* The instruction/tool split reads as a vertical double barline instead of a
-   generic application divider. */
+/* Stage rail: real rehearsal letters rather than numbered circles. */
+.stageTab{gap:var(--s2)}
+.stageRehearsal{
+ display:inline-grid;
+ place-items:center;
+ width:1.35rem;
+ height:1.35rem;
+ border:1px solid var(--score-line);
+ font-style:normal;
+ font-size:var(--t-micro);
+ font-weight:700;
+ line-height:1;
+ color:inherit;
+}
+.stageTab.active .stageRehearsal{border-color:var(--score-line-strong);color:var(--accent)}
+.stagePassed{font-style:normal;color:var(--done);font-size:var(--t-micro)}
+
 .lessonDo{
  border-left:0;
  padding-left:calc(var(--s7) + .45rem);
- background-image:linear-gradient(
-  to right,
-  var(--score-line) 0 1px,
-  transparent 1px 4px,
-  var(--score-line-strong) 4px 6px,
-  transparent 6px
- );
+ background-image:linear-gradient(to right,var(--score-line) 0 1px,transparent 1px 4px,var(--score-line-strong) 4px 6px,transparent 6px);
  background-size:6px 100%;
  background-repeat:no-repeat;
  background-position:left top;
 }
 
-/* Passing a stage is the visual equivalent of reaching a double bar. */
 .checkBar{border-top:4px double var(--score-line-strong)}
 
-/* On a one-column lesson the vertical bar becomes a horizontal double bar. */
+/* Tempo ladders read like score tempo markings rather than dashboard stats. */
+.lessonRead .tempoLadder header h3{
+ font-family:var(--font-mono);
+ font-size:0;
+ font-weight:500;
+ letter-spacing:0;
+}
+.lessonRead .tempoLadder header h3::before{
+ content:"♩ = ";
+ font-size:var(--t-h3);
+}
+.lessonRead .tempoLadder header h3::after{
+ content:attr(data-bpm);
+ font-size:var(--t-h3);
+}
+
+/* Existing tempo markup has the BPM as text, so show it traditionally using
+   adjacent content while keeping the original text accessible. */
+.lessonRead .tempoLadder header h3:not([data-bpm]){font-size:var(--t-h3)}
+.lessonRead .tempoLadder header h3:not([data-bpm])::before{content:"♩ = ";font-size:inherit}
+
+/* Practice exercises behave like repeatable measures. */
+.lessonRead .exerciseGrid>article{
+ position:relative;
+ padding-inline:1.55rem;
+}
+.lessonRead .exerciseGrid>article::before,
+.lessonRead .exerciseGrid>article::after{
+ position:absolute;
+ top:var(--s4);
+ color:var(--ink-3);
+ font-size:1rem;
+ line-height:1;
+}
+.lessonRead .exerciseGrid>article::before{content:"𝄆";left:0}
+.lessonRead .exerciseGrid>article::after{content:"𝄇";right:0}
+
+/* Numbered lesson blocks read like measure numbers in the margin. */
+.lessonRead header>span:first-child,
+.lessonRead>div>article>span:first-child,
+.lessonRead>div>aside>span:first-child{
+ position:relative;
+}
+.lessonRead header>span:first-child::before,
+.lessonRead>div>article>span:first-child::before,
+.lessonRead>div>aside>span:first-child::before{
+ content:"m. ";
+ opacity:.55;
+ font-weight:500;
+ letter-spacing:0;
+ text-transform:none;
+}
+
 @media (max-width:68rem){
  .lessonDo{
   padding-left:0;
   padding-top:calc(var(--s6) + .45rem);
   border-top:0;
-  background-image:linear-gradient(
-   to bottom,
-   var(--score-line) 0 1px,
-   transparent 1px 4px,
-   var(--score-line-strong) 4px 6px,
-   transparent 6px
-  );
+  background-image:linear-gradient(to bottom,var(--score-line) 0 1px,transparent 1px 4px,var(--score-line-strong) 4px 6px,transparent 6px);
   background-size:100% 6px;
   background-position:left top;
  }
 }
 
-/* Keep the notation language restrained on small screens: same semantics,
-   slightly tighter system spacing. */
 @media (max-width:52rem){
  :root{--score-staff-step:.24rem}
  .lede-block + .band,
  .band + .band,
  .lessonRead>div>*+*{padding-top:calc(var(--s5) + var(--score-staff-height))}
+ .lessonRead .exerciseGrid>article{padding-inline:1.15rem}
 }
