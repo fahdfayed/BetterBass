@@ -84,6 +84,7 @@ export default function LessonWorkspace({
       <h2>{guide.title}</h2>
       <p className="dim">{guide.body}</p>
      </div>
+     <div className="scoreStaffDivider" aria-hidden="true"/>
      {instruction}
     </section>
 
