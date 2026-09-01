@@ -1,0 +1,177 @@
+/**
+ * Score language — musical separators without turning the application shell
+ * into manuscript paper.
+ *
+ * Normal navigation, controls and dense data rows keep their technical
+ * hairlines. Musical section boundaries borrow the visual grammar of a score:
+ * five-line staves, barlines, double bars and rehearsal marks.
+ */
+
+:root{
+ --score-line:color-mix(in oklab,var(--ink) 16%,transparent);
+ --score-line-strong:color-mix(in oklab,var(--ink) 30%,transparent);
+ --score-staff-step:.28rem;
+ --score-staff-height:calc(var(--score-staff-step) * 4 + 1px);
+}
+
+/* ---- reusable notation primitives -------------------------------------- */
+
+.scoreStaff{
+ position:relative;
+ height:var(--score-staff-height);
+ flex:none;
+ background-image:
+  linear-gradient(to right,transparent calc(100% - 1px),var(--score-line-strong) calc(100% - 1px)),
+  repeating-linear-gradient(
+   to bottom,
+   var(--score-line) 0,
+   var(--score-line) 1px,
+   transparent 1px,
+   transparent var(--score-staff-step)
+  );
+ background-size:100% var(--score-staff-height),100% var(--score-staff-height);
+ background-repeat:no-repeat;
+}
+
+/* End-of-section / final-bar treatment. */
+.scoreDoubleBar{
+ height:4px;
+ border:0;
+ background:linear-gradient(
+  to bottom,
+  var(--score-line) 0 1px,
+  transparent 1px 2px,
+  var(--score-line-strong) 2px 4px
+ );
+}
+
+/* A word can be treated like a rehearsal mark without inventing a new badge
+   language. Useful for A/B/C sections, mission stages and named passages. */
+.scoreRehearsal{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ width:max-content;
+ min-width:1.7rem;
+ min-height:1.7rem;
+ padding:.15rem .42rem;
+ border:1px solid var(--score-line-strong);
+ border-radius:0;
+ background:var(--bg);
+ color:var(--ink-2);
+ font-size:var(--t-micro);
+ font-weight:680;
+ letter-spacing:.08em;
+ line-height:1;
+ text-transform:uppercase;
+}
+
+/* ---- home / high-level musical sections -------------------------------- */
+
+/* Major bands are separated like systems in a score. The right edge receives
+   one barline; rows inside each band keep normal single hairlines for density. */
+.lede-block + .band,
+.band + .band{
+ position:relative;
+ padding-top:calc(var(--s6) + var(--score-staff-height));
+ background-image:
+  linear-gradient(to right,transparent calc(100% - 1px),var(--score-line-strong) calc(100% - 1px)),
+  repeating-linear-gradient(
+   to bottom,
+   var(--score-line) 0,
+   var(--score-line) 1px,
+   transparent 1px,
+   transparent var(--score-staff-step)
+  );
+ background-size:100% var(--score-staff-height),100% var(--score-staff-height);
+ background-repeat:no-repeat;
+ background-position:left top;
+}
+
+/* ---- lesson document ---------------------------------------------------- */
+
+/* Replace the document's generic top borders with a true five-line system.
+   This only affects major instruction blocks, not every table row or control. */
+.lessonRead>div>*+*{
+ position:relative;
+ padding-top:calc(var(--s6) + var(--score-staff-height));
+ border-top:0;
+ background-image:
+  linear-gradient(to right,transparent calc(100% - 1px),var(--score-line-strong) calc(100% - 1px)),
+  repeating-linear-gradient(
+   to bottom,
+   var(--score-line) 0,
+   var(--score-line) 1px,
+   transparent 1px,
+   transparent var(--score-staff-step)
+  );
+ background-size:100% var(--score-staff-height),100% var(--score-staff-height);
+ background-repeat:no-repeat;
+ background-position:left top;
+}
+
+/* The stage name behaves like a rehearsal mark, while the heading below it
+   stays ordinary editorial typography. */
+.stageIntro>.label{
+ align-self:flex-start;
+ width:max-content;
+ min-width:1.7rem;
+ min-height:1.7rem;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ padding:.15rem .42rem;
+ border:1px solid var(--score-line-strong);
+ border-radius:0;
+ background:var(--bg);
+ color:var(--ink-2);
+ letter-spacing:.08em;
+ line-height:1;
+}
+
+/* The instruction/tool split reads as a vertical double barline instead of a
+   generic application divider. */
+.lessonDo{
+ border-left:0;
+ padding-left:calc(var(--s7) + .45rem);
+ background-image:linear-gradient(
+  to right,
+  var(--score-line) 0 1px,
+  transparent 1px 4px,
+  var(--score-line-strong) 4px 6px,
+  transparent 6px
+ );
+ background-size:6px 100%;
+ background-repeat:no-repeat;
+ background-position:left top;
+}
+
+/* Passing a stage is the visual equivalent of reaching a double bar. */
+.checkBar{border-top:4px double var(--score-line-strong)}
+
+/* On a one-column lesson the vertical bar becomes a horizontal double bar. */
+@media (max-width:68rem){
+ .lessonDo{
+  padding-left:0;
+  padding-top:calc(var(--s6) + .45rem);
+  border-top:0;
+  background-image:linear-gradient(
+   to bottom,
+   var(--score-line) 0 1px,
+   transparent 1px 4px,
+   var(--score-line-strong) 4px 6px,
+   transparent 6px
+  );
+  background-size:100% 6px;
+  background-position:left top;
+ }
+}
+
+/* Keep the notation language restrained on small screens: same semantics,
+   slightly tighter system spacing. */
+@media (max-width:52rem){
+ :root{--score-staff-step:.24rem}
+ .lede-block + .band,
+ .band + .band,
+ .lessonRead>div>*+*{padding-top:calc(var(--s5) + var(--score-staff-height))}
+}
