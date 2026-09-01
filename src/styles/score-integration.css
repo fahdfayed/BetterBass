@@ -2,8 +2,9 @@
  * Score language integration for the Aurora workspace.
  *
  * `score.css` owns the notation vocabulary. This file applies that vocabulary
- * to existing lesson/practice surfaces without turning software chrome into a
- * manuscript-page theme.
+ * only where the composition explicitly asks for it. Staff lines are never
+ * inferred from sibling order: that made controls and progressive-disclosure
+ * blocks accidentally become notation systems.
  */
 
 :root{
@@ -15,21 +16,32 @@
 
 /* ========================================================= staff systems = */
 
-/*
- * Five actual staff lines, with a closing barline at the right edge. This is
- * deliberately more visible than the old generic hairline: a musical section
- * boundary should read immediately as notation, not as faint UI chrome.
- */
-.lessonRead>.stageIntro + *,
-.lessonRead>div:not(.stageIntro)>*+*,
+/* One intentional, full-width system. Put this element in the markup exactly
+   where the musical document changes section. It cannot attach itself to a
+   button, progress control or disclosure widget because it is not a pseudo-
+   element generated from DOM adjacency. */
+.scoreStaffDivider{
+ width:100%;
+ height:var(--score-system-height);
+ flex:none;
+ margin-block:var(--s4) var(--s2);
+ background:
+  linear-gradient(to right,transparent calc(100% - 2px),var(--score-divider-strong) calc(100% - 2px)),
+  repeating-linear-gradient(
+   to bottom,
+   var(--score-divider-line) 0 var(--rastral),
+   transparent var(--rastral) var(--score-system-step)
+  );
+ pointer-events:none;
+}
+
+/* Home's top-level bands are known semantic siblings, so this is safe: unlike
+   lesson internals, a .band is always a real page section. */
 .band + .band{
  position:relative;
  padding-top:calc(var(--s6) + var(--score-system-height));
  border-top:0;
 }
-
-.lessonRead>.stageIntro + *::before,
-.lessonRead>div:not(.stageIntro)>*+*::before,
 .band + .band::before{
  content:"";
  position:absolute;
@@ -49,11 +61,10 @@
 
 /* ====================================================== rehearsal stages = */
 
+/* The stage rail itself is one intentional score system. */
 .stageTabs{
  position:relative;
  border-bottom:0;
- /* Reserve a real system below the stage names instead of hiding it under the
-    old one-pixel tab rule. */
  padding-bottom:calc(var(--s3) + var(--score-system-height));
  background:
   linear-gradient(to right,transparent calc(100% - 2px),var(--score-divider-strong) calc(100% - 2px)),
@@ -68,7 +79,6 @@
 }
 
 .stageTab{padding-bottom:var(--s2)}
-
 .stageTab .rehearsalMark{
  min-width:calc(var(--staff) * 3.25);
  height:calc(var(--staff) * 3.25);
@@ -169,11 +179,8 @@
 
 @media (max-width:52rem){
  :root{--score-system-step:.42rem}
- .lessonRead>.stageIntro + *,
- .lessonRead>div:not(.stageIntro)>*+*,
- .band + .band{
-  padding-top:calc(var(--s5) + var(--score-system-height));
- }
+ .scoreStaffDivider{margin-block:var(--s3) var(--s1)}
+ .band + .band{padding-top:calc(var(--s5) + var(--score-system-height))}
  .stageTabs{padding-bottom:calc(var(--s2) + var(--score-system-height))}
  .stageTab .rehearsalMark{
   min-width:calc(var(--staff) * 3);
