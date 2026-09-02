@@ -237,24 +237,49 @@
  align-items:flex-start;
  gap:var(--s5);
 }
-.productHeroBrand{
+/*
+ * The two-voice statement.
+ *
+ * The signature this design system pins first — Playfair italic and Inter
+ * alternating inside ONE heading, the first clause set and the second stated —
+ * was used nowhere on the page that has to make the argument. Instead the hero
+ * ran two headings against each other: the brand at 128px in the serif, and
+ * the differentiator at 32px in the sans. A visitor arriving cold, which
+ * PRODUCT.md says is every visitor, met a name they have no reason to know
+ * four times the size of the reason to stay.
+ *
+ * Both voices are the same size here, which is what makes them one block
+ * rather than two lines. The tracking is what separates them: the serif runs
+ * looser at -.05em and the sans harder at -.08em, exactly as the type scale
+ * specifies, so the pair sits as a single paragraph of display type with a
+ * change of register in the middle of it.
+ */
+.productHeroStatement{
  margin:0;
+ display:flex;
+ flex-direction:column;
  max-width:none !important;
- font-family:var(--font-accent) !important;
- font-style:italic;
- font-size:clamp(4.5rem,10vw,10rem) !important;
- font-weight:500 !important;
- letter-spacing:var(--track-serif) !important;
- line-height:.82 !important;
+ font-size:clamp(2.6rem,6.4vw,6.75rem) !important;
+ font-weight:400 !important;
+ line-height:.92 !important;
  color:var(--ink) !important;
+ text-wrap:balance;
 }
-.productHeroThesis{
- margin:var(--s2) 0 0;
- font-size:clamp(1.35rem,2.5vw,2.6rem);
- line-height:1.05;
+.productHeroStatement .heroVoiceSet{
+ font-family:var(--font-accent);
+ font-style:italic;
+ font-weight:500;
+ letter-spacing:var(--track-serif);
+}
+.productHeroStatement .heroVoiceStated{
+ font-family:var(--font-display);
  letter-spacing:var(--track-sans);
- color:var(--ink);
- max-width:20ch;
+ /*
+  * The stated clause carries the claim, so it gets the optical lead-in the set
+  * clause does not need: a hair of space above, and no more, because the two
+  * voices reading as one block is the whole effect.
+  */
+ margin-top:.06em;
 }
 .productHeroSupport{
  max-width:34rem;
@@ -315,14 +340,275 @@
  .productHero{align-items:flex-start;padding-top:var(--s9);padding-bottom:48vh}
  .productHeroCopy{width:min(42rem,100%)}
  .productHeroVisual{width:110vw;right:-35vw;bottom:7vh;opacity:.72}
- .productHeroBrand{font-size:clamp(4rem,16vw,7rem) !important}
+ .productHeroStatement{font-size:clamp(2.4rem,7.4vw,4.5rem) !important}
 }
 @media (max-width:42rem){
  .productHero{min-height:calc(100svh - var(--nav));padding-inline:var(--s5);padding-bottom:42vh}
- .productHeroThesis{font-size:clamp(1.35rem,7vw,2rem)}
+ /*
+  * Phone. The claim has to stay the largest thing on the screen — that is the
+  * whole point of the change — but three lines of display type at the old
+  * brand's 60px would wrap "Progression first. Scale second." into five, so
+  * the ceiling is set where the statement lands in four lines and still clears
+  * the call to action inside the first screen.
+  */
+ .productHeroStatement{font-size:clamp(2.4rem,10.4vw,3.4rem) !important;line-height:.96 !important}
  .productHeroSupport{font-size:var(--t-body);max-width:30rem}
  .productHeroVisual{width:145vw;right:-63vw;bottom:6vh}
  .productHeroVisual .neckPreviewChord,.productHeroVisual .neckKey{display:none}
+}
+
+/* ========================================================= practice == */
+
+/*
+ * The session heading, at the size its own sheet asks for.
+ *
+ * Nothing here invents a scale. `beast.css` sets the day title to
+ * `clamp(36px,4vw,58px)` and the lesson cockpit's to `--t-h1`, and both lose
+ * to `.page .osScreen h2{font-size:var(--t-h2)}` in `legacy-views.css`, which
+ * is one class more specific than either. So the practice page's designed
+ * second peak was arriving at 37px — the blanket rule for a hundred small
+ * panel headings applied to the one heading that names what you are about to
+ * spend fifty minutes doing.
+ *
+ * That is the whole reason the page reads flat. Of roughly 235 pieces of text
+ * on it, 172 are at 11px and 43 more at 14px; above that there is the manifesto
+ * h1 at 64px and almost nothing in between. Restoring this one heading gives
+ * the type scale its missing middle, and it does it with a value the design
+ * had already chosen.
+ *
+ * Both tracks take the same value rather than their two different authored
+ * ones, because they are the same block doing the same job on the same page,
+ * and because 58px sits under the 64px h1 where a second peak belongs.
+ */
+.page .osScreen .dayObjective h2,
+.page .osScreen .lessonPracticeCockpit>header h2{
+ font-size:clamp(36px,4vw,58px);
+ line-height:.95;
+ letter-spacing:var(--track-sans);
+}
+/*
+ * And the objective reads at lead size. It is the sentence that says what the
+ * session is for, and at body size it was the same weight as the hundred
+ * captions around it.
+ */
+.page .osScreen .dayObjective>div>p,
+.page .osScreen .lessonPracticeCockpit>header>p{
+ font-size:var(--t-lead);
+ line-height:1.5;
+ color:var(--ink-2);
+}
+
+/*
+ * Practice: colour by job.
+ *
+ * `beast.css` was written against a palette this project no longer has. It
+ * reaches for `var(--lime)` about forty times — for pass counts, timers, exit
+ * standards, section eyebrows, cleared tempo rungs and the finish button — and
+ * `legacy-tokens.css` maps `--lime` to the oxide, so all forty arrive as the
+ * one accent. `--amber`, `--red`, `--orange`, `--violet`, `--warn` and
+ * `--wrong` land on it too. I counted thirteen flame elements in the first
+ * viewport and not one of them was the thing to press.
+ *
+ * Rarity is what gives an accent its force, and this page had spent it on
+ * captions. So `--lime` drops to the grey ramp here, which is the correct
+ * home for a label that carries no state, and the four jobs that genuinely
+ * need colour are named below. Scoped to `.practiceEnvironment` on purpose:
+ * the same collapse exists app-wide and fixing it everywhere is a decision
+ * about every screen, not this one.
+ */
+.practiceEnvironment{
+ --lime:var(--label-ink);
+ --acid:var(--label-ink);
+ --amber:var(--caution);
+ --orange:var(--caution);
+ --red:var(--stop);
+ --warn:var(--caution);
+ --wrong:var(--stop);
+}
+
+/*
+ * Every control on a legacy screen is held at `background:none !important` and
+ * `color:var(--ink-3) !important` by `legacy-views.css`, which is why the
+ * finish button, the complete-block button and the current-day chip all render
+ * as the same grey ghost as a caption. One rule answers it, at the same
+ * (0,5,1) specificity so it wins on order, and it reads both values from
+ * custom properties — so the roles below are assignments, not another
+ * specificity argument. The defaults reproduce exactly what the blanket rule
+ * does today, so nothing that is not named changes.
+ *
+ * The class is on the screen root itself, not on a descendant of it, so this
+ * is `.osScreen.practiceEnvironment` — with a space it matches nothing.
+ */
+.page .osScreen.practiceEnvironment button:not(.action):not(.action-primary),
+.page .osScreen.slapLab button:not(.action):not(.action-primary){
+ background:var(--btn-fill,none) !important;
+ color:var(--btn-ink,var(--ink-3)) !important;
+}
+
+/*
+ * The action keeps the flame, and it is the only thing that does. One filled
+ * orange per region: finish the day, complete the block, save the log, answer
+ * the prompt.
+ */
+.practiceEnvironment .finishDay:not(:disabled),
+.practiceEnvironment .digitalLog>button,
+.practiceEnvironment .sessionRowCard>footer button,
+.practiceEnvironment .promptAnswer button:first-of-type{
+ --btn-fill:var(--flame);
+ --btn-ink:var(--on-flame);
+}
+.practiceEnvironment .coachPrompt>button{--btn-ink:var(--flame)}
+
+/*
+ * A pass is a fact you scan: the count in the rail, a cleared day, a finished
+ * block, a tempo rung that held. Every one already carries a ✓ or a word
+ * beside it, so the hue is the second code and never the only one.
+ */
+.practiceEnvironment .dayRail nav button.passed,
+.practiceEnvironment .tempoLadderBeast>div button.passed{--btn-ink:var(--pass)}
+.practiceEnvironment .dayRail>header b,
+.practiceEnvironment .sessionBlocks>button.done>i,
+.practiceEnvironment .beastBodyCheck i{color:var(--pass)}
+.practiceEnvironment .tempoLadderBeast>footer i.done{background:var(--pass)}
+
+/*
+ * The control bar's captions read `--ink-3` directly rather than through the
+ * accent, so the remap above never reached them: in cream they land at 4.46:1
+ * at 11px, four hundredths under AA. Pre-existing rather than introduced here,
+ * but it is the same caption doing the same job, so it takes the same ink.
+ */
+.page .osScreen.practiceEnvironment .practiceControlBar small,
+.page .osScreen.practiceEnvironment .practiceControlBar span{color:var(--label-ink)}
+
+/*
+ * Caution and stop, which have to be separable from the accent or a warning
+ * reads as a suggestion. The error dock's amber was being overwritten by the
+ * blanket "first span in a header is a label" rule, and the stop and danger
+ * buttons by the blanket control reset, so both are named here.
+ */
+.page .osScreen.practiceEnvironment .errorDock>span,
+.page .osScreen.practiceEnvironment .errorDock button b{color:var(--caution)}
+.practiceEnvironment .timerActions .stop,
+.practiceEnvironment .beastBodyCheck .danger{
+ --btn-fill:var(--stop);
+ --btn-ink:var(--on-flame);
+}
+
+/*
+ * Where you are, in the accent's quiet register.
+ *
+ * The current day is not something you press — you are already on it — so it
+ * takes the flame as a wash rather than as a fill, exactly the way the neck
+ * marks the note under study. One hue, two registers: a solid orange is an
+ * instruction, a washed one is a position.
+ */
+.practiceEnvironment .dayRail nav button.active,
+.practiceEnvironment .practiceControlBar>button.active,
+.practiceEnvironment .tempoLadderBeast>div button.active,
+.practiceEnvironment .beastSections button.active{
+ --btn-fill:var(--flame-wash);
+ --btn-ink:var(--ink);
+}
+/*
+ * And whatever the current control contains comes with it. `--btn-ink` reaches
+ * the button, not the caption inside it: on the tempo ladder the wash tinted
+ * the ground under an `--ink-3` caption and took it to 4.46:1 in cream, four
+ * hundredths under AA. A control marked as where-you-are should be the most
+ * readable one in its row, not the least.
+ */
+.practiceEnvironment .dayRail nav button.active :is(b,i,small,span),
+.practiceEnvironment .practiceControlBar>button.active :is(b,i,small,span),
+.practiceEnvironment .tempoLadderBeast>div button.active :is(b,i,small,span),
+.practiceEnvironment .beastSections button.active :is(b,i,small,span){
+ color:var(--ink);
+}
+
+/*
+ * The section tabs, with their padding back.
+ *
+ * `beast.css` sets `padding:17px 13px` and the blanket legacy control rule
+ * overrides it with a vertical-only padding, so the computed value on a tab
+ * was `0 0 12px`: no horizontal room at all, and the label pinned to the top
+ * edge of a 48px box. With a 24px radius and a fill behind it, the label read
+ * as floating above a detached lozenge rather than sitting inside a tab.
+ */
+.page .osScreen.practiceEnvironment .beastSections button{
+ display:grid !important;
+ place-items:center !important;
+ padding:0 var(--s4) !important;
+}
+
+/*
+ * The native option list.
+ *
+ * `color-scheme:dark` is already set and Chrome still paints the popup from
+ * the platform theme on some systems, which puts white-on-white-blue menus in
+ * the middle of a black workstation. Colouring the options themselves is the
+ * part that actually lands. Ignored on platforms that draw their own menu,
+ * which is the correct outcome there.
+ *
+ * The value has to be opaque, too: the legacy sheet gives options the same 6%
+ * white lift it gives surfaces, and 6% white over the popup's own white base
+ * is white.
+ */
+.page .osScreen.practiceEnvironment select option{
+ background-color:#0a0a0b !important;
+ color:#ffffff !important;
+}
+:root[data-theme="cream"] .page .osScreen.practiceEnvironment select option{
+ background-color:#ffffff !important;
+ color:#111827 !important;
+}
+
+/* ------------------------------------------------- practice: touch --- */
+
+/*
+ * The practice page on a phone.
+ *
+ * The gate is the input device, not the viewport: PRODUCT.md puts the player
+ * at the instrument with both hands occupied, and a tablet on a stand needs
+ * this exactly as much as a phone does while a 1200px window with a mouse
+ * needs none of it. The workstation stays dense where a pointer is precise.
+ *
+ * Every one of these already clears 44px vertically. It is the horizontal axis
+ * that fails, and it fails because three rows of controls are being squeezed
+ * by flex rather than allowed to keep their size and scroll — which is the
+ * actual adaptation here, not a bigger number.
+ */
+@media (pointer:coarse){
+ /*
+  * The 30-day map. At 29px these are the primary navigation of the whole
+  * course rendered smaller than a fingertip. Below 800px the rail is already
+  * full width, so at 44px the grid simply wraps to about seven per row and
+  * becomes a real calendar instead of a row of specks.
+  */
+ .practiceEnvironment .dayRail nav button{
+  min-width:44px;
+  min-height:44px;
+ }
+
+ /*
+  * The error dock and the section tabs are both single rows that overflow.
+  * Squeezing every item to fit is what produced 22px and 36px targets, so
+  * they stop shrinking and scroll instead: the row keeps its shape, the items
+  * keep their words, and the axis that was already scrollable does the work.
+  */
+ .practiceEnvironment .errorDock,
+ .practiceEnvironment .beastSections{
+  overflow-x:auto;
+  overscroll-behavior-x:contain;
+  scrollbar-width:none;
+ }
+ .practiceEnvironment .errorDock::-webkit-scrollbar,
+ .practiceEnvironment .beastSections::-webkit-scrollbar{display:none}
+ .practiceEnvironment .errorDock button,
+ .practiceEnvironment .beastSections button{
+  flex:none;
+  min-width:44px;
+  min-height:44px;
+  padding-inline:var(--s3);
+  white-space:nowrap;
+ }
 }
 
 /* ========================================================== containment == */

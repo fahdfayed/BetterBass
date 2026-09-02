@@ -25,6 +25,7 @@ const ROUTES:Pattern[]=[
  {path:"/course",view:"roadmap"},
  {path:"/course/:lesson",view:"courseLesson"},
  {path:"/practice",view:"practice"},
+ {path:"/practice/manual",view:"manual"},
  {path:"/practice/today",view:"today"},
  {path:"/practice/live",view:"live"},
  {path:"/coach",view:"coach"},

@@ -132,9 +132,16 @@ export default function HarmonyFretboard({embedded=false,centre:givenCentre,prog
   * are marked rather than guessing one and being wrong three times in four.
   */
  const heardPc=livePitch?((livePitch.midi%12)+12)%12:null;
+ const heardMidi=livePitch?.midi??null;
+ /*
+  * Keyed on the note, not on `livePitch`. The detector calls setPitch from a
+  * requestAnimationFrame loop and `centsToNote` returns a fresh object every
+  * frame, so this memo never once hit: it allocated a new Set sixty times a
+  * second to describe a hand that had not moved.
+  */
  const heardAt=useMemo(
-  ()=>livePitch&&listening?positionKeys(livePitch.midi):new Set<string>(),
-  [livePitch,listening],
+  ()=>heardMidi!==null&&listening?positionKeys(heardMidi):new Set<string>(),
+  [heardMidi,listening],
  );
 
  // A centre handed in from outside replaces the board's own, when it moves.
@@ -153,7 +160,8 @@ export default function HarmonyFretboard({embedded=false,centre:givenCentre,prog
  },[handedOver]);
  const parsed=useMemo(()=>parseProgression(applied),[applied]),chords=parsed.chords,current=chords[Math.min(active,Math.max(0,chords.length-1))]||parseChord("Cmaj9"),next=chords.length>1?chords[(active+1)%chords.length]:current,currentKey=`${active}:${current.symbol}:${applied}`;
  const recommendations=useMemo(()=>recommendScales(current,next,centre,homeMode,lens),[current,next,centre,homeMode,lens]),selectedRecommendation=recommendations.find(x=>choice?.key===currentKey&&x.scale.id===choice.scale)||recommendations[0],selectedScale=selectedRecommendation.scale,paths=useMemo(()=>voiceLeadingPaths(current,next),[current,next]),shared=useMemo(()=>commonTones(current,next),[current,next]);
- const actualDisplay=displayMode==="interval"?"degree":displayMode==="function"||displayMode==="heat"?"priority":displayMode,filter=Math.min(4,fog),visibleFrets=neckRange==="low"?FRETS.slice(0,13):neckRange==="middle"?FRETS.slice(5,16):neckRange==="high"?FRETS.slice(10):FRETS;
+ const actualDisplay=displayMode==="interval"?"degree":displayMode==="function"||displayMode==="heat"?"priority":displayMode,filter=Math.min(4,fog);
+ const visibleFrets=useMemo(()=>neckRange==="low"?FRETS.slice(0,13):neckRange==="middle"?FRETS.slice(5,16):neckRange==="high"?FRETS.slice(10):FRETS,[neckRange]);
  const selected=selectedPc??current.bass,selectedRole=classifyNote(selected,current,selectedScale,next),selectedIv=mod(selected-current.root),selectedDestination=nearestTarget(selected,next),durationMs=Math.round(60000/tempo*4*barsPerChord),selectedBandStyle=BAND_STYLES.find(style=>style.id===bandStyle)||BAND_STYLES[0];
  const harmonyAudio=useRef<HarmonyAudioEngine|null>(null),countInTimer=useRef<number|null>(null),harmonyLevelRef=useRef(harmonyLevel),bandStyleRef=useRef<BandStyleId>(bandStyle),bandMixRef=useRef<BandMix>(bandMix);
 
@@ -223,6 +231,80 @@ export default function HarmonyFretboard({embedded=false,centre:givenCentre,prog
  const cellText=(pc:number,role:ReturnType<typeof classifyNote>)=>actualDisplay==="note"?PITCH_NAMES[pc]:actualDisplay==="degree"?intervalLabel(pc-current.root,current):actualDisplay==="voice"?`→${PITCH_NAMES[nearestTarget(pc,next)]}`:role.short;
  const visible=(role:ReturnType<typeof classifyNote>)=>filter===0||filter===1&&!["approach","outside"].includes(role.id)||filter===2&&role.rank<=6||filter===3&&role.rank<=3||filter===4;
 
+ /*
+  * Everything about a fret that the harmony decides, worked out once.
+  *
+  * This is the hot path of the whole product, and it is hot for a reason that
+  * is invisible from the screen: the pitch detector runs setPitch inside a
+  * requestAnimationFrame loop while the player plays, so this component
+  * re-rendered sixty times a second against the live band. Every one of those
+  * renders classified all 52 frets and built 52 aria-label strings, 52 class
+  * strings and 52 click handlers — to change the one cell under the finger.
+  *
+  * Role, label and note name depend on the chord, the scale and the view, none
+  * of which move while a note is sounding. They are computed here and keyed on
+  * exactly those. What is left in the render below is the part that really does
+  * change per frame: which fret is under the hand, and which one is picked.
+  */
+ const boardCells=useMemo(()=>STRINGS.map((string,stringIndex)=>({
+  name:string.name,
+  stringIndex,
+  frets:visibleFrets.map((fret,col)=>{
+   const pc=mod(string.open+fret),role=classifyNote(pc,current,selectedScale,next);
+   return {
+    fret,pc,col,
+    key:`${stringIndex}:${col}`,
+    roleId:role.id,
+    shown:visible(role),
+    text:filter===4?"?":cellText(pc,role),
+    note:filter!==4&&actualDisplay!=="note"?PITCH_NAMES[pc]:null,
+    label:`${string.name} string fret ${fret}: ${PITCH_NAMES[pc]}, ${role.label}`,
+    select:()=>onSelectPc(pc),
+   };
+  }),
+ })),
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ [visibleFrets,current,next,selectedScale,filter,actualDisplay,onSelectPc]);
+
+ /*
+  * One tab stop for the whole neck.
+  *
+  * Fifty-two frets are fifty-two buttons, and as plain tab stops they sat
+  * between the player and every control after them: reaching the progression
+  * builder from the map controls meant fifty-two presses through a grid whose
+  * every cell is reachable in two. A grid gets one stop and arrow keys, which
+  * is also how the instrument is actually laid out — left and right along the
+  * string, up and down across them.
+  */
+ const padRefs=useRef(new Map<string,HTMLButtonElement>());
+ const [cursor,setCursor]=useState({s:0,f:0});
+ /*
+  * The handler reads the cursor from a ref, not from the render it closed
+  * over. Held arrow keys repeat faster than React commits, so two presses in
+  * one frame both saw the same starting cell and the second went nowhere.
+  */
+ const cursorRef=useRef(cursor);
+ const moveCursor=useCallback((next:{s:number;f:number})=>{cursorRef.current=next;setCursor(next)},[]);
+ // The neck area control changes how many frets exist, so the cursor is
+ // clamped rather than left pointing past the end of a shorter neck.
+ useEffect(()=>{if(cursorRef.current.f>=visibleFrets.length)moveCursor({...cursorRef.current,f:visibleFrets.length-1})},[visibleFrets,moveCursor]);
+ const onBoardKeys=useCallback((event:React.KeyboardEvent<HTMLDivElement>)=>{
+  const columns=visibleFrets.length;
+  let {s,f}=cursorRef.current;
+  switch(event.key){
+   case "ArrowLeft":f=Math.max(0,f-1);break;
+   case "ArrowRight":f=Math.min(columns-1,f+1);break;
+   case "ArrowUp":s=Math.max(0,s-1);break;
+   case "ArrowDown":s=Math.min(STRINGS.length-1,s+1);break;
+   case "Home":f=0;break;
+   case "End":f=columns-1;break;
+   default:return;
+  }
+  event.preventDefault();
+  moveCursor({s,f});
+  padRefs.current.get(`${s}:${f}`)?.focus();
+ },[moveCursor,visibleFrets]);
+
  return <div className="osScreen harmonyFretboard">
   <section className="hfIntro"><div>{embedded?<h2>{"See what matters now."}</h2>:<h1 data-page-heading tabIndex={-1}>{"See what matters now."}</h1>}<p>{"Choose a progression, move through its chords and watch every fret change job. The map ranks bass note, root, guide tones, written tensions, modal colour, voice-leading targets and controlled outside routes, it does not pretend one scale is the only answer."}</p></div><aside><small>{"Current decision"}</small><b dir="ltr">{current.symbol}</b><span>{PITCH_NAMES[current.root]} {selectedScale.name}</span><em>{selectedRecommendation.score}% {"FIT"}</em></aside></section>
 
@@ -270,7 +352,7 @@ export default function HarmonyFretboard({embedded=false,centre:givenCentre,prog
    * label and still know what they are about to play. In the note view the
    * label already IS the note name, and the pad printed it twice.
    */}
-  <div className="hfBoardWrap"><div className="hfBoard" data-labels={actualDisplay} style={{minWidth:`calc(var(--hf-nut) + ${visibleFrets.length} * var(--hf-fret))`}}><div className="hfFretNumbers" style={{gridTemplateColumns:`var(--hf-nut) repeat(${visibleFrets.length}, minmax(var(--hf-fret), 1fr))`}}><b>{"String"}</b>{visibleFrets.map(f=><span className={[3,5,7,9,12,15,17,19].includes(f)?"marked":""} key={f}>{f}<i/></span>)}</div>{STRINGS.map((string,stringIndex)=><div className={`hfString string-${stringIndex}`} style={{gridTemplateColumns:`var(--hf-nut) repeat(${visibleFrets.length}, minmax(var(--hf-fret), 1fr))`}} key={string.name}><b>{string.name}<small>{"String"}</small></b>{visibleFrets.map(fret=>{const pc=mod(string.open+fret),role=classifyNote(pc,current,selectedScale,next),show=visible(role),picked=selected===pc,destination=selectedDestination===pc;const under=heardAt.has(`${stringIndex}:${fret}`),sounding=heardPc===pc&&!under;return <button type="button" aria-pressed={picked} aria-label={`${string.name} string fret ${fret}: ${PITCH_NAMES[pc]}, ${role.label}${under?", playing now":""}`} onClick={()=>onSelectPc(pc)} className={`role-${role.id} ${show?"visible":"hidden"} ${picked?"picked":""} ${destination?"destination":""} ${under?"under":""} ${sounding?"sounding":""}`} key={fret}><i/><b dir="ltr">{filter===4?"?":cellText(pc,role)}</b>{filter!==4&&actualDisplay!=="note"&&<small dir="ltr">{PITCH_NAMES[pc]}</small>}</button>})}</div>)}</div></div>
+  <div className="hfBoardWrap"><div className="hfBoard" role="group" aria-label="Fretboard map. Use the arrow keys to move between frets and strings." onKeyDown={onBoardKeys} data-labels={actualDisplay} style={{minWidth:`calc(var(--hf-nut) + ${visibleFrets.length} * var(--hf-fret))`}}><div className="hfFretNumbers" style={{gridTemplateColumns:`var(--hf-nut) repeat(${visibleFrets.length}, minmax(var(--hf-fret), 1fr))`}}><b>{"String"}</b>{visibleFrets.map(f=><span className={[3,5,7,9,12,15,17,19].includes(f)?"marked":""} key={f}>{f}<i/></span>)}</div>{boardCells.map(row=><div className={`hfString string-${row.stringIndex}`} style={{gridTemplateColumns:`var(--hf-nut) repeat(${visibleFrets.length}, minmax(var(--hf-fret), 1fr))`}} key={row.name}><b>{row.name}<small>{"String"}</small></b>{row.frets.map(cell=>{const picked=selected===cell.pc,destination=selectedDestination===cell.pc,under=heardAt.has(cell.key),sounding=heardPc===cell.pc&&!under;return <button type="button" aria-pressed={picked} aria-label={under?`${cell.label}, playing now`:cell.label} onClick={cell.select} tabIndex={cursor.s===row.stringIndex&&cursor.f===cell.col?0:-1} onFocus={()=>{if(cursorRef.current.s!==row.stringIndex||cursorRef.current.f!==cell.col)moveCursor({s:row.stringIndex,f:cell.col})}} ref={el=>{if(el)padRefs.current.set(cell.key,el);else padRefs.current.delete(cell.key)}} className={`role-${cell.roleId} ${cell.shown?"visible":"hidden"} ${picked?"picked":""} ${destination?"destination":""} ${under?"under":""} ${sounding?"sounding":""}`} key={cell.fret}><i/><b dir="ltr">{cell.text}</b>{cell.note!==null&&<small dir="ltr">{cell.note}</small>}</button>})}</div>)}</div></div>
   </section>
 
   <section className="hfCurrent">

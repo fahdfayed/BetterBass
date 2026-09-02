@@ -57,6 +57,60 @@
  --on-flame:#1a0d04;
 
  /*
+  * The neck's four jobs, and the wash each one lights its fret with.
+  *
+  * Board-local by contract: only `.hfString` may read these, and DESIGN.md
+  * records them as the one sanctioned exception to the One Flame Rule. On the
+  * fretboard the job a note is doing is the content rather than decoration,
+  * and four jobs separated only by opacity are four jobs the player has to
+  * stop and decode mid-bar.
+  *
+  * Hue and alpha are authored per theme, not derived. A wash is alpha over a
+  * well that is itself alpha over the ground, so the text sitting on it
+  * composites three deep: picking one set of numbers and letting the theme
+  * flip them underneath is how the cream board ended up with 3.75:1 root
+  * labels and a ladder you could not see.
+  */
+ --pad-root:#e8702a;
+ --pad-root-ink:var(--flame);
+ --pad-root-fill:rgba(232,112,42,.22);
+ --pad-guide:#5a9be0;
+ --pad-guide-ink:var(--ink);
+ --pad-guide-fill:rgba(90,155,224,.10);
+ --pad-chord-ink:var(--ink-2);
+ --pad-chord-fill:rgba(255,255,255,.05);
+ --pad-voice:#3fb0c4;
+ --pad-voice-ink:var(--ink-3);
+ --pad-voice-fill:rgba(63,176,196,.15);
+ --pad-colour:#8f74e2;
+ --pad-colour-ink:var(--ink-3);
+ --pad-colour-fill:rgba(143,116,226,.13);
+ --pad-available-ink:var(--ink-3);
+ --pad-outside-ink:var(--ink-4);
+
+ /*
+  * Status, which is not the accent.
+  *
+  * `--warn`, `--wrong`, `--amber`, `--orange`, `--red`, `--violet` and
+  * `--lime` all resolve to the flame, so seven semantic names render as one
+  * colour: on a working screen a caution, a failure, a pass and a caption are
+  * indistinguishable from the one thing you are meant to press.
+  *
+  * These three are the real signals. Teal for a pass rather than green,
+  * because green against orange is the pair that converges first under
+  * deuteranopia and this reading is scanned, not studied — and because the
+  * voice is "measure, do not congratulate", so a pass is a fact, not a
+  * celebration. Every one of them is paired with a word or a glyph in the
+  * markup, so colour is never the only code.
+  */
+ --pass:#3fb08f;
+ --pass-wash:rgba(63,176,143,.14);
+ --caution:#e3b341;
+ --stop:#e0453f;
+ /* The ink a caption falls back to when it stops being an accent. */
+ --label-ink:var(--ink-3);
+
+ /*
   * Ink that sits on a photograph.
   *
   * The hero's copy is over an image, not over the theme's ground, so it stays
@@ -221,6 +275,53 @@
  --flame-deep:#a1450e;
  --flame-wash:rgba(192,84,17,.10);
  --flame-glow:rgba(192,84,17,.22);
+
+ /*
+  * The neck on cream. Composed, not inverted: the hues go deeper because they
+  * now have to darken a near-white ground rather than lift a black one, and
+  * every alpha comes down, because on cream the wash eats the label's contrast
+  * instead of adding to it. Root takes the deep flame so it clears AA on its
+  * own fill rather than on the bare well.
+  */
+ --pad-root:#c05411;
+ --pad-root-ink:#8f3a08;
+ --pad-root-fill:rgba(192,84,17,.14);
+ --pad-guide:#2a63a8;
+ --pad-guide-ink:var(--ink);
+ --pad-guide-fill:rgba(42,99,168,.09);
+ --pad-chord-ink:var(--ink-2);
+ --pad-chord-fill:rgba(17,24,39,.06);
+ /*
+  * The two lit ranks carry their own ink. A fill and its label are one pair:
+  * ink-3 clears AA on the bare well and not on the wash this rank lights its
+  * own fret with, and a rank that is easier to see must not be harder to read.
+  */
+ --pad-voice:#0f7b8c;
+ --pad-voice-ink:rgba(17,24,39,.74);
+ --pad-voice-fill:rgba(15,123,140,.12);
+ --pad-colour:#5b46b8;
+ --pad-colour-ink:rgba(17,24,39,.72);
+ --pad-colour-fill:rgba(91,70,184,.10);
+ /*
+  * And the bottom of the ladder is separated by hand here, because cream's
+  * ink-3 and ink-4 are .60 and .61 — the same value twice. Four greys are
+  * really three on this ground, since a true fourth step would not clear AA
+  * against cream, so the neck cannot borrow a fifth rank from them.
+  */
+ --pad-available-ink:rgba(17,24,39,.72);
+ --pad-outside-ink:var(--ink-4);
+
+ /* The same three signals, composed for a near-white ground. */
+ --pass:#0e7a5f;
+ --pass-wash:rgba(14,122,95,.12);
+ --caution:#8a6206;
+ --stop:#b3261e;
+ /*
+  * Not `--ink-3` here. Cream's ink-3 and ink-4 are .60 and .61, and at 11px on
+  * a panel that lands at 4.46:1 — four hundredths under AA. A caption that
+  * stops being an accent must not stop being readable.
+  */
+ --label-ink:rgba(17,24,39,.70);
 
  --chalk:#111827;
  --on-chalk:#ffffff;

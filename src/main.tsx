@@ -60,6 +60,12 @@ import "./styles/container-scroll.css";
 import "./styles/score.css";
 import "./styles/score-integration.css";
 
+/* The practice session as one fascia; structure only, the palette is unchanged. */
+import "./styles/practice-fascia.css";
+
+/* The instrument labs, each given the same treatment against its own structure. */
+import "./styles/lab-slap.css";
+
 // Audit corrections are intentionally last: they resolve cross-generation
 // cascade collisions without introducing another visual language.
 import "./styles/ui-audit.css";

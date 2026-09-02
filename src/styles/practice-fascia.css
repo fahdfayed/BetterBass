@@ -1,0 +1,413 @@
+/**
+ * The practice session as one fascia.
+ *
+ * Structure borrowed from a cassette-deck front; colour is the app's own. The
+ * roll landed on the deck for two reasons that are about this page and not
+ * about nostalgia:
+ *
+ *   ONE FASCIA, NO PAGES. The deck puts every function on a single panel and
+ *   hinges the deep settings open in place. This page used to carry six
+ *   sections of navigation over thirteen stacked panels. Five of those six are
+ *   reference, and reference is now its own surface; what is left is the one
+ *   thing you actually do, on one plate.
+ *
+ *   AN ENGRAVED LABEL PER FUNCTION. Every switch on a deck says what it does,
+ *   permanently, in the panel itself. The audit counted 172 pieces of text at
+ *   11px on this page — captions doing the work engraving should do. Labels
+ *   here are small, tracked, uppercase and always present, and they name the
+ *   control beside them rather than floating above a group.
+ *
+ * The flame is the amber LED: the running process and the active control, and
+ * nothing else. That mapping is why the palette did not have to change.
+ */
+
+/* ==================================================== the fascia bar == */
+
+/*
+ * The identification plate. A deck tells you which machine it is before it
+ * tells you anything else; this says which day you are on, what phase it
+ * belongs to, and carries the two switches that leave this surface.
+ */
+.practiceEnvironment .deckBar{
+ grid-column:1/-1;
+ display:flex;
+ align-items:center;
+ gap:var(--s5);
+ flex-wrap:wrap;
+ padding:var(--s4) var(--s5);
+ border-bottom:1px solid var(--rule-strong);
+}
+.practiceEnvironment .deckId{
+ display:flex;
+ align-items:baseline;
+ gap:var(--s2);
+ flex:none;
+}
+.practiceEnvironment .deckId small,
+.practiceEnvironment .deckTitle small,
+.practiceEnvironment .deckSwitch small{
+ font-family:var(--font-display);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-legend);
+ text-transform:uppercase;
+ color:var(--ink-4);
+}
+.practiceEnvironment .deckId b{
+ font-family:var(--font-mono);
+ font-variant-numeric:tabular-nums;
+ font-size:var(--t-h2);
+ line-height:1;
+ color:var(--ink);
+}
+.practiceEnvironment .deckTitle{
+ display:flex;
+ flex-direction:column;
+ gap:2px;
+ min-width:0;
+ flex:1 1 20rem;
+}
+.practiceEnvironment .deckTitle b{
+ font-size:var(--t-h3);
+ font-weight:600;
+ letter-spacing:var(--track-sans);
+ color:var(--ink);
+}
+
+/*
+ * Switches, not links. Each one states its function above its value, the way
+ * a labelled toggle does, so the panel reads without a legend.
+ */
+.practiceEnvironment .deckSwitches{display:flex;gap:var(--s2);flex:none}
+.practiceEnvironment .deckSwitch{
+ display:flex;
+ flex-direction:column;
+ align-items:flex-start;
+ gap:2px;
+ min-height:44px;
+ padding:var(--s2) var(--s4);
+ text-align:left;
+}
+.practiceEnvironment .deckSwitch b{
+ font-family:var(--font-mono);
+ font-variant-numeric:tabular-nums;
+ font-size:var(--t-small);
+ color:var(--ink-2);
+}
+/*
+ * The lamp. A deck marks the engaged control with a lit bar along its top
+ * edge rather than by filling it, which keeps the label readable while it is
+ * on. Same idea, same one accent.
+ */
+.practiceEnvironment .deckSwitch.on{
+ --btn-fill:var(--flame-wash);
+ box-shadow:inset 0 2px 0 0 var(--flame);
+}
+.practiceEnvironment .deckSwitch.on b{color:var(--ink)}
+
+/* ================================================== the hinged map == */
+
+/*
+ * Closed by default and it takes no space when closed. The thirty-day map was
+ * a permanent 260px rail carrying thirty targets beside a session you are
+ * trying to run; it is the single largest thing that made this page feel
+ * crowded, and it answers a question you ask between days.
+ */
+.practiceEnvironment .guidedDay{grid-template-columns:1fr}
+.practiceEnvironment .dayRail{
+ display:none;
+ position:static;
+ max-height:none;
+ border-right:0;
+ border-bottom:1px solid var(--groove);
+}
+.practiceEnvironment .dayRail.open{display:block}
+
+@media (min-width:80rem){
+ /* Open, it takes the column it used to own permanently. */
+ .practiceEnvironment .guidedDay:has(.dayRail.open){grid-template-columns:17rem 1fr}
+ .practiceEnvironment .dayRail.open{
+  border-right:1px solid var(--groove);
+  border-bottom:0;
+ }
+}
+
+/* ========================================================= drawers == */
+
+/*
+ * Shut is the default and shut costs nothing. A drawer that merely collapses
+ * to a header still spends a rule and a line of the panel; these are gone
+ * until their switch is thrown, and the switch on the bar is what says they
+ * exist.
+ */
+.practiceEnvironment .deckDrawer{display:none !important}
+.practiceEnvironment .deckDrawer.open{display:grid !important}
+.practiceEnvironment .errorDock.deckDrawer.open{display:flex !important}
+
+/* ================================================ engraved sections == */
+
+/*
+ * Every zone on the fascia states its own name in the panel. These were
+ * `<span>` eyebrows in the markup already; the change is that they now read as
+ * engraving — always present, always the same size, never competing with the
+ * content they label — instead of as a colour-coded caption.
+ */
+.practiceEnvironment .dayObjective span,
+.practiceEnvironment .dayContext b,
+.practiceEnvironment .sessionBlocks>header span,
+.practiceEnvironment .activeBlock>header span,
+.practiceEnvironment .tempoLadderBeast>header span,
+.practiceEnvironment .stateModel>span,
+.practiceEnvironment .sessionRowCard>header span,
+.practiceEnvironment .practiceControlBar small{
+ font-family:var(--font-display);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-legend);
+ text-transform:uppercase;
+ color:var(--ink-4);
+}
+
+/* =================================================== the dot matrix == */
+
+/*
+ * The tape counter. The session timer is the one number you read from across
+ * the room mid-bar, so it is set as a readout: tabular, large, and the only
+ * thing on the panel allowed to be that size.
+ */
+.practiceEnvironment .activeBlock>header>b{
+ font-family:var(--font-mono);
+ font-variant-numeric:tabular-nums;
+ font-size:clamp(2.5rem,5vw,3.75rem);
+ line-height:.9;
+ letter-spacing:-.03em;
+ color:var(--ink);
+}
+/* Running, read off the transport rather than a class that never existed. */
+.practiceEnvironment .activeBlock:has(.timerActions .stop)>header>b{color:var(--flame)}
+
+/* ==================================================== the LED ladder == */
+
+/*
+ * The tempo ladder as a climbing ladder rather than ten buttons in a row.
+ * Rungs below the current one are lit at the pass colour, the current rung is
+ * the flame, and the rungs above are unlit stock. It is the same control it
+ * always was; it now reads as a level rather than as a toolbar.
+ */
+.practiceEnvironment .tempoLadderBeast>div{gap:2px}
+.practiceEnvironment .tempoLadderBeast>div button{
+ position:relative;
+ padding-block:var(--s3) var(--s2);
+ border-radius:0;
+}
+.practiceEnvironment .tempoLadderBeast>div button::before{
+ content:"";
+ position:absolute;
+ inset:auto 12% 4px;
+ height:3px;
+ background:var(--lift-2);
+}
+.practiceEnvironment .tempoLadderBeast>div button.passed::before{background:var(--pass)}
+.practiceEnvironment .tempoLadderBeast>div button.active::before{background:var(--flame)}
+
+/* ======================================================= the plates == */
+
+/*
+ * Bolted zones. The panels were separated by a full border on every side,
+ * which at thirteen panels is twenty-six vertical rules down one page. A
+ * fascia is one surface with milled seams: the zones divide, they do not each
+ * get their own box.
+ */
+.practiceEnvironment .practiceConsole,
+.practiceEnvironment .tempoAndState>article,
+.practiceEnvironment .sessionRowCard,
+.practiceEnvironment .dayContext,
+.practiceEnvironment .errorDock{
+ border-left:0;
+ border-right:0;
+ border-radius:0;
+}
+
+/* ==================================================== the track list == */
+
+/*
+ * The session list is a track list: index, name, duration, state lamp. It used
+ * to carry the task and the pass standard on every row as well — two full
+ * sentences, seven times over, and the single largest block of 11px text on
+ * the surface. Both belong to the block you have selected, and the panel
+ * beside the list already states them. A list you scan and a panel you read
+ * are different jobs.
+ */
+.practiceEnvironment .sessionBlocks>button{
+ grid-template-columns:2.5rem 1fr auto;
+ align-items:center;
+ gap:var(--s4);
+ padding-block:var(--s3);
+}
+.practiceEnvironment .sessionBlocks>button>div{display:flex;flex-direction:column-reverse;gap:1px;min-width:0}
+.practiceEnvironment .sessionBlocks b{margin:0;font-size:var(--t-body);font-weight:500}
+
+@media (max-width:60rem){
+ .practiceEnvironment .deckBar{gap:var(--s3);padding:var(--s3) var(--s4)}
+ /*
+  * Six switches on a phone stacked the bar three rows deep and pushed the
+  * session below the fold. A fascia does not reflow — it runs off the edge of
+  * the panel, and you slide to the rest.
+  */
+ .practiceEnvironment .deckBar{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+ .practiceEnvironment .deckBar::-webkit-scrollbar{display:none}
+ .practiceEnvironment .deckTitle{flex:0 0 auto;max-width:14rem}
+ .practiceEnvironment .deckSwitches{flex:none}
+ .practiceEnvironment .deckSwitch{flex:none;white-space:nowrap}
+}
+
+/* ===================================================== the transport == */
+
+/*
+ * The flame follows the running process, which is the one job amber has on a
+ * deck. Stopped, the thing to press is START. Running, START has become PAUSE
+ * and the thing to press is COMPLETE. One lit control at any moment, never
+ * two, and the readout above carries the same colour while it counts.
+ *
+ * `:has` reads the transport's own state off the pause button's class, so the
+ * rule needs no new markup and cannot drift out of step with the component.
+ */
+.practiceEnvironment .timerActions:not(:has(.stop))>button:first-child{
+ --btn-fill:var(--flame);
+ --btn-ink:var(--on-flame);
+}
+.practiceEnvironment .timerActions:has(.stop) .complete{
+ --btn-fill:var(--flame);
+ --btn-ink:var(--on-flame);
+}
+/*
+ * And the generator's button stops being the loudest thing in its panel: it
+ * makes a practice row, it does not advance the session.
+ */
+.practiceEnvironment .stateModel>button{--btn-fill:none;--btn-ink:var(--ink-2)}
+
+/* ========================================================== material == */
+
+/*
+ * Depth on a black ground.
+ *
+ * DESIGN.md says glass and glow, not shadow, and on this ground that is
+ * physics rather than doctrine: a dark shadow cast onto #000 is invisible.
+ * Everything below therefore builds depth the way the deck itself does — with
+ * a lit top edge, a dark bottom edge, and the difference between a plate that
+ * sits proud and a well that is cut into it.
+ *
+ *   PLATE   a surface at --lift, lit along its top edge, dark along its
+ *           bottom. It reads as sitting on top of the ground.
+ *   WELL    a surface below the plate, darker than the ground it sits in,
+ *           with the light on its INNER top edge. It reads as cut in.
+ *
+ * The two are the whole vocabulary. A zone is one or the other, never both,
+ * and nothing here casts a shadow onto anything else — the only cast light in
+ * the system is still the glow under the flame pill.
+ */
+.practiceEnvironment{
+ --plate:var(--lift);
+ --plate-edge:inset 0 1px 0 0 rgba(255,255,255,.09),0 1px 0 0 rgba(0,0,0,.55);
+ --well-face:var(--ground-2);
+ --well-edge:inset 0 1px 2px 0 rgba(0,0,0,.6),inset 0 -1px 0 0 rgba(255,255,255,.05);
+}
+:root[data-theme="cream"] .practiceEnvironment{
+ --plate-edge:inset 0 1px 0 0 rgba(255,255,255,.9),0 1px 0 0 rgba(17,24,39,.14);
+ --well-face:rgba(17,24,39,.05);
+ --well-edge:inset 0 1px 2px 0 rgba(17,24,39,.14),inset 0 -1px 0 0 rgba(255,255,255,.7);
+}
+
+/*
+ * The plates. Each zone of the fascia is a bolted panel: the bar you read the
+ * day from, the console you run it from, the ladder, the generator. They are
+ * separated by their own edges now rather than by a rule drawn between them,
+ * which is what makes the surface read as assembled instead of ruled.
+ */
+/*
+ * `legacy-views.css` flattens this whole family — `.page .osScreen section` at
+ * transparent with no shadow, and a named rule holding `.practiceConsole` and
+ * its siblings at `background:none !important`. Both are answered here at
+ * (0,4,0) with the important they force, because a fascia without material is
+ * the flat page this was asked to stop being.
+ */
+.page .osScreen.practiceEnvironment .deckBar,
+.page .osScreen.practiceEnvironment .dayObjective,
+.page .osScreen.practiceEnvironment .practiceConsole,
+.page .osScreen.practiceEnvironment .practiceControlBar,
+.page .osScreen.practiceEnvironment .tempoAndState>article,
+.page .osScreen.practiceEnvironment .sessionRowCard,
+.page .osScreen.practiceEnvironment .dayContext,
+.page .osScreen.practiceEnvironment .dayRail.open{
+ background:var(--plate) !important;
+ box-shadow:var(--plate-edge) !important;
+ /*
+  * Plates are square and wells are milled, which is the reference's own
+  * rule: a bolted panel zone has a hard edge, and the things cut into it
+  * — the window, the counter — carry the rounded corner.
+  */
+ border-radius:0 !important;
+ border:0;
+}
+.practiceEnvironment .guidedDay{
+ display:grid;
+ gap:var(--s3);
+ border:0;
+ background:none;
+ padding-block:var(--s3);
+}
+.practiceEnvironment .tempoAndState{gap:var(--s3)}
+
+/*
+ * The wells. Three things on this panel are cut into it rather than sitting on
+ * it, and they are the three you read rather than press: the block list, the
+ * counter, and any drawer that is open. A drawer especially — it is literally
+ * the inside of the machine.
+ */
+/*
+ * `--r-well`, not `--r`. The pill radius is 9999px, which on a tall block is
+ * not a rounded corner but a lozenge — the well has a milled corner, the same
+ * one the surface tokens already name.
+ */
+.page .osScreen.practiceEnvironment .sessionBlocks,
+.page .osScreen.practiceEnvironment .activeBlock>header,
+.page .osScreen.practiceEnvironment .deckDrawer.open,
+.page .osScreen.practiceEnvironment .blockStandard{
+ background:var(--well-face) !important;
+ box-shadow:var(--well-edge) !important;
+ border-radius:var(--r-well) !important;
+ border:0;
+}
+.practiceEnvironment .activeBlock>header{
+ padding:var(--s4) var(--s5);
+ margin-bottom:var(--s4);
+}
+.practiceEnvironment .sessionBlocks{border-right:0}
+
+/*
+ * Controls sit proud of the plate they are on, and the engaged one keeps its
+ * lit bar. A raised control on a lit plate is the whole reason a deck can be
+ * operated without reading it twice.
+ */
+/*
+ * The fill goes through `--btn-fill` rather than through `background`: the
+ * audit sheet already owns that declaration at a higher specificity, and a
+ * control that sits proud is a value for it, not a fight with it.
+ */
+.practiceEnvironment .deckSwitch,
+.practiceEnvironment .timerActions button,
+.practiceEnvironment .tempoLadderBeast>div button,
+.practiceEnvironment .practiceControlBar>button{
+ --btn-fill:var(--lift);
+ box-shadow:var(--plate-edge);
+}
+.practiceEnvironment .deckSwitch:hover,
+.practiceEnvironment .timerActions button:hover,
+.practiceEnvironment .practiceControlBar>button:hover{--btn-fill:var(--lift-2)}
+/*
+ * Pressed means pressed: the lit edge moves to the inside and the plate stops
+ * standing proud.
+ */
+.practiceEnvironment .deckSwitch.on,
+.practiceEnvironment .tempoLadderBeast>div button.active,
+.practiceEnvironment .practiceControlBar>button.active{
+ box-shadow:inset 0 2px 0 0 var(--flame),var(--well-edge);
+}

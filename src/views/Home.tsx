@@ -75,10 +75,22 @@ export default function Home({percent:_,completed,lesson,stage,flow,units,onOpen
   <>
    <section className="productHero" aria-labelledby="outside-in-title">
     <div className="productHeroCopy">
-     <h1 id="outside-in-title" className="productHeroBrand rise d1" data-page-heading tabIndex={-1}>
-      Outside In
+     {/*
+       * One heading, two voices. DESIGN.md pins the signature as "Playfair
+       * Display italic and Inter alternating inside a single heading, the
+       * first clause set and the second stated" — and the home page, which is
+       * the only screen that exists to make the argument, was the one place
+       * not using it. It shouted a name a first-time visitor has no reason to
+       * know at 128px and stated the differentiator underneath at 32px.
+       *
+       * Both strings are unchanged. They are one statement now instead of two
+       * competing ones, so the page has a single peak and the thing worth
+       * reading is the thing that is loud.
+       */}
+     <h1 id="outside-in-title" className="productHeroStatement" data-page-heading tabIndex={-1}>
+      <span className="heroVoiceSet rise d1">Outside In</span>
+      <span className="heroVoiceStated rise d2">Progression first. Scale second.</span>
      </h1>
-     <p className="productHeroThesis rise d2">Progression first. Scale second.</p>
      <p className="productHeroSupport rise d3">
       See what every note is doing against the chord you are on and the one you are moving toward.
      </p>

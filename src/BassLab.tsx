@@ -420,7 +420,7 @@ export default function BassLab(){
   onOpen={openCourseLesson}
  />}
 
- {view==="practice"&&<Suspense fallback={<ToolLoading/>}><BeastPractice currentLesson={course.title} courseTools={course.tools} toolMeta={toolMeta} onOpenTool={openCourseTool}/></Suspense>} 
+ {(view==="practice"||view==="manual")&&<Suspense fallback={<ToolLoading/>}><BeastPractice surface={view==="manual"?"manual":"session"} currentLesson={course.title} courseTools={course.tools} toolMeta={toolMeta} onOpenTool={openCourseTool}/></Suspense>} 
 
  {view==="coach"&&<Suspense fallback={<ToolLoading/>}><PerformanceCoach root={root} modeName={MODES[mode].n} courseTitle={course.title} courseCompleted={courseCompleted} courseTotal={COURSE_LESSONS.length} events={events} livePitch={pitch} listening={listening} recording={recording} onStartRecording={beginTake} onStopRecording={endTake} onSetRoot={key=>{setRoot(key);setChord(`${N[key]}m7`)}} modeIntervals={MODES[mode].s} characterInterval={MODES[mode].s[MODES[mode].c]} onOpen={openCoachTool} onAudition={notes=>audition(notes,.35)}/></Suspense>} 
 

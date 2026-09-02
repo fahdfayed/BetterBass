@@ -21,6 +21,9 @@ colors:
   pad-voice: "#3fb0c4"
   pad-colour: "#8f74e2"
   pad-guide: "#5a9be0"
+  pad-voice-cream: "#0f7b8c"
+  pad-colour-cream: "#5b46b8"
+  pad-guide-cream: "#2a63a8"
 typography:
   display:
     fontFamily: "Inter, system-ui, sans-serif"
@@ -301,6 +304,17 @@ every frame and destroys performance on a phone, so it is never applied to one.
 
 **Blur Is For Fixed Things.** If it scrolls, it does not blur.
 
+**Depth On Black Is A Lit Edge.** A cast shadow onto `#000` is invisible, so
+the fascia builds depth from material rather than from shadow. A **plate** is a
+surface at `--lift`, lit along its top edge and dark along its bottom, and it
+reads as sitting on the ground: square-edged, because a bolted panel zone has a
+hard corner. A **well** is darker than the ground it sits in with the light on
+its inner top edge, and it reads as cut in: milled at `--r-well`, because the
+things cut into a panel are the rounded ones. A zone is one or the other, never
+both. Controls sit proud on their plate and move their lit edge to the inside
+when engaged. Nothing casts onto anything else; the flame's glow is still the
+only cast light in the system.
+
 ## Shapes
 
 `--r` is `9999px`. Every button, field, pill and control is fully rounded.
@@ -363,14 +377,29 @@ weakens as the reason to play the note weakens. The two ranks that ask for
 movement are the loudest, because a player looking up mid-bar is looking for the
 next place to put a finger.
 
-| roles | hue | strength |
-|---|---|---|
-| root, bass | `--pad-root` (flame) | 22% |
-| voice | `--pad-voice` (cyan) | 18% |
-| colour | `--pad-colour` (violet) | 13% |
-| guide | `--pad-guide` (blue) | 10% |
-| chord, specified, written | ink | 5% |
-| context, approach, outside | — | none |
+| roles | hue | dark | cream |
+|---|---|---|---|
+| root, bass | `--pad-root` flame | 22% | 14% |
+| voice | `--pad-voice` cyan | 15% | 12% |
+| colour | `--pad-colour` violet | 13% | 10% |
+| guide | `--pad-guide` blue | 10% | 9% |
+| chord, specified, written | ink | 5% | 6% |
+| context, approach, outside | — | none | none |
+
+Both themes are composed in `tokens.css`, never derived from each other. A wash
+is alpha over a well that is itself alpha over the ground, so a label on it
+composites three deep and the same numbers do not survive the flip: the first
+version of this ladder was authored on black and arrived on cream with 3.75:1
+root labels and a ladder at 1.12 against its own well — invisible.
+
+Each rank owns its ink as well as its fill, `--pad-*-ink`, because a fill and
+its label are one pair and have to be measured together. On cream that is not
+optional: `--ink-3` and `--ink-4` are .60 and .61 there, the same value twice,
+so the four greys are really three on that ground and the neck cannot borrow a
+fifth step from them.
+
+Measured, both themes, every rank: text on its own fill ≥4.58:1, and the wash
+ladder strictly descending from root.
 
 The wash is read from `--pad-fill`, one custom property per pad, so state beats
 role without a specificity argument: hover, selected and under-the-finger set
@@ -399,6 +428,55 @@ The first fret in a row has none — the nut is already that line. String rows a
 separated at `--groove`, a step lighter than the wires, because frets are what
 you are counting. The string itself runs through the middle of the row behind
 the notes, so it is never the row’s boundary.
+
+### The fascia
+
+The practice session is built as one deck fascia. The structure came from a
+cassette-deck front, chosen through a direction round; the palette did not
+change, and the reason it did not is that the flame already does the job amber
+does on a deck — it marks the running process and the active control, and
+nothing else.
+
+**One fascia, no pages.** Everything the session needs is on a single plate,
+and the deeper material hinges open in place. Reference lives on its own
+surface at `/practice/manual`; the session surface never navigates.
+
+**An engraved label per function.** Every switch states what it does above what
+it currently says, permanently, in the panel: `30-DAY MAP / 0 of 30`, `THIS DAY
+/ Why`, `BLOCK / Procedure`. The label is `--font-display` at `--t-micro`,
+uppercase, tracked, `--ink-4`, and it never moves or changes size. This is the
+correction to a page that had 170 pieces of 11px text doing the work engraving
+should do.
+
+**Drawers are shut, and shut costs nothing.** A drawer that collapses to a
+header still spends a rule and a line of panel. These are absent until their
+switch is thrown, and the switch on the bar is what says they exist. Four of
+them carry what used to be displayed at once: the thirty-day map, why the day
+exists, the block's five-step procedure, the row generator, the fault log.
+
+**The lamp, not the fill.** An engaged switch takes a lit bar along its top
+edge (`inset 0 2px 0 0 var(--flame)`) over a `--flame-wash` ground, so the
+label stays readable while it is on. A solid flame fill is reserved for the one
+thing to press.
+
+**The flame follows the running process.** Stopped, the transport's first
+control is the flame. Running, it has become PAUSE in `--stop` and the flame
+moves to COMPLETE, while the readout above counts in flame. One lit control at
+any moment, never two. Both rules read the transport's own state with `:has`,
+so no new markup can drift out of step with the component.
+
+**The readout.** The block timer is the one number read from across the room
+mid-bar: tabular mono, up to 3.75rem, and the only thing on the panel allowed
+to be that size.
+
+**The ladder.** Stepped state reads as a level, not a toolbar: a rung's lamp is
+`--pass` below the current position, `--flame` at it, and `--lift-2` above.
+
+**The list is a list.** The session's blocks carry an index, a name, a duration
+and a state lamp. The task and the pass standard belong to the block you have
+selected and are stated by the panel beside it. A list you scan and a panel you
+read are different jobs, and giving both jobs to one element is what made this
+surface unreadable.
 
 ### The dock
 

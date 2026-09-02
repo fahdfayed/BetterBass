@@ -312,10 +312,11 @@
  * reason to play the note weakens.
  *
  * Every hue token in this project resolves to flame or to ink, so the neck
- * declares its own four. This is a deliberate exception to DESIGN.md's One
- * Flame Rule and it is scoped to the board alone: on a fretboard the job the
- * note is doing is the content, not decoration, and four jobs told apart only
- * by opacity are four jobs a player has to stop and decode. Nothing outside
+ * declares its own four, in `tokens.css` beside the flame and composed per
+ * theme there. This is a deliberate exception to DESIGN.md's One Flame Rule
+ * and it is scoped to the board alone: on a fretboard the job the note is
+ * doing is the content, not decoration, and four jobs told apart only by
+ * opacity are four jobs a player has to stop and decode. Nothing outside
  * `.hfString` may read these.
  *
  *   root, bass   flame   22%   the anchor
@@ -324,33 +325,32 @@
  *   guide        blue    10%   3rd and 7th, stated rather than aimed at
  *   chord, spec. ink      5%   written into the symbol
  */
-.hfBoard{
- --pad-root:var(--flame);
- --pad-voice:#3fb0c4;
- --pad-colour:#8f74e2;
- --pad-guide:#5a9be0;
-}
 .hfString button.role-root,
-.hfString button.role-bass{--pad-fill:color-mix(in oklab,var(--pad-root) 22%,transparent)}
-.hfString button.role-voice{--pad-fill:color-mix(in oklab,var(--pad-voice) 18%,transparent)}
-.hfString button.role-colour{--pad-fill:color-mix(in oklab,var(--pad-colour) 13%,transparent)}
-.hfString button.role-guide{--pad-fill:color-mix(in oklab,var(--pad-guide) 10%,transparent)}
+.hfString button.role-bass{--pad-fill:var(--pad-root-fill)}
+.hfString button.role-voice{--pad-fill:var(--pad-voice-fill)}
+.hfString button.role-colour{--pad-fill:var(--pad-colour-fill)}
+.hfString button.role-guide{--pad-fill:var(--pad-guide-fill)}
 .hfString button.role-chord,
 .hfString button.role-specified,
-.hfString button.role-written{--pad-fill:color-mix(in oklab,var(--ink) 5%,transparent)}
+.hfString button.role-written{--pad-fill:var(--pad-chord-fill)}
 
+/*
+ * Root reads its ink from the pad palette rather than from the flame directly:
+ * on cream the label sits on its own 14% flame fill, and the flame that clears
+ * AA on the bare well does not clear it there.
+ */
 .hfString button.role-root>b,
-.hfString button.role-bass>b{color:var(--oxide-ink);font-weight:700}
-.hfString button.role-guide>b{color:var(--signal);font-weight:600}
+.hfString button.role-bass>b{color:var(--pad-root-ink);font-weight:700}
+.hfString button.role-guide>b{color:var(--pad-guide-ink);font-weight:600}
 .hfString button.role-chord>b,
 .hfString button.role-specified>b,
-.hfString button.role-written>b{color:var(--bone-2);font-weight:500}
-.hfString button.role-colour>b,
-.hfString button.role-voice>b,
-.hfString button.role-available>b{color:var(--bone-3)}
+.hfString button.role-written>b{color:var(--pad-chord-ink);font-weight:500}
+.hfString button.role-voice>b{color:var(--pad-voice-ink)}
+.hfString button.role-colour>b{color:var(--pad-colour-ink)}
+.hfString button.role-available>b{color:var(--pad-available-ink)}
 .hfString button.role-context>b,
 .hfString button.role-approach>b,
-.hfString button.role-outside>b{color:var(--bone-4)}
+.hfString button.role-outside>b{color:var(--pad-outside-ink)}
 
 /*
  * Two rings on the neck, and they are ranked the way the ink is.
@@ -386,6 +386,24 @@
  */
 
 /* -- states ------------------------------------------------------------ */
+
+/*
+ * The neck's own focus ring.
+ *
+ * The global one is `:where(button,…):focus-visible`, and `:where()` carries
+ * zero specificity — any element-level `outline` beats it, and two rules right
+ * here set one: `.sounding` and `.under`. A ring that a note being played can
+ * silently switch off is not a focus indicator.
+ *
+ * It draws inward. The pads sit flush against each other inside a scroll
+ * container, so a ring at a positive offset would be drawn over the neighbour
+ * on both sides and clipped at either end of the board.
+ */
+.hfString button:focus-visible{
+ outline:2px solid var(--flame);
+ outline-offset:-3px;
+ z-index:2;
+}
 
 /* Selected by the player: pressed into the neck. */
 .hfString button.picked{
@@ -616,17 +634,24 @@
 /* ===================================================== pad label sizing == */
 
 /*
- * A role name is up to seven characters and the cell is 54px wide, so at body
- * size the label was being cut mid-word: WRITTEN arrived as WRITTI. The label
- * steps down and is allowed to compress slightly rather than being clipped,
- * because a truncated role name is worse than a small one.
+ * The role name steps down a size and compresses slightly. This block predates
+ * `--hf-fret` and was written when the cell was a fixed 54px and WRITTEN was
+ * arriving as WRITTI; the fret is now sized to the widest label its mode can
+ * produce, so nothing is cut. The smaller size stays because it is what buys
+ * that fret its width — at body size the priority view would need a 100px
+ * fret and a 1.4m neck.
+ *
+ * `text-overflow` is the ellipsis, not `clip`: this rule sits after the one
+ * that sets it, and a clip here would silently undo the backstop DESIGN.md
+ * records — a label cut mid-glyph at the wire reads as the next fret's first
+ * letters.
  */
 .hfString button>b{
  font-size:var(--t-micro);
  letter-spacing:-.02em;
  max-width:100%;
  overflow:hidden;
- text-overflow:clip;
+ text-overflow:ellipsis;
  white-space:nowrap;
 }
 /*
@@ -678,3 +703,77 @@
 .harmonyFretboard>*,
 .hfWork>*,
 .hfContext>*{width:100%;max-width:100%;box-sizing:border-box}
+
+/* ======================================================= touch targets == */
+
+/*
+ * The workstation is dense on purpose: a 30px pill is right for a mouse on a
+ * screen this full of controls, and shrinking the neck to fit a phone would
+ * make it unplayable, which is why the board scrolls instead.
+ *
+ * But PRODUCT.md is explicit about the scene — the player is at the
+ * instrument with both hands occupied, and every touch happens in a gap
+ * between playing. A control you have to look at twice to hit costs a bar.
+ *
+ * So the gate is the input device, not the viewport. A tablet propped on a
+ * stand and a touchscreen laptop need this as much as a phone does, and a
+ * 1200px window with a mouse does not.
+ */
+@media (pointer:coarse){
+ .hfMapControls button,
+ .hfContext .hfHear,
+ .hfNoteTutor>button,
+ .hfChordRail button,
+ .hfBandMixer>div button,
+ .hfTimingControls input,
+ .hfTimingControls select{
+  /*
+   * 44px, not 2.75rem. The root is 15px here, so the rem lands at 41 and
+   * quietly misses the target it was written to hit. A touch target is a
+   * measurement of a fingertip, like the fret grid above it — neither one
+   * belongs on the type scale.
+   */
+  min-height:44px;
+  padding-inline:var(--s3);
+ }
+
+ /*
+  * The slider is the worst of them at 16px, and it is the one control that is
+  * dragged rather than tapped. The input grows to a 44px hit area while the
+  * track it draws stays a line: the target is the finger's, the mark is the
+  * eye's, and they do not have to be the same size.
+  */
+ .hfHarmonyLevel input[type="range"]{
+  height:44px;
+  background:none;
+  -webkit-appearance:none;
+  appearance:none;
+ }
+ .hfHarmonyLevel input[type="range"]::-webkit-slider-runnable-track{
+  height:3px;
+  border-radius:var(--r);
+  background:var(--lift-2);
+ }
+ .hfHarmonyLevel input[type="range"]::-moz-range-track{
+  height:3px;
+  border-radius:var(--r);
+  background:var(--lift-2);
+ }
+ .hfHarmonyLevel input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  appearance:none;
+  width:1.5rem;
+  height:1.5rem;
+  margin-top:-.66rem;
+  border:0;
+  border-radius:50%;
+  background:var(--flame);
+ }
+ .hfHarmonyLevel input[type="range"]::-moz-range-thumb{
+  width:1.5rem;
+  height:1.5rem;
+  border:0;
+  border-radius:50%;
+  background:var(--flame);
+ }
+}
