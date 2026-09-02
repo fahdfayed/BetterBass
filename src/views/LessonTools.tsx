@@ -112,7 +112,7 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
  }
 
  if(stage===3||stage===4)return (
-  <div className="transport">
+  <div className="toolDeck">
    <div className="transportRow">
     <button className={bridge.playing?"action action-quiet":"action-primary"} onClick={bridge.startRuntime}>
      {bridge.playing?"■ Stop band":"▶ Start band"}
@@ -136,7 +136,7 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
  );
 
  return (
-  <div className="transport">
+  <div className="toolDeck">
    <div className="transportRow">
     <button className={bridge.recording?"action action-quiet":"action-primary"} onClick={bridge.recording?bridge.endTake:bridge.beginTake}>
      {bridge.recording?"■ End & analyse":"● Record the take"}

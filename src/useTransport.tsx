@@ -26,6 +26,8 @@ export type TransportState={
  running:boolean;
  loop:boolean;
  countIn:boolean;
+ /** Click level, 0 to 1. The fader on the transport writes it. */
+ level:number;
  /** Beat within the bar, 0 to 3. Meaningless while stopped. */
  beat:number;
  /** Bars elapsed since the clock started. */
@@ -38,6 +40,7 @@ export type TransportState={
  stop:()=>void;
  setLoop:(on:boolean)=>void;
  setCountIn:(on:boolean)=>void;
+ setLevel:(value:number)=>void;
 };
 
 const Ctx=createContext<TransportState|null>(null);
@@ -54,6 +57,16 @@ export function TransportProvider({children}:{children:ReactNode}){
  const [running,setRunning]=useState(false);
  const [loop,setLoop]=useState(true);
  const [countIn,setCountIn]=useState(true);
+ /*
+  * The click level.
+  *
+  * The three voices below were scheduled at fixed gains, so the only way to
+  * quieten the click against a bass was the operating system, which takes
+  * the rest of the page with it. The fader scales all three together and
+  * keeps their relationship: the count-in stays above the downbeat, and the
+  * downbeat stays above the other three beats.
+  */
+ const [level,setLevelRaw]=useState(.8);
  const [beat,setBeat]=useState(0);
  const [bar,setBar]=useState(0);
  const [counting,setCounting]=useState(false);
@@ -62,6 +75,9 @@ export function TransportProvider({children}:{children:ReactNode}){
  // The clock reads tempo through a ref so a change while running takes effect
  // on the next beat instead of tearing the clock down and restarting it.
  const tempoRef=useRef(tempo);
+ /* Read inside the audio callback, which does not re-close over state. */
+ const levelRef=useRef(level);
+ levelRef.current=level;
  tempoRef.current=tempo;
  const countInRef=useRef(countIn);
  countInRef.current=countIn;
@@ -104,7 +120,10 @@ export function TransportProvider({children}:{children:ReactNode}){
     const osc=ctx.createOscillator(),gain=ctx.createGain();
     osc.frequency.setValueAtTime(inCount?1760:onDownbeat?1320:880,time);
     gain.gain.setValueAtTime(.0001,time);
-    gain.gain.exponentialRampToValueAtTime(inCount?.34:onDownbeat?.42:.2,time+.004);
+    const peak=(inCount?.34:onDownbeat?.42:.2)*levelRef.current;
+    /* exponentialRamp cannot reach zero, so a fader at the bottom ramps to
+       the same inaudible floor the tail uses rather than throwing. */
+    gain.gain.exponentialRampToValueAtTime(Math.max(.0002,peak),time+.004);
     gain.gain.exponentialRampToValueAtTime(.0001,time+.055);
     osc.connect(gain);gain.connect(ctx.destination);
     osc.start(time);osc.stop(time+.07);
@@ -124,6 +143,10 @@ export function TransportProvider({children}:{children:ReactNode}){
   setRunning(true);
  },[]);
 
+ const setLevel=useCallback((value:number)=>{
+  setLevelRaw(Math.min(1,Math.max(0,value)));
+ },[]);
+
  const toggle=useCallback(()=>{
   if(audio.current)stop();else start();
  },[start,stop]);
@@ -135,9 +158,9 @@ export function TransportProvider({children}:{children:ReactNode}){
  },[]);
 
  const value=useMemo<TransportState>(()=>({
-  tempo,running,loop,countIn,beat,bar,counting,
-  setTempo,nudgeTempo,toggle,stop,setLoop,setCountIn,
- }),[tempo,running,loop,countIn,beat,bar,counting,setTempo,nudgeTempo,toggle,stop]);
+  tempo,running,loop,countIn,level,beat,bar,counting,
+  setTempo,nudgeTempo,toggle,stop,setLoop,setCountIn,setLevel,
+ }),[tempo,running,loop,countIn,level,beat,bar,counting,setTempo,nudgeTempo,toggle,stop,setLevel]);
 
  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

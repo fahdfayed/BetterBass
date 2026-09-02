@@ -5,7 +5,6 @@ import Home from "./views/Home";
 import WorldMap from "./views/WorldMap";
 const TabStudio=lazy(()=>import("./tab/TabStudio"));
 const JacoMasterclass=lazy(()=>import("./views/JacoMasterclass"));
-import ThemeToggle from "./components/ThemeToggle";
 import CourseLibrary from "./views/CourseLibrary";
 import LessonWorkspace from "./views/LessonWorkspace";
 import LessonTools,{WORKSPACE_LABELS} from "./views/LessonTools";
@@ -230,17 +229,11 @@ export default function BassLab(){
    <label><span className="label">Key</span><select aria-label="Key centre" value={root} onChange={e=>{setRoot(+e.target.value);setChord(`${N[+e.target.value]}m7`)}}>{N.map((n,i)=><option value={i} key={n}>{n}</option>)}</select></label>
    <label><span className="label">Sound</span><select aria-label="Home mode" value={mode} onChange={e=>setMode(+e.target.value)}>{MODES.map((m,i)=><option value={i} key={m.n}>{m.n}</option>)}</select></label>
   </div>}
-  <ThemeToggle/>
+
   <VoiceControl/>
  </>;
 
  return <AppShell
-  course={{percent:coursePct,index:courseIndex,total:COURSE_LESSONS.length,title:course.title}}
-  chart={{
-   keyName:N[root],keyIndex:root,onKey:index=>{setRoot(index);setChord(`${N[index]}m7`)},keyOptions:N,
-   sound:MODES[mode].n,soundIndex:mode,onSound:setMode,soundOptions:MODES.map(m=>m.n),
-   meter,chord,feel:style,
-  }}
   input={{listening,detail:pitch?`${pitch.n}${pitch.oct} at ${Math.round(pitch.hz)} Hz`:"Connect only when a tool asks"}}
   onToggleInput={()=>void startAudio()}
   inputBusy={connecting}

@@ -8,37 +8,18 @@
 
 /* =============================================================== shell == */
 
-/* Working pages were scrolling underneath fixed chrome. Keep the navigation in
-   normal flow and let it stick, so content never appears behind the wordmark or
-   centre navigation. */
-.navBar{
- position:sticky;
- top:0;
- background:color-mix(in oklab,var(--ground) 88%,transparent);
- border-bottom:1px solid var(--hairline);
- backdrop-filter:var(--blur);
- -webkit-backdrop-filter:var(--blur);
-}
-
-/* The nav now occupies its own height, so the sheet no longer needs to reserve
-   another nav-height of empty space. */
-.sheet{padding-top:var(--s7)}
-.sheet:has(.spotHero),.sheet:has(.productHero){padding-top:0}
-
-/* A five-link pill is too dense on small laptops. Contents and the dock already
-   provide complete navigation at these widths. */
-.navPill{display:none}
-@media (min-width:74rem){.navPill{display:flex}}
-
-/* The old photo-hero colour override was tied to whether a hero existed
-   anywhere on the page, not whether the nav was actually over it. With sticky,
-   opaque-enough chrome the nav always follows the active theme instead. */
-.stand:has(.spotHero) .navMark,
-.stand:has(.spotHero) .navMarkWord,
-.stand:has(.spotHero) .navMenu,
-.stand:has(.spotHero) .navPill button{color:var(--ink)}
-.stand:has(.spotHero) .navMenu{border-color:var(--glass-line)}
-.stand:has(.spotHero) .navMenuKey{color:var(--ink-3);border-color:var(--hairline-2)}
+/*
+ * The shell corrections that stood here are gone with the shell they corrected.
+ *
+ * They pinned a floating nav bar back into normal flow, hid a five-link glass
+ * pill below 74rem, and re-inked the chrome wherever a photographic hero was
+ * present anywhere on the page. There is no nav bar, no pill and no hero: the
+ * sections are tabs across the head of the right page, and the page they sit
+ * on is paper.
+ *
+ * One line survives, and it is the one that was never about that shell: a
+ * heading focused on route change must not land under the tab row.
+ */
 
 [data-page-heading],.pacedBeat{scroll-margin-top:calc(var(--nav) + var(--s4))}
 
@@ -159,203 +140,39 @@
 
 /* ================================================================ dock == */
 
-/* The fixed bottom strip is one horizontal scroller. Giving the transport a
-   viewport percentage and the destinations the remainder clipped the tempo or
-   input controls on phones. The whole strip scrolls instead, so every control
-   remains reachable and nothing has to disappear. */
 /*
- * The bar does not scroll; the row of destinations inside it does.
+ * The dock corrections are gone with the two-occupant dock they described.
  *
- * This asked for overflow-x:auto with overflow-y:visible, which CSS does not
- * grant: when either axis is not visible the other computes to auto, so the bar
- * was clipping vertically too. The dock tooltip rises above the bar by design,
- * and it was being sheared off at the bar's top edge, which is the cut-off
- * rounded rectangle visible over the icons.
+ * That strip carried the transport and a magnifying row of section
+ * destinations, competing for one bar, so the rules here fought over who got
+ * to scroll and who got to overflow: the bar was told not to clip, and the
+ * transport was pinned to its content width so it could push the destinations
+ * sideways.
  *
- * `.dockTabsRow` already carries overflow-x:auto and is the correct scroller,
- * so the bar can simply stop clipping. `html,body{overflow-x:hidden}` in
- * stand.css still guards the page against sideways drift.
+ * Both would break the book. The dock has one occupant now — the destinations
+ * moved to the left page — so the transport fits the width instead of
+ * overflowing it, and the strip clips again, which is what rounds the corner
+ * under the play key.
  */
-.dock{
- min-width:0;
- max-width:100vw;
- overflow:visible;
-}
-.dock::-webkit-scrollbar{display:none}
-.dock .transport{flex:0 0 auto;min-width:max-content;max-width:none}
-.dockTabs{flex:0 0 auto;min-width:max-content}
-@media (max-width:52rem){
- .dock .transport{padding-inline:var(--s3)}
- .dockTabs{padding-right:var(--s3)}
- .tInputDetail{display:none}
-}
 
 /* =============================================================== home == */
 
-/* A product-specific first viewport. The real fretboard-role visual is the
-   dominant plane, and the wash behind it is the only atmosphere: staves are
-   reserved for places where the document actually changes section. */
-.productHero{
- position:relative;
- min-height:calc(100dvh - var(--nav));
- width:100vw;
- margin-inline:calc(50% - 50vw);
- overflow:hidden;
- display:flex;
- align-items:center;
- padding:clamp(4rem,9vw,8rem) clamp(1.25rem,6vw,6rem);
- background:
-  radial-gradient(circle at 72% 58%,var(--flame-wash),transparent 32%),
-  linear-gradient(115deg,var(--ground) 0%,var(--ground) 42%,color-mix(in oklab,var(--ground-2) 84%,var(--flame)) 100%);
- isolation:isolate;
-}
 /*
- * The ruled field that used to sit here has been removed, and the reason is
- * worth keeping: it was a continuous stave running the whole height of the
- * hero, added to "build atmosphere". Two things were wrong with it.
+ * The product hero that stood here is gone, and with it every rule that
+ * measured the window instead of the page.
  *
- * It was decoration. Notation earns its place in this interface by carrying
- * meaning, and a ruling that marks nothing is a texture wearing a stave's
- * clothes.
+ * It was full-bleed by construction — 100vw wide with margin-inline:calc(50% -
+ * 50vw) to break out of the content column, a radial wash across the whole
+ * viewport, and a neck rotated three degrees, masked, and bled off the right
+ * edge. Inside a bound spread there is no viewport to break out to: the right
+ * page is eight hundred pixels of an eleven hundred pixel window, so the
+ * escape hatch dragged the first screen of the product off its own left edge
+ * and put a horizontal scrollbar under it.
  *
- * And it was self-defeating. The score language works by contrast with plain
- * technical chrome: a five-line system means "a section changes here" only
- * because the surface around it is not ruled. Wallpapering the first screen in
- * staff lines spends that contrast before the reader meets a single real
- * divider, and the genuine systems between the bands below stop reading as
- * boundaries at all.
- *
- * The hero keeps its wash and the real neck. The staves live where a section
- * actually begins.
+ * The statement moved to the left page and the neck became the first thing on
+ * the working page rather than atmosphere behind the words. Both live in
+ * home-book.css now.
  */
-.productHeroCopy{
- position:relative;
- z-index:2;
- width:min(46rem,58vw);
- display:flex;
- flex-direction:column;
- align-items:flex-start;
- gap:var(--s5);
-}
-/*
- * The two-voice statement.
- *
- * The signature this design system pins first — Playfair italic and Inter
- * alternating inside ONE heading, the first clause set and the second stated —
- * was used nowhere on the page that has to make the argument. Instead the hero
- * ran two headings against each other: the brand at 128px in the serif, and
- * the differentiator at 32px in the sans. A visitor arriving cold, which
- * PRODUCT.md says is every visitor, met a name they have no reason to know
- * four times the size of the reason to stay.
- *
- * Both voices are the same size here, which is what makes them one block
- * rather than two lines. The tracking is what separates them: the serif runs
- * looser at -.05em and the sans harder at -.08em, exactly as the type scale
- * specifies, so the pair sits as a single paragraph of display type with a
- * change of register in the middle of it.
- */
-.productHeroStatement{
- margin:0;
- display:flex;
- flex-direction:column;
- max-width:none !important;
- font-size:clamp(2.6rem,6.4vw,6.75rem) !important;
- font-weight:400 !important;
- line-height:.92 !important;
- color:var(--ink) !important;
- text-wrap:balance;
-}
-.productHeroStatement .heroVoiceSet{
- font-family:var(--font-accent);
- font-style:italic;
- font-weight:500;
- letter-spacing:var(--track-serif);
-}
-.productHeroStatement .heroVoiceStated{
- font-family:var(--font-display);
- letter-spacing:var(--track-sans);
- /*
-  * The stated clause carries the claim, so it gets the optical lead-in the set
-  * clause does not need: a hair of space above, and no more, because the two
-  * voices reading as one block is the whole effect.
-  */
- margin-top:.06em;
-}
-.productHeroSupport{
- max-width:34rem;
- color:var(--ink-2);
- font-size:var(--t-lead);
- line-height:1.55;
-}
-.productHeroActions{display:flex;align-items:center;gap:var(--s4);margin-top:var(--s2)}
-.productHeroVisual{
- position:absolute;
- z-index:1;
- right:-7vw;
- bottom:8vh;
- /*
-  * Narrowed, and faded out along its leading edge.
-  *
-  * At 1280 the neck ran from x373 while the copy column ran to x704, so three
-  * hundred pixels of the thesis and the support line sat on top of a live
-  * fretboard grid. The copy is above it in the stacking order, which meant the
-  * text was technically visible and actually unreadable.
-  *
-  * The mask is the part that scales: whatever the viewport does to these two
-  * widths, the instrument dissolves before it reaches the reading column
-  * instead of being clipped at a hard edge, and it still bleeds off the right.
-  */
- width:min(58vw,62rem);
- /*
-  * The hold before the ramp matters. Fading straight from the leading edge
-  * left the chord label at roughly a tenth opacity behind the last words of
-  * the thesis, which reads as a smudge rather than as depth. Holding fully
-  * transparent for the first tenth puts the display line on clean ground and
-  * starts the instrument after it.
-  */
- mask-image:linear-gradient(to right,transparent 0%,transparent 10%,#000 40%);
- -webkit-mask-image:linear-gradient(to right,transparent 0%,transparent 10%,#000 40%);
- transform:rotate(-3deg) translate3d(0,0,0);
- transform-origin:center;
- opacity:.92;
- animation:heroInstrumentIn 1100ms var(--ease-out-expo) both;
- pointer-events:none;
-}
-.productHeroVisual .neckPreview{gap:var(--s5)}
-.productHeroVisual .neckGrid{
- border-radius:0;
- border-color:var(--hairline-2);
- background:var(--hairline-2);
- box-shadow:0 35px 80px -55px rgba(0,0,0,.9);
-}
-.productHeroVisual .neckGrid>*{background:color-mix(in oklab,var(--ground-2) 78%,transparent)}
-.productHeroVisual .neckPreviewChord,.productHeroVisual .neckKey{opacity:.78}
-
-@keyframes heroInstrumentIn{
- from{opacity:0;transform:rotate(-3deg) translate3d(7%,3%,0) scale(.97)}
- to{opacity:.92;transform:rotate(-3deg) translate3d(0,0,0) scale(1)}
-}
-
-@media (max-width:62rem){
- .productHero{align-items:flex-start;padding-top:var(--s9);padding-bottom:48vh}
- .productHeroCopy{width:min(42rem,100%)}
- .productHeroVisual{width:110vw;right:-35vw;bottom:7vh;opacity:.72}
- .productHeroStatement{font-size:clamp(2.4rem,7.4vw,4.5rem) !important}
-}
-@media (max-width:42rem){
- .productHero{min-height:calc(100svh - var(--nav));padding-inline:var(--s5);padding-bottom:42vh}
- /*
-  * Phone. The claim has to stay the largest thing on the screen — that is the
-  * whole point of the change — but three lines of display type at the old
-  * brand's 60px would wrap "Progression first. Scale second." into five, so
-  * the ceiling is set where the statement lands in four lines and still clears
-  * the call to action inside the first screen.
-  */
- .productHeroStatement{font-size:clamp(2.4rem,10.4vw,3.4rem) !important;line-height:.96 !important}
- .productHeroSupport{font-size:var(--t-body);max-width:30rem}
- .productHeroVisual{width:145vw;right:-63vw;bottom:6vh}
- .productHeroVisual .neckPreviewChord,.productHeroVisual .neckKey{display:none}
-}
 
 /* ========================================================= practice == */
 
@@ -620,7 +437,7 @@
 @media (max-width:700px){.sheet{padding-top:var(--s4)}}
 
 @media (prefers-reduced-motion:reduce){
- .productHeroVisual,.rise,.d1,.d2,.d3,.d4{animation:none !important;transform:none !important;opacity:1 !important}
+ .rise,.d1,.d2,.d3,.d4{animation:none !important;transform:none !important;opacity:1 !important}
 }
 
 /* ============================================================== radius === */

@@ -174,8 +174,8 @@ body.isSplitting{user-select:none;cursor:col-resize}
 
 /* ---- transport ---------------------------------------------------------- */
 
-.transport{display:flex;flex-direction:column;gap:var(--s5)}
-.transport p{font-size:var(--t-small)}
+.toolDeck{display:flex;flex-direction:column;gap:var(--s5)}
+.toolDeck p{font-size:var(--t-small)}
 .transportRow{display:flex;align-items:center;gap:var(--s5)}
 .transportRow>button{flex:1;justify-content:center}
 .barBeat,.takeCount{display:flex;align-items:baseline;gap:2px;flex:none;font-family:var(--font-mono)}

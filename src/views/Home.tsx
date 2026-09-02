@@ -1,4 +1,5 @@
 import Glyph from "../components/Glyph";
+import PageLeaf from "../components/PageLeaf";
 import Icon from "../components/Icon";
 import {Fragment} from "react";
 import {goToView} from "../router";
@@ -73,39 +74,41 @@ export default function Home({percent:_,completed,lesson,stage,flow,units,onOpen
 
  return (
   <>
-   <section className="productHero" aria-labelledby="outside-in-title">
-    <div className="productHeroCopy">
-     {/*
-       * One heading, two voices. DESIGN.md pins the signature as "Playfair
-       * Display italic and Inter alternating inside a single heading, the
-       * first clause set and the second stated" — and the home page, which is
-       * the only screen that exists to make the argument, was the one place
-       * not using it. It shouted a name a first-time visitor has no reason to
-       * know at 128px and stated the differentiator underneath at 32px.
-       *
-       * Both strings are unchanged. They are one statement now instead of two
-       * competing ones, so the page has a single peak and the thing worth
-       * reading is the thing that is loud.
-       */}
-     <h1 id="outside-in-title" className="productHeroStatement" data-page-heading tabIndex={-1}>
-      <span className="heroVoiceSet rise d1">Outside In</span>
-      <span className="heroVoiceStated rise d2">Progression first. Scale second.</span>
-     </h1>
-     <p className="productHeroSupport rise d3">
+   {/*
+     * The statement is the left page.
+     *
+     * It was a full-bleed hero: 100vw wide, pulled out of the content column
+     * with a negative margin, a neck rotated three degrees bleeding off the
+     * right, and a radial wash behind the whole thing. That arrangement needs
+     * the viewport, and inside a bound spread it does not have one — the
+     * escape hatch measured the window rather than the page and dragged the
+     * first screen of the product a hundred and fifty pixels off its own
+     * left edge.
+     *
+     * On a book the argument goes on the facing page and the work goes on the
+     * right, which is what the rest of this section already does. The neck
+     * stays, but it stops being atmosphere behind the words and becomes the
+     * first thing on the working page: it is the demonstration, so it should
+     * be legible rather than rotated and faded under a headline.
+     */}
+   <PageLeaf>
+    <div className="homeStatement">
+     <h1 id="outside-in-title" className="homeWord" data-page-heading tabIndex={-1}>Outside <em>In</em></h1>
+     <p className="sectionMark homeClaim">Progression first. Scale second.</p>
+     <hr className="redRule"/>
+     <p className="homeSupport">
       See what every note is doing against the chord you are on and the one you are moving toward.
      </p>
-     <div className="productHeroActions rise d4">
-      <button className="action-primary" onClick={onOpenLesson}>
-       {stage.index?"Continue":"Begin"} lesson
-      </button>
-     </div>
+     <button className="action-primary homeBegin" onClick={onOpenLesson}>
+      {stage.index?"Continue":"Begin"} lesson <span className="caret" aria-hidden="true">&#8594;</span>
+     </button>
     </div>
+   </PageLeaf>
 
-    <div className="productHeroVisual" aria-hidden="true">
-     <NeckPreview/>
-    </div>
+   <section className="homeDemo" aria-label="What a note is doing">
+    <NeckPreview/>
+    <p className="annot homeDemoNote">Notes in context.</p>
    </section>
-
    <section className="band reveal">
     <div className="band-head">
      <h2 className="label">Today</h2>
@@ -147,7 +150,7 @@ export default function Home({percent:_,completed,lesson,stage,flow,units,onOpen
     </ol>
    </section>
 
-   <section className="band reveal">
+   <section className="band reveal homeElsewhere">
     <h2 className="label band-head">Elsewhere</h2>
     <ol className="rows stagger">
      {ELSEWHERE.map(item=>(
@@ -165,7 +168,7 @@ export default function Home({percent:_,completed,lesson,stage,flow,units,onOpen
     </ol>
    </section>
 
-   <section className="band reveal">
+   <section className="band reveal homeCourse">
     <div className="band-head">
      <h2 className="label">The course</h2>
      <button className="action action-quiet" onClick={()=>goToView("roadmap")}>

@@ -51,10 +51,24 @@
   * correctly with the dark ink that sits on them, and is the right side of the
   * trade at two to one.
   */
- --lime:var(--oxide-ink);
- --violet:var(--oxide-ink);
- --blue:var(--ink-3);
- --red:var(--alert-ink);
+ /*
+  * The four legacy accents, which finally get to mean four different things.
+  *
+  * Under the single-accent rule these all collapsed onto one orange, so in the
+  * old sheets a pass, a failure, a link and a caption were the same colour.
+  * The book has four inks, so each of these can carry its own job again:
+  * --lime marks what was measured, --red marks what failed, --blue is the
+  * margin hand, and --violet is the neck's colour-tone rank.
+  *
+  * --red in particular had to move. It read var(--alert-ink), and --alert-ink
+  * reads var(--red) one file earlier, so the pair formed a custom-property
+  * cycle: CSS resolves a cycle to guaranteed-invalid, which silently unset
+  * both of them and dropped every legacy failure marker back to inherited ink.
+  */
+ --lime:var(--moss);
+ --violet:var(--pad-colour);
+ --blue:var(--pencil);
+ --red:var(--stop);
 
  /* One radius family instead of 11px/12px/13px/14px/15px/17px/18px/24px, and
     that family is now the milled corner rather than a soft one: 8px and 12px
@@ -72,7 +86,7 @@
     elements rendered in the old monospace beside a hundred and sixty-six in the
     new one. Two monos in one interface is not a preference, it is a bug. */
  --sans:var(--font);
- --mono:var(--font-mono);
+ --mono:var(--font-label);
 }
 
 /**
@@ -158,10 +172,16 @@
 .page .osScreen option{background:var(--bg-lift)}
 .page .osScreen input[type="range"]{accent-color:var(--accent)}
 
-/* Small inline markers: counters, pips, tally marks. */
-.page .osScreen i:not([class]),
-.page .osScreen u:not([class]),
-.page .osScreen em:not([class]){background:var(--wash);color:var(--ink-2)}
+/*
+ * Small inline markers: counters, pips, tally marks.
+ *
+ * Never inside a heading. A page title in this design puts its standing-up
+ * clause in an <em>, and this rule was painting a grey box behind it — the
+ * one visible seam left between the legacy sheets and the book.
+ */
+.page .osScreen :not(h1,h2,h3,h4,[data-page-heading])>i:not([class]),
+.page .osScreen :not(h1,h2,h3,h4,[data-page-heading])>u:not([class]),
+.page .osScreen :not(h1,h2,h3,h4,[data-page-heading])>em:not([class]){background:var(--wash);color:var(--ink-2)}
 
 /*
  * Legacy buttons that are not the primary action sit flat until hovered.
@@ -172,25 +192,34 @@
  * fill off every primary button inside a legacy screen — on the dark theme
  * that left near-black ink on the near-black page, at 1:1.
  */
+/*
+ * background-color, not background.
+ *
+ * The shorthand resets background-image too, and this rule reaches every
+ * button inside a legacy screen — including the ones the book prints on a
+ * stave. It was quietly wiping the ruling out from under every row of the
+ * labs index. It only ever meant to remove the fill, so it now says so.
+ */
 .page .osScreen button:not(.mega):not(.action):not(.action-primary){
- background:transparent;
+ background-color:transparent;
  border-color:var(--rule);
 }
 .page .osScreen button:not(.mega):not(.action):not(.action-primary):hover{
- background:var(--wash);
+ background-color:var(--wash);
  border-color:var(--rule-strong);
 }
 .page .osScreen button.active,
 .page .osScreen button[aria-pressed="true"]{
- background:var(--accent-wash);
+ background-color:var(--accent-wash);
  border-color:color-mix(in oklab,var(--accent) 45%,transparent);
  color:var(--ink);
 }
 
 /* An empty class attribute still matches [class], so the earlier :not([class])
-   guard skipped markers written as <i className={...}> with a falsy value. */
-.page .osScreen i,
-.page .osScreen u{background:var(--wash);color:var(--ink-2)}
+   guard skipped markers written as <i className={...}> with a falsy value.
+   Headings are excluded here for the same reason as above. */
+.page .osScreen :not(h1,h2,h3,h4,[data-page-heading])>i,
+.page .osScreen :not(h1,h2,h3,h4,[data-page-heading])>u{background:var(--wash);color:var(--ink-2)}
 
 /* Legacy warning copy keeps its meaning but moves onto the new warn hue. */
 .page .osScreen .warn,

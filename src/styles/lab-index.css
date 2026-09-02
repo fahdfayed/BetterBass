@@ -1,0 +1,174 @@
+/**
+ * The labs, as the contents of a section rather than a grid of tiles.
+ *
+ * Seven rows on seven staves. Each one states its number, what the tool is,
+ * what it does, what it produces, and the way in — in that order, left to
+ * right, which is the order the questions actually arrive in.
+ *
+ * The page it replaces put an icon, a heading and a paragraph into seven
+ * identical boxes. That arrangement says "seven of the same thing" about a set
+ * whose whole point is that they are seven different things, and it is the
+ * default container reached for when nobody decided what the page was.
+ */
+
+/* ============================================================= statement == */
+
+/*
+ * The left page on this route.
+ *
+ * There is no list to put over there — the labs are the list, and they are the
+ * work — so the facing page carries the statement, the way out, and the note
+ * at the foot. It is the one route where the title is struck on the left page
+ * rather than at the head of the right.
+ */
+.leafStatement{
+ display:flex;
+ flex-direction:column;
+ gap:var(--s3);
+ flex:1;
+ min-height:0;
+}
+.leafStatement h1{
+ font-size:var(--t-h2);
+ line-height:1.08;
+ letter-spacing:var(--track-title);
+ max-width:none;
+}
+.leafStatement .redRule{margin:var(--s3) 0 var(--s4)}
+.leafStatement>p{
+ font-size:var(--t-body);
+ line-height:1.5;
+ color:var(--ink-2);
+ max-width:none;
+}
+
+.leafReturn{
+ align-self:flex-start;
+ margin-top:var(--s3);
+ display:inline-flex;
+ align-items:center;
+ gap:var(--s2);
+ font-family:var(--font);
+ font-size:var(--t-body);
+ color:var(--vermillion);
+ transition:color var(--m-click) var(--ease-page);
+}
+.leafReturn:hover{color:var(--vermillion-deep)}
+
+/* ================================================================ list ==== */
+
+.labIndex{display:block}
+
+.labList{
+ list-style:none;
+ margin:0;
+ padding:0;
+ display:flex;
+ flex-direction:column;
+}
+
+/*
+ * One row, five columns, and none of them is a card.
+ *
+ * The two drawings are given fixed tracks rather than intrinsic ones so every
+ * row's title starts on the same vertical: a list whose left edge moves as the
+ * artwork changes width is a list the eye cannot run down, which is the only
+ * thing this page is for.
+ */
+.labRow{
+ width:100%;
+ display:grid;
+ grid-template-columns:2rem 3.25rem minmax(11rem,1fr) 6.5rem auto;
+ align-items:center;
+ gap:var(--s5);
+ padding:var(--s4) var(--s2);
+ text-align:left;
+ color:var(--ink-2);
+ transition:color var(--m-click) var(--ease-page);
+}
+.labRow:hover{color:var(--ink)}
+
+.labNum{
+ font-family:var(--font-title);
+ font-size:1.5rem;
+ font-weight:500;
+ font-variant-numeric:lining-nums tabular-nums;
+ line-height:1;
+ color:var(--ink-3);
+ text-shadow:0 0 4px var(--paper),0 0 4px var(--paper);
+}
+.labRow:hover .labNum{color:var(--vermillion)}
+
+.labMark{display:flex;align-items:center;justify-content:center;color:var(--ink-2)}
+.labMark svg{width:2.75rem;height:2.125rem}
+
+.labText{
+ display:flex;
+ flex-direction:column;
+ gap:.15rem;
+ min-width:0;
+ /* The type knocks the ruling out behind it, the way an engraver does. */
+ text-shadow:0 0 3px var(--paper),0 0 3px var(--paper),0 0 7px var(--paper);
+}
+.labTitle{
+ font-family:var(--font);
+ font-size:var(--t-h3);
+ font-weight:600;
+ line-height:1.2;
+ color:var(--ink);
+}
+.labDesc{
+ font-size:var(--t-small);
+ line-height:1.45;
+ color:var(--ink-3);
+ max-width:38ch;
+}
+
+/*
+ * What the tool produces.
+ *
+ * Moss, because everything in this design that is a reading taken off the
+ * player is moss, and each of these is exactly that: the waveform of a take,
+ * the shapes lit on a neck, the curve of a plan. Nothing moss is pressable,
+ * and none of these is a control.
+ */
+.labYield{display:flex;align-items:center;justify-content:flex-end;color:var(--moss-line)}
+.labYield svg{width:6.5rem;height:1.875rem}
+
+.labOpen{
+ display:inline-flex;
+ align-items:center;
+ gap:var(--s2);
+ white-space:nowrap;
+ font-family:var(--font);
+ font-size:var(--t-body);
+ color:var(--ink-3);
+ text-shadow:0 0 4px var(--paper),0 0 4px var(--paper);
+ transition:color var(--m-click) var(--ease-page);
+}
+.labRow:hover .labOpen{color:var(--vermillion)}
+
+/* ============================================================ responsive == */
+
+@media (max-width:66rem){
+ /* The yield drawing is the first thing to go: it illustrates, it does not
+    inform. Everything else on the row answers a question. */
+ .labRow{grid-template-columns:2rem 3.25rem minmax(10rem,1fr) auto}
+ .labYield{display:none}
+}
+@media (max-width:52rem){
+ .labRow{
+  grid-template-columns:2rem 1fr;
+  grid-template-areas:"num text" ". open";
+  gap:var(--s2) var(--s4);
+  padding:var(--s4) var(--s2);
+ }
+ .labNum{grid-area:num;align-self:start}
+ .labText{grid-area:text}
+ .labOpen{grid-area:open;justify-self:start}
+ /* The mark is the row's ornament, and a phone has no room for ornament. */
+ .labMark{display:none}
+ /* A stave under a two-line entry reads as a smudge, so the rows rule instead. */
+ .labRow{background-image:none;border-top:1px solid var(--rule)}
+ .labList>li:last-child .labRow{border-bottom:1px solid var(--rule)}
+}

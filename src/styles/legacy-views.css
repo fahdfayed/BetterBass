@@ -98,13 +98,16 @@
 .maqamLab button:not(.action):not(.action-primary){
  border:0 !important;
  border-radius:var(--r-control) !important;
- background:none !important;
+ /* background-color, not background: the shorthand also resets
+    background-image, and this rule reaches every button on a legacy screen —
+    including the rows the book prints on a stave. It only ever meant the fill. */
+ background-color:transparent !important;
  color:var(--ink-3) !important;
  transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
 }
 .maqamLab button:not(.action):not(.action-primary):hover{
  color:var(--ink) !important;
- background:var(--wash) !important;
+ background-color:var(--wash) !important;
 }
 .maqamLab button.active:not(.action){
  color:var(--mq-gold) !important;
@@ -217,7 +220,7 @@
 }
 .practiceConsole button:not(.action):not(.action-primary):hover{
  color:var(--ink) !important;
- background:var(--wash) !important;
+ background-color:var(--wash) !important;
 }
 .practiceConsole button.complete{color:var(--done) !important}
 
@@ -279,17 +282,20 @@
    one action on its screen. */.page .osScreen button:not(.mega):not(.action):not(.action-primary), .slapLab button:not(.action):not(.action-primary), .ghostButton{
  border:0 !important;
  border-radius:var(--r-control) !important;
- background:none !important;
+ /* background-color, not background: the shorthand also resets
+    background-image, and this rule reaches every button on a legacy screen —
+    including the rows the book prints on a stave. It only ever meant the fill. */
+ background-color:transparent !important;
  color:var(--ink-3) !important;
  transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
 }
 .page .osScreen button:not(.mega):not(.action):not(.action-primary):hover, .slapLab button:not(.action):not(.action-primary):hover, .ghostButton:hover{
  color:var(--ink) !important;
- background:var(--wash) !important;
+ background-color:var(--wash) !important;
 }
 .page .osScreen button.active, .slapLab button.active{
  color:var(--accent) !important;
- background:var(--accent-wash) !important;
+ background-color:var(--accent-wash) !important;
 }
 
 /* The one filled action per legacy screen keeps its weight, on the new accent. */.page .osScreen button.mega{

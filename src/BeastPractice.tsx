@@ -123,7 +123,7 @@ export default function BeastPractice({currentLesson,courseTools,toolMeta,onOpen
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
    const strip=sectionNav.current;
    if(!strip)return;
-   const header=document.querySelector(".navBar");
+   const header=document.querySelector(".tabs");
    const clearance=(header?.getBoundingClientRect().height??0)+8;
    const top=Math.max(0,window.scrollY+strip.getBoundingClientRect().top-clearance);
    window.scrollTo({top,behavior:still?"auto":"smooth"});

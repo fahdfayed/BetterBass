@@ -8,6 +8,15 @@
         "value": "inter",
         "createdAt": "2026-09-01T12:39:56.715Z",
         "reason": "user pinned it: the design brief specifies 'Body/UI font: Inter' and 'Inter + Playfair Display' by name, and a brief-pinned face outranks a saturated-pattern warning"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/styles/home-book.css"
+        ],
+        "createdAt": "2026-09-02T16:21:11.946Z",
+        "reason": "Both hits are border-right:3px solid var(--ink) closing a musical system: the final barline. Ink, not an accent; the containers are a row of bars and a row of movements, not cards; comp 7 (user-pinned) shows the heavy black bar at the end of both; manuscript.css already defines .barline-final as the same 3px ink."
       }
     ]
   }

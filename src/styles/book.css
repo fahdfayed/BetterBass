@@ -1,0 +1,537 @@
+/**
+ * The book on the stand.
+ *
+ * Three surfaces lie on a dark ground: the left page, the right page, and the
+ * instrument strip along the bottom. The binding runs between the two pages,
+ * and nothing floats over anything — this replaces a shell whose whole idea
+ * was chrome hovering clear of a full-bleed photograph, and the photograph is
+ * gone.
+ *
+ * The spread does not scroll as a unit. Each page scrolls inside itself, the
+ * way the two halves of an open book are read independently, and the transport
+ * never leaves the bottom edge because the transport is not part of the
+ * document. That is also what lets the whole thing fit a viewport exactly: the
+ * stand is 100dvh, the dock is a fixed height, and the pages take what is left.
+ */
+
+/* ================================================================= stand == */
+
+.stand{
+ position:relative;
+ z-index:1;
+ display:flex;
+ flex-direction:column;
+ gap:.625rem;
+ height:100dvh;
+ padding:.5rem;
+ background:var(--stand);
+ /* A stand is not a document. Nothing here scrolls; the pages do. */
+ overflow:hidden;
+}
+
+/* ================================================================== book == */
+
+.book{
+ flex:1;
+ min-height:0;
+ display:grid;
+ grid-template-columns:var(--page-left) var(--gutter) minmax(0,1fr);
+}
+
+/*
+ * The trimmed corner.
+ *
+ * Ten pixels, and it is the one soft corner in the design. It is not a UI
+ * radius: a printed page has a trimmed corner, and the pages, the transport
+ * strip and nothing else get it. Every control inside them is still two
+ * pixels, which is why a button on this page never reads as a smaller version
+ * of the page it sits on.
+ */
+.leaf,.recto,.dock{
+ background:var(--paper);
+ border-radius:var(--r-page);
+ box-shadow:var(--depth-book);
+}
+
+/* ============================================================== left page = */
+
+.leaf{
+ position:relative;
+ display:flex;
+ flex-direction:column;
+ gap:var(--s5);
+ padding:var(--s6) var(--s5) var(--s5);
+ overflow-y:auto;
+ overscroll-behavior:contain;
+}
+
+/*
+ * The shading that falls into the gutter.
+ *
+ * A bound page curves away where it meets the spine, so the ivory darkens over
+ * the last centimetre. Drawn as a gradient on the page rather than as a
+ * shadow cast by the spine, because the spine is a gap: there is nothing
+ * there to cast anything.
+ */
+.leaf::after,.recto::before{
+ content:"";
+ position:absolute;
+ top:0;bottom:0;
+ width:2.25rem;
+ pointer-events:none;
+ border-radius:inherit;
+}
+.leaf::after{
+ right:0;
+ background:linear-gradient(to right,transparent,var(--gutter-shade));
+}
+.recto::before{
+ left:0;
+ background:linear-gradient(to left,transparent,var(--gutter-shade));
+ z-index:2;
+}
+
+.wordmark{
+ font-family:var(--font-title);
+ font-size:1.1875rem;
+ font-weight:400;
+ letter-spacing:var(--track-title);
+ color:var(--ink);
+ line-height:1;
+ align-self:flex-start;
+ transition:color var(--m-click) var(--ease-page);
+}
+.wordmark em{font-style:italic}
+.wordmark:hover{color:var(--vermillion)}
+
+/* The route's own left page, when it prints one. */
+.leafSlot{display:contents}
+/*
+ * When it does, the default below is not rendered.
+ *
+ * Decided here rather than by a flag in the shell: the flag would have to be
+ * set during render by a descendant of the component reading it, which React
+ * is right to refuse. `:not(:empty)` on the slot is the same test, taken from
+ * the DOM after the fact, and it costs nothing.
+ */
+.leafSlot:not(:empty)+.leafDefault{display:none}
+
+.leafDefault{display:flex;flex-direction:column;gap:var(--s3);min-height:0}
+.leafDefault .redRule{margin:var(--s2) 0 var(--s4)}
+
+/* ---- the contents list --------------------------------------------------- */
+
+.leafList{
+ list-style:none;
+ margin:0;
+ padding:0;
+ display:flex;
+ flex-direction:column;
+}
+
+/*
+ * A row of the contents, printed on its own stave.
+ *
+ * The stave is the row's ground rather than a divider between rows, which is
+ * why there is no border here: five ruled lines already say where one entry
+ * ends and the next begins, and adding a rule on top of them would be saying
+ * it twice in two different hands.
+ */
+.leafItem{
+ width:100%;
+ display:grid;
+ grid-template-columns:1rem 1.9rem minmax(0,1fr) .75rem;
+ align-items:center;
+ gap:var(--s2);
+ padding:var(--s2) var(--s1);
+ text-align:left;
+ color:var(--ink-2);
+ transition:color var(--m-click) var(--ease-page);
+}
+.leafItem:hover{color:var(--ink)}
+.leafItem .clef{font-size:1.375rem;color:var(--ink-4);transform:translateY(-.06em)}
+.leafItem:hover .clef,.leafItem.is-here .clef{color:var(--ink-3)}
+
+.leafNum{
+ font-family:var(--font-title);
+ font-size:1.25rem;
+ font-weight:500;
+ font-variant-numeric:lining-nums tabular-nums;
+ color:var(--ink-3);
+ line-height:1;
+}
+.leafItem.is-here .leafNum{color:var(--vermillion)}
+
+/*
+ * The entry knocks the ruling out behind it. The clef and the number do not,
+ * because both are engraved onto the stave rather than printed over it.
+ */
+.leafText{
+ display:flex;flex-direction:column;gap:.1rem;min-width:0;
+ text-shadow:0 0 3px var(--paper),0 0 3px var(--paper),0 0 7px var(--paper);
+}
+/*
+ * Names wrap rather than truncate.
+ *
+ * An ellipsis in a table of contents is the one place it cannot be afforded:
+ * three of these entries begin with the same word, so a clipped line stops
+ * telling you which screen it is. Two lines of a short name costs less than a
+ * list you cannot read.
+ */
+.leafName{
+ font-family:var(--font);
+ font-style:italic;
+ font-size:1.0625rem;
+ line-height:1.2;
+ color:inherit;
+ text-wrap:pretty;
+}
+.leafItem.is-here .leafName{font-style:normal;font-weight:600;color:var(--ink)}
+.leafBlurb{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ letter-spacing:.04em;
+ line-height:1.35;
+ color:var(--ink-3);
+ display:-webkit-box;
+ -webkit-box-orient:vertical;
+ -webkit-line-clamp:2;
+ overflow:hidden;
+}
+
+/* The mark for where you are: a filled notehead pointing at the entry. */
+.leafHere{color:var(--vermillion);display:flex}
+
+/*
+ * The entry you are on takes a vermillion rule down its leading edge, which is
+ * the one place in the design a colour runs along an edge. On a list set on
+ * staves there is no fill available to mark a row with — a fill would cover
+ * the ruling that makes it a stave — so the mark goes into the margin where a
+ * reader would put a pencil line.
+ */
+.leafItem.is-here{position:relative}
+.leafItem.is-here::before{
+ content:"";
+ position:absolute;
+ left:calc(var(--s2) * -1);
+ top:12%;bottom:12%;
+ width:2px;
+ background:var(--vermillion);
+}
+
+/* The pencilled note at the foot of the page. */
+.leafFocus{
+ margin-top:auto;
+ padding-top:var(--s6);
+ display:flex;
+ flex-direction:column;
+ gap:.05rem;
+}
+.leafFocus span{display:block}
+
+/* ================================================================= spine == */
+
+/*
+ * The binding.
+ *
+ * A gap rather than an object: the stand shows through between the two pages,
+ * and the rings are what make that gap read as a binding instead of as a
+ * column of margin. Two of them, high and at the middle, which is where they
+ * fall on a ring binder of this proportion.
+ */
+.spine{
+ position:relative;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:flex-start;
+ gap:34%;
+ padding-top:11%;
+}
+.spineRing{
+ width:.625rem;height:.625rem;
+ flex:none;
+ border-radius:var(--r-lamp);
+ border:1px solid var(--stand-line);
+ position:relative;
+}
+/* The pin through the ring. */
+.spineRing::after{
+ content:"";
+ position:absolute;
+ left:50%;top:50%;
+ width:1.5rem;height:1px;
+ background:var(--stand-line);
+ transform:translate(-50%,-50%);
+}
+
+/* ============================================================= right page = */
+
+.recto{
+ position:relative;
+ display:flex;
+ flex-direction:column;
+ min-width:0;
+ overflow:hidden;
+}
+
+/* ---- the tabs ------------------------------------------------------------ */
+
+/*
+ * Section dividers, across the head of the working page.
+ *
+ * They are separated by vertical rules rather than by gaps, so the row reads
+ * as one strip of tabs cut from the same sheet. The current section is
+ * vermillion with a rule under it: the same mark the left page uses under its
+ * section name, so "where am I" is answered in the same hand twice.
+ */
+.tabs{
+ flex:none;
+ display:flex;
+ align-items:stretch;
+ height:var(--nav);
+ padding-left:var(--page-pad);
+ border-bottom:1px solid var(--rule);
+ overflow-x:auto;
+ scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+
+.tab{
+ position:relative;
+ flex:none;
+ display:flex;
+ align-items:center;
+ padding:0 var(--s5);
+ border-right:1px solid var(--rule);
+ font-family:var(--font);
+ font-size:var(--t-body);
+ color:var(--ink-3);
+ white-space:nowrap;
+ transition:color var(--m-click) var(--ease-page),background var(--m-click) var(--ease-page);
+}
+.tab:first-child{border-left:1px solid var(--rule)}
+.tab:hover{color:var(--ink);background:var(--paper-2)}
+.tab[aria-current="page"]{color:var(--vermillion)}
+.tab[aria-current="page"]::after{
+ content:"";
+ position:absolute;
+ left:0;right:0;bottom:-1px;
+ height:2px;
+ background:var(--vermillion);
+}
+
+.tabsEnd{
+ margin-left:auto;
+ display:flex;
+ align-items:center;
+ gap:var(--s4);
+ padding:0 var(--page-pad) 0 var(--s5);
+}
+
+.contents{
+ display:flex;
+ align-items:center;
+ gap:var(--s2);
+ padding:var(--s2) var(--s3);
+ border:1px solid var(--rule-2);
+ border-radius:var(--r);
+ color:var(--ink-3);
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ transition:color var(--m-click) var(--ease-page),border-color var(--m-click) var(--ease-page);
+}
+.contents:hover{color:var(--ink);border-color:var(--rule-3)}
+.contents svg{flex:none}
+.contentsKey{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ line-height:1;
+ padding:.15rem .3rem;
+ border:1px solid var(--rule);
+ border-radius:var(--r);
+ color:var(--ink-4);
+}
+@media (max-width:64rem){.contentsLabel,.contentsKey{display:none}}
+
+/* ---- the sheet ----------------------------------------------------------- */
+
+.sheet{
+ flex:1;
+ min-height:0;
+ overflow-y:auto;
+ overscroll-behavior:contain;
+}
+
+.page{
+ width:100%;
+ max-width:var(--measure);
+ margin-inline:auto;
+ padding:var(--s6) var(--page-pad) var(--s8);
+ display:flex;
+ flex-direction:column;
+ gap:var(--s7);
+}
+/* Workspaces take the width they are given. */
+.page.wide{max-width:var(--measure-wide)}
+
+/* ================================================================== dock == */
+
+.dock{
+ flex:none;
+ height:var(--dock);
+ display:flex;
+ align-items:stretch;
+ overflow:hidden;
+}
+
+/* ============================================================== palette === */
+
+.palScrim{
+ position:fixed;
+ inset:0;
+ z-index:100;
+ display:grid;
+ place-items:start center;
+ padding-top:14vh;
+ /* The stand, not a generic dim. The book is being covered by the desk. */
+ background:var(--stand-scrim);
+ animation:palFade var(--m-panel) var(--ease-page) both;
+}
+@keyframes palFade{from{opacity:0}to{opacity:1}}
+
+.pal{
+ width:min(92vw,34rem);
+ max-height:58vh;
+ display:flex;
+ flex-direction:column;
+ overflow:hidden;
+ background:var(--paper);
+ border:1px solid var(--rule-2);
+ border-radius:var(--r-surface);
+ box-shadow:var(--depth-book);
+ animation:palRise var(--m-sweep) var(--ease-page) both;
+}
+@keyframes palRise{
+ from{opacity:0;transform:translateY(-8px)}
+ to{opacity:1;transform:none}
+}
+
+.palInput{
+ padding:var(--s5) var(--s6);
+ border-bottom:1px solid var(--rule);
+ font-family:var(--font);
+ font-size:var(--t-lead);
+ background:transparent;
+}
+.palInput::placeholder{color:var(--ink-4)}
+.palList{list-style:none;padding:var(--s2) var(--s3) var(--s3);margin:0;overflow-y:auto}
+.palItem{
+ display:flex;
+ align-items:center;
+ gap:var(--s4);
+ width:100%;
+ padding:.5rem var(--s3);
+ border-radius:var(--r);
+ color:var(--ink-2);
+ font-size:var(--t-body);
+ transition:background var(--m-click) var(--ease-page),color var(--m-click) var(--ease-page);
+}
+.palItem svg{width:1rem;height:1rem;flex:none;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.palItem[data-active="true"]{background:var(--vermillion-wash);color:var(--ink)}
+.palItem .palWhere{
+ margin-left:auto;
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ color:var(--ink-3);
+}
+.palEmpty{padding:var(--s6);text-align:center;color:var(--ink-3);font-size:var(--t-body)}
+
+/* ============================================================= responsive = */
+
+/*
+ * A spread needs two pages' worth of width. Below that the binding closes: the
+ * left page becomes a drawer over the working page rather than a column beside
+ * it, because a contents page squeezed to eight characters is not a contents
+ * page.
+ *
+ * It is opened by the same contents control that opens the palette on a wide
+ * screen, so nothing new appears in the chrome at this width — the control
+ * that lists where you can go simply lists everything instead of the sections.
+ */
+@media (max-width:62rem){
+ /*
+  * The binding closes.
+  *
+  * The left page stops being a column beside the work and becomes a band above
+  * it, because a contents page squeezed to eight characters is not a contents
+  * page. The spine goes with it: there is nothing to bind.
+  */
+ .book{
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:auto minmax(0,1fr);
+ }
+ .spine{display:none}
+
+ /*
+  * And it only appears at all when the route printed something there itself.
+  *
+  * This is the part that cannot be a display:none. A route like the opening
+  * page puts its whole argument and its primary action on the left page, so
+  * hiding that column on a phone deletes the reason to be here and the button
+  * that acts on it — which is exactly what the first version of this
+  * breakpoint did.
+  *
+  * What can go is the default: a list of the section's other screens, which
+  * the contents control already covers and which would otherwise push the tabs
+  * off the first screen on every route in the book.
+  */
+ .leaf{
+  grid-row:1;
+  overflow:visible;
+  border-radius:var(--r-page) var(--r-page) 0 0;
+  box-shadow:none;
+  padding-bottom:var(--s5);
+ }
+ .leaf:has(.leafSlot:empty){display:none}
+ .recto{grid-row:2;border-radius:0 0 var(--r-page) var(--r-page)}
+ /* With the two pages stacked there is no gutter for either to curve into. */
+ .leaf::after,.recto::before{display:none}
+
+ .stand{padding:.375rem;gap:.375rem}
+ .page{padding:var(--s5) var(--page-pad) var(--s7)}
+}
+
+/*
+ * When the spread is closed the two halves are one sheet, so only the outer
+ * corners are trimmed and the shadow is cast once, by the pair.
+ */
+@media (max-width:62rem){
+ .book{box-shadow:var(--depth-book);border-radius:var(--r-page)}
+ .leaf,.recto{box-shadow:none}
+}
+
+/*
+ * Under a phone the transport is what has to survive. It keeps the whole
+ * width and drops to two rows so nothing inside it shrinks below a thumb.
+ */
+@media (max-width:34rem){
+ /* Two rows of controls, each clearing a thumb. */
+ :root{--dock:6.25rem}
+}
+
+/* Header key/mode selects, in the book's own vocabulary. */
+.head-selects{display:flex;align-items:center;gap:var(--s4)}
+.head-selects label{display:flex;align-items:center;gap:var(--s2)}
+.head-selects select{
+ color:var(--ink-2);
+ font-size:var(--t-small);
+ cursor:pointer;
+ transition:color var(--m-click) var(--ease-page);
+}
+.head-selects select:hover{color:var(--ink)}
+@media (max-width:68rem){.head-selects{display:none}}

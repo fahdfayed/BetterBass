@@ -1,0 +1,364 @@
+/**
+ * The transport strip, and the typographic voice of a page.
+ *
+ * This replaces stand.css, which built the shell for the world before this
+ * one: a full-bleed photographic hero with a scrim over it, a nav bar floating
+ * clear of the top edge, its sections in a blurred glass pill, and a fixed
+ * dock sitting over the content on a translucent ground. All of it is gone.
+ * There is no photograph to float over, nothing here is glass, and the dock is
+ * a strip of paper on the stand rather than a bar hovering above the page.
+ *
+ * What survives is the part that was never about the photograph: the heading
+ * voice, and the rule that a section is separated by space and a rule and
+ * never by a box.
+ */
+
+/* ============================================================= transport == */
+
+.transport{
+ display:flex;
+ align-items:stretch;
+ gap:0;
+ width:100%;
+ min-width:0;
+ font-family:var(--font-label);
+}
+
+/*
+ * The play key.
+ *
+ * Full bleed into the corner of the strip, because it is a key on a machine
+ * rather than a button on a page: it is the one control here a hand reaches
+ * for without looking, and a key at the corner can be hit by feel. It is also
+ * the one vermillion fill in the chrome, and while the clock is running it
+ * goes to ink, so a stopped transport and a running one are never the same
+ * colour in the same place.
+ */
+.tKey{
+ flex:none;
+ width:5.25rem;
+ display:grid;
+ place-items:center;
+ border:0;
+ border-radius:var(--r-page) 0 0 var(--r-page);
+ background:var(--vermillion);
+ color:var(--on-vermillion);
+ transition:background var(--m-click) var(--ease-page);
+}
+.tKey:hover{background:var(--vermillion-deep)}
+.tKey.on{background:var(--ink)}
+.tKey.on:hover{background:var(--ink-2)}
+.tKey:active{box-shadow:var(--depth-press)}
+
+.tGroup{
+ display:flex;
+ align-items:center;
+ gap:var(--s3);
+ padding:0 var(--s5);
+ min-width:0;
+}
+.transport .barline{margin-block:1rem;flex:none}
+
+/* ---- where you are ------------------------------------------------------- */
+
+.tBar{gap:var(--s4)}
+.tBarValue{font-size:2.125rem;line-height:1;color:var(--ink)}
+
+/*
+ * Four numbered beats.
+ *
+ * They were four anonymous lamps, which on a page whose argument is that a
+ * player reads notation was the one place the interface stopped writing things
+ * down. A bar of four has numbered beats, so these carry their numbers, and
+ * the beat you are on is the filled notehead among them.
+ */
+.tBeats{display:flex;align-items:center;gap:var(--s2);padding-right:var(--s5)}
+.tBeat{
+ width:1.5rem;height:1.5rem;
+ display:grid;
+ place-items:center;
+ border-radius:var(--r-lamp);
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ font-weight:500;
+ font-style:normal;
+ color:var(--ink-3);
+ transition:background var(--m-click) linear,color var(--m-click) linear;
+}
+.tBeat[data-on="true"]{background:var(--ink);color:var(--paper)}
+/* The count-in bar is visibly not the take. */
+.tBeat.counting[data-on="true"]{background:var(--vermillion);color:var(--on-vermillion)}
+
+/* ---- how fast ------------------------------------------------------------ */
+
+/*
+ * A metronome mark, set the way an engraver sets one: the note, an equals
+ * sign, the number. A player reads that without decoding anything, which is
+ * more than can be said for a label reading TEMPO over a number reading BPM.
+ */
+.tTempo{gap:var(--s3)}
+.tempoMark{
+ display:flex;
+ align-items:baseline;
+ gap:.15rem;
+ color:var(--ink-3);
+ font-size:1.25rem;
+ line-height:1;
+ cursor:pointer;
+}
+.tempoEq{font-family:var(--font);font-size:1rem}
+
+.tTempoValue{
+ width:3.5ch;
+ padding:0;
+ border:0;
+ background:transparent;
+ font-size:2.125rem;
+ line-height:1;
+ color:var(--ink);
+ text-align:center;
+ -moz-appearance:textfield;
+ appearance:textfield;
+}
+/* The browser's own spinner is not this design's stepper. */
+.tTempoValue::-webkit-outer-spin-button,
+.tTempoValue::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+.tStepper{display:flex;align-items:center;gap:var(--s1)}
+.tStep{
+ width:1.75rem;height:1.75rem;
+ display:grid;
+ place-items:center;
+ border:1px solid transparent;
+ border-radius:var(--r);
+ color:var(--ink-3);
+ transition:color var(--m-click) var(--ease-page),border-color var(--m-click) var(--ease-page);
+}
+.tStep:hover:not(:disabled){color:var(--ink);border-color:var(--rule-2)}
+.tStep:disabled{color:var(--ink-4);cursor:not-allowed}
+
+/* ---- modes and input ----------------------------------------------------- */
+
+/*
+ * A mode is an icon and its word, and it is marked by turning vermillion
+ * rather than by acquiring a fill. Everything in this strip sits directly on
+ * the paper; a filled chip here would be the second filled shape on the
+ * strip, competing with the one key that starts the machine.
+ */
+.tMode{
+ display:flex;
+ align-items:center;
+ gap:var(--s2);
+ padding:var(--s2) var(--s3);
+ border-radius:var(--r);
+ color:var(--ink-3);
+ font-family:var(--font);
+ font-size:var(--t-body);
+ white-space:nowrap;
+ transition:color var(--m-click) var(--ease-page),background var(--m-click) var(--ease-page);
+}
+.tMode:hover{color:var(--ink);background:var(--paper-2)}
+.tMode[aria-pressed="true"]{color:var(--ink)}
+.tMode svg{flex:none;color:var(--ink-4);transition:color var(--m-click) var(--ease-page)}
+/*
+ * An engaged mode goes to ink, not to vermillion.
+ *
+ * Loop and count-in both default to on, so marking them in the accent put
+ * three vermillion marks on a strip whose whole argument is that there is one
+ * — and the one that matters, the key that starts the machine, stopped being
+ * the loudest thing on it.
+ */
+.tMode[aria-pressed="true"] svg{color:var(--ink-2)}
+
+.tModes{gap:var(--s2)}
+
+.tInput{gap:var(--s3);min-width:0}
+.tInputSwitch[aria-pressed="true"] svg{color:var(--moss)}
+/*
+ * The detail line beside the input control.
+ *
+ * It is the only sentence in the strip, so it is the only thing here set in
+ * the reading face rather than stamped. It disappears before anything else
+ * does, because it explains a control that also states its own state.
+ */
+.tInputDetail{
+ max-width:16rem;
+ font-size:var(--t-micro);
+ line-height:1.3;
+ color:var(--ink-3);
+}
+@media (max-width:100rem){.tInputDetail{display:none}}
+
+/* ---- the level ----------------------------------------------------------- */
+
+.tLevel{
+ margin-left:auto;
+ gap:var(--s4);
+ padding-right:var(--s6);
+ color:var(--ink-4);
+}
+
+/*
+ * The fader.
+ *
+ * Drawn rather than left to the browser, because a range input is one of the
+ * four or five controls a user agent styles entirely on its own, and the
+ * default on this page is a blue system slider on ivory paper — the one colour
+ * in the document nobody chose. The track is a ruled line and the handle is a
+ * filled notehead, which is what every other draggable value in this design
+ * looks like.
+ */
+.tFader{
+ width:clamp(5rem,9vw,8rem);
+ height:1.5rem;
+ padding:0;
+ background:transparent;
+ border:0;
+ cursor:pointer;
+ -webkit-appearance:none;
+ appearance:none;
+}
+.tFader::-webkit-slider-runnable-track{height:1px;background:var(--rule-2)}
+.tFader::-moz-range-track{height:1px;background:var(--rule-2)}
+.tFader::-webkit-slider-thumb{
+ -webkit-appearance:none;
+ width:.75rem;height:.75rem;
+ margin-top:-.375rem;
+ border:0;
+ border-radius:var(--r-lamp);
+ background:var(--ink);
+}
+.tFader::-moz-range-thumb{
+ width:.75rem;height:.75rem;
+ border:0;
+ border-radius:var(--r-lamp);
+ background:var(--ink);
+}
+.tFader:hover::-webkit-slider-thumb{background:var(--vermillion)}
+.tFader:hover::-moz-range-thumb{background:var(--vermillion)}
+
+/* ============================================================== headings == */
+
+/*
+ * The struck title at the head of a page.
+ *
+ * Playfair italic, and large. The two-voice heading of the previous design —
+ * a serif clause inside a sans line — is retired with the world it belonged
+ * to: here the whole title is set in one hand, and an <em> inside it stands
+ * the clause up straight in roman rather than switching typeface. Reversing
+ * the italic is the emphasis a didone has; a second family is not.
+ */
+.osScreen h1,[data-page-heading],.display{
+ font-family:var(--font-title);
+ font-style:italic;
+ font-weight:400;
+ font-size:var(--t-display);
+ letter-spacing:var(--track-title);
+ line-height:1.02;
+ color:var(--ink);
+ margin:0;
+ text-transform:none;
+ max-width:20ch;
+ text-wrap:balance;
+}
+.osScreen h1 em,[data-page-heading] em,.display em{font-style:normal}
+
+/*
+ * Below the title the printer's serif takes over. A didone set at heading
+ * sizes on a working screen loses its hairlines and starts to shimmer, so
+ * Playfair stops at the page title and everything under it is Source Serif.
+ */
+.osScreen h2{
+ font-family:var(--font);
+ font-weight:600;
+ font-size:var(--t-h2);
+ letter-spacing:var(--track);
+ line-height:1.12;
+ color:var(--ink);
+}
+.osScreen h3,.osScreen h4{
+ font-family:var(--font);
+ font-weight:600;
+ font-size:var(--t-h3);
+ letter-spacing:var(--track);
+ line-height:1.2;
+ color:var(--ink);
+}
+.osScreen p,.lead{max-width:var(--measure-text);color:var(--ink-2)}
+.lead{font-size:var(--t-lead);line-height:1.5}
+
+/* ============================================================== sections == */
+
+/*
+ * A section is separated by space and a rule, never by a box.
+ *
+ * This rule is inherited from the design before this one and it is right for
+ * a different reason now. There, a stack of bordered cards would have competed
+ * with the photograph. Here it would be boxes drawn inside a box: the page is
+ * already a ruled rectangle, and nesting rectangles inside it is what turns a
+ * printed page into a dashboard.
+ */
+.osScreen>section,.osScreen>article,.sheet>section,.sheet>article{
+ background:none;
+ border:0;
+ border-radius:0;
+ box-shadow:none;
+ padding-block:var(--s6) var(--s5);
+}
+.osScreen>section+section,.osScreen>article+article,
+.osScreen>section+article,.osScreen>article+section{
+ border-top:1px solid var(--rule);
+}
+
+/* ============================================================ responsive == */
+
+@media (max-width:78rem){
+ .tInput .tInputDetail{display:none}
+}
+@media (max-width:62rem){
+ .tKey{width:4rem}
+ .tGroup{padding:0 var(--s4)}
+ .tBarValue,.tTempoValue{font-size:1.75rem}
+ .tLevel{display:none}
+}
+@media (max-width:46rem){
+ /* The words go before the controls do, and not before they have to. */
+ .tMode span{display:none}
+}
+
+@media (max-width:34rem){
+ /*
+  * Two rows, laid out rather than wrapped.
+  *
+  * flex-wrap put the strip into whatever order the widths happened to allow:
+  * the key half off the edge, the bar clipped at the top, the tempo alone on a
+  * second line and the input on a third. Everything here is a control a hand
+  * reaches for while holding an instrument, so nothing may shrink below a
+  * thumb — which means the layout has to be stated, not left to reflow.
+  *
+  * The key spans both rows at the left corner, where it can be hit by feel.
+  * Above the fold of the strip: where you are and how fast. Below it: how it
+  * repeats and what it is listening to. The level fader is the only thing
+  * dropped, because it is the one control here with a system equivalent.
+  */
+ .transport{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  grid-template-rows:1fr 1fr;
+  align-items:center;
+  column-gap:var(--s2);
+ }
+ .tKey{grid-column:1;grid-row:1 / span 2;width:3.75rem;border-radius:var(--r-page) 0 0 var(--r-page)}
+ .tBar{grid-column:2;grid-row:1;padding-left:var(--s4)}
+ .tBeats{grid-column:3;grid-row:1;padding-right:var(--s4)}
+ .tTempo{grid-column:2 / span 2;grid-row:2;padding-left:var(--s4);justify-content:flex-start}
+ .tModes{display:none}
+ .tInput{
+  grid-column:3;grid-row:2;
+  justify-content:flex-end;
+  padding-right:var(--s4);
+ }
+ .tLevel,.tInputDetail{display:none}
+ .transport .barline{display:none}
+ .tBarValue,.tTempoValue{font-size:1.625rem}
+}

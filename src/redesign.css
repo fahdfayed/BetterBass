@@ -140,7 +140,7 @@ button:not(:disabled):active{transform:translateY(1px)}
 .maqamTabs, .exercisePicker, .backingControls{border-radius:var(--r);overflow-x:auto}
 
 .runtimeHero,.bandSettings,.mixer,.runtimeMissions{border-radius:var(--r);background:transparent}
-.transport h2{font-size:2.0625rem}
+.bandDeck h2{font-size:2.0625rem}
 .controlGrid label,.tempoControl,.progressionBuilder small,.runtimeActions button,.channel b,.channel small{font-size:max(11px,0.6875rem)}
 .runtimeMissions p{font-size:var(--t-small)}
 .diagnosticFlow>article{border-radius:var(--r);background:transparent}

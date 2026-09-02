@@ -1,0 +1,307 @@
+/**
+ * The page the book falls open at.
+ *
+ * Left page: the name, the claim, the reason, and the way in. Right page: the
+ * neck showing what a note is doing, then today's session as one system of
+ * bars, then the other rooms, then the six movements of the course.
+ *
+ * The argument and the work are on facing pages, which is the whole reason the
+ * spread exists. A first-time visitor reads the left page once and never needs
+ * it again; the right page is what they come back to.
+ */
+
+/*
+ * Titles wrap inside their column.
+ *
+ * The row primitive these two grids reuse was built for a full-width list, so
+ * its title is set nowrap — correct when a row is seven hundred pixels wide
+ * and wrong the moment six of them share that width. Without this the course
+ * grid measured its widest unit title and pushed the whole page sideways.
+ */
+.homeCourse .row-main,.homeElsewhere .row-main,
+.homeCourse .row-main>*,.homeElsewhere .row-main>*{
+ min-width:0;
+ white-space:normal;
+ overflow-wrap:break-word;
+}
+
+/*
+ * The shell prints the wordmark at the head of every left page. This route
+ * prints it as the statement instead, at title-page size, so the small one
+ * above it would be the same name twice on the same page.
+ */
+.leaf:has(.homeStatement) .wordmark{display:none}
+
+/* ============================================================= statement == */
+
+.homeStatement{
+ display:flex;
+ flex-direction:column;
+ align-items:flex-start;
+ gap:var(--s3);
+ flex:1;
+ min-height:0;
+}
+
+/*
+ * The name, set once, at the size a title page sets it.
+ *
+ * It was 128px of italic serif over a 32px claim, which put a name a cold
+ * visitor has no reason to know four times the size of the reason to stay.
+ * Here it is a wordmark rather than a headline — the claim under it is the
+ * heading, and it is the line in vermillion.
+ */
+.homeWord{
+ font-family:var(--font-title);
+ font-style:normal;
+ font-weight:400;
+ font-size:clamp(2.25rem,3.4vw,3rem);
+ line-height:1;
+ letter-spacing:var(--track-title);
+ color:var(--ink);
+ margin:0;
+ max-width:none;
+}
+.homeWord em{font-style:italic}
+
+.homeClaim{
+ font-size:var(--t-small);
+ line-height:1.5;
+ letter-spacing:var(--track-label);
+ max-width:none;
+}
+.homeStatement .redRule{margin:var(--s2) 0 var(--s4)}
+
+.homeSupport{
+ font-size:var(--t-body);
+ line-height:1.55;
+ color:var(--ink-2);
+ max-width:none;
+}
+
+/*
+ * The one thing to press on the page you land on, and the only strip of tape
+ * in the book that is not on the transport.
+ */
+.homeBegin{margin-top:var(--s4);align-self:flex-start}
+.homeBegin .caret{margin-left:var(--s2)}
+
+/* ============================================================== the neck == */
+
+/*
+ * The demonstration, and it is the first thing on the working page.
+ *
+ * It used to sit behind the headline, rotated three degrees and masked to a
+ * fade, which is a picture of a fretboard rather than a fretboard. The product
+ * claim is that this board tells you what a note is doing; a board you cannot
+ * read does not make that claim, it decorates it.
+ */
+.homeDemo{
+ position:relative;
+ display:flex;
+ align-items:flex-start;
+ gap:var(--s6);
+ padding-block:var(--s5) var(--s6);
+ border-bottom:1px solid var(--rule);
+}
+.homeDemo .neckPreview{flex:1 1 auto;min-width:0;max-width:34rem}
+/* The pencil points at it from the margin, which is what a margin is for. */
+.homeDemoNote{
+ flex:none;
+ align-self:center;
+ max-width:9rem;
+ font-size:1.125rem;
+}
+@media (max-width:66rem){.homeDemoNote{display:none}}
+
+/* ================================================================ today === */
+
+/*
+ * Today is one system of bars, read left to right.
+ *
+ * It was a vertical list of rows. A session of four blocks with rehearsal
+ * letters and a coda is a line of music, and a player reads a line of music
+ * across rather than down — so the blocks sit in a row of bars separated by
+ * barlines, with the final one closed by a heavy double.
+ */
+.chartRows{
+ list-style:none;
+ margin:0;
+ padding:0;
+ display:grid;
+ grid-auto-flow:column;
+ grid-auto-columns:minmax(0,1fr);
+ border:1px solid var(--rule);
+ border-right:3px solid var(--ink);
+}
+.chartRows>.system{
+ display:flex;
+ flex-direction:column;
+ min-width:0;
+ border-right:1px solid var(--rule);
+}
+.chartRows>.system:last-child{border-right:0}
+
+.chartRows .systemMark{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding-top:var(--s4);
+ font-family:var(--font-title);
+ font-style:italic;
+ font-size:1.5rem;
+ line-height:1;
+ color:var(--ink-3);
+}
+.chartRows .rehearsalMark[data-current="true"]{color:var(--vermillion)}
+.chartRows .rehearsalMark[data-done="true"]{color:var(--moss)}
+
+.chartRows .systemBody{
+ flex:1;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ gap:var(--s2);
+ padding:var(--s3) var(--s3) var(--s5);
+ text-align:center;
+ min-width:0;
+}
+.chartRows .chartRowMain{display:flex;flex-direction:column;gap:.15rem;min-width:0}
+.chartRows .chartRowMain b{
+ font-family:var(--font-title);
+ font-style:italic;
+ font-weight:400;
+ font-size:var(--t-h3);
+ color:var(--ink);
+}
+/*
+ * The task, pencilled under the bar.
+ *
+ * It inherits the margin hand from the chart register, and a hand needs size:
+ * Caveat has a small x-height, so at the stamped label size it was three lines
+ * of script nobody can read. It is set at reading size and held to two lines —
+ * the bar states what the block is, and this says how to play it.
+ */
+.chartRows .marginNote{
+ font-family:var(--font-hand);
+ font-size:1rem;
+ line-height:1.25;
+ letter-spacing:0;
+ color:var(--pencil);
+ display:-webkit-box;
+ -webkit-box-orient:vertical;
+ -webkit-line-clamp:2;
+ overflow:hidden;
+}
+.chartRows .repeatCount{
+ display:flex;
+ align-items:baseline;
+ gap:.3rem;
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ color:var(--ink-3);
+}
+.chartRows .chartRow.is-current{background:var(--vermillion-wash)}
+.chartRows .chartRow.is-done .chartRowMain b{color:var(--ink-3)}
+
+@media (max-width:52rem){
+ /* A system of four bars does not fit a phone, so it becomes a list again. */
+ .chartRows{grid-auto-flow:row;border-right-width:1px}
+ .chartRows>.system{flex-direction:row;align-items:center;gap:var(--s4);border-right:0;border-bottom:1px solid var(--rule)}
+ .chartRows>.system:last-child{border-bottom:0}
+ .chartRows .systemMark{padding:0 0 0 var(--s4)}
+ .chartRows .systemBody{flex-direction:row;justify-content:space-between;align-items:center;text-align:left;padding:var(--s3) var(--s4)}
+}
+
+/* ============================================================ elsewhere == */
+
+/*
+ * The other rooms. Four of them, in a row, each an icon and a destination —
+ * this is a signpost rather than a menu, so it is as short as a signpost.
+ */
+.homeElsewhere .rows{
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ border-top:1px solid var(--rule);
+}
+.homeElsewhere .row{
+ flex-direction:column;
+ align-items:flex-start;
+ gap:var(--s2);
+ padding:var(--s5) var(--s4);
+ border-top:0;
+ border-right:1px solid var(--rule);
+}
+.homeElsewhere .rows>li:last-child .row{border-right:0}
+.homeElsewhere .row:hover:not([disabled]){background:var(--paper-2);padding-left:var(--s4)}
+.homeElsewhere .row-icon{color:var(--ink-3)}
+.homeElsewhere .row-end{margin-left:0;color:var(--vermillion)}
+
+@media (max-width:52rem){
+ .homeElsewhere .rows{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .homeElsewhere .rows>li:nth-child(2n) .row{border-right:0}
+}
+
+/* =============================================================== course === */
+
+/*
+ * Six movements, side by side.
+ *
+ * The course is not a backlog of twenty-eight items; it is six movements, and
+ * the shape of it is the thing a visitor needs to see on the first screen. Set
+ * across rather than down, with the number in vermillion and the title in the
+ * engraver's italic, it reads as a table of contents at a glance.
+ */
+.homeCourse .rows{
+ display:grid;
+ grid-template-columns:repeat(6,minmax(0,1fr));
+ border:1px solid var(--rule);
+ border-right:3px solid var(--ink);
+}
+.homeCourse .row{
+ flex-direction:column;
+ align-items:flex-start;
+ gap:var(--s2);
+ padding:var(--s5) var(--s4);
+ border-top:0;
+ border-right:1px solid var(--rule);
+ min-height:11rem;
+}
+.homeCourse .rows>li:last-child .row{border-right:0}
+.homeCourse .row:hover:not([disabled]){background:var(--paper-2);padding-left:var(--s4)}
+.homeCourse .row-n{
+ font-family:var(--font-title);
+ font-style:normal;
+ font-weight:500;
+ font-size:1.5rem;
+ line-height:1;
+ letter-spacing:var(--track-title);
+ color:var(--vermillion);
+}
+.homeCourse .row-main{display:flex;flex-direction:column;gap:var(--s2);min-width:0}
+.homeCourse .row-main b{
+ font-family:var(--font-title);
+ font-style:italic;
+ font-weight:400;
+ font-size:var(--t-h3);
+ line-height:1.1;
+ color:var(--ink);
+}
+.homeCourse .row-main small{font-size:var(--t-small);line-height:1.4;color:var(--ink-3)}
+.homeCourse .unit-progress{margin-top:auto;display:flex;align-items:center;gap:var(--s2);width:100%}
+.homeCourse .unit-progress .meter{flex:1}
+.homeCourse .row[disabled]{opacity:.45}
+
+@media (max-width:74rem){
+ .homeCourse .rows{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .homeCourse .rows>li:nth-child(3n) .row{border-right:0}
+ .homeCourse .rows>li:nth-child(-n+3) .row{border-bottom:1px solid var(--rule)}
+}
+@media (max-width:52rem){
+ .homeCourse .rows{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .homeCourse .rows>li:nth-child(3n) .row{border-right:1px solid var(--rule)}
+ .homeCourse .rows>li:nth-child(2n) .row{border-right:0}
+ .homeCourse .row{min-height:0}
+}

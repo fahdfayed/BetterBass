@@ -32,7 +32,7 @@ html{
 
 body{
  min-height:100dvh;
- background:var(--bg);
+ background:var(--stand);
  color:var(--ink);
  font-family:var(--font);
  font-size:var(--t-body);
@@ -93,12 +93,20 @@ small{font-size:max(var(--t-micro),.85em)}
 .dim{color:var(--ink-3)}
 .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 
-/* Numerals used as content rather than as data: big, thin, tabular. */
+/*
+ * Numerals used as content rather than as data.
+ *
+ * The engraver's face, because a number this size is being read from the
+ * stand rather than scanned in a column. It was set in the UI sans at weight
+ * 300 and tracked to -.04em, which belonged to a design whose display voice
+ * was a tightly tracked grotesque; here it is the same face the page title is
+ * struck in.
+ */
 .figure{
- font-family:var(--font-mono);
- font-variant-numeric:tabular-nums;
- font-weight:300;
- letter-spacing:-.04em;
+ font-family:var(--font-num);
+ font-variant-numeric:tabular-nums lining-nums;
+ font-weight:500;
+ letter-spacing:var(--track-title);
  line-height:1;
 }
 

@@ -1,194 +1,304 @@
 /**
- * Design tokens: Lithos.
+ * Design tokens: the music book.
  *
- * Dark, full bleed, photographic. White type over imagery, one orange that
- * means act, and glass where the interface floats over the picture rather than
- * sitting beside it.
+ * A book of manuscript paper, open on a dark stand, with the instrument along
+ * the bottom edge. This replaces a dark photographic world -- full-bleed
+ * imagery with glass chrome floating over it -- and the replacement is total
+ * rather than a re-tint. Every rule that world held is reversed here on
+ * purpose, because a design that keeps half of the thing it replaced reads as
+ * undecided:
  *
- * Three things carry the look and all three are pinned by the brief.
+ *   photograph is the ground   ->  paper is the ground
+ *   glass floating over it     ->  ink printed into it
+ *   white at four opacities    ->  ink at four steps, and three more colours
+ *   one orange, and only one   ->  vermillion, pencil blue, moss
+ *   everything is a pill       ->  everything is a ruled rectangle
+ *   depth is glow and blur     ->  depth is a cast shadow and a milled well
+ *   Inter sets, Playfair       ->  Source Serif prints, Playfair strikes the
+ *     accents one line             title, Inter is stamped on the plate
  *
- * Type is two voices in one line. Playfair Display italic and Inter alternate
- * inside a single heading, which is the signature move: the first line is set,
- * the second is stated. Tracking is negative everywhere and hard negative on
- * display, because that tightness is most of why it reads expensive.
+ * There is one ground. The dark studio theme and its cream counterpart are
+ * both gone: paper is not a theme, it is the material, and a book does not
+ * have a night mode. That decision removed an entire second palette and every
+ * pair of measurements that went with it.
  *
- * Everything interactive is a pill. This reverses the square rule of the world
- * it replaces, deliberately and completely: a half-measure between the two
- * would read as neither.
+ * Three things carry the look.
  *
- * And colour is almost absent. One orange, spent on the thing to press and
- * nothing else. Every other distinction is white at four opacities, which is
- * what lets the imagery stay the loudest thing on the screen.
+ * THE STAVE IS THE GRID. Lists are set on five-line staves with a real clef at
+ * the head of each line, drawn in Bravura rather than in Unicode lookalikes.
+ * Rules do not separate rows; they are the paper the rows are printed on.
+ *
+ * FOUR HANDS, NEVER MIXED. Playfair strikes the title. Source Serif prints
+ * everything read. Inter is stamped small, uppercase, tracked, and never sets
+ * a sentence. Caveat writes in the margin in pencil blue and never leaves it.
+ *
+ * VERMILLION IS LIVE. The red marks what is running, what is current, and what
+ * to press -- not what is important. A page with nothing running and nothing
+ * to press carries no red at all, and that is the correct amount.
  */
 
 :root{
- /* ---- ground -----------------------------------------------------------
-  * True black behind the imagery, because the brief sets the section to black
-  * and a photograph over near-black looks washed. The lifted values are white
-  * at low alpha rather than lighter greys: glass over a picture, not a panel
-  * beside one.
+ /* ---- the stand --------------------------------------------------------
+  * The book does not float in the void; it lies on something. This is the
+  * dark blue-black around the page edge, and the only place in the design
+  * where the ground is dark. It is a surface, not a theme.
   */
- --ground:#000000;
- --ground-2:#0a0a0b;
- --lift:rgba(255,255,255,.06);
- --lift-2:rgba(255,255,255,.10);
- --glass:rgba(255,255,255,.20);
- --glass-line:rgba(255,255,255,.30);
+ --stand:#101619;
+ --stand-2:#0a0f12;
+ --stand-line:rgba(250,247,240,.10);
+ /* The desk, drawn over the book while the contents are open. */
+ --stand-scrim:rgba(16,22,25,.72);
+
+ /*
+  * Ink on the stand.
+  *
+  * The dark ground outside the book carries a little text of its own — the
+  * state of the copy on the server, and the boot screen before there is a
+  * book to open. Those cannot use the page ink, which is near-black, so the
+  * stand gets its own three steps in the paper colour.
+  *
+  * Measured against the stand: 13.9:1, 7.9:1 and 5.8:1. The dimmest step is
+  * warmer than it looks it should be because it sets 11px uppercase, and the
+  * value that read right by eye landed at 3.87 — under AA, on the one label
+  * out here that a player might actually need.
+  */
+ --on-stand:rgba(250,247,240,.90);
+ --on-stand-2:rgba(250,247,240,.66);
+ --on-stand-3:rgba(250,247,240,.55);
+ /* The one state out here worth interrupting for: the copy is local only. */
+ --on-stand-warn:#e0a13c;
+
+ /* ---- the paper --------------------------------------------------------
+  * Warm ivory, not white. Three steps down into the page: the sheet, the
+  * shading that falls near the gutter and under a raised element, and the
+  * darker stock of a well cut into the page.
+  */
+ --paper:#faf7f0;
+ --paper-2:#f4efe3;
+ --paper-3:#ede7d8;
+ --paper-edge:#e2dbc9;
 
  /* ---- ink --------------------------------------------------------------
-  * White and three steps down. The brief works almost entirely in white at
-  * eighty percent, so that is the body value rather than an afterthought.
+  * Warm black and three steps. ink-3 is the floor for anything that is read:
+  * it clears AA on paper at 4.7:1. ink-4 is for marks, never for words.
   */
- --ink:#ffffff;
- --ink-2:rgba(255,255,255,.80);
- --ink-3:rgba(255,255,255,.62);
- --ink-4:rgba(255,255,255,.46);
- --hairline:rgba(255,255,255,.14);
- --hairline-2:rgba(255,255,255,.26);
+ --ink:#1b1a17;
+ --ink-2:#46443e;
+ --ink-3:#6a675e;
+ --ink-4:#9c988c;
 
- /* ---- the one colour ---------------------------------------------------
-  * Oxide orange. It fills the thing to press, marks the current position, and
-  * appears nowhere else. Its wash lights an area; it never coats a surface.
+ /* ---- the engraving ----------------------------------------------------
+  * Staff lines, box rules, and the heavy final barline. These are printed
+  * grey, not transparent black: a rule over the shaded paper near the gutter
+  * must not go darker than the same rule out on the open sheet.
   */
- --flame:#e8702a;
- --flame-deep:#d2611f;
- --flame-wash:rgba(232,112,42,.14);
- --flame-glow:rgba(232,112,42,.30);
- --on-flame:#1a0d04;
-
+ --rule:#dcd6c6;
+ --rule-2:#c3bca8;
+ --rule-3:#a9a08a;
+ --rule-heavy:var(--ink);
+ --stave:#ded8c9;
  /*
-  * The neck's four jobs, and the wash each one lights its fret with.
-  *
-  * Board-local by contract: only `.hfString` may read these, and DESIGN.md
-  * records them as the one sanctioned exception to the One Flame Rule. On the
-  * fretboard the job a note is doing is the content rather than decoration,
-  * and four jobs separated only by opacity are four jobs the player has to
-  * stop and decode mid-bar.
-  *
-  * Hue and alpha are authored per theme, not derived. A wash is alpha over a
-  * well that is itself alpha over the ground, so the text sitting on it
-  * composites three deep: picking one set of numbers and letting the theme
-  * flip them underneath is how the cream board ended up with 3.75:1 root
-  * labels and a ladder you could not see.
+  * The shading where a bound page curves away into the gutter. It is a wash
+  * on the page rather than a shadow cast by the spine, because the spine is a
+  * gap and a gap casts nothing.
   */
- --pad-root:#e8702a;
- --pad-root-ink:var(--flame);
- --pad-root-fill:rgba(232,112,42,.22);
- --pad-guide:#5a9be0;
- --pad-guide-ink:var(--ink);
- --pad-guide-fill:rgba(90,155,224,.10);
- --pad-chord-ink:var(--ink-2);
- --pad-chord-fill:rgba(255,255,255,.05);
- --pad-voice:#3fb0c4;
- --pad-voice-ink:var(--ink-3);
- --pad-voice-fill:rgba(63,176,196,.15);
- --pad-colour:#8f74e2;
- --pad-colour-ink:var(--ink-3);
- --pad-colour-fill:rgba(143,116,226,.13);
- --pad-available-ink:var(--ink-3);
- --pad-outside-ink:var(--ink-4);
+ --gutter-shade:rgba(27,26,23,.055);
 
- /*
-  * Status, which is not the accent.
-  *
-  * `--warn`, `--wrong`, `--amber`, `--orange`, `--red`, `--violet` and
-  * `--lime` all resolve to the flame, so seven semantic names render as one
-  * colour: on a working screen a caution, a failure, a pass and a caption are
-  * indistinguishable from the one thing you are meant to press.
-  *
-  * These three are the real signals. Teal for a pass rather than green,
-  * because green against orange is the pair that converges first under
-  * deuteranopia and this reading is scanned, not studied — and because the
-  * voice is "measure, do not congratulate", so a pass is a fact, not a
-  * celebration. Every one of them is paired with a word or a glyph in the
-  * markup, so colour is never the only code.
+ /* ---- vermillion: what is live -----------------------------------------
+  * One red, and it is measured to work in both directions: 4.94:1 as ink on
+  * paper, and 5.46:1 with white sitting on it. That is why it is a shade
+  * deeper than the swatch looks -- a brighter vermillion sets a beautiful
+  * heading and an illegible caption, and this red has to do both, because it
+  * labels the running block and prints the section name above it.
   */
- --pass:#3fb08f;
- --pass-wash:rgba(63,176,143,.14);
- --caution:#e3b341;
- --stop:#e0453f;
- /* The ink a caption falls back to when it stops being an accent. */
- --label-ink:var(--ink-3);
+ --vermillion:#c4351a;
+ --vermillion-deep:#9d2811;
+ --vermillion-wash:rgba(196,53,26,.10);
+ --vermillion-wash-2:rgba(196,53,26,.18);
+ --on-vermillion:#fffaf5;
 
- /*
-  * Ink that sits on a photograph.
-  *
-  * The hero's copy is over an image, not over the theme's ground, so it stays
-  * white in both themes: flipping it with the theme would put dark type on a
-  * dark photo. Separate names because they answer to the picture rather than
-  * to the palette, and the scrim is what makes either survive an image whose
-  * bright half lands under the headline.
+ /* ---- pencil blue: the margin ------------------------------------------
+  * The hand that annotates. It writes in Caveat in the margins, rules the
+  * arrows that point at what the note is about, and outlines the secondary
+  * action -- the one you listen to rather than commit to.
   */
- --on-image:#ffffff;
- --on-image-2:rgba(255,255,255,.80);
- --on-image-3:rgba(255,255,255,.62);
- --on-image-glass:rgba(255,255,255,.20);
- --on-image-line:rgba(255,255,255,.30);
- --scrim:linear-gradient(to bottom,
-  rgba(0,0,0,.55) 0%,rgba(0,0,0,.15) 38%,rgba(0,0,0,.25) 62%,rgba(0,0,0,.75) 100%);
+ --pencil:#2f5c9e;
+ --pencil-2:#24497f;
+ --pencil-wash:rgba(47,92,158,.09);
 
- /* The white pill, the second action shape in the system. */
- --chalk:#ffffff;
- --on-chalk:#111827;
- --chalk-hover:#f3f4f6;
+ /* ---- moss: what was measured ------------------------------------------
+  * The instrument's own colour on this page. Waveforms, cent deviations,
+  * tempo reached, criteria met. It is a reading taken off the player, which
+  * is why it is never the colour of a control: nothing moss is pressable.
+  *
+  * Two values, because a stroke and a word need different weights. --moss
+  * clears AA as text at 4.9:1; --moss-line is the lighter one and only ever
+  * draws.
+  */
+ --moss:#63701a;
+ --moss-line:#8a9a33;
+ --moss-wash:rgba(99,112,26,.12);
+
+ /* ---- the three signals ------------------------------------------------
+  * A pass is moss, because a pass is a measurement and the voice is "measure,
+  * do not congratulate". A caution is the ochre of a pencil correction. A
+  * stop is deeper than the vermillion so the two never read as the same mark
+  * on the transport, where they sit side by side.
+  *
+  * Every one of them is paired with a word or a glyph in the markup, so
+  * colour is never the only code.
+  */
+ --pass:var(--moss);
+ --pass-wash:var(--moss-wash);
+ --caution:#8a6206;
+ --caution-wash:rgba(138,98,6,.12);
+ --stop:#8f2f14;
 
  /* ---- type -------------------------------------------------------------
-  * Inter sets the interface; Playfair italic is the accent voice and is only
-  * ever italic, because that is the only cut this design uses.
-  */
- --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
- --font-mono:"Inter",ui-monospace,SFMono-Regular,Menlo,monospace;
-
- /*
-  * The accent voice, and it is opt-in.
+  * Four hands, and which one is which is the whole typographic system.
   *
-  * --font-display stays Inter on purpose. Fourteen stylesheets ask for it by
-  * name for every heading and half the labels, so pointing it at Playfair put
-  * the whole interface in italic serif: lesson titles, counters, the word
-  * PASSED. The italic is an accent, and an accent applied to everything is
-  * just a typeface.
+  * --font is the printer: Source Serif sets every sentence on the page.
   *
-  * Playfair is reached only through --font-accent, which is spent on the
-  * wordmark, one line of a two-voice heading, and an <em> inside a title.
+  * --font-display stays on the printer's serif too, and that is deliberate.
+  * Fourteen stylesheets ask for it by name for every heading and half the
+  * labels; pointing it at Playfair put the entire interface into italic
+  * didone once already, lesson titles and the word PASSED included. Playfair
+  * is reached only through --font-title, and only for the struck title at the
+  * head of a page, the wordmark, and a numeral big enough to read from the
+  * stand. A didone has hairlines: set it small and they disappear.
+  *
+  * --font-label is the rubber stamp. Uppercase, tracked, 11px, and it never
+  * sets a sentence. It is the engraved plate label above a control.
+  *
+  * --font-hand is the pencil, and it stays in the margin.
   */
- --font-display:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+ --font:"Source Serif 4",Georgia,"Times New Roman",serif;
+ --font-display:"Source Serif 4",Georgia,"Times New Roman",serif;
+ --font-title:"Playfair Display",Georgia,serif;
  --font-accent:"Playfair Display",Georgia,serif;
+ --font-label:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+ --font-hand:"Caveat","Segoe Script",cursive;
+ --font-num:"Playfair Display",Georgia,serif;
+ --font-arabic:"Noto Naskh Arabic","Source Serif 4",serif;
 
  --t-micro:max(11px,.6875rem);
  --t-small:clamp(.8125rem,.79rem + .1vw,.875rem);
- --t-body:clamp(.875rem,.85rem + .15vw,.9375rem);
- --t-lead:clamp(1rem,.95rem + .3vw,1.125rem);
- --t-h3:clamp(1.125rem,1.05rem + .45vw,1.5rem);
- --t-h2:clamp(1.5rem,1.2rem + 1.4vw,2.5rem);
- --t-h1:clamp(2.25rem,1.5rem + 3.4vw,4.5rem);
- --t-display:clamp(3rem,1.6rem + 6vw,8rem);
+ --t-body:clamp(.9375rem,.9rem + .18vw,1rem);
+ --t-lead:clamp(1.0625rem,1rem + .3vw,1.1875rem);
+ --t-h3:clamp(1.125rem,1.05rem + .45vw,1.4375rem);
+ --t-h2:clamp(1.375rem,1.15rem + 1.05vw,2rem);
+ --t-h1:clamp(1.875rem,1.3rem + 2.6vw,3.25rem);
+ --t-display:clamp(2.375rem,1.4rem + 4.2vw,4.75rem);
+ --t-readout:clamp(2.5rem,1.4rem + 4.6vw,5.25rem);
 
  /*
-  * The tracking is the design. Negative on everything, harder on display, and
-  * hardest on the Inter line of a two-voice heading: the brief sets the serif
-  * line looser than the sans line beneath it, and that difference is what
-  * makes the pair sit as one block instead of two.
+  * Tracking, reversed from the world this replaces.
+  *
+  * That design tracked everything hard negative and said so: it was most of
+  * why it read expensive. Paper does not work that way. A serif set on a page
+  * wants its designed fit, so the body tracking is zero, the didone comes in
+  * a hair at display size where its own fit opens up, and the only place
+  * tracking goes far is the stamped label -- where it goes far positive,
+  * because 11px uppercase without tracking is a smudge.
   */
- --track:-.02em;
- --track-serif:-.05em;
- --track-sans:-.08em;
- --track-label:.01em;
+ --track:0;
+ --track-title:-.015em;
+ --track-label:.14em;
+ --track-label-wide:.22em;
 
  /* ---- space ------------------------------------------------------------ */
  --s1:.25rem; --s2:.5rem;  --s3:.75rem; --s4:1rem;
  --s5:1.25rem;--s6:1.75rem;--s7:2.5rem; --s8:3.5rem;
  --s9:5rem;   --s10:7rem;
 
- /* ---- shape ------------------------------------------------------------
-  * Everything interactive is a pill. Surfaces take a large soft corner, which
-  * is what a floating glass panel wants.
+ /* ---- the stave --------------------------------------------------------
+  * A five-line stave is a measurement, not a type step, so it is set in px
+  * and everything that sits on one is positioned from these.
   */
- /* ============================================================ notation = */
+ --stave-gap:7px;
+ --stave-h:calc(var(--stave-gap) * 4);
+ --stave-line:1px;
+
+ /* ---- shape ------------------------------------------------------------
+  * A ruled box has a hard corner. This reverses the pill rule completely: the
+  * radius is the printer's trim, two pixels, and the only fully rounded thing
+  * in the design is a switch, because a switch is a switch. A note head is a
+  * circle because a note head is a circle.
+  */
+ --r:2px;
+ --r-surface:3px;
+ --r-well:2px;
+ --r-switch:9999px;
+ --r-lamp:50%;
+
  /*
+ * The trimmed corner, and the only soft one in the design.
+ *
+ * It belongs to the physical objects — the two pages and the transport strip
+ * — because a printed sheet has a trimmed corner. Nothing printed on them
+ * borrows it: a control inside a page is still two pixels, which is what
+ * keeps a button from reading as a smaller copy of the page it sits on.
+ */
+ --r-page:10px;
+
+ /* ---- depth ------------------------------------------------------------
+  * Paper depth, which is three things and no glass.
+  *
+  * The book casts a real shadow onto the stand -- offset and softly blurred,
+  * because a zero-offset halo is decoration rather than light. A raised
+  * element on the page takes a fine white top edge and a short shadow, the
+  * way something resting on paper does. A well is cut into the page: darker
+  * stock, with the light caught on its inner top edge.
+  *
+  * There is no backdrop-filter anywhere in this design. Nothing here is
+  * glass, so nothing has anything to blur.
+  */
+ --depth-book:0 28px 70px -24px rgba(0,0,0,.62),0 3px 10px rgba(0,0,0,.28);
+ --depth-raise:0 1px 0 rgba(255,255,255,.75),0 1px 3px rgba(27,26,23,.14);
+ --depth-tape:0 2px 4px -1px rgba(27,26,23,.28);
+ --depth-tape-lift:0 4px 8px -2px rgba(27,26,23,.32);
+ --depth-tape-press:0 1px 2px -1px rgba(27,26,23,.30);
+ --depth-knob:0 1px 2px rgba(27,26,23,.35);
+ --depth-well:inset 0 1px 3px rgba(27,26,23,.12),inset 0 0 0 1px var(--rule);
+ --depth-press:inset 0 2px 4px rgba(27,26,23,.18);
+ --depth-panel:none;
+ --bezel:inset 0 0 0 1px var(--rule);
+ --blur:none;
+
+ /* ---- motion -----------------------------------------------------------
+  * Paper motion. A page turns, a drawer slides open, ink lands. The curve is
+  * a decelerating one that settles rather than the hard exponential of the
+  * world this replaces, because nothing here arrives out of blur.
+  */
+ --ease-page:cubic-bezier(.2,.8,.2,1);
+ --ease-out-expo:cubic-bezier(.2,.8,.2,1);
+ --ease-mech:cubic-bezier(.3,.7,.2,1);
+ --ease-snap:cubic-bezier(.4,0,.2,1);
+ --m-click:140ms;
+ --m-panel:260ms;
+ --m-sweep:420ms;
+ --m-enter:620ms;
+ --m-zoom:900ms;
+
+ /* ---- layout -----------------------------------------------------------
+  * The bound spread. The left page holds the section's ordered list; the
+  * gutter is the binding between them; the dock along the bottom is the
+  * instrument. --nav is the tab row across the head of the right page.
+  */
+ --nav:3.5rem;
+ --dock:4.25rem;
+ --gutter:2.25rem;
+ --page-left:clamp(17rem,24vw,22rem);
+ --page-pad:clamp(1.25rem,2.4vw,2.5rem);
+ --head:auto;
+ --measure:74rem;
+ --measure-wide:120rem;
+ --measure-text:34rem;
+ --spotlight:0px;
+
+ /* ---- notation ---------------------------------------------------------
   * Four registers, one attribute. `data-register` on any container picks both
-  * the symbol face and the handwriting face for everything inside it, so a
-  * chord chart and a theory reference can sit on the same page in different
-  * hands without either one leaking into the chrome.
+  * the symbol face and the handwriting face for everything inside it.
   *
   * Every symbol stack ends in Bravura, which is the face actually present. A
   * register whose first choice is missing loses its handwriting and keeps its
@@ -198,136 +308,6 @@
  --smufl:"Bravura";
  --script:var(--font);
  --font-notation:var(--smufl);
-
- --r:9999px;
- --r-surface:1.5rem;
- --r-well:1rem;
- --r-lamp:50%;
-
- /* ---- depth ------------------------------------------------------------
-  * The design floats things over a photograph, so depth is glass and glow
-  * rather than a shadow cast onto a flat ground.
-  */
- --depth-panel:none;
- --depth-well:inset 0 0 0 1px var(--hairline);
- --depth-press:inset 0 0 0 1px var(--hairline-2);
- --depth-go:0 10px 30px -10px var(--flame-glow);
- --depth-chassis:0 -1px 0 var(--hairline);
- --depth-float:0 20px 60px -30px rgba(0,0,0,.9);
- --blur:blur(12px);
- --bezel:inset 0 0 0 1px var(--hairline);
- --bezel-lit:inset 0 0 0 1px var(--hairline-2);
- --edge-lit:var(--hairline);
- --edge-dark:transparent;
- --groove:var(--hairline);
- --groove-lip:transparent;
-
- /* ---- motion -----------------------------------------------------------
-  * One curve, the brief's: a hard exponential out. Entrances are long because
-  * they arrive out of blur; state changes are short because a control should
-  * answer immediately.
-  */
- --ease-out-expo:cubic-bezier(.16,1,.3,1);
- --ease-mech:cubic-bezier(.16,1,.3,1);
- --ease-snap:cubic-bezier(.16,1,.3,1);
- --m-click:180ms;
- --m-panel:300ms;
- --m-sweep:500ms;
- --m-enter:1100ms;
- --m-zoom:1800ms;
-
- /* ---- layout ----------------------------------------------------------- */
- --nav:4.5rem;
- --dock:4.25rem;
- --head:auto;
- --spotlight:260px;
- --measure:74rem;
- --measure-wide:120rem;
- --measure-text:34rem;
-}
-
-/* ============================================================== daylight ==
- *
- * The brief's root wrapper is white while its hero is black, so the design
- * already contains both grounds. This is the lighter half, kept because a
- * reader's stored theme should not be discarded to tidy a name.
- *
- * The orange barely moves. It is the one fixed point in the design, and it
- * only darkens enough to carry as a letterform on white.
- */
-:root[data-theme="cream"]{
- --ground:#ffffff;
- --ground-2:#f7f7f8;
- --lift:rgba(17,24,39,.045);
- --lift-2:rgba(17,24,39,.075);
- --glass:rgba(17,24,39,.06);
- --glass-line:rgba(17,24,39,.12);
-
- --ink:#111827;
- --ink-2:rgba(17,24,39,.78);
- --ink-3:rgba(17,24,39,.60);
- --ink-4:rgba(17,24,39,.61);
- --hairline:rgba(17,24,39,.12);
- --hairline-2:rgba(17,24,39,.24);
-
- --flame:#c05411;
- --on-flame:#ffffff;
- --flame-deep:#a1450e;
- --flame-wash:rgba(192,84,17,.10);
- --flame-glow:rgba(192,84,17,.22);
-
- /*
-  * The neck on cream. Composed, not inverted: the hues go deeper because they
-  * now have to darken a near-white ground rather than lift a black one, and
-  * every alpha comes down, because on cream the wash eats the label's contrast
-  * instead of adding to it. Root takes the deep flame so it clears AA on its
-  * own fill rather than on the bare well.
-  */
- --pad-root:#c05411;
- --pad-root-ink:#8f3a08;
- --pad-root-fill:rgba(192,84,17,.14);
- --pad-guide:#2a63a8;
- --pad-guide-ink:var(--ink);
- --pad-guide-fill:rgba(42,99,168,.09);
- --pad-chord-ink:var(--ink-2);
- --pad-chord-fill:rgba(17,24,39,.06);
- /*
-  * The two lit ranks carry their own ink. A fill and its label are one pair:
-  * ink-3 clears AA on the bare well and not on the wash this rank lights its
-  * own fret with, and a rank that is easier to see must not be harder to read.
-  */
- --pad-voice:#0f7b8c;
- --pad-voice-ink:rgba(17,24,39,.74);
- --pad-voice-fill:rgba(15,123,140,.12);
- --pad-colour:#5b46b8;
- --pad-colour-ink:rgba(17,24,39,.72);
- --pad-colour-fill:rgba(91,70,184,.10);
- /*
-  * And the bottom of the ladder is separated by hand here, because cream's
-  * ink-3 and ink-4 are .60 and .61 — the same value twice. Four greys are
-  * really three on this ground, since a true fourth step would not clear AA
-  * against cream, so the neck cannot borrow a fifth rank from them.
-  */
- --pad-available-ink:rgba(17,24,39,.72);
- --pad-outside-ink:var(--ink-4);
-
- /* The same three signals, composed for a near-white ground. */
- --pass:#0e7a5f;
- --pass-wash:rgba(14,122,95,.12);
- --caution:#8a6206;
- --stop:#b3261e;
- /*
-  * Not `--ink-3` here. Cream's ink-3 and ink-4 are .60 and .61, and at 11px on
-  * a panel that lands at 4.46:1 — four hundredths under AA. A caption that
-  * stops being an accent must not stop being readable.
-  */
- --label-ink:rgba(17,24,39,.70);
-
- --chalk:#111827;
- --on-chalk:#ffffff;
- --chalk-hover:#1f2937;
-
- --depth-float:0 20px 60px -30px rgba(17,24,39,.35);
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -342,148 +322,214 @@
 
 /* ========================================================== migration ====
  *
- * The names the rest of the codebase already asks for, pointed at Lithos.
+ * The names the rest of the codebase already asks for, pointed at the book.
  *
  * Seven hundred and fifty-eight var() references across fourteen stylesheets
- * predate this world. Aliasing is what lets all of them inherit it without
- * being rewritten, and because var() resolves where it is used, one block
- * serves both grounds.
+ * predate this world, and aliasing is what lets all of them inherit it
+ * without being rewritten.
+ *
+ * One thing changed in how this block is written. Under the previous design's
+ * single-accent rule, every semantic name here -- caution, failure, pass,
+ * caption, seven of them -- resolved to the same orange, so a warning and a
+ * button were the same colour on a working screen. This world has four inks,
+ * so the names can mean what they say again: a measurement is moss, an
+ * annotation is pencil blue, and vermillion is kept for what is live.
  */
 :root{
- --bg:var(--ground);
- --bg-lift:var(--lift);
- --bg-raised:var(--lift-2);
- --wash:var(--lift);
+ --ground:var(--paper);
+ --ground-2:var(--paper-2);
+ --bg:var(--paper);
+ --bg-lift:var(--paper-2);
+ --bg-raised:var(--paper);
+ --wash:var(--paper-2);
+ --lift:var(--paper-2);
+ --lift-2:var(--paper-3);
+ --glass:var(--paper-2);
+ --glass-line:var(--rule);
  --text:var(--ink);
  --muted:var(--ink-3);
- --rule:var(--hairline);
- --rule-strong:var(--hairline-2);
- --rule-heavy:var(--ink);
- --line:var(--hairline);
+ --hairline:var(--rule);
+ --hairline-2:var(--rule-2);
+ --rule-strong:var(--rule-2);
+ --line:var(--rule);
+ --groove:var(--rule);
+ --groove-lip:transparent;
+ --edge-lit:rgba(255,255,255,.7);
+ --edge-dark:var(--rule);
 
- /* the paper world's names */
- --stock:var(--ground);
- --stock-2:var(--ground-2);
- --stock-3:var(--lift);
- --stock-edge:var(--ground);
+ /* the paper world's names, which finally mean what they say */
+ --stock:var(--paper);
+ --stock-2:var(--paper-2);
+ --stock-3:var(--paper-3);
+ --stock-edge:var(--paper-edge);
  --toner:var(--ink);
  --toner-2:var(--ink-2);
  --toner-3:var(--ink-3);
  --toner-4:var(--ink-4);
- --pencil:var(--flame);
- --pencil-wash:var(--flame-wash);
- --ink-blue:var(--ink-2);
- --ink-blue-wash:var(--lift-2);
+ --pencil-ink:var(--pencil);
+ --ink-blue:var(--pencil);
+ --ink-blue-wash:var(--pencil-wash);
  --graphite:var(--ink-3);
 
  /* the panel world's names */
- --face:var(--ground);
- --face-2:var(--ground-2);
- --well:var(--lift);
- --rack:var(--ground);
+ --face:var(--paper);
+ --face-2:var(--paper-2);
+ --well:var(--paper-3);
+ --rack:var(--paper-2);
  --bone:var(--ink);
  --bone-2:var(--ink-2);
  --bone-3:var(--ink-3);
  --bone-4:var(--ink-4);
- --oxide:var(--flame);
- --oxide-ink:var(--flame);
+ --oxide:var(--vermillion);
+ --oxide-ink:var(--vermillion);
  --oxide-dim:var(--ink-4);
- --oxide-wash:var(--flame-wash);
- --signal:var(--ink);
+ --oxide-wash:var(--vermillion-wash);
+ --signal:var(--moss);
  --signal-dim:var(--ink-4);
- --signal-wash:var(--lift-2);
- --alert:var(--flame);
- --alert-ink:var(--flame);
+ --signal-wash:var(--moss-wash);
+ --alert:var(--vermillion);
+ --alert-ink:var(--vermillion);
  --alert-dim:var(--ink-4);
- --alert-wash:var(--flame-wash);
+ --alert-wash:var(--vermillion-wash);
  --steel:var(--ink-3);
- --tobacco:var(--ink-3);
- --tobacco-ink:var(--ink-3);
- --olive:var(--ink-4);
- --olive-ink:var(--ink-4);
+ --tobacco:var(--caution);
+ --tobacco-ink:var(--caution);
+ --olive:var(--moss);
+ --olive-ink:var(--moss);
 
- --accent:var(--flame);
- --accent-fill:var(--flame);
- --accent-ink:var(--on-flame);
- --accent-mark-ink:var(--on-flame);
- --on-accent:var(--on-flame);
- --accent-wash:var(--flame-wash);
+ --flame:var(--vermillion);
+ --flame-deep:var(--vermillion-deep);
+ --flame-wash:var(--vermillion-wash);
+ --flame-glow:rgba(196,53,26,.28);
+ --on-flame:var(--on-vermillion);
+ --accent:var(--vermillion);
+ --accent-fill:var(--vermillion);
+ --accent-ink:var(--on-vermillion);
+ --accent-mark-ink:var(--on-vermillion);
+ --on-accent:var(--on-vermillion);
+ --accent-wash:var(--vermillion-wash);
 
- --done:var(--ink);
- --played:var(--ink);
- --warn:var(--ink-3);
- --wrong:var(--flame);
+ --chalk:var(--ink);
+ --on-chalk:var(--paper);
+ --chalk-hover:var(--ink-2);
+
+ --done:var(--moss);
+ --played:var(--moss);
+ --warn:var(--caution);
+ --wrong:var(--stop);
+ --label-ink:var(--ink-3);
 
  /*
-  * Fretboard note roles under a one-colour design.
-  *
-  * The brief pins a single accent, so inventing a second and third hue for the
-  * neck would break the thing that makes this look expensive. Role is carried
-  * by white at four opacities plus fill and outline, and the orange is spent
-  * only on where the hand is going.
+  * Ink on an image. Nothing in this world sits on a photograph any more, but
+  * the names survive in markup that has not been rewritten, so they resolve
+  * to the page's own ink rather than staying white on white.
   */
- --hf-root:var(--flame);
- --hf-bass:var(--flame);
- --hf-guide:var(--ink);
+ --on-image:var(--ink);
+ --on-image-2:var(--ink-2);
+ --on-image-3:var(--ink-3);
+ --on-image-glass:var(--paper-2);
+ --on-image-line:var(--rule);
+ --scrim:none;
+
+ /* ---- the neck ---------------------------------------------------------
+  * The fretboard's note roles, which are the one place this design carries
+  * more than its three colours.
+  *
+  * On the board the job a note is doing is the content, not decoration, and
+  * four jobs told apart only by ink weight are four jobs the player has to
+  * stop and decode mid-bar. So role gets hue here, and only here.
+  *
+  * Every one of these is measured as ink on paper: red 4.94, blue 6.0, teal
+  * 5.6, plum 6.96. The washes are light because a wash on ivory eats the
+  * label's contrast rather than adding to it -- the opposite of how the same
+  * ladder behaved on black.
+  */
+ --pad-root:var(--vermillion);
+ --pad-root-ink:var(--vermillion);
+ --pad-root-fill:rgba(196,53,26,.13);
+ --pad-guide:var(--pencil);
+ --pad-guide-ink:var(--pencil);
+ --pad-guide-fill:rgba(47,92,158,.08);
+ --pad-chord-ink:var(--ink-2);
+ --pad-chord-fill:rgba(27,26,23,.05);
+ --pad-voice:#0f6b78;
+ --pad-voice-ink:#0f6b78;
+ --pad-voice-fill:rgba(15,107,120,.10);
+ --pad-colour:#6b3f8c;
+ --pad-colour-ink:#6b3f8c;
+ --pad-colour-fill:rgba(107,63,140,.09);
+ --pad-available-ink:var(--ink-3);
+ --pad-outside-ink:var(--ink-4);
+
+ --hf-root:var(--vermillion);
+ --hf-bass:var(--vermillion);
+ --hf-guide:var(--pencil);
  --hf-chord:var(--ink-2);
  --hf-written:var(--ink-2);
- --hf-colour:var(--ink-3);
- --hf-voice:var(--ink-3);
- --hf-available:var(--ink-4);
+ --hf-colour:#6b3f8c;
+ --hf-voice:#0f6b78;
+ --hf-available:var(--ink-3);
  --hf-context:var(--ink-4);
  --hf-approach:var(--ink-3);
- --hf-outside:var(--flame);
+ --hf-outside:var(--caution);
 
- --violet:var(--flame);
- --lime:var(--ink);
- --acid:var(--ink);
- --amber:var(--flame);
- --orange:var(--flame);
- --red:var(--flame);
- --blue:var(--ink-2);
- --cyan:var(--ink-2);
- --mq-gold:var(--flame);
+ --violet:#6b3f8c;
+ --lime:var(--moss);
+ --acid:var(--moss);
+ --amber:var(--caution);
+ --orange:var(--vermillion);
+ --blue:var(--pencil);
+ --cyan:#0f6b78;
+ --mq-gold:var(--caution);
  --mq-gold2:var(--ink-3);
- --mq-teal:var(--ink-2);
- --mq-line:var(--hairline);
- --coach-panel:var(--lift);
- --quest-fill-top:var(--lift-2);
- --quest-fill-bottom:var(--ground);
+ --mq-teal:#0f6b78;
+ --mq-line:var(--rule);
+ --coach-panel:var(--paper-2);
+ --quest-fill-top:var(--paper-2);
+ --quest-fill-bottom:var(--paper);
 
- --sans:var(--font);
- --mono:var(--font);
+ --sans:var(--font-label);
+ /*
+  * --mono and --font-mono are the stamp, not a monospace.
+  *
+  * Twelve stylesheets ask for them by name and every one of those uses is the
+  * same job: a small uppercase tracked label. The previous world had already
+  * pointed them at its UI sans rather than at a monospace, because two monos
+  * in one interface is a bug rather than a preference. They keep the misleading
+  * name because renaming them across twelve files buys nothing, and they are
+  * aliases precisely so that the name never has to be the truth.
+  */
+ --mono:var(--font-label);
+ --font-mono:var(--font-label);
  --t-tiny:var(--t-micro);
  --track-legend:var(--track-label);
- --track-display:var(--track-serif);
- --track-mono:var(--track);
+ --track-display:var(--track-title);
+ --track-mono:var(--track-label);
+ --track-serif:var(--track-title);
+ --track-sans:var(--track);
+
  /*
-  * The control radius, and deliberately not the pill token.
-  *
-  * `--r` is 9999px, which is correct on a control and catastrophic on anything
-  * larger: the radius clamps to half the smaller side, so a 592 by 260 card
-  * asking for a "pill" became a stadium with a 130px corner, and where the rule
-  * also set overflow:hidden it sheared the content inside. That produced four
-  * separate defects: clipped labels on the tool cards, ellipses instead of
-  * circles around every note on the neck, a stadium around the chord rail, and
-  * the scale cards cut off down their left edge.
-  *
-  * 1.5rem is half the tallest standard control here, so everything up to 3rem
-  * tall still resolves to a true pill, while nothing larger can deform. It is
-  * the same value as --r-surface on purpose: a control and a surface should
-  * agree once the control is big enough to be a surface.
+  * The control radius. Everything is a ruled rectangle now, so this is the
+  * printer's trim rather than the half-height stadium the pill world needed.
+  * --r-pill survives for the one shape that is still fully rounded: a switch.
   */
- --r-control:1.5rem;
- --r-pill:var(--r);
+ --r-control:2px;
+ --r-pill:var(--r-switch);
  --radius-lg:var(--r-surface);
+
+ --depth-go:var(--depth-tape);
+ --depth-chassis:0 -1px 0 var(--rule);
+ --depth-float:var(--depth-raise);
+ --bezel-lit:inset 0 0 0 1px var(--rule-2);
 
  --t-fast:var(--m-click);
  --t-colour:var(--m-click);
  --t-base:var(--m-panel);
  --t-page:var(--m-panel);
  --t-slow:var(--m-sweep);
- --ease:var(--ease-out-expo);
- --ease-out:var(--ease-out-expo);
- --ease-spring:var(--ease-out-expo);
+ --ease:var(--ease-page);
+ --ease-out:var(--ease-page);
+ --ease-spring:var(--ease-page);
 
  --header:var(--nav);
  --transport:var(--dock);
@@ -501,6 +547,6 @@
  * Rehearsal chart: challenges, chord symbols, margin annotations.
  */
 [data-register="engraved"]{--smufl:"Leland","Bravura";--script:var(--font)}
-[data-register="classical"]{--smufl:"Bravura";--script:var(--font-accent)}
-[data-register="jazz"]{--smufl:"Petaluma","Bravura";--script:"Petaluma Script",var(--font)}
-[data-register="chart"]{--smufl:"MuseJazz","Bravura";--script:"MuseJazz Text",var(--font)}
+[data-register="classical"]{--smufl:"Bravura";--script:var(--font-title)}
+[data-register="jazz"]{--smufl:"Petaluma","Bravura";--script:"Petaluma Script",var(--font-hand)}
+[data-register="chart"]{--smufl:"MuseJazz","Bravura";--script:"MuseJazz Text",var(--font-hand)}

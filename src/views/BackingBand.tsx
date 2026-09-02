@@ -67,7 +67,7 @@ export default function BackingBand({
    </div>
 
    <div className="runtimeHero">
-    <div className="transport">
+    <div className="bandDeck">
      <div className={`pulse ${playing?"playing":""}`}>
       <b>{beat}</b><span>Beat</span><i>{bar}</i><small>BAR</small>
      </div>

@@ -3,7 +3,7 @@
 .coachHero>div{padding:5vw}
 .coachHero>div>span,.coachControlStrip small,.coachEmpty>span,.sessionEvidenceHead>div>span,.coachAssess>header>div>span,.assessmentStage article>span,.evidenceSummary>article>span,.evidenceSummary>aside>span,.debtBoard>span,.masteryBoard>span,.keyEvidence header span,.habitEvidence>div>span,.habitEvidence>aside>span,.coachHistory>header>span,.historyGrid>article>span{font:var(--t-micro) var(--mono);letter-spacing:.14em;color:var(--lime)}
 .coachHero h1{font-size:clamp(58px,7.4vw,104px);line-height:.82;letter-spacing:-.07em;margin:36px 0 26px}
-.coachHero h1 em{font-style:normal;color:transparent;-webkit-text-stroke:1px var(--lime)}
+.coachHero h1 em{font-style:normal;}
 .coachHero>div>p{max-width:760px;color:var(--ink-3);font-size:var(--t-micro);line-height:1.8}
 .coachHero>aside{align-self:center;margin:38px;padding:var(--s6);border:1px solid #4b5834;background:transparent}
 .coachHero>aside small,.coachHero>aside span{display:block;font:var(--t-micro) var(--mono);color:var(--ink-3)}

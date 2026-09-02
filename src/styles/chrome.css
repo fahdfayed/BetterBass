@@ -1,0 +1,172 @@
+/**
+ * The two pieces of chrome that are not the book.
+ *
+ * The voice control sits in the head of the right page beside the contents,
+ * and the sync status sits on the stand outside the book entirely. Both were
+ * drawn for the world before this one and both were still wearing it: a
+ * hard-coded slate border on the voice switch, and a status chip pinned to the
+ * bottom right corner of the viewport, where the transport now is.
+ *
+ * They load after every other sheet because both are overriding older rules in
+ * globals.css, redesign.css and node-runtime.css that address them by the same
+ * class names.
+ */
+
+/* ================================================================ voice === */
+
+/*
+ * One control in two halves: the switch, and the test that only exists while
+ * the switch is on. They share a single ruled box with a divider between them,
+ * because they are one control on a panel rather than two buttons in a row.
+ */
+.voiceControl{
+ display:flex;
+ align-items:stretch;
+ border:1px solid var(--rule-2);
+ border-radius:var(--r);
+ background:transparent;
+ overflow:hidden;
+}
+.voiceControl button{
+ min-height:2.125rem;
+ border:0;
+ border-radius:0;
+ background:transparent;
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ font-weight:500;
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ color:var(--ink-2);
+ transition:color var(--m-click) var(--ease-page),background var(--m-click) var(--ease-page);
+}
+.voiceControl button:hover{color:var(--ink);background:var(--paper-2)}
+
+.voiceControl .voiceToggle{display:flex;align-items:center;gap:var(--s2);padding:0 var(--s3)}
+.voiceControl .voiceToggle svg{flex:none;color:var(--ink-4);transition:color var(--m-click) var(--ease-page)}
+.voiceControl .voiceToggle[aria-pressed="true"] svg{color:var(--ink-2)}
+.voiceControl .voiceToggle[aria-pressed="false"]{color:var(--ink-3)}
+
+.voiceControl .voiceTest{
+ padding:0 var(--s3);
+ border-left:1px solid var(--rule);
+ color:var(--ink-3);
+}
+
+/*
+ * Speaking is a live state, so it is the one thing here that takes vermillion —
+ * and it takes it as a lit edge rather than a fill, the way every other running
+ * process in this design is marked.
+ */
+.voiceControl.speaking{border-color:var(--vermillion)}
+.voiceControl.speaking .voiceToggle svg{color:var(--vermillion)}
+
+.voiceUnsupported{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ color:var(--ink-3);
+}
+
+@media (max-width:56rem){
+ .voiceControl .voiceToggle span,.voiceControl .voiceTest{display:none}
+ .voiceControl .voiceToggle{padding:0 var(--s2)}
+}
+
+/* =============================================================== status === */
+
+/*
+ * Where the copy of your progress currently lives.
+ *
+ * It was a chip pinned to the bottom right of the viewport, which is where the
+ * transport now runs the full width — so it sat on top of the input control
+ * and the level fader. It moves onto the stand instead: outside the book, in
+ * the margin above the top right corner, printed on the dark ground rather
+ * than on paper.
+ *
+ * That position is also the honest one. This is not something the page is
+ * telling you; it is something about the machine the page is running on, and
+ * the book is not the place for it.
+ */
+.nodeRuntimeStatus{
+ position:fixed;
+ right:.75rem;
+ top:.5rem;
+ bottom:auto;
+ z-index:30;
+ display:flex;
+ align-items:center;
+ gap:var(--s2);
+ min-width:0;
+ padding:0;
+ border:0;
+ background:transparent;
+ box-shadow:none;
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ color:var(--on-stand-3);
+ pointer-events:none;
+}
+.nodeRuntimeStatus>i{
+ grid-row:auto;
+ width:5px;height:5px;
+ flex:none;
+ border-radius:var(--r-lamp);
+ background:currentColor;
+}
+.nodeRuntimeStatus>span,.nodeRuntimeStatus>b{
+ font:inherit;
+ letter-spacing:inherit;
+}
+/*
+ * Synced is the state it is in almost always, so it says the least. Saving and
+ * the local fallback are the two a player might act on, and only those two
+ * brighten.
+ */
+.nodeRuntimeStatus>b{color:var(--on-stand-2);font-weight:500}
+.nodeRuntimeStatus.saving>b,.nodeRuntimeStatus.saving>i{color:var(--on-stand)}
+.nodeRuntimeStatus.offline>b,.nodeRuntimeStatus.offline>i{color:var(--on-stand-warn)}
+
+@media (max-width:62rem){
+ /* The word "Node api" is for a developer; the state is for the player. */
+ .nodeRuntimeStatus>span{display:none}
+}
+
+/* ================================================================= boot === */
+
+/*
+ * The one screen with no book on it, because there is nothing to open yet.
+ * Set on the stand, centred, in the reading face.
+ */
+.nodeBoot{
+ min-height:100dvh;
+ display:grid;
+ place-content:center;
+ justify-items:center;
+ text-align:center;
+ gap:var(--s3);
+ padding:var(--s7);
+ background:var(--stand);
+ color:var(--on-stand);
+}
+.nodeBoot>i{
+ width:9px;height:9px;
+ margin:0 0 var(--s4);
+ border-radius:var(--r-lamp);
+ background:var(--vermillion);
+ box-shadow:none;
+}
+.nodeBoot h1{
+ font-family:var(--font-title);
+ font-style:italic;
+ font-weight:400;
+ font-size:var(--t-h1);
+ letter-spacing:var(--track-title);
+ line-height:1.1;
+ margin:0;
+ color:inherit;
+}
+.nodeBoot p{color:var(--on-stand-2);max-width:34rem}
