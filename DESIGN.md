@@ -17,6 +17,10 @@ colors:
   flame-deep: "#d2611f"
   chalk: "#ffffff"
   on-chalk: "#111827"
+  pad-root: "{colors.flame}"
+  pad-voice: "#3fb0c4"
+  pad-colour: "#8f74e2"
+  pad-guide: "#5a9be0"
 typography:
   display:
     fontFamily: "Inter, system-ui, sans-serif"
@@ -180,7 +184,11 @@ this ships broken.
 ### Named Rules
 
 **The One Flame Rule.** One orange element per screen, and none when there is no
-action to take.
+action to take. **One exception, scoped to `.hfString`:** the harmony fretboard
+carries four hues, because on that board the job a note is doing is the content
+and not decoration, and four jobs told apart only by opacity are four jobs the
+player has to stop and decode. See The neck, below. Nothing outside the board
+may read `--pad-voice`, `--pad-colour` or `--pad-guide`.
 
 **The Four Greys Rule.** Every distinction that is not "press this" is carried
 by white at one of four opacities. Reaching for a fifth colour means the
@@ -331,6 +339,67 @@ Mark and wordmark left, sections centred in a glass pill, actions right. The
 pill is hidden below 900px, where the contents control becomes the whole
 navigation.
 
+### The neck
+
+The harmony fretboard is the workspace the product is run from, and it is read
+between changes with both hands on the instrument. Everything below exists to
+make it answerable at a glance rather than decoded.
+
+**Rank is ink, and ink is monotone.** The classifier returns eleven roles; the
+tutor panel names all eleven and the board shows five steps, because five is
+what the eye separates at a glance. Every step down is a step dimmer, with no
+exceptions and no role brighter than a role above it.
+
+| rank | roles | ink | weight |
+|---|---|---|---|
+| 1 | root, bass | flame | 700 |
+| 2 | guide | ink | 600 |
+| 3 | chord, specified, written | ink-2 | 500 |
+| 4 | colour, voice, available | ink-3 | 400 |
+| 5 | context, approach, outside | ink-4 | 400 |
+
+**Highlight is aim.** Ink says what a note is; the wash says where to go, and it
+weakens as the reason to play the note weakens. The two ranks that ask for
+movement are the loudest, because a player looking up mid-bar is looking for the
+next place to put a finger.
+
+| roles | hue | strength |
+|---|---|---|
+| root, bass | `--pad-root` (flame) | 22% |
+| voice | `--pad-voice` (cyan) | 18% |
+| colour | `--pad-colour` (violet) | 13% |
+| guide | `--pad-guide` (blue) | 10% |
+| chord, specified, written | ink | 5% |
+| context, approach, outside | — | none |
+
+The wash is read from `--pad-fill`, one custom property per pad, so state beats
+role without a specificity argument: hover, selected and under-the-finger set
+the same property and win by cascade order. It is applied through a single
+`!important` in `ui-audit.css`, because `legacy-views.css` holds every legacy
+control at `background:none !important`.
+
+**Two rings, ranked like the ink.** Root takes the flame ring; guide takes a
+hairline; the next chord’s target takes the white ring on `::before`. Approach
+and outside take none — they are already the dimmest ink and that is the mark.
+There were five rings on a 52-cell board once, which is the same as none.
+`::after` belongs to role and `::before` to destination; never let one draw into
+the other’s pseudo-element.
+
+**The fret grid is a measurement, not a type step.** `--hf-nut` and `--hf-fret`
+are px, and the fret width is set per label mode from the widest label that mode
+can produce: 84px for the role words, 56px for the two-name accidentals, 44px
+for note names and targets. The board scrolls rather than shrinking; a neck at
+half scale is neither playable nor readable. Nothing may leave a fret: the pad
+clips, and a label that outgrows its fret ends in an ellipsis inside its own
+cell.
+
+**The wires are the frets.** Each pad carries the line on its leading edge at
+`--rule-strong`, so wires land exactly on the grid columns at any fret width.
+The first fret in a row has none — the nut is already that line. String rows are
+separated at `--groove`, a step lighter than the wires, because frets are what
+you are counting. The string itself runs through the middle of the row behind
+the notes, so it is never the row’s boundary.
+
 ### The dock
 
 Fixed bottom strip, glass over the ground. Transport, tempo, loop, count-in and
@@ -391,6 +460,8 @@ blank screen for anyone who turned animation off.
 - **Don't** set `border-radius` inside a focus rule.
 - **Don't** apply `backdrop-filter` to anything that scrolls.
 - **Don't** introduce a second accent colour or a fifth grey.
+- **Don’t** read the neck’s four hues anywhere but `.hfString`, and don’t rank a
+  role by hue alone — the ink step has to carry it too.
 - **Don't** square a control, or round it partially.
 - **Don't** hotlink a font, image, script or stylesheet from a third-party host.
   They are blocked outright here and the failure is silent.

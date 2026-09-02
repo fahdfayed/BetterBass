@@ -84,11 +84,34 @@
 }
 .hfBoardWrap::-webkit-scrollbar{height:8px}
 
+/*
+ * The fret grid, in one place.
+ *
+ * The component used to hard-code `58px repeat(n, minmax(44px, 1fr))` into an
+ * inline style, which put the neck's only real measurement somewhere no
+ * stylesheet could answer. It reads these two instead.
+ *
+ * A fret is sized by the widest thing it has to hold, and that is a different
+ * width in each view. The priority view puts a word in the cell: APPROACH is
+ * 61px at the label's own size, so a 44px fret cut it off mid-word and left it
+ * butted against the label of the next fret, with no wire between them to say
+ * where one ended. The degree view has the two-name accidentals, ♯4 / ♭5 at
+ * 39px. The note and next-target views are two or three characters and keep
+ * the tighter spacing.
+ *
+ * These are px on purpose. Fret spacing is a physical measurement of an
+ * instrument, not a step on the type scale.
+ */
+.hfBoard{--hf-nut:58px;--hf-fret:44px}
+.hfBoard[data-labels="priority"]{--hf-fret:84px}
+.hfBoard[data-labels="degree"]{--hf-fret:56px}
+
 /* Fret numbers read as engraved into the top edge of the board. */
 .hfFretNumbers{
  display:grid;
  align-items:center;
  padding-bottom:var(--s2);
+ border-bottom:1px solid var(--groove);
 }
 .hfFretNumbers>b,.hfFretNumbers>span{
  font-family:var(--font-mono);
@@ -106,7 +129,16 @@
 }
 .hfFretNumbers>span:not(.marked) i{display:block;height:8px}
 
-/* A string row. The name sits on the nut; the frets run right from it. */
+/*
+ * A string row. The name sits on the nut; the frets run right from it.
+ *
+ * The rule between rows stays, and it was tried without. The string line looks
+ * like it should be the row's own boundary, but it runs through the middle of
+ * the row, behind the notes, which is where a string actually is — so pulling
+ * the rule left nothing at all between one string and the next. It is a step
+ * lighter than the fret wires above it, which is the right order for a neck:
+ * frets are the thing you are counting.
+ */
 .hfString{
  display:grid;
  align-items:stretch;
@@ -149,9 +181,25 @@
  display:grid;
  place-items:center;
  gap:0;
+ /*
+  * The fret wire. Every pad carries the line on its leading edge, so the wires
+  * land exactly on the grid columns however the neck is sized, and the nut is
+  * the heavier rule the string-name column already draws.
+  *
+  * `legacy-views.css` sets `border:0 !important` on every legacy control and
+  * takes this with it; `ui-audit.css` puts it back for the neck alone. It has
+  * to be stated in both places: this is the value, that is the exception.
+  */
  border:0;
- border-left:1px solid var(--groove);
+ border-left:1px solid var(--rule-strong);
  border-radius:0;
+ /*
+  * Nothing leaves the fret. Labels are clipped by their own cell rather than
+  * running across the wire into the next one, and the padding keeps them off
+  * the wire instead of touching it.
+  */
+ overflow:hidden;
+ padding-inline:var(--s2);
  background:none;
  color:var(--bone-4);
  cursor:pointer;
@@ -161,13 +209,32 @@
             transform var(--m-click) var(--ease-snap);
 }
 /* The string itself, drawn through the pad. */
+/*
+ * `redesign.css` still draws this element as a 48px note disc, which in a 44px
+ * cell was both wider than the fret and, against the height and inset set
+ * here, a flattened oval with a border. This is the newer language: the ring
+ * around a note is drawn by the role's ::after, and `i` is only the string.
+ */
 .hfString button>i{
  position:absolute;left:0;right:0;top:50%;
+ width:auto;
+ border:0;
+ border-radius:0;
  height:var(--gauge,1.5px);
  transform:translateY(-50%);
  background:linear-gradient(var(--steel),var(--bone-4));
- opacity:.32;
+ opacity:.5;
  pointer-events:none;
+}
+/*
+ * The same stale disc in its hover and picked states, where redesign.css
+ * re-centres and scales it. On a string line that reads as the string sliding
+ * half a fret sideways and thickening under the pointer. A string does not
+ * move when you choose a note on it.
+ */
+.hfString button:hover>i,
+.hfString button.picked>i{
+ transform:translateY(-50%);
 }
 .hfString button>b{
  font-family:var(--font-mono);
@@ -175,6 +242,16 @@
  font-variant-numeric:tabular-nums;
  line-height:1;
  z-index:1;
+ /*
+  * The fret is sized to fit every label above, so this is the backstop, not
+  * the plan: if a label ever outgrows its fret it ends in an ellipsis inside
+  * its own cell. A word cut mid-glyph at the wire reads as the next word's
+  * first letters, which is how APPROACH and GUIDE became APPROACGUIDE.
+  */
+ max-width:100%;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap;
 }
 .hfString button>small{
  font-family:var(--font-mono);
@@ -183,58 +260,142 @@
  line-height:1;
  margin-top:2px;
  z-index:1;
+ max-width:100%;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap;
 }
-.hfString button:hover{background:var(--groove-lip);color:var(--bone-2)}
+/*
+ * Hover was `--groove-lip`, which is transparent on the dark ground, so the
+ * neck answered the pointer with nothing at all. A cell you can click has to
+ * say so. (redesign.css held the cell background at `transparent !important`,
+ * which is why this and the selected wash below both did nothing; the
+ * important is dropped there rather than answered with another one here.)
+ */
+.hfString button.visible:hover,
+.hfString button:hover{--pad-fill:var(--lift-2);color:var(--bone-2)}
 
 /* Hidden by the current filter: still present, still an anchor, not shouting. */
 .hfString button.hidden>b,.hfString button.hidden>small{opacity:.14}
 
 /* -- roles ------------------------------------------------------------- */
 /*
- * Five distinguishable treatments, not eleven. Rank collapses into: the
- * target, the notes that state the change, the notes that belong, the notes
- * merely available, and the notes outside. Shape and outline carry as much of
- * that as colour does.
+ * Rank, in one flame and four greys.
+ *
+ * The eleven roles are real and the tutor panel still names all of them. The
+ * neck does not: at a glance a player resolves maybe five steps, and the board
+ * was spending eleven treatments to deliver three. Root and approach both came
+ * out flame, so the note you build on and the note you pass through were the
+ * same colour; guide, chord and specified were all pure white, so the note
+ * that defines the quality and the note that merely belongs were the same
+ * weight. Two of the three values the eye could actually separate pointed the
+ * wrong way, and the loudest mark on the board — a dashed flame ring — sat on
+ * the notes that matter least.
+ *
+ * So the neck ranks by ink and nothing else. Every step down is a step dimmer,
+ * monotonically, and the flame is spent once on the thing the line is built
+ * from. This is DESIGN.md's Four Greys Rule read literally: if a distinction
+ * is not "press this", white at one of four opacities carries it.
+ *
+ *   flame   root, bass          the anchor
+ *   ink     guide               3rd and 7th: what makes the chord that chord
+ *   ink-2   chord, specified    written into the symbol
+ *   ink-3   colour, voice, available   in the scale, optional
+ *   ink-4   context, approach, outside not the material
  */
+/*
+ * The highlight ladder.
+ *
+ * Ink alone ranks the notes, but it does not aim the hand: a player reading
+ * the neck between changes needs to see where to go, not only what each note
+ * is. So the ranks worth aiming at carry a wash, and the wash weakens as the
+ * reason to play the note weakens.
+ *
+ * Every hue token in this project resolves to flame or to ink, so the neck
+ * declares its own four. This is a deliberate exception to DESIGN.md's One
+ * Flame Rule and it is scoped to the board alone: on a fretboard the job the
+ * note is doing is the content, not decoration, and four jobs told apart only
+ * by opacity are four jobs a player has to stop and decode. Nothing outside
+ * `.hfString` may read these.
+ *
+ *   root, bass   flame   22%   the anchor
+ *   voice        cyan    18%   what the next chord needs; aim here
+ *   colour       violet  13%   the degree that makes this mode this mode
+ *   guide        blue    10%   3rd and 7th, stated rather than aimed at
+ *   chord, spec. ink      5%   written into the symbol
+ */
+.hfBoard{
+ --pad-root:var(--flame);
+ --pad-voice:#3fb0c4;
+ --pad-colour:#8f74e2;
+ --pad-guide:#5a9be0;
+}
+.hfString button.role-root,
+.hfString button.role-bass{--pad-fill:color-mix(in oklab,var(--pad-root) 22%,transparent)}
+.hfString button.role-voice{--pad-fill:color-mix(in oklab,var(--pad-voice) 18%,transparent)}
+.hfString button.role-colour{--pad-fill:color-mix(in oklab,var(--pad-colour) 13%,transparent)}
+.hfString button.role-guide{--pad-fill:color-mix(in oklab,var(--pad-guide) 10%,transparent)}
+.hfString button.role-chord,
+.hfString button.role-specified,
+.hfString button.role-written{--pad-fill:color-mix(in oklab,var(--ink) 5%,transparent)}
+
 .hfString button.role-root>b,
 .hfString button.role-bass>b{color:var(--oxide-ink);font-weight:700}
+.hfString button.role-guide>b{color:var(--signal);font-weight:600}
+.hfString button.role-chord>b,
+.hfString button.role-specified>b,
+.hfString button.role-written>b{color:var(--bone-2);font-weight:500}
+.hfString button.role-colour>b,
+.hfString button.role-voice>b,
+.hfString button.role-available>b{color:var(--bone-3)}
+.hfString button.role-context>b,
+.hfString button.role-approach>b,
+.hfString button.role-outside>b{color:var(--bone-4)}
+
+/*
+ * Two rings on the neck, and they are ranked the way the ink is.
+ *
+ * There were five: root, guide, approach, outside, and the destination — on a
+ * 52-cell board that is a ring on nearly every fret, which is the same as no
+ * ring anywhere. Worse, root and destination both drew into ::after, so a root
+ * that was also the next chord's target silently lost one of its two marks.
+ *
+ * Root takes the flame ring, because finding the anchor is the one thing a
+ * player does without reading. Guide keeps a hairline, quiet enough to be a
+ * texture rather than a second shout. Approach and outside get no ring at all:
+ * they are already the dimmest ink on the board, and that is the mark.
+ */
 .hfString button.role-root::after{
  content:"";position:absolute;inset:15% 10%;
  border-radius:var(--r);
  box-shadow:inset 0 0 0 1.5px var(--oxide);
  pointer-events:none;
 }
-.hfString button.role-guide>b{color:var(--signal);font-weight:600}
 .hfString button.role-guide::after{
  content:"";position:absolute;inset:18% 14%;
  border-radius:50%;
- box-shadow:inset 0 0 0 1.5px var(--signal-dim);
+ box-shadow:inset 0 0 0 1px var(--hairline);
  pointer-events:none;
 }
-.hfString button.role-chord>b,
-.hfString button.role-specified>b,
-.hfString button.role-written>b{color:var(--bone)}
-.hfString button.role-colour>b,
-.hfString button.role-voice>b{color:var(--tobacco-ink)}
-.hfString button.role-available>b,
-.hfString button.role-context>b{color:var(--bone-3)}
-/* Outside and approach are dashed: a different texture, not just a hue. */
-.hfString button.role-outside>b,
-.hfString button.role-approach>b{color:var(--alert-ink)}
-.hfString button.role-outside::after,
-.hfString button.role-approach::after{
- content:"";position:absolute;inset:18% 14%;
- border:1px dashed color-mix(in oklab,var(--alert) 55%,transparent);
- border-radius:var(--r);
- pointer-events:none;
-}
+/*
+ * redesign.css drew a second destination ring here, a 56px dashed circle, on
+ * the same ::after the role rings use and at a higher specificity, so a root
+ * that was also the next chord's target lost its flame ring to it without
+ * saying so. That rule is deleted rather than overridden: ::after now belongs
+ * to role, ::before to destination, and neither can eat the other.
+ */
 
 /* -- states ------------------------------------------------------------ */
 
 /* Selected by the player: pressed into the neck. */
 .hfString button.picked{
- background:var(--oxide-wash);
- box-shadow:var(--depth-press);
+ /*
+  * A fill, not a fourth outline. The inset hairline that used to draw here
+  * landed on a square cell, so the one mark on the neck that was not an
+  * ellipse was the one the player puts there themselves.
+  */
+ --pad-fill:var(--oxide-wash);
+ box-shadow:none;
 }
 .hfString button.picked>b{color:var(--oxide-ink)}
 
@@ -261,7 +422,7 @@
  * it is telling you something has changed when nothing has.
  */
 .hfString button.under{
- background:var(--signal-wash);
+ --pad-fill:var(--signal-wash);
  box-shadow:var(--depth-press),0 0 8px -2px var(--signal);
  transform:translateY(1px);
 }

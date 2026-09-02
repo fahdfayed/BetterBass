@@ -380,4 +380,36 @@
  */
 .page .osScreen .hfString>button:not(.action):not(.action-primary){
  border-radius:0 !important;
+ /*
+  * And it keeps its fret wire. The same legacy rule that pills these cells
+  * also flattens them with `border:0 !important`, which is right for a row of
+  * controls and wrong for a neck: the left border of a fret pad IS the fret.
+  * Without it the board is one undivided field, and the labels of adjacent
+  * frets — GUIDE, WRITTEN, APPROACH — run together into a single line of
+  * letters with nothing between them to say where one fret ends.
+  *
+  * Same specificity as the legacy rule, (0,5,1), so this wins on order, which
+  * is the arrangement the radius above already relies on.
+  */
+ border-left:1px solid var(--rule-strong) !important;
+ /*
+  * And its states get to fill a cell. The same legacy rule holds every legacy
+  * control at `background:none !important`, which is right for a row of ghost
+  * pills and wrong for a grid where hover, selection and "under your finger
+  * right now" are the only feedback the player has while both hands are on the
+  * instrument.
+  *
+  * One important, not three: the fill is read from a custom property, so the
+  * neck's own sheet stays the place the values live and custom properties
+  * cascade normally instead of arguing about specificity.
+  */
+ background:var(--pad-fill,none) !important;
+}
+/*
+ * Except the first fret in the row, where the nut is already the line. The
+ * string-name column draws it as a heavy rule, and a hairline a pixel to its
+ * right just reads as the nut having been printed twice.
+ */
+.page .osScreen .hfString>button:not(.action):not(.action-primary):first-of-type{
+ border-left:0 !important;
 }

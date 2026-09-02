@@ -744,9 +744,6 @@
     transform 0.15s,
     background 0.15s;
 }
-.hfString button.visible:not(.role-outside) {
-  background: transparent;
-}
 .hfString button.hidden {
   opacity: 0.08;
 }
