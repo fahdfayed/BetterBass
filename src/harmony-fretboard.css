@@ -502,9 +502,15 @@
 .hfModes {
   margin-bottom: 18px;
 }
+/*
+ * Sized by the cards, not by the viewport. Four fixed columns needed a media
+ * query for every width the band can be; auto-fit asks each card what it needs
+ * and lays out as many as fit, so the same rule gives four across the neck's
+ * full width, two in a lesson workspace and one on a phone.
+ */
 .hfModes > div {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
   gap: var(--s2);
 }
 .hfModes > div > article {

@@ -1,5 +1,4 @@
 import type {ReactNode} from "react";
-import {useSplit} from "./useSplit";
 
 type Props={
  lesson:{index:number;total:number;title:string;unit:number;outcome:string;duration:number};
@@ -39,7 +38,6 @@ export default function LessonWorkspace({
  canAdvance,blockedReason,onPrevLesson,onNextLesson,hasPrev,hasNext,
  instruction,workspace,workspaceLabel,
 }:Props){
- const {split,frame,onPointerDown,onKeyDown,min,max}=useSplit();
 
  return (
   <div className="lessonShell">
@@ -74,7 +72,19 @@ export default function LessonWorkspace({
     })}
    </nav>
 
-   <div className="lessonSplit" ref={frame} style={{gridTemplateColumns:`minmax(0,${split}fr) auto minmax(0,${100-split}fr)`}}>
+   {/*
+     * Fixed, not draggable.
+     *
+     * The divider used to be draggable and remembered where it was left, which
+     * meant the workspace could be parked at a quarter of the width and the
+     * tool inside it had no say. The fretboard is the tool that suffers: it is
+     * the widest thing in the product, and at a narrow split its controls
+     * collapsed into single-character columns.
+     *
+     * The proportions below are stated in the stylesheet as real minimums for
+     * both panes, so neither can be starved. Below the breakpoint they stack.
+     */}
+   <div className="lessonSplit">
     <section className="lessonRead stageSwap" key={stageIndex} aria-label="Instruction">
      <div className="stageIntro">
       <div className="stageScoreHeading">
@@ -88,19 +98,8 @@ export default function LessonWorkspace({
      {instruction}
     </section>
 
-    <div
-     className="splitter"
-     role="separator"
-     tabIndex={0}
-     aria-label="Resize the workspace"
-     aria-orientation="vertical"
-     aria-valuenow={Math.round(split)}
-     aria-valuemin={min}
-     aria-valuemax={max}
-     onPointerDown={onPointerDown}
-     onKeyDown={onKeyDown}
-     onDoubleClick={()=>onKeyDown({key:"Enter",preventDefault(){},shiftKey:false} as never)}
-    ><i aria-hidden="true"/></div>
+    {/* A rule between reading and working, no longer a control. */}
+    <div className="splitter" aria-hidden="true"><i/></div>
 
     <aside className="lessonDo" aria-label={workspaceLabel}>
      <div className="doHead">

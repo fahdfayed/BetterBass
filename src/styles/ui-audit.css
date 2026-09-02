@@ -130,7 +130,7 @@
 
 /* Half-width panes become cramped well before 68rem when a fretboard, table or
    audio tool is on the right. Collapse while both sides can still breathe. */
-@media (max-width:80rem){
+@media (max-width:84rem){
  .lessonSplit{grid-template-columns:minmax(0,1fr) !important;gap:var(--s6)}
  .splitter{display:none}
  .page .lessonDo,.lessonDo{
@@ -163,13 +163,23 @@
    viewport percentage and the destinations the remainder clipped the tempo or
    input controls on phones. The whole strip scrolls instead, so every control
    remains reachable and nothing has to disappear. */
+/*
+ * The bar does not scroll; the row of destinations inside it does.
+ *
+ * This asked for overflow-x:auto with overflow-y:visible, which CSS does not
+ * grant: when either axis is not visible the other computes to auto, so the bar
+ * was clipping vertically too. The dock tooltip rises above the bar by design,
+ * and it was being sheared off at the bar's top edge, which is the cut-off
+ * rounded rectangle visible over the icons.
+ *
+ * `.dockTabsRow` already carries overflow-x:auto and is the correct scroller,
+ * so the bar can simply stop clipping. `html,body{overflow-x:hidden}` in
+ * stand.css still guards the page against sideways drift.
+ */
 .dock{
  min-width:0;
  max-width:100vw;
- overflow-x:auto;
- overflow-y:visible;
- overscroll-behavior-x:contain;
- scrollbar-width:none;
+ overflow:visible;
 }
 .dock::-webkit-scrollbar{display:none}
 .dock .transport{flex:0 0 auto;min-width:max-content;max-width:none}
@@ -183,7 +193,8 @@
 /* =============================================================== home == */
 
 /* A product-specific first viewport. The real fretboard-role visual is the
-   dominant plane; gradients and staff lines only build atmosphere behind it. */
+   dominant plane, and the wash behind it is the only atmosphere: staves are
+   reserved for places where the document actually changes section. */
 .productHero{
  position:relative;
  min-height:calc(100dvh - var(--nav));
@@ -198,20 +209,25 @@
   linear-gradient(115deg,var(--ground) 0%,var(--ground) 42%,color-mix(in oklab,var(--ground-2) 84%,var(--flame)) 100%);
  isolation:isolate;
 }
-.productHero::before{
- content:"";
- position:absolute;
- inset:0;
- z-index:-1;
- opacity:.35;
- background:repeating-linear-gradient(
-  to bottom,
-  transparent 0 calc(var(--staff) - var(--rastral)),
-  var(--hairline) calc(var(--staff) - var(--rastral)) var(--staff)
- );
- mask-image:linear-gradient(to right,transparent 0%,black 50%,black 100%);
- pointer-events:none;
-}
+/*
+ * The ruled field that used to sit here has been removed, and the reason is
+ * worth keeping: it was a continuous stave running the whole height of the
+ * hero, added to "build atmosphere". Two things were wrong with it.
+ *
+ * It was decoration. Notation earns its place in this interface by carrying
+ * meaning, and a ruling that marks nothing is a texture wearing a stave's
+ * clothes.
+ *
+ * And it was self-defeating. The score language works by contrast with plain
+ * technical chrome: a five-line system means "a section changes here" only
+ * because the surface around it is not ruled. Wallpapering the first screen in
+ * staff lines spends that contrast before the reader meets a single real
+ * divider, and the genuine systems between the bands below stop reading as
+ * boundaries at all.
+ *
+ * The hero keeps its wash and the real neck. The staves live where a section
+ * actually begins.
+ */
 .productHeroCopy{
  position:relative;
  z-index:2;
@@ -252,7 +268,28 @@
  z-index:1;
  right:-7vw;
  bottom:8vh;
- width:min(70vw,72rem);
+ /*
+  * Narrowed, and faded out along its leading edge.
+  *
+  * At 1280 the neck ran from x373 while the copy column ran to x704, so three
+  * hundred pixels of the thesis and the support line sat on top of a live
+  * fretboard grid. The copy is above it in the stacking order, which meant the
+  * text was technically visible and actually unreadable.
+  *
+  * The mask is the part that scales: whatever the viewport does to these two
+  * widths, the instrument dissolves before it reaches the reading column
+  * instead of being clipped at a hard edge, and it still bleeds off the right.
+  */
+ width:min(58vw,62rem);
+ /*
+  * The hold before the ramp matters. Fading straight from the leading edge
+  * left the chord label at roughly a tenth opacity behind the last words of
+  * the thesis, which reads as a smudge rather than as depth. Holding fully
+  * transparent for the first tenth puts the display line on clean ground and
+  * starts the instrument after it.
+  */
+ mask-image:linear-gradient(to right,transparent 0%,transparent 10%,#000 40%);
+ -webkit-mask-image:linear-gradient(to right,transparent 0%,transparent 10%,#000 40%);
  transform:rotate(-3deg) translate3d(0,0,0);
  transform-origin:center;
  opacity:.92;
@@ -298,4 +335,49 @@
 
 @media (prefers-reduced-motion:reduce){
  .productHeroVisual,.rise,.d1,.d2,.d3,.d4{animation:none !important;transform:none !important;opacity:1 !important}
+}
+
+/* ============================================================== radius === */
+
+/*
+ * Cards that happen to be buttons.
+ *
+ * `legacy-tokens.css` and `legacy-views.css` both give `.page .osScreen button`
+ * the control radius, which is right for the hundreds of small controls those
+ * sheets contain and wrong for the handful that are the size of a card. The
+ * pill token is 9999px, so a 592 by 260 tool card resolved to a 130px corner,
+ * and because the same rule sets overflow:hidden the curve ate the "Open tool"
+ * label sitting 25px from the left and 22px from the bottom. The decorative
+ * circle behind it was sheared into the loose arcs visible across the grid.
+ *
+ * The blanket rule stays: pilling every small control is the design. This names
+ * the exceptions, because a radius is only a pill while the element is the size
+ * of a control.
+ *
+ * ON THE !important. It is here to answer one, not to start one. The legacy
+ * rule is `.page .osScreen button:not(.mega):not(.action):not(.action-primary)`
+ * marked important, so no ordinary declaration can reach these cards however
+ * specific it is. The selectors below are built to the same specificity, (0,5,1),
+ * and win on order alone. Removing the important from the legacy rule instead
+ * would have re-shaped several hundred small controls it was added to fix.
+ */
+/*
+ * The per-element exceptions that used to live here are gone: with --r-control
+ * at 1.5rem they all resolved to the same value they were asking for, so the
+ * list had become six selectors restating the default. Only the neck still
+ * needs an override, and it needs the opposite of a radius.
+ */
+
+/*
+ * Fret cells are square-cornered on purpose.
+ *
+ * The neck draws its note marker as a 48px circle in a child element and keeps
+ * the cell itself a plain rectangle, which is why redesign.css sets the cell to
+ * border-radius:0. The blanket control pill overrode that zero, and because a
+ * cell is 98 by 72 the result was not a circle but a stretched oval around
+ * every note. The marker was already correct; the cell just had to stop
+ * pretending to be a control.
+ */
+.page .osScreen .hfString>button:not(.action):not(.action-primary){
+ border-radius:0 !important;
 }

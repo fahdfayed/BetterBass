@@ -389,20 +389,22 @@
 /* ================================================ context column fixes == */
 
 /*
- * The panels in here were built to sit at full page width and carry their own
- * multi-column grids. In a 20rem column those grids collapse to ribbons of two
- * words per line, so inside the context panel everything is a single column
- * and the type steps down to match the measure.
+ * These panels were built to sit at full page width and carry their own
+ * multi-column grids, and when this was a 20rem column those grids collapsed
+ * into ribbons of two words per line. The answer then was to flatten every
+ * descendant to a single column and forbid anything from claiming a floor
+ * wider than the rail.
+ *
+ * The rail is gone. This is a full-width band under the neck now, and those
+ * two defences turned into the bug they were written to prevent: the scale
+ * recommendations ask for four columns and were being forced into one, so each
+ * card rendered as a 1380 by 374 slab with every line running the full width.
+ *
+ * What survives is the part that is still true at any width: nothing may
+ * exceed the band, and prose keeps a comfortable measure.
  */
-.hfContext :is(header,div,ul,ol,dl,article,footer){
- grid-template-columns:1fr!important;
- grid-template-areas:none!important;
-}
-/* Flex rows of prose collapse too; rows of switches are handled below. */
 .hfContext :is(header,section)>div{min-width:0}
-.hfContext *{min-width:0;max-width:100%}
-/* Nothing in a 20rem column may set its own floor wider than the column. */
-.hfContext :is(section,div,article,table,pre){min-width:0!important}
+.hfContext *{max-width:100%}
 .hfContext h2,.hfContext h3{
  font-size:var(--t-h3);
  line-height:1.15;

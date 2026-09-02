@@ -71,7 +71,27 @@
 
 /* ---- the split ---------------------------------------------------------- */
 
-.lessonSplit{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:var(--s5);align-items:start}
+/*
+ * Reading and working, in fixed proportion.
+ *
+ * Both tracks state a real minimum rather than sharing the width evenly, which
+ * is what lets neither pane be starved. The fretboard is the widest tool the
+ * workspace ever holds and takes 666px once its own columns are at their
+ * smallest, and the panel's heading and padding cost a further 165px, so the
+ * floor is 52rem. Both numbers are measured rather than derived: the board's
+ * own grid adds 36px of gaps over the sum of its columns, and forgetting the
+ * container is how the first two attempts still overflowed.
+ *
+ * Below 84rem the whole thing stacks, which is the width at which both floors
+ * plus the reading minimum stop fitting. They only ever coexist on a screen
+ * wide enough for both.
+ */
+.lessonSplit{
+ display:grid;
+ grid-template-columns:minmax(24rem,1fr) auto minmax(52rem,1.1fr);
+ gap:var(--s5);
+ align-items:start;
+}
 
 /*
  * The divider between reading and working.
@@ -81,17 +101,16 @@
  * the reader's to set, and it is remembered. The hit area is wider than the
  * line it draws, because a two-pixel target is not a target.
  */
+/* A rule, not a handle: the split is fixed, so nothing here invites a drag. */
 .splitter{
  align-self:stretch;width:var(--s5);min-height:12rem;
- display:grid;place-items:center;cursor:col-resize;
- background:none;border:0;touch-action:none;
+ display:grid;place-items:center;
+ background:none;border:0;pointer-events:none;
 }
 .splitter i{
  display:block;width:2px;height:100%;border-radius:var(--r);
  background:var(--rule);transition:background var(--t-base) var(--ease);
 }
-.splitter:hover i,.splitter:focus-visible i{background:var(--accent)}
-.splitter:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r)}
 /* While dragging, the pointer must not select the text it crosses. */
 body.isSplitting{user-select:none;cursor:col-resize}
 .lessonRead{display:flex;flex-direction:column;gap:var(--s5);min-width:0}

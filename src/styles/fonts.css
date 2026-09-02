@@ -37,20 +37,19 @@
 /*
  * Bravura: the SMuFL notation face.
  *
- * Already in this repository, shipped by alphaTab and served from /font, which
+ * Already in this repository, shipped by alphaTab and served from /fonts, which
  * is why the notation in this interface can be real engraving glyphs rather
  * than the Unicode miscellaneous-symbols approximations every other web app
  * settles for. U+2669 is a text character that happens to look like a note.
  * U+E1D5 is the note, drawn by the people who drew the rest of the score.
  *
  * Bravura is SIL Open Font License 1.1; the licence ships beside it in
- * public/font. It is loaded lazily rather than preloaded: no glyph from it
+ * public/fonts. It is loaded lazily rather than preloaded: no glyph from it
  * appears above the fold, and it is a 313K face.
  */
 @font-face{
  font-family:"Bravura";
- src:url("/font/Bravura.woff2") format("woff2"),
-     url("/font/Bravura.otf") format("opentype");
+ src:url("/fonts/Bravura.woff2") format("woff2");
  font-weight:400;font-style:normal;font-display:swap;
 }
 
@@ -60,7 +59,7 @@
  * Leland (MuseScore), Petaluma and Petaluma Script (Steinberg), and MuseJazz
  * Text (MuseScore) are all SIL Open Font License 1.1 and all redistributable,
  * but none of them is in this repository. These declarations are live: drop the
- * files into public/font and the register they belong to changes face with no
+ * files into public/fonts and the register they belong to changes face with no
  * other edit.
  *
  * Until then every register still engraves correctly, because the symbol stacks
@@ -68,13 +67,13 @@
  * costs the handwriting, never the notation. That is the whole reason the
  * symbol font and the text font are separate tokens.
  */
-@font-face{font-family:"Leland";src:url("/font/Leland.woff2") format("woff2");
+@font-face{font-family:"Leland";src:url("/fonts/Leland.woff2") format("woff2");
  font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"Petaluma";src:url("/font/Petaluma.woff2") format("woff2");
+@font-face{font-family:"Petaluma";src:url("/fonts/Petaluma.woff2") format("woff2");
  font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"Petaluma Script";src:url("/font/PetalumaScript.woff2") format("woff2");
+@font-face{font-family:"Petaluma Script";src:url("/fonts/PetalumaScript.woff2") format("woff2");
  font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"MuseJazz";src:url("/font/MuseJazz.woff2") format("woff2");
+@font-face{font-family:"MuseJazz";src:url("/fonts/MuseJazz.woff2") format("woff2");
  font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:"MuseJazz Text";src:url("/font/MuseJazzText.woff2") format("woff2");
+@font-face{font-family:"MuseJazz Text";src:url("/fonts/MuseJazzText.woff2") format("woff2");
  font-weight:400;font-style:normal;font-display:swap}

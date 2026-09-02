@@ -193,11 +193,40 @@ a surface and a photograph both want attention, the surface loses.
 
 **Interface:** Inter (300, 400, 500, 600, 700)
 **Accent:** Playfair Display italic (400, 500, 600)
+**Notation:** Bravura, and by register Leland, Petaluma, Petaluma Script,
+MuseJazz, MuseJazz Text
 
-Self-hosted as WOFF2 under `/fonts`, eight files, both SIL Open Font Licence.
+Self-hosted as WOFF2 under `/fonts`, both SIL Open Font Licence.
 The brief specifies a Google Fonts `@import`; that is replaced with self-hosting
 because a linked font stylesheet does not arrive in this project and the failure
 is silent, so the page keeps its layout and quietly wears system-ui.
+
+### The notation register
+
+Musical content is engraved rather than styled. Six further faces exist for it,
+all SIL Open Font Licence, all served from `/fonts` beside the other two.
+
+Only **Bravura** is present in the repository; it arrives with alphaTab and is
+the reason the notation in this interface can be real SMuFL glyphs instead of
+the Unicode miscellaneous-symbols lookalikes every other web application
+settles for. U+2669 is a text character shaped like a quarter note. U+E1D5 is
+the quarter note, on the same baseline and the same stem weight as the barlines
+beside it, and that difference is most of why engraving looks engraved.
+
+Four registers select a symbol face and a handwriting face together, through
+`data-register` on any container:
+
+| Register | Symbols | Hand | Used for |
+|---|---|---|---|
+| `engraved` | Leland | Inter | Lessons, exercises, notation |
+| `classical` | Bravura | Playfair italic | Theory and reference |
+| `jazz` | Petaluma | Petaluma Script | Jam rooms, improv, chord charts |
+| `chart` | MuseJazz | MuseJazz Text | Challenges, chord symbols, annotations |
+
+Every symbol stack ends in Bravura. A register whose first choice has not been
+added loses its handwriting and keeps its engraving, rather than falling through
+to a text font that would draw a quarter note as an empty box. That is the whole
+reason the symbol font and the text font are separate tokens.
 
 **Character:** Inter carries everything. Playfair Display italic is the accent
 voice, and it exists only in italic because that is the only cut this design

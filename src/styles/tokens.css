@@ -355,7 +355,23 @@
  --track-legend:var(--track-label);
  --track-display:var(--track-serif);
  --track-mono:var(--track);
- --r-control:var(--r);
+ /*
+  * The control radius, and deliberately not the pill token.
+  *
+  * `--r` is 9999px, which is correct on a control and catastrophic on anything
+  * larger: the radius clamps to half the smaller side, so a 592 by 260 card
+  * asking for a "pill" became a stadium with a 130px corner, and where the rule
+  * also set overflow:hidden it sheared the content inside. That produced four
+  * separate defects: clipped labels on the tool cards, ellipses instead of
+  * circles around every note on the neck, a stadium around the chord rail, and
+  * the scale cards cut off down their left edge.
+  *
+  * 1.5rem is half the tallest standard control here, so everything up to 3rem
+  * tall still resolves to a true pill, while nothing larger can deform. It is
+  * the same value as --r-surface on purpose: a control and a surface should
+  * agree once the control is big enough to be a surface.
+  */
+ --r-control:1.5rem;
  --r-pill:var(--r);
  --radius-lg:var(--r-surface);
 
