@@ -60,7 +60,7 @@
  color:var(--ink-3);
  margin-top:var(--s3);
 }
-.ledePosition span{color:var(--ink-4)}
+.ledePosition span{color:var(--ink-3)}
 
 /* The caret travels on hover, the one place a control moves rather than inks. */
 .caret{

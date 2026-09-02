@@ -2,7 +2,9 @@ import {useCallback,useEffect,useState,type ReactNode} from "react";
 import CommandPalette from "./CommandPalette";
 import Transport from "./Transport";
 import {LeafSlotProvider} from "./PageLeaf";
-import {destinationFor,NAV,peersFor} from "../nav";
+import Icon from "./Icon";
+import PageTurn from "./PageTurn";
+import {ALL_DESTINATIONS,destinationFor,NAV,peersFor,type IconName} from "../nav";
 import {goToView,useRoute} from "../router";
 import {useReveal} from "../useReveal";
 
@@ -88,6 +90,31 @@ const TABS=NAV.map(group=>({label:group.label,item:group.items[0]}))
  * the instruction a player writes to himself in a margin, which is why it is
  * never load-bearing and never the only place something is said.
  */
+/*
+ * The index cut into the fore-edge of the book.
+ *
+ * Four places a player goes mid-lesson, always in the same order and always in
+ * the same position, so the one you want is reached for rather than read for.
+ * They are the four questions that interrupt playing — what is this called,
+ * where am I in the course, can I hear it, and what have I proved — and each
+ * one already has a screen.
+ */
+const INDEX:Array<{view:string;label:string;icon:IconName}>=[
+ {view:"reference",label:"Theory",icon:"theory"},
+ {view:"map",label:"Map",icon:"map"},
+ {view:"games",label:"Ear",icon:"games"},
+ {view:"courseProgress",label:"Log",icon:"progress"},
+];
+
+/*
+ * The reading order of the whole book, so a turn knows which way to go.
+ *
+ * ALL_DESTINATIONS is already the order the contents list prints and the order
+ * the course opens in, which makes it the right authority: moving to a later
+ * entry turns the page forward, and moving to an earlier one turns it back.
+ */
+const READING_ORDER=new Map(ALL_DESTINATIONS.map((entry,index)=>[entry.view,index]));
+
 const FOCUS:Record<string,string[]>={
  Learn:["Read it once.","Play it slowly.","Then read it again."],
  Practice:["Clarity over speed.","Always neutral."],
@@ -196,11 +223,18 @@ export default function AppShell({input,onToggleInput,inputBusy,actions,children
          );
         })}
        </ol>}
-
-       <p className="leafFocus annot">
-        {focus.map(line=><span key={line}>{line}</span>)}
-       </p>
       </div>
+
+      {/*
+        * The pencilled note sits at the foot of the verso on every page,
+        * including the ones that print their own left page. It used to live
+        * inside the default block, so a route that filled the slot -- home,
+        * for one -- hid it along with the contents list and ended its page in
+        * a third of a column of blank paper.
+        */}
+      <p className="leafFocus annot">
+       {focus.map(line=><span key={line}>{line}</span>)}
+      </p>
      </aside>
 
      {/* ======================================================= the binding */}
@@ -256,6 +290,28 @@ export default function AppShell({input,onToggleInput,inputBusy,actions,children
        {children}
       </main>
      </div>
+
+     {/*
+       * The leaf that goes over, in the working page's own grid cell so its
+       * hinge lands on the binding without measuring anything.
+       */}
+     <PageTurn at={route.path} order={READING_ORDER.get(route.view)}/>
+
+     {/* ================================================== the fore-edge = */}
+     <nav className="indexRail" aria-label="Index">
+      {INDEX.map(entry=>(
+       <button
+        key={entry.view}
+        type="button"
+        className="indexTab"
+        aria-current={route.view===entry.view?"page":undefined}
+        onClick={()=>goToView(entry.view)}
+       >
+        <Icon name={entry.icon}/>
+        <span className="indexLabel">{entry.label}</span>
+       </button>
+      ))}
+     </nav>
     </div>
 
     {/* ========================================================== the dock */}

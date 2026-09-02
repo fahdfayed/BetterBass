@@ -43,7 +43,7 @@
 .voiceControl button:hover{color:var(--ink);background:var(--paper-2)}
 
 .voiceControl .voiceToggle{display:flex;align-items:center;gap:var(--s2);padding:0 var(--s3)}
-.voiceControl .voiceToggle svg{flex:none;color:var(--ink-4);transition:color var(--m-click) var(--ease-page)}
+.voiceControl .voiceToggle svg{flex:none;color:var(--ink-3);transition:color var(--m-click) var(--ease-page)}
 .voiceControl .voiceToggle[aria-pressed="true"] svg{color:var(--ink-2)}
 .voiceControl .voiceToggle[aria-pressed="false"]{color:var(--ink-3)}
 
@@ -92,8 +92,20 @@
 .nodeRuntimeStatus{
  position:fixed;
  right:.75rem;
- top:.5rem;
- bottom:auto;
+ /*
+  * At the foot of the stand, level with the instrument strip.
+  *
+  * It was pinned to the margin above the top right corner, and that margin is
+  * half a centimetre: the stand's padding, eight pixels, against a line of
+  * type eleven pixels tall. The book's top edge cut it in half. Down here it
+  * sits on the strip, which is the dark ground this was always written for,
+  * clear of the fore-edge index and of every control in the strip itself.
+  */
+ top:auto;
+ bottom:0;
+ height:var(--dock);
+ padding-right:var(--s2);
+ pointer-events:none;
  z-index:30;
  display:flex;
  align-items:center;
@@ -130,9 +142,36 @@
 .nodeRuntimeStatus.saving>b,.nodeRuntimeStatus.saving>i{color:var(--on-stand)}
 .nodeRuntimeStatus.offline>b,.nodeRuntimeStatus.offline>i{color:var(--on-stand-warn)}
 
-@media (max-width:62rem){
- /* The word "Node api" is for a developer; the state is for the player. */
- .nodeRuntimeStatus>span{display:none}
+/*
+ * The word "Node api" is for a developer; the state is for the player.
+ *
+ * It used to be shown down to 62rem and hidden below. On the instrument strip
+ * there is no width to spare at any size -- the level fader runs to the right
+ * edge -- so the developer's half of the line is read out to a screen reader
+ * and nothing else. What is left is a lamp and one word, which is the whole
+ * message: it is either synced, saving, or keeping a local copy.
+ */
+.nodeRuntimeStatus>span{
+ position:absolute;
+ width:1px;height:1px;
+ padding:0;margin:-1px;
+ overflow:hidden;
+ clip-path:inset(50%);
+ white-space:nowrap;
+}
+
+/*
+ * On a narrow strip the lamp sits in the top right corner of it, clear of the
+ * single row of controls, rather than reserving a column the strip does not
+ * have.
+ */
+@media (max-width:64rem){
+ .nodeRuntimeStatus{
+  height:auto;
+  bottom:auto;
+  top:calc(100dvh - var(--dock) - .25rem);
+  right:.5rem;
+ }
 }
 
 /* ================================================================= boot === */

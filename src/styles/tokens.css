@@ -50,6 +50,27 @@
  --stand-scrim:rgba(16,22,25,.72);
 
  /*
+  * The binding.
+  *
+  * Where a workspace opens as a spread, the two pages meet at a real fold
+  * rather than at a rule. The fold itself is darker than the stand, because
+  * you are looking into the gutter of a bound book rather than at the surface
+  * it lies on, and the paper darkens as it curves away on both sides.
+  *
+  * --fold-curl is a distance, not a ratio: a page curves over the last
+  * centimetre or so of its width whether the page is wide or narrow, and a
+  * percentage would make a narrow pane look folded in half.
+  */
+ --fold:#0c1113;
+ --fold-line:rgba(250,247,240,.07);
+ --fold-shade:rgba(27,26,23,.11);
+ --fold-w:.625rem;
+ --fold-curl:2.75rem;
+
+ /* The index tabs cut into the outer edge of the book. */
+ --index-w:2.5rem;
+
+ /*
   * Ink on the stand.
   *
   * The dark ground outside the book carries a little text of its own — the
@@ -271,6 +292,14 @@
   * world this replaces, because nothing here arrives out of blur.
   */
  --ease-page:cubic-bezier(.2,.8,.2,1);
+ /*
+  * A leaf going over.
+  *
+  * Not a deceleration. A turned page is lifted against its own weight, tips
+  * past the vertical, falls, and lands -- slow at both ends and quick through
+  * the middle. An ease-out here reads as a panel sliding; this reads as paper.
+  */
+ --ease-turn:cubic-bezier(.46,.03,.24,1);
  --ease-out-expo:cubic-bezier(.2,.8,.2,1);
  --ease-mech:cubic-bezier(.3,.7,.2,1);
  --ease-snap:cubic-bezier(.4,0,.2,1);
@@ -279,6 +308,9 @@
  --m-sweep:420ms;
  --m-enter:620ms;
  --m-zoom:900ms;
+ /* One leaf, all the way over. An eighth at 84, and it is the longest thing
+    in the design because it is the only thing with a physical arc to travel. */
+ --m-turn:460ms;
 
  /* ---- layout -----------------------------------------------------------
   * The bound spread. The left page holds the section's ordered list; the
@@ -445,12 +477,15 @@
   * ladder behaved on black.
   */
  --pad-root:var(--vermillion);
- --pad-root-ink:var(--vermillion);
+ /* The label sits inside its own wash, and the wash is what it has to be read
+    against: vermillion on 13% vermillion is 4.18, so the ink steps down one
+    while the fill stays the true red the role is known by. 5.90 in the well. */
+ --pad-root-ink:var(--vermillion-deep);
  --pad-root-fill:rgba(196,53,26,.13);
  --pad-guide:var(--pencil);
  --pad-guide-ink:var(--pencil);
  --pad-guide-fill:rgba(47,92,158,.08);
- --pad-chord-ink:var(--ink-2);
+ --pad-chord-ink:var(--ink);
  --pad-chord-fill:rgba(27,26,23,.05);
  --pad-voice:#0f6b78;
  --pad-voice-ink:#0f6b78;
@@ -458,8 +493,15 @@
  --pad-colour:#6b3f8c;
  --pad-colour-ink:#6b3f8c;
  --pad-colour-fill:rgba(107,63,140,.09);
- --pad-available-ink:var(--ink-3);
- --pad-outside-ink:var(--ink-4);
+ /* The achromatic tail of the ladder, and it is three steps because paper
+    affords exactly three legible ones: chord tone, available, outside, at
+    16.3:1, 9.1:1 and 5.3:1. The further out the note, the lighter the ink,
+    and the lightest of the three still clears AA -- these are the notes this
+    product exists to explain, so none of them is set in the mark ink. Root
+    stays out of this ladder entirely: it is told apart by hue, a ring and a
+    fill rather than by being the blackest thing on the board. */
+ --pad-available-ink:var(--ink-2);
+ --pad-outside-ink:var(--ink-3);
 
  --hf-root:var(--vermillion);
  --hf-bass:var(--vermillion);

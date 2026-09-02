@@ -48,7 +48,7 @@
  gap:var(--s2);
  padding:0 0 var(--s3);
  white-space:nowrap;
- color:var(--ink-4);
+ color:var(--ink-3);
  font-size:var(--t-small);
  transition:color var(--t-base) var(--ease);
 }
@@ -88,10 +88,32 @@
  */
 .lessonSplit{
  display:grid;
- grid-template-columns:minmax(24rem,1fr) auto minmax(52rem,1.1fr);
+ /*
+  * The minimums are what has to fit inside the recto, not inside the window.
+  * The verso, the gutter and the page padding take roughly 400px before this
+  * grid is measured, so 24rem + 52rem asked for a 1760px window and blew a
+  * 1440px one out past the page edge, taking the workspace column with it.
+  * These two stops add up to the width the recto actually has at the 84rem
+  * breakpoint below, which is where the split stacks.
+  */
+ grid-template-columns:minmax(20rem,1fr) auto minmax(30rem,1.2fr);
+ grid-template-rows:minmax(0,auto);
  gap:var(--s5);
  align-items:start;
+ min-width:0;
 }
+
+/*
+ * Explicit cells, for the same reason the book's are.
+ *
+ * The reading page has a second occupant: the leaf that turns lies in its cell
+ * so that it hinges on the binding. One explicitly placed item is enough to
+ * push every flowed sibling a column along, and it did — the reading page
+ * landed in the binding's column and the binding in the workspace's.
+ */
+.lessonRead{grid-column:1;grid-row:1}
+.splitter{grid-column:2;grid-row:1}
+.lessonDo{grid-column:3;grid-row:1}
 
 /*
  * The divider between reading and working.
@@ -146,7 +168,18 @@ body.isSplitting{user-select:none;cursor:col-resize}
  flex-wrap:wrap;
  padding:var(--s5) 0;
  border-top:1px solid var(--rule);
- background:color-mix(in oklab,var(--bg) 88%,transparent);
+ /*
+  * Opaque, and the page's own colour.
+  *
+  * Sticky, with the lesson scrolling underneath, so any transparency here is
+  * the paragraph above showing through the criterion -- on a phone that put
+  * two different sentences on the same four lines. And the colour has to be
+  * --paper rather than --bg: the legacy token file repoints --bg at the
+  * shaded stock, which made the bar a tinted rectangle with two hard edges
+  * sitting in the middle of the reading. What should be visible here is the
+  * final barline above it, and nothing else.
+  */
+ background:var(--paper);
 }
 .checkCriteria{display:flex;flex-direction:column;gap:var(--s1);min-width:0;flex:1}
 .checkCriteria b{font-size:var(--t-small);font-weight:400;color:var(--ink-2)}
@@ -170,7 +203,7 @@ body.isSplitting{user-select:none;cursor:col-resize}
 .earKey:hover{background:var(--wash);color:var(--accent)}
 .earKey:active{transform:scale(.97)}
 .earKey b{font-size:var(--t-lead);font-weight:400;font-family:var(--font-mono)}
-.earKey small{font-size:var(--t-micro);color:var(--ink-4)}
+.earKey small{font-size:var(--t-micro);color:var(--ink-3)}
 
 /* ---- transport ---------------------------------------------------------- */
 
@@ -180,9 +213,9 @@ body.isSplitting{user-select:none;cursor:col-resize}
 .transportRow>button{flex:1;justify-content:center}
 .barBeat,.takeCount{display:flex;align-items:baseline;gap:2px;flex:none;font-family:var(--font-mono)}
 .barBeat b,.takeCount b{font-size:var(--t-h3);font-weight:300;letter-spacing:-.03em}
-.barBeat span{color:var(--ink-4)}
+.barBeat span{color:var(--ink-3)}
 .takeCount{flex-direction:column;align-items:flex-end;gap:0}
-.takeCount small{font-size:var(--t-micro);color:var(--ink-4);letter-spacing:var(--track-label);}
+.takeCount small{font-size:var(--t-micro);color:var(--ink-3);letter-spacing:var(--track-label);}
 .tempoControl{display:flex;flex-direction:column;gap:var(--s3)}
 .tempoControl input{width:100%;accent-color:var(--accent)}
 
@@ -204,4 +237,8 @@ body.isSplitting{user-select:none;cursor:col-resize}
 @media (max-width:52rem){
  .stageTabs{gap:var(--s5)}
  .missionId h1{font-size:var(--t-h3)}
+ /* Criterion above, action below. Side by side, the standard wrapped to four
+    lines against a full-width strip of tape. */
+ .checkBar{flex-direction:column;align-items:stretch;gap:var(--s4)}
+ .checkAction{justify-content:space-between}
 }

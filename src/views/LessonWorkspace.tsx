@@ -1,4 +1,5 @@
 import type {ReactNode} from "react";
+import PageTurn from "../components/PageTurn";
 
 type Props={
  lesson:{index:number;total:number;title:string;unit:number;outcome:string;duration:number};
@@ -39,6 +40,13 @@ export default function LessonWorkspace({
  instruction,workspace,workspaceLabel,
 }:Props){
 
+ /*
+  * A new lesson is a new spread, and that turn is the shell's: the lesson is
+  * in the address, so the route-level leaf already goes over the whole working
+  * page. What is left for this view is the stage, which is a change of task
+  * within one spread and turns the reading page alone — the instrument on the
+  * right has not changed, and turning it would say that it had.
+  */
  return (
   <div className="lessonShell">
    <header className="missionBar">
@@ -85,7 +93,13 @@ export default function LessonWorkspace({
      * both panes, so neither can be starved. Below the breakpoint they stack.
      */}
    <div className="lessonSplit">
-    <section className="lessonRead stageSwap" key={stageIndex} aria-label="Instruction">
+    {/* The leaf, laid into the reading column's own cell so it hinges on the
+        binding. Outside the section below, which React remounts on every stage
+        change: a turn mounted inside the thing that changes can never know
+        that it did. */}
+    <PageTurn at={stageIndex} order={stageIndex} verso/>
+
+    <section className="lessonRead" key={stageIndex} aria-label="Instruction">
      <div className="stageIntro">
       <div className="stageScoreHeading">
        <span className="rehearsalMark" data-current="true" aria-hidden="true">{rehearsalLetter(stageIndex)}</span>
@@ -96,6 +110,28 @@ export default function LessonWorkspace({
      </div>
      <div className="scoreStaffDivider" aria-hidden="true"/>
      {instruction}
+
+     {/*
+       * The standard sits at the foot of the page it belongs to.
+       *
+       * It used to run the full width beneath the spread, which put the
+       * criterion for this stage across the binding and under the instrument,
+       * and left the fold stopping short of the bottom of the book. It is the
+       * last thing printed on the reading page, so that is where it goes, and
+       * it turns with the page when the stage changes.
+       */}
+     <footer className="checkBar">
+      <div className="checkCriteria">
+       <span className="label">Move on when</span>
+       <b>{guide.finish}</b>
+      </div>
+      <div className="checkAction">
+       {!canAdvance&&blockedReason&&<span className="checkBlocked">{blockedReason}</span>}
+       <button className="action-primary" onClick={onAdvance} disabled={!canAdvance}>
+        {advanceLabel} <svg className="caret" viewBox="0 0 12 12" width="9" height="9" aria-hidden="true"><path d="M2 1 10 6 2 11Z" fill="currentColor"/></svg>
+       </button>
+      </div>
+     </footer>
     </section>
 
     {/* A rule between reading and working, no longer a control. */}
@@ -109,19 +145,6 @@ export default function LessonWorkspace({
      <div className="doBody">{workspace}</div>
     </aside>
    </div>
-
-   <footer className="checkBar">
-    <div className="checkCriteria">
-     <span className="label">Move on when</span>
-     <b>{guide.finish}</b>
-    </div>
-    <div className="checkAction">
-     {!canAdvance&&blockedReason&&<span className="checkBlocked">{blockedReason}</span>}
-     <button className="action-primary" onClick={onAdvance} disabled={!canAdvance}>
-      {advanceLabel} <svg className="caret" viewBox="0 0 12 12" width="9" height="9" aria-hidden="true"><path d="M2 1 10 6 2 11Z" fill="currentColor"/></svg>
-     </button>
-    </div>
-   </footer>
   </div>
  );
 }

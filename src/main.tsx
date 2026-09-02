@@ -78,6 +78,15 @@ import "./styles/lab-slap.css";
 import "./styles/lab-index.css";
 import "./styles/home-book.css";
 
+// The bound spread: the binding a split workspace opens at and the index cut
+// into the fore-edge. After lesson.css, which sets the grid it draws the fold
+// into.
+import "./styles/spread.css";
+
+// The leaf that goes over. After spread.css, because the turn is drawn against
+// the fold the spread establishes.
+import "./styles/page-turn.css";
+
 // Audit corrections are intentionally last: they resolve cross-generation
 // cascade collisions without introducing another visual language.
 import "./styles/ui-audit.css";

@@ -119,7 +119,7 @@
 }
 .neckGrid>*{background:var(--ground-2);display:grid;place-items:center;min-height:2.75rem}
 .neckGrid .neckFretNo{
- min-height:1.75rem;font-size:var(--t-micro);color:var(--ink-4);
+ min-height:1.75rem;font-size:var(--t-micro);color:var(--ink-3);
  font-variant-numeric:tabular-nums;
 }
 .neckGrid .neckOpen{

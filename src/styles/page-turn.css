@@ -1,0 +1,212 @@
+/**
+ * The page turn.
+ *
+ * A leaf of the book goes over: it lifts off the binding, tips past the
+ * vertical showing its reverse, falls, and lands on the other side, dragging a
+ * shadow across the page it uncovers.
+ *
+ * THE SHEET IS PAPER, NOT A PICTURE OF ONE. The obvious way to build this is to
+ * snapshot the outgoing page and rotate the snapshot, which is what the View
+ * Transitions API does. Two reasons this does not:
+ *
+ *   1. A snapshot has one side. A view transition cross-fades an old image
+ *      against a new one, and there is no moment in that where the back of the
+ *      sheet exists -- which is the only part of a page turn that says "page".
+ *   2. This world's paper is one flat ivory, so a real sheet and a captured one
+ *      are indistinguishable to the eye, and the real one costs one element and
+ *      two gradients instead of two full-page rasters.
+ *
+ * It is also the only version that always runs. A view transition aborts when
+ * the document is hidden or another is already in flight, and an animation that
+ * silently does not happen is worse than no animation.
+ *
+ * Everything animated here is transform and opacity. The pitch detector already
+ * runs work on every animation frame while the microphone is live, so the turn
+ * stays on the compositor and lasts one eighth note.
+ */
+
+/* ================================================================= layer == */
+
+/*
+ * The layer sits in the working page's own grid cell, which is what puts the
+ * hinge exactly on the binding without measuring anything: the leaf's left edge
+ * IS the spine. The book does not clip, so the sheet is free to sweep across
+ * the gutter and over the contents page, the way it does on a stand.
+ */
+.turnLayer{
+ grid-column:3;
+ grid-row:1;
+ position:relative;
+ z-index:20;
+ pointer-events:none;
+ /*
+  * Close enough to see the page lift.
+  *
+  * At a long perspective a sheet twenty degrees off the page projects almost
+  * exactly onto it, and the first third of the turn reads as the working page
+  * having gone blank rather than as paper coming up off it. Shortening the
+  * distance is what puts the free edge visibly above the surface early.
+  */
+ perspective:1500px;
+ perspective-origin:32% 45%;
+}
+
+/*
+ * Inside a spread the leaf that turns is the reading page, so the layer takes
+ * the reading column's cell instead of the working page's. Same trick, one
+ * column over: the cell puts the hinge on the binding for free.
+ */
+.turnLayer.is-verso{
+ grid-column:1;
+ grid-row:1;
+ perspective-origin:100% 45%;
+}
+
+/* ================================================================== leaf == */
+
+.turnLeaf{
+ position:absolute;
+ inset:0;
+ transform-origin:left center;
+ transform-style:preserve-3d;
+ animation:leafOver var(--m-turn) var(--ease-turn) both;
+ will-change:transform;
+}
+
+/* Going back turns the same leaf the other way: it comes over from the spine
+   and lays down on the right. Same sheet, same arc, played backwards. */
+.turnLayer[data-dir="back"] .turnLeaf{animation-direction:reverse}
+
+/* A leaf hinged on its right edge, for the reading page of a spread. */
+.turnLayer.is-verso .turnLeaf{transform-origin:right center}
+.turnLayer.is-verso .turnLeaf{animation-name:leafOverVerso}
+
+/*
+ * The leaf settles rather than stopping.
+ *
+ * A page that has gone over lies on the pile on the other side. There is no
+ * pile here -- the left page is a standing contents list, not a stack -- so the
+ * sheet has to leave, and leaving by having the element removed is a cream
+ * rectangle vanishing off the contents in one frame. It thins out over the
+ * last fifth of the arc instead, as it comes down. Played in reverse for a
+ * backward turn this reads correctly too: the page gathers as it lifts.
+ */
+@keyframes leafOver{
+ from{transform:rotateY(0);opacity:1}
+ 80%{opacity:1}
+ to{transform:rotateY(-180deg);opacity:0}
+}
+@keyframes leafOverVerso{
+ from{transform:rotateY(0);opacity:1}
+ 80%{opacity:1}
+ to{transform:rotateY(180deg);opacity:0}
+}
+
+/* ================================================================== face == */
+
+/*
+ * The sheet has one side, and it is the reverse.
+ *
+ * A turning page shows you its front for the first half of the arc, and the
+ * front of this one would be blank: the leaf is real paper rather than a
+ * snapshot, so there is nothing printed on it. Lying flat over the working
+ * page at ten degrees, blank paper does not read as a page lifting. It reads
+ * as the screen having gone empty, which is the one thing a transition must
+ * never look like.
+ *
+ * So the leaf carries no front. For the first half of the turn there is
+ * nothing over the page but the shadow of something passing; at the vertical
+ * the reverse comes into view and sweeps off toward the binding. The reader is
+ * told the same two facts either way -- the page changed, and which way it
+ * went -- and is never shown a blank sheet of their own content.
+ *
+ * `backface-visibility` is what does it: rotated a half turn, the face is
+ * pointing away from the reader until the leaf passes ninety degrees.
+ */
+.turnFace{
+ position:absolute;
+ inset:0;
+ display:block;
+ backface-visibility:hidden;
+ box-shadow:var(--depth-book);
+}
+
+/*
+ * A shade cooler than the page, because the back of a lifted sheet faces away
+ * from the light. Its gutter shading is mirrored: rotated a half turn, the
+ * sheet's binding edge is on the right, so that is where the fold falls. The
+ * outer edge takes a hairline of catch-light -- the trimmed edge of the paper
+ * turning through the lamp, and the detail that stops it reading as a
+ * rectangle rotating.
+ */
+.turnBack{
+ transform:rotateY(180deg);
+ background:
+  linear-gradient(to left,var(--fold-shade) 0,transparent var(--fold-curl)),
+  linear-gradient(to left,var(--edge-lit) 0 1px,transparent 1px),
+  linear-gradient(to left,var(--paper-2) 0,var(--paper-3) 100%);
+ border-radius:var(--r-page) 0 0 var(--r-page);
+}
+
+.turnLayer.is-verso .turnBack{
+ background:
+  linear-gradient(to right,var(--fold-shade) 0,transparent var(--fold-curl)),
+  linear-gradient(to right,var(--edge-lit) 0 1px,transparent 1px),
+  linear-gradient(to right,var(--paper-2) 0,var(--paper-3) 100%);
+ border-radius:0 var(--r-page) var(--r-page) 0;
+}
+
+/* ================================================================= shade == */
+
+/*
+ * The shadow the leaf drags across the page underneath.
+ *
+ * This is the part that makes the turn read as one sheet above another rather
+ * than as a rectangle spinning in place: the new page is in shadow while the
+ * old one is over it, and the shadow retreats toward the binding as the leaf
+ * lands. It is a gradient on one element, moved with a transform, so it costs
+ * the compositor nothing.
+ */
+.turnShade{
+ position:absolute;
+ inset:0;
+ border-radius:var(--r-page);
+ background:linear-gradient(
+  to right,
+  rgba(12,17,19,.34) 0,
+  rgba(12,17,19,.16) 38%,
+  transparent 78%
+ );
+ transform-origin:left center;
+ animation:shadeSweep var(--m-turn) var(--ease-turn) both;
+ will-change:transform,opacity;
+}
+.turnLayer[data-dir="back"] .turnShade{animation-direction:reverse}
+.turnLayer.is-verso .turnShade{
+ background:linear-gradient(
+  to left,
+  rgba(12,17,19,.34) 0,
+  rgba(12,17,19,.16) 38%,
+  transparent 78%
+ );
+ transform-origin:right center;
+}
+
+@keyframes shadeSweep{
+ from{opacity:0;transform:scaleX(1)}
+ 25%{opacity:1}
+ to{opacity:0;transform:scaleX(.08)}
+}
+
+/* ======================================================== reduced motion == */
+
+/*
+ * No arc, and no substitute arc either. Under reduced motion the page simply
+ * is the new page: the content beneath has its own arrival, and a sheet that
+ * fades in place over the whole working area would be a flash of blank paper
+ * where there used to be a turn -- worse than nothing, and the one thing a
+ * reader who turned motion off is asking not to see.
+ */
+@media (prefers-reduced-motion:reduce){
+ .turnLayer{display:none}
+}

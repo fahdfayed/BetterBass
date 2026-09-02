@@ -4,7 +4,7 @@
 .tabPlay{min-width:7rem;justify-content:center}
 
 .tabToggles{display:flex;gap:var(--s4);margin-left:auto}
-.tabToggle{font-size:var(--t-small);color:var(--ink-4);transition:color var(--t-base) var(--ease)}
+.tabToggle{font-size:var(--t-small);color:var(--ink-3);transition:color var(--t-base) var(--ease)}
 .tabToggle:hover{color:var(--ink-2)}
 .tabToggle.on{color:var(--accent)}
 .tabViewport{overflow:auto;max-height:70vh;overscroll-behavior:contain}
@@ -75,7 +75,7 @@
 .exercises{display:flex;flex-direction:column;gap:var(--s5)}
 .exercisePick{display:flex;flex-wrap:wrap;gap:var(--s4)}
 .exerciseChip{display:inline-flex;align-items:baseline;gap:var(--s2);font-size:var(--t-small);color:var(--ink-3);padding-bottom:var(--s1);border-bottom:1px solid transparent;transition:color var(--t-base) var(--ease),border-color var(--t-base) var(--ease)}
-.exerciseChip i{font-family:var(--font-mono);font-style:normal;font-size:var(--t-tiny);color:var(--ink-4)}
+.exerciseChip i{font-family:var(--font-mono);font-style:normal;font-size:var(--t-tiny);color:var(--ink-3)}
 .exerciseChip:hover{color:var(--ink)}
 .exerciseChip.on{color:var(--ink);border-bottom-color:var(--accent)}
 .exerciseChip.on i{color:var(--accent)}
@@ -100,10 +100,10 @@
 .chapterHead{display:flex;align-items:baseline;gap:var(--s5);width:100%;text-align:left;
  padding:var(--s5) 0;color:var(--ink-2);transition:color var(--t-base) var(--ease)}
 .chapterHead:hover,.chapter.is-open .chapterHead{color:var(--ink)}
-.chapterHead .figure{font-style:normal;font-size:var(--t-tiny);color:var(--ink-4);min-width:1.4rem}
+.chapterHead .figure{font-style:normal;font-size:var(--t-tiny);color:var(--ink-3);min-width:1.4rem}
 .chapter.is-open .chapterHead .figure{color:var(--accent)}
 .chapterTitle{flex:1;font-size:var(--t-h3);font-weight:500;letter-spacing:-.01em}
-.chapterCount{font-size:var(--t-tiny);color:var(--ink-4)}
+.chapterCount{font-size:var(--t-tiny);color:var(--ink-3)}
 .chapterBody{padding:0 0 var(--s6) calc(1.4rem + var(--s5))}
 .chapterNote,.epigraph{max-width:var(--measure);margin:0 0 var(--s5)}
 .epigraph{font-style:italic;color:var(--ink-3)}

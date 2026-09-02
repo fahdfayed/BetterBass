@@ -133,7 +133,7 @@
  font-size:var(--t-micro);
  font-weight:500;
  letter-spacing:var(--track-label);
- color:var(--ink-4);
+ color:var(--ink-3);
 }
 
 /* Legacy buttons adopt the single action style. */

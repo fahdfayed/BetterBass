@@ -35,8 +35,25 @@
  flex:1;
  min-height:0;
  display:grid;
- grid-template-columns:var(--page-left) var(--gutter) minmax(0,1fr);
+ /* contents, binding, working page, and the index cut into the fore-edge */
+ grid-template-columns:var(--page-left) var(--gutter) minmax(0,1fr) auto;
+ grid-template-rows:minmax(0,1fr);
 }
+
+/*
+ * Every occupant states its own cell.
+ *
+ * Auto-flow was enough while each child wanted its own column, and it stopped
+ * being enough the moment the working page acquired a second occupant: the
+ * turning leaf lies in the same cell as the page it is lifting off, and an
+ * explicitly placed item is laid down before the flowed ones. The working page
+ * was pushed into the index's column, the index wrapped to a row of its own,
+ * and the leaf was left with whatever width its own empty box asked for.
+ */
+.leaf{grid-column:1;grid-row:1}
+.spine{grid-column:2;grid-row:1}
+.recto{grid-column:3;grid-row:1}
+.indexRail{grid-column:4;grid-row:1}
 
 /*
  * The trimmed corner.
@@ -51,6 +68,36 @@
  background:var(--paper);
  border-radius:var(--r-page);
  box-shadow:var(--depth-book);
+}
+
+/*
+ * The instrument strip is the one surface here that is not paper.
+ *
+ * It is a machine bolted to the foot of the stand, and it reads as one because
+ * it is the same dark as the ground the book lies on rather than a page with
+ * controls printed on it. Every control inside it is written against the ink
+ * scale, so instead of restating forty rules in a second colour the strip
+ * repoints the scale at the three steps that exist for the dark ground. A
+ * label, a readout and a barline all follow without knowing they moved.
+ */
+.dock{
+ background:var(--stand-2);
+ --ink:var(--on-stand);
+ --ink-2:var(--on-stand-2);
+ --ink-3:var(--on-stand-3);
+ --ink-4:rgba(250,247,240,.40);
+ --paper:var(--stand-2);
+ --paper-2:rgba(250,247,240,.07);
+ --paper-3:rgba(250,247,240,.05);
+ --rule:var(--stand-line);
+ --rule-2:rgba(250,247,240,.16);
+ --rule-3:rgba(250,247,240,.26);
+ --wash:rgba(250,247,240,.07);
+ --line:var(--stand-line);
+ --hairline:var(--stand-line);
+ --hairline-2:rgba(250,247,240,.16);
+ --text:var(--on-stand);
+ --muted:var(--on-stand-3);
 }
 
 /* ============================================================== left page = */
@@ -219,6 +266,22 @@
  background:var(--vermillion);
 }
 
+/*
+ * The verso scrolls too, so its children obey the same rule the sheet's do:
+ * a scrolling column never shrinks what it is scrolling. Without it a long
+ * contents list squeezed the block above and printed itself over the
+ * pencilled note at the foot.
+ */
+.leaf>*{flex-shrink:0}
+
+/*
+ * A route that writes its own margin note keeps it, and the shell does not add
+ * a second one underneath. Moving this out of the default block is what lets
+ * it print on pages that supply their own left page; the cost was two notes in
+ * two hands at the foot of every page that already had one.
+ */
+.leafSlot:has(.annot)~.leafFocus{display:none}
+
 /* The pencilled note at the foot of the page. */
 .leafFocus{
  margin-top:auto;
@@ -321,12 +384,23 @@
  background:var(--vermillion);
 }
 
+/*
+ * The rail scrolls sideways once five section tabs stop fitting, and these are
+ * the two controls that must not scroll away with them: the voice toggle and
+ * the way into the contents. On a phone they were simply off the right edge,
+ * with no scrollbar to say so. Pinned to the end of the scrollport, with the
+ * page's own ground behind them so the tabs pass underneath.
+ */
 .tabsEnd{
  margin-left:auto;
+ position:sticky;
+ right:0;
+ z-index:1;
  display:flex;
  align-items:center;
  gap:var(--s4);
  padding:0 var(--page-pad) 0 var(--s5);
+ background:var(--paper);
 }
 
 .contents{
@@ -352,7 +426,7 @@
  padding:.15rem .3rem;
  border:1px solid var(--rule);
  border-radius:var(--r);
- color:var(--ink-4);
+ color:var(--ink-3);
 }
 @media (max-width:64rem){.contentsLabel,.contentsKey{display:none}}
 
@@ -374,6 +448,17 @@
  flex-direction:column;
  gap:var(--s7);
 }
+/*
+ * The sheet is a column flex box with a bounded height and its own scrollbar,
+ * which means its children are flex items that shrink by default. On a page
+ * taller than the sheet they are squeezed instead of scrolled, and the squeeze
+ * is silent: a section whose own minimum size is zero -- anything with an
+ * `overflow` of its own, or an explicit `min-height:0` -- collapses to its
+ * padding and lets its contents spill out and be clipped. That is how the
+ * lesson stage rail lost the top half of every label. A scrolling column never
+ * shrinks what it is scrolling.
+ */
+.page>*{flex-shrink:0}
 /* Workspaces take the width they are given. */
 .page.wide{max-width:var(--measure-wide)}
 
@@ -426,7 +511,7 @@
  font-size:var(--t-lead);
  background:transparent;
 }
-.palInput::placeholder{color:var(--ink-4)}
+.palInput::placeholder{color:var(--ink-3)}
 .palList{list-style:none;padding:var(--s2) var(--s3) var(--s3);margin:0;overflow-y:auto}
 .palItem{
  display:flex;

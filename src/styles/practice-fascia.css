@@ -50,7 +50,7 @@
  font-size:var(--t-micro);
  letter-spacing:var(--track-legend);
  text-transform:uppercase;
- color:var(--ink-4);
+ color:var(--ink-3);
 }
 .practiceEnvironment .deckId b{
  font-family:var(--font-mono);
@@ -163,7 +163,7 @@
  font-size:var(--t-micro);
  letter-spacing:var(--track-legend);
  text-transform:uppercase;
- color:var(--ink-4);
+ color:var(--ink-3);
 }
 
 /* =================================================== the dot matrix == */
@@ -310,7 +310,10 @@
  --well-face:var(--ground-2);
  --well-edge:inset 0 1px 2px 0 rgba(0,0,0,.6),inset 0 -1px 0 0 rgba(255,255,255,.05);
 }
-:root[data-theme="cream"] .practiceEnvironment{
+/* The highlight sits on top and the shade below, which is what it is to be lit
+   from above on paper. Gated on a theme attribute that is never set, this read
+   as a white inner glow on a dark plate. */
+.practiceEnvironment{
  --plate-edge:inset 0 1px 0 0 rgba(255,255,255,.9),0 1px 0 0 rgba(17,24,39,.14);
  --well-face:rgba(17,24,39,.05);
  --well-edge:inset 0 1px 2px 0 rgba(17,24,39,.14),inset 0 -1px 0 0 rgba(255,255,255,.7);

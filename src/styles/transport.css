@@ -22,6 +22,21 @@
  width:100%;
  min-width:0;
  font-family:var(--font-label);
+ /*
+  * Room at the right end for the sync lamp, which is fixed to the strip rather
+  * than laid out in it: it is a state of the machine the book runs on, not a
+  * transport control, and it must not end up on top of the level fader.
+  */
+ padding-right:6.5rem;
+}
+
+/*
+ * On a narrow strip there is no room to reserve. The lamp goes above the
+ * controls' own line rather than beside them, so the strip keeps every
+ * control it has.
+ */
+@media (max-width:64rem){
+ .transport{padding-right:0}
 }
 
 /*
@@ -159,7 +174,7 @@
 }
 .tMode:hover{color:var(--ink);background:var(--paper-2)}
 .tMode[aria-pressed="true"]{color:var(--ink)}
-.tMode svg{flex:none;color:var(--ink-4);transition:color var(--m-click) var(--ease-page)}
+.tMode svg{flex:none;color:var(--ink-3);transition:color var(--m-click) var(--ease-page)}
 /*
  * An engaged mode goes to ink, not to vermillion.
  *
@@ -195,7 +210,7 @@
  margin-left:auto;
  gap:var(--s4);
  padding-right:var(--s6);
- color:var(--ink-4);
+ color:var(--ink-3);
 }
 
 /*

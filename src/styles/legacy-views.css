@@ -43,7 +43,7 @@
  border-radius:0 !important;
  background:none !important;
  padding:0 0 var(--s3) !important;
- color:var(--ink-4) !important;
+ color:var(--ink-3) !important;
  white-space:nowrap;
 }
 .maqamTabs button:hover{color:var(--ink-2) !important}
@@ -125,17 +125,16 @@
  * microtonal marker still reads differently from body text) rather than
  * flattening them away.
  */
-.maqamLab{
- /* Lifted a little off the accent: as small text on the dark ground the
-    accent itself lands at 4.49:1, which is a hundredth short. */
- --mq-gold:color-mix(in oklab,var(--accent) 88%,white);
- --mq-gold2:color-mix(in oklab,var(--accent) 72%,white);
-}
+/* The accent is already dark on paper, so lightening it toward white is what
+   makes it unreadable — 3.3:1 at small sizes. It goes the other way, and still
+   reads apart from the body ink.
 
-/* On cream the accent is already dark, so lightening it toward white is what
-   makes it unreadable — 3.3:1 at small sizes. It goes the other way here and
-   still reads apart from the body ink. */
-:root[data-theme="cream"] .maqamLab{
+   This block used to be gated on `[data-theme="cream"]`, with a dark-ground
+   version above it. There is one ground now and the attribute is never set, so
+   the gate matched nothing and the sheet's own dark-world literals stayed live:
+   `--mq-teal` was printing #69c4bc on ivory, at 1.92:1, on the first line of
+   the page. */
+.maqamLab{
  --mq-gold:var(--accent);
  --mq-gold2:color-mix(in oklab,var(--accent) 72%,black);
  --mq-teal:var(--ink-3);
@@ -172,9 +171,16 @@
  padding:var(--s4) 0 !important;
 }
 
-/* Segmented switch and section tabs: labels on a line, active one underlined. */
+/* Segmented switch and section tabs: labels on a line, active one underlined.
+
+   "On a line" has to be stated. Underneath, these are two-column card grids,
+   and flattening the cards to labels left the labels sharing a 169px track
+   they need 284px for -- clipped, with an overflow rule that had nothing to
+   scroll because the tracks themselves were the constraint. */
 .practiceTrackSwitch,
 .beastSections{
+ display:flex !important;
+ align-items:baseline;
  border:0 !important;
  border-bottom:1px solid var(--rule) !important;
  border-radius:0 !important;
@@ -186,14 +192,19 @@
 }
 .practiceTrackSwitch::-webkit-scrollbar,
 .beastSections::-webkit-scrollbar{display:none}
+/* `white-space:nowrap` keeps the label on one line but does not stop the flex
+   item shrinking around it, so on the practice page a 284px switch label was
+   being compressed into a 169px grid track and clipped. The rail already
+   scrolls; `flex:none` is what gives it something to scroll. */
 .practiceTrackSwitch button,
 .beastSections button{
  position:relative;
+ flex:none;
  border:0 !important;
  border-radius:0 !important;
  background:none !important;
  padding:0 0 var(--s3) !important;
- color:var(--ink-4) !important;
+ color:var(--ink-3) !important;
  white-space:nowrap;
 }
 .practiceTrackSwitch button:hover,
@@ -338,7 +349,7 @@
  border-radius:0 !important;
  background:none !important;
  padding:0 0 var(--s3) !important;
- color:var(--ink-4) !important;
+ color:var(--ink-3) !important;
 }
 .labTabs button:hover{color:var(--ink-2) !important}
 .labTabs button.active{color:var(--ink) !important}
@@ -379,13 +390,19 @@
  padding:0 !important;
  gap:var(--s6) !important;
 }
+/* The rail scrolls sideways rather than compressing: as flex items with the
+   default shrink these labels were squeezed to 34px of a 57px word inside the
+   lesson workspace, and the overflow the container already declares had
+   nothing left to scroll. */
 .theoryDictionaryTabs button{
  position:relative;
+ flex:none;
+ white-space:nowrap;
  border:0 !important;
  border-radius:0 !important;
  background:none !important;
  padding:0 0 var(--s3) !important;
- color:var(--ink-4) !important;
+ color:var(--ink-3) !important;
 }
 .theoryDictionaryTabs button.active{color:var(--ink) !important}
 .theoryDictionaryTabs button.active::after{
@@ -439,7 +456,7 @@
  background:none !important;
 }
 .page .osScreen .slapFlowRail article:last-child{border-right:0 !important}
-.page .osScreen .slapFlowRail article>b{color:var(--ink-4) !important}
+.page .osScreen .slapFlowRail article>b{color:var(--ink-3) !important}
 .page .osScreen .slapFlowRail article.done>b,
 .page .osScreen .slapFlowRail article.active>b{color:var(--accent) !important}
 
@@ -522,7 +539,7 @@
  border-radius:0 !important;
  background:none !important;
  padding:0 0 var(--s3) !important;
- color:var(--ink-4) !important;
+ color:var(--ink-3) !important;
  font-weight:500 !important;
  white-space:nowrap;
 }
@@ -541,7 +558,7 @@
 }
 /* The strips stack a small index above the label; inline keeps them on one line. */
 .slapTabs button i,
-.coachTabs button i{display:inline !important;margin:0 var(--s2) 0 0 !important;opacity:1 !important;color:var(--ink-4)}
+.coachTabs button i{display:inline !important;margin:0 var(--s2) 0 0 !important;opacity:1 !important;color:var(--ink-3)}
 .slapTabs button span,
 .coachTabs button span{display:inline !important}
 

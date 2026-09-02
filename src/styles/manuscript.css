@@ -288,7 +288,9 @@ body{
  box-shadow:var(--depth-tape-press);
 }
 .action-primary:disabled,.tape:disabled{
- background:var(--rule-2);color:var(--paper);transform:none;box-shadow:none;
+ /* Unavailable, still readable. Paper on this fill measured 1.77:1, which is a
+    label you can see the shape of and not read. Ink on it is 5.14:1. */
+ background:var(--rule-2);color:var(--ink-2);transform:none;box-shadow:none;
 }
 
 /*

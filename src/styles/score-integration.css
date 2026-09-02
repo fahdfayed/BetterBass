@@ -87,7 +87,7 @@
  font-size:var(--t-micro);
 }
 .stageTab.done .rehearsalMark{border-color:var(--hairline-2);color:var(--ink-3)}
-.stageTab.active .rehearsalMark{border-color:var(--flame);color:var(--flame)}
+.stageTab.active .rehearsalMark{border-color:var(--accent);color:var(--accent)}
 
 .stageScoreHeading{
  display:flex;

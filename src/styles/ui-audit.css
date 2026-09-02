@@ -372,7 +372,9 @@
  background-color:#0a0a0b !important;
  color:#ffffff !important;
 }
-:root[data-theme="cream"] .page .osScreen.practiceEnvironment select option{
+/* A native dropdown paints its own list. Left on the dark values it opened a
+   black panel out of an ivory page. */
+.page .osScreen.practiceEnvironment select option{
  background-color:#ffffff !important;
  color:#111827 !important;
 }

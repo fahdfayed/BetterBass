@@ -203,7 +203,7 @@
 }
 .hfChordRail button small {
   font: var(--t-micro) var(--mono);
-  color: var(--ink-4);
+  color: var(--ink-3);
 }
 .hfChordRail button b {
   font: var(--t-lead) var(--mono);
@@ -221,7 +221,7 @@
 }
 .hfChordRail button.active {
   background: transparent;
-  color: var(--ink-4);
+  color: var(--ink-3);
   box-shadow:none;
 }
 .hfChordRail button.active small,
@@ -277,7 +277,7 @@
 .hfChordDecode dt,
 .hfNoteTutor dt {
   font: var(--t-micro) var(--mono);
-  color: var(--ink-4);
+  color: var(--ink-3);
 }
 .hfChordDecode dd,
 .hfNoteTutor dd {
@@ -393,7 +393,7 @@
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   background: transparent;
-  color: var(--ink-4);
+  color: var(--ink-3);
   text-align: left;
   font: var(--t-micro) var(--mono);
 }
@@ -404,7 +404,7 @@
   border-bottom: 0;
 }
 .hfBandMixer button i {
-  color: var(--ink-4);
+  color: var(--ink-3);
   font-style: normal;
 }
 .hfBandMixer button.active {
@@ -479,7 +479,7 @@
   display: block;
   padding-top: var(--s2);
   border-top: 1px solid var(--line);
-  color: var(--ink-4);
+  color: var(--ink-3);
   font: var(--t-micro)/1.5 var(--mono);
 }
 .hfAutoPulse {
@@ -539,7 +539,7 @@
 }
 .hfModeSelect small {
   font: var(--t-micro) var(--mono);
-  color: var(--ink-4);
+  color: var(--ink-3);
 }
 .hfModeSelect b {
   min-height: 52px;
@@ -552,7 +552,7 @@
   right: 20px;
   top: 17px;
   font: var(--t-h2) var(--mono);
-  color: var(--ink-4);
+  color: var(--ink-3);
 }
 .hfModes article.active strong {
   color: var(--lime);
@@ -699,7 +699,7 @@
   display: grid;
   place-items: center;
   font: var(--t-micro) var(--mono);
-  color: var(--ink-4);
+  color: var(--ink-3);
 }
 .hfFretNumbers > span.marked {
   color: var(--lime);
@@ -818,7 +818,7 @@
    ground. Nothing is lost by reading it in ink: the badge states its role
    twice more, in the border and the swatch, and the neck cells have always
    worked this way. */
-:root[data-theme="cream"] .hfRoleBadge {
+.hfRoleBadge {
   color: var(--ink-2);
 }
 .hfNoteTutor article > h2 {
@@ -913,7 +913,7 @@
 }
 .hfVoiceLeading footer span {
   font: var(--t-micro) var(--mono);
-  color: var(--ink-4);
+  color: var(--ink-3);
 }
 .hfVoiceLeading footer b {
   font: var(--t-micro) var(--mono);

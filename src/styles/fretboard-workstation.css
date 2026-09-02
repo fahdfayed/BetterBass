@@ -113,11 +113,14 @@
  padding-bottom:var(--s2);
  border-bottom:1px solid var(--groove);
 }
+/* The fret numbers are read, not glanced at: a player checks which fret a
+   marked note is on. --bone-4 is the mark ink and lands at 2.34:1 over the
+   board's stock. */
 .hfFretNumbers>b,.hfFretNumbers>span{
  font-family:var(--font-mono);
  font-size:var(--t-micro);
  font-variant-numeric:tabular-nums;
- color:var(--bone-4);
+ color:var(--bone-3);
  text-align:center;
 }
 .hfFretNumbers>b{text-align:left;font-family:var(--font-display);letter-spacing:var(--track-legend);text-transform:uppercase}
@@ -156,7 +159,7 @@
  font-size:var(--t-micro);
  letter-spacing:var(--track-legend);
  text-transform:uppercase;
- color:var(--bone-4);
+ color:var(--bone-3);
 }
 /*
  * String gauge. The low E is a visibly heavier line than the G, which is the
@@ -415,7 +418,13 @@
  --pad-fill:var(--oxide-wash);
  box-shadow:none;
 }
-.hfString button.picked>b{color:var(--oxide-ink)}
+/*
+ * The picked cell states itself in the accent whatever role it holds, and on a
+ * root or bass pad it is stating it inside a 13% vermillion wash of its own.
+ * Vermillion on that wash is 4.18:1; the deeper step is 5.90 and is the same
+ * red. This is the pairing --pad-root-ink already exists for.
+ */
+.hfString button.picked>b{color:var(--vermillion-deep)}
 
 /*
  * Where the line has to arrive next.
@@ -628,7 +637,9 @@
  font-size:var(--t-micro);
  letter-spacing:var(--track-legend);
  text-transform:uppercase;
- color:var(--bone-4);
+ /* These name the group of controls under them -- "Labels", "Show", "Neck
+    area". --bone-4 is the mark ink, and it printed them at 2.69:1. */
+ color:var(--bone-3);
 }
 
 /* ===================================================== pad label sizing == */
