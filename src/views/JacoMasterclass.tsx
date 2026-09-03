@@ -1,7 +1,17 @@
-import {lazy,Suspense,useState} from "react";
+import {Suspense,useState} from "react";
 import {JACO_CHAPTERS} from "../tab/jaco-masterclass";
 
-const ExerciseTabs=lazy(()=>import("../tab/ExerciseTabs"));
+/*
+ * Statically imported, like the five other views that use it.
+ *
+ * It was lazy here and in LessonTools, and that dynamic import could never
+ * split: BeastPractice, MaqamLab, SlapLab, ChromaticGym and TechniqueLab all
+ * pull the same module in eagerly, so the bundler kept it in the shared chunk
+ * and warned that the dynamic import did nothing. Every one of those views is
+ * itself lazily loaded, so the module already arrives only when a view that
+ * needs it does -- the second boundary bought nothing but a spinner.
+ */
+import ExerciseTabs from "../tab/ExerciseTabs";
 
 /**
  * The masterclass, laid out as the method it follows.

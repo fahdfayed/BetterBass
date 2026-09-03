@@ -113,19 +113,36 @@
  padding-bottom:var(--s2);
  border-bottom:1px solid var(--groove);
 }
-/* The fret numbers are read, not glanced at: a player checks which fret a
-   marked note is on. --bone-4 is the mark ink and lands at 2.34:1 over the
-   board's stock. */
+/*
+ * Every fret number is read, not glanced at, and that means every one of
+ * them -- not only the marked frets. A player scanning for fret eight is not
+ * helped by fret eight being dimmer than fret nine.
+ *
+ * A one-step-down grey for the unmarked majority was tried here and reported
+ * back twice as too faint to read, which is the right call: at eleven pixels
+ * on a stand, a step that clears a contrast checker can still read as a
+ * watermark once it is the minority ink surrounded by darker neighbours. So
+ * the whole row is struck in full ink now, at one weight, and the marked
+ * frets are told apart the way a real fingerboard tells them apart -- by the
+ * inlay dot underneath, plus a heavier stroke on the number itself.
+ */
 .hfFretNumbers>b,.hfFretNumbers>span{
  font-family:var(--font-mono);
  font-size:var(--t-micro);
+ font-weight:500;
  font-variant-numeric:tabular-nums;
- color:var(--bone-3);
+ color:var(--bone);
  text-align:center;
 }
+/* Declared explicitly rather than left to inherit the row's own colour:
+   redesign.css still carries `.hfFretNumbers>span.marked{color:var(--lime)}`
+   from the world this replaced, and omitting colour here let that leftover
+   rule win the cascade -- it is the only declaration of that property once
+   this one stops stating it, whichever file loaded first. */
+.hfFretNumbers>span.marked{color:var(--bone);font-weight:700}
 .hfFretNumbers>b{text-align:left;font-family:var(--font-display);letter-spacing:var(--track-legend);text-transform:uppercase}
-/* The inlay positions carry a real dot, the way a neck does. */
-.hfFretNumbers>span.marked{color:var(--bone-2)}
+/* The inlay dot is what marks a fret; the number stays the same ink either
+   way and only steps up in weight. */
 .hfFretNumbers>span.marked i{
  display:block;width:5px;height:5px;border-radius:50%;
  background:var(--bone-4);margin:3px auto 0;
@@ -788,3 +805,109 @@
   background:var(--flame);
  }
 }
+
+/* ================================================== the board that fits === */
+
+/*
+ * The neck sizes itself to the room it is given.
+ *
+ * The board's width is not a style, it is arithmetic: the nut column plus
+ * thirteen fret columns, each with a real minimum, and the inline min-width on
+ * the board states exactly that sum. So the board fits or it does not, and
+ * when it does not the wrapper puts a scrollbar under it and the player reads
+ * two thirds of a neck.
+ *
+ * Both halves of that sum come from `--hf-fret`, which is the lever: the grid
+ * takes it as each column's minimum and the min-width calc multiplies it. Step
+ * it down and the whole board steps down with it -- no override of the inline
+ * style, no guessing at the fret count, which is dynamic.
+ *
+ * The ladder is set against the wrapper rather than the window, because the
+ * board sits in a page inside a book and the window has never been what it has
+ * to fit inside. A role name is the widest thing a pad ever carries, so the
+ * priority and voice-leading views get the roomier steps; note and degree
+ * labels are two characters and stay comfortable much further down.
+ */
+.hfBoardWrap{
+ container-type:inline-size;
+ container-name:neck;
+}
+
+/*
+ * The word "String" is said four times too many.
+ *
+ * The header cell says "String" and every row says "G String", "D String" --
+ * in a column that has to be narrow enough to leave the frets their width. At
+ * 46px the word does not fit, so it clipped to "TRING" and bled toward the
+ * first fret, which is what made the numbering look out of step with the rows
+ * under it. The letter is the label; the word is scaffolding. Hidden to the
+ * eye, kept for a screen reader, and the column drops to what a letter needs.
+ */
+.hfFretNumbers>b{font-size:0}
+.hfString>b small{font-size:0}
+
+/*
+ * The ladder stops where the words do.
+ *
+ * APPROACH is the longest thing a pad ever carries, and it needs about sixty
+ * pixels of column. Stepping below that does not make the board fit -- it
+ * makes the board fit while saying WRIT and APPRO, which is a scrollbar's
+ * problem solved by creating a worse one. The steps end at seventy, and under
+ * that the board scrolls rather than abbreviating what it is there to teach.
+ */
+@container neck (max-width:74rem){
+ .hfBoard{--hf-nut:40px;--hf-fret:40px}
+ .hfBoard[data-labels="priority"],
+ .hfBoard[data-labels="voice"]{--hf-fret:78px}
+}
+
+@container neck (max-width:62rem){
+ .hfBoard{--hf-nut:40px;--hf-fret:36px}
+ .hfBoard[data-labels="priority"],
+ .hfBoard[data-labels="voice"]{--hf-fret:70px}
+}
+
+/*
+ * Note and degree labels are one or two characters, so they keep shrinking
+ * long after a role name has stopped. Only the wordy views hold at seventy.
+ */
+/*
+ * Note and degree labels are one or two characters, so they keep shrinking
+ * long after a role name has stopped. Priority and voice-leading views hold
+ * at seventy pixels here on purpose -- see the 62rem tier above -- and scroll
+ * rather than step down further: a board that keeps shrinking a role word
+ * eventually abbreviates it, and a scrollbar is the honest trade once the
+ * word itself has nowhere left to give.
+ */
+@container neck (max-width:48rem){
+ .hfBoard{--hf-nut:36px;--hf-fret:30px}
+}
+
+@container neck (max-width:34rem){
+ .hfBoard{--hf-nut:32px;--hf-fret:26px}
+}
+
+/*
+ * The last thirty pixels, and the twelve.
+ *
+ * Two insets were quietly spending the width the labels needed. The board
+ * carried fifteen pixels either side -- thirty across, which was exactly the
+ * overflow that put a scrollbar under a board otherwise a pixel from fitting.
+ * And every pad spent nearly nine pixels either side, so a seventy pixel fret
+ * offered its label fifty-two, and APPROACH needs sixty-four.
+ *
+ * A fret is a slot between two wires. It does not have a margin, and the pad
+ * has a fret wire down its left edge to separate it from its neighbour, so the
+ * padding was never doing the work of keeping the columns apart.
+ */
+.hfBoard{padding-inline:0}
+.hfString>button{padding-inline:2px}
+
+/*
+ * And the wrapper's own seventeen either side.
+ *
+ * This is the element that scrolls, so every pixel of horizontal padding on it
+ * is a pixel taken off the board and handed back as scroll distance. The
+ * vertical inset stays -- the board needs air above and below it on the page.
+ */
+.hfBoardWrap{padding-inline:0}

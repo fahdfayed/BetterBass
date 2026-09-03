@@ -59,6 +59,24 @@ export default function PageTurn({at,order,verso=false}:Props){
   setTurn({id:sequence.current,dir:directionBetween(was.order,order)});
  },[at,order]);
 
+ /*
+  * A backstop, because `animationend` is not guaranteed to arrive.
+  *
+  * A document that is not being rendered does not advance its animations, so a
+  * turn that starts just as the tab goes to the background never finishes and
+  * never fires. The sheet ends the arc transparent and takes no pointer, so a
+  * leaked one is invisible — but it is still a node lying over the working page
+  * for the rest of the session, and the next turn stacks another on top.
+  *
+  * The event stays the primary path: it is exact, and it clears on the frame
+  * the leaf lands. This only catches the case where the frame never comes.
+  */
+ useEffect(()=>{
+  if(!turn)return;
+  const swept=window.setTimeout(()=>setTurn(null),1200);
+  return()=>window.clearTimeout(swept);
+ },[turn]);
+
  if(!turn)return null;
 
  return (
@@ -68,10 +86,8 @@ export default function PageTurn({at,order,verso=false}:Props){
    data-dir={turn.dir}
    aria-hidden="true"
    /*
-     * Cleared by the leaf's own animation rather than by a timer, so a turn
-     * interrupted by a second navigation is replaced instead of leaving a sheet
-     * lying across the page until a setTimeout that belongs to the old one
-     * fires. `key` remounts the layer, which restarts the arc from flat.
+     * `key` remounts the layer, so a turn interrupted by a second navigation is
+     * replaced rather than resumed: the new sheet starts its arc from flat.
      */
    onAnimationEnd={event=>{
     /*
@@ -84,7 +100,7 @@ export default function PageTurn({at,order,verso=false}:Props){
   >
    <i className="turnShade"/>
    <div className="turnLeaf">
-    {/* One face, and it is the reverse. See the head of page-turn.css. */}
+    <i className="turnFace turnFront"/>
     <i className="turnFace turnBack"/>
    </div>
   </div>

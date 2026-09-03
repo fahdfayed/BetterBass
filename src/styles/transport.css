@@ -377,3 +377,42 @@
  .transport .barline{display:none}
  .tBarValue,.tTempoValue{font-size:1.625rem}
 }
+
+/* ================================================== the beat, as noteheads = */
+
+/*
+ * A dot over every beat and the number under it.
+ *
+ * The numbers alone say which beat of the bar you are on; the dots say it the
+ * way a count-off is written, and give the running bar a row of heads that
+ * fills left to right. The dot is the mark and the figure is the label, which
+ * is the same division this design makes everywhere else.
+ */
+.tBeat{position:relative}
+.tBeat::before{
+ content:"";
+ position:absolute;
+ left:50%;
+ bottom:calc(100% + .28rem);
+ width:5px;height:5px;
+ border-radius:var(--r-lamp);
+ transform:translateX(-50%);
+ background:var(--rule-2);
+ transition:background var(--m-click) var(--ease-page);
+}
+.tBeat[data-on="true"]::before{background:var(--ink)}
+/* The count-in is not the take, so its heads are the live colour instead. */
+.tBeat.counting[data-on="true"]::before{background:var(--vermillion)}
+
+/* The unit, stamped under the figure the way a plate label is. */
+.tTempoUnit{
+ align-self:flex-end;
+ margin-bottom:.15rem;
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ font-weight:500;
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ color:var(--ink-3);
+ line-height:1;
+}

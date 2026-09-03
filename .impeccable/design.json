@@ -1,6 +1,6 @@
 {
  "schemaVersion": 2,
- "generatedAt": "2026-09-02T22:23:58Z",
+ "generatedAt": "2026-09-03T08:42:03Z",
  "title": "Design System: Outside In Bass Lab",
  "extensions": {
   "colorMeta": {
@@ -500,7 +500,7 @@
    {
     "name": "m-sweep",
     "value": "420ms",
-    "purpose": "The whole spread turning on a new lesson. An eighth."
+    "purpose": "A sweep across the page. An eighth."
    },
    {
     "name": "m-enter",
@@ -509,8 +509,8 @@
    },
    {
     "name": "page-turn",
-    "value": "rotateY(8deg) on perspective(2400px)",
-    "purpose": "A page turns about the binding. Eight degrees is a page being turned by someone reading it; forty is a page being thrown."
+    "value": "rotateY(0 -> 180deg) about the binding, 460ms cubic-bezier(.46,.03,.24,1)",
+    "purpose": "A leaf of the book goes over. The sheet is a real element rather than a snapshot and has two faces: a front that carries the gutter shading and darkens toward its free edge, and a cooler reverse with a hairline of catch-light on its trimmed edge. Direction follows the reading order in nav.ts."
    },
    {
     "name": "beat-ms",
@@ -772,7 +772,7 @@
    "Do put flex-shrink: 0 on the children of any scrolling flex column.",
    "Do theme the browser's own furniture — selection, caret, scrollbar, focus ring, and tabular figures — from this palette.",
    "Do open a split workspace as a spread, with the binding between the pages and no gap standing them off it.",
-   "Do turn a page about the binding when what is printed on it changes.",
+   "Do turn a page about the binding when what is printed on it changes, and turn it the way the reading order went.",
    "Do keep the fore-edge index in one order and one position.",
    "Do collapse every entrance to its final state under prefers-reduced-motion."
   ],
@@ -793,7 +793,9 @@
    "Don't draw the fold on a stacked layout. One column has no gutter.",
    "Don't turn the stand, the fore-edge index or the instrument strip. Only pages turn.",
    "Don't remount a live tool to animate it. Hold the turn as state.",
-   "Don't reach for --bg when you mean the page. The legacy token file repoints it at the shaded stock; the page is --paper."
+   "Don't reach for --bg when you mean the page. The legacy token file repoints it at the shaded stock; the page is --paper.",
+   "Don't route a navigation through a View Transition. It defers the DOM update to the next rendering opportunity and aborts when the document is hidden, so the address arrives late and the motion does not arrive at all.",
+   "Don't judge motion from a paused frame. Blank paper over the page looks broken in a still and reads as a page in motion; a turn assessed by scrubbing loses the half of itself that only exists at speed."
   ]
  }
 }

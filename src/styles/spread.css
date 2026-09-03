@@ -257,3 +257,14 @@
 @media (max-width:64rem){
  .indexRail{display:none}
 }
+
+/* ==================================================== the workspace pane == */
+
+/*
+ * Gone with the pane.
+ *
+ * These rules collapsed the tools' two-column layouts because the workspace
+ * was half a page wide. The lesson does not split any more -- the instrument
+ * has the whole page -- so the container that needed rescuing is the one in
+ * lesson-stack.css, scoped to the stage itself.
+ */

@@ -58,7 +58,7 @@
 .tabSeek{display:flex;align-items:center;gap:var(--s4)}
 .tabTime{font-size:var(--t-tiny);color:var(--ink-3);min-width:2.6rem;font-variant-numeric:tabular-nums}
 .tabTime:last-child{text-align:right}
-.tabScrub{flex:1;-webkit-appearance:none;appearance:none;height:1.25rem;background:transparent;cursor:pointer}
+.tabScrub{flex:1;-webkit-appearance:none;appearance:none;height:1.5rem;background:transparent;cursor:pointer}
 .tabScrub:disabled{cursor:default;opacity:.45}
 /* The filled portion is driven by --played, set from the playhead. */
 .tabScrub::-webkit-slider-runnable-track{height:3px;border-radius:var(--r);

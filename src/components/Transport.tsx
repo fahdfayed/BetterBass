@@ -150,6 +150,7 @@ export default function Transport({input,onToggleInput,inputBusy}:Props){
      onChange={event=>t.setTempo(Number(event.target.value))}
      aria-label="Tempo in beats per minute"
     />
+    <span className="tTempoUnit" aria-hidden="true">BPM</span>
     <span className="tStepper">
      <button
       type="button" className="tStep" onClick={()=>t.nudgeTempo(-1)}

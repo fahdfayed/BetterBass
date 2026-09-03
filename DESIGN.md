@@ -690,21 +690,53 @@ Fret pads keep their left border, because the left border of a fret pad *is* the
 fret; without it the board is one undivided field and the labels of adjacent
 frets run together into a single line of letters.
 
-### The page turn
+### The page turn (signature)
 
-Changing what is on a page turns it, about the binding. The verso rotates about
-its right edge and the recto about its left, at `8deg` on a `2400px`
-perspective, with a shadow falling away from the fold as it lifts. Eight degrees
-is a page being turned by someone reading it; forty is a page being thrown. A
-stage change turns the verso alone, because the instrument on the recto has not
-changed; a new lesson turns both, because a new lesson is a new spread. A route
-change turns the two halves of the book and leaves the stand, the fore-edge and
-the instrument strip alone — furniture that flips is a glitch, not a transition.
+Changing what is on a page turns a leaf of the book, about the binding, over
+`460ms` on `cubic-bezier(.46,.03,.24,1)` — slow at both ends and quick through
+the middle, because a turned page is lifted against its own weight, tips past
+the vertical, falls, and lands.
 
-Held as state for the length of the turn rather than keyed on the lesson, so the
-workspace is not remounted to animate it: tearing down a live fretboard and a
-running microphone to play a transition costs the player the thing they were
-doing.
+**The sheet is paper, not a picture of one.** It is a real element rather than a
+snapshot of the outgoing page, and that decides everything else about it. A
+snapshot has one side, so there is no moment in it where the back of the sheet
+exists — which is the only part of a page turn that says "page". This world's
+paper is one flat ivory, so a real sheet and a captured one are the same to the
+eye, and the real one costs one element and three gradients.
+
+**The leaf has two sides, and needs both.** The front is on screen for about a
+fifth of a second while it is visibly rotating, and that is the part that reads
+as a page lifting; without it the first half of the arc contains nothing, and
+the turn becomes a shadow fading in and out. The front earns its place by not
+being flat: it carries the gutter shading on its binding edge, because that
+shading belongs to the sheet and travels with it; it darkens toward the free
+edge, the way paper does as it curves away from the lamp; and the free edge
+takes a soft shadow, which is the page's own thickness.
+
+The reverse is a shade cooler, mirrors its gutter shading (rotated a half turn,
+the binding edge is on the other side), and takes a hairline of catch-light on
+its trimmed edge. The sheet thins out only over the last tenth of the arc as it
+lands, because the left page here is a standing contents list rather than a pile
+for it to lie on.
+
+**Direction carries information.** The reading order in `nav.ts` is the
+authority: a later destination turns the page forward, an earlier one turns it
+back, played as the same arc in reverse. The course states that lessons open in
+order and the left page prints that order against every entry, so the turn is
+the third place the interface says it without words.
+
+A route change turns the working page. A stage change turns the reading page of
+a spread alone, because the instrument beside it has not changed and turning it
+would say that it had. The stand, the fore-edge index and the instrument strip
+never turn — furniture that flips is a glitch, not a transition.
+
+The turn is a real element and not a View Transition, deliberately. That API
+cross-fades two snapshots, cannot show a reverse, defers its DOM update to the
+next rendering opportunity, and aborts outright when the document is hidden or
+another transition is in flight — so a route change routed through it arrived a
+click late in a background tab, and the animation silently did not happen. The
+leaf runs either way, and it is cleaned up by its own `animationend` with a
+timer as a backstop for the case where no frame ever comes.
 
 ### Named Rules
 
@@ -740,7 +772,8 @@ hairline a pixel to its right reads as the nut printed twice.
   ring, and tabular figures — from this palette.
 - **Do** open a split workspace as a spread, with the binding between the pages
   and no gap standing them off it.
-- **Do** turn a page about the binding when what is printed on it changes.
+- **Do** turn a page about the binding when what is printed on it changes, and
+  turn it the way the reading order went.
 - **Do** keep the fore-edge index in one order and one position.
 - **Do** collapse every entrance to its final state under `prefers-reduced-motion`.
 
@@ -771,5 +804,11 @@ hairline a pixel to its right reads as the nut printed twice.
 - **Don't** turn the stand, the fore-edge index or the instrument strip. Only
   pages turn.
 - **Don't** remount a live tool to animate it. Hold the turn as state.
+- **Don't** judge motion from a paused frame. Blank paper over the page looks
+  broken in a still and reads as a page in motion; a turn assessed by scrubbing
+  loses the half of itself that only exists at speed.
+- **Don't** route a navigation through a View Transition. It defers the DOM
+  update to the next rendering opportunity and aborts when the document is
+  hidden, so the address arrives late and the motion does not arrive at all.
 - **Don't** reach for `--bg` when you mean the page. The legacy token file
   repoints it at the shaded stock; the page is `--paper`.

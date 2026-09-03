@@ -47,7 +47,11 @@ const ROUTES:Pattern[]=[
  {path:"/progress",view:"courseProgress"},
 ];
 
-const ROUTE_EVENT="basslab-route";
+/**
+ * Broadcast on every route change. Exported because the error boundary listens
+ * for it too: leaving a broken address is what releases the crash screen.
+ */
+export const ROUTE_EVENT="basslab-route";
 const FALLBACK:Route={view:"course",params:{},path:"/"};
 
 const segments=(path:string)=>path.replace(/\/+$/,"").split("/").filter(Boolean);

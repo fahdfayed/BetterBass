@@ -138,6 +138,14 @@
  z-index:2;
 }
 
+/*
+ * The wordmark is a control, so it is a target.
+ *
+ * Set solid it measured 94 by 21, under the 24px floor, on every route in the
+ * book -- and it is the one control a reader hits to get home. The padding
+ * grows the hit area and the negative margin gives the space back to the
+ * layout, so the mark sits exactly where it did and is simply easier to hit.
+ */
 .wordmark{
  font-family:var(--font-title);
  font-size:1.1875rem;
@@ -146,6 +154,8 @@
  color:var(--ink);
  line-height:1;
  align-self:flex-start;
+ padding-block:.375rem;
+ margin-block:-.375rem;
  transition:color var(--m-click) var(--ease-page);
 }
 .wordmark em{font-style:italic}
@@ -575,7 +585,17 @@
   * the contents control already covers and which would otherwise push the tabs
   * off the first screen on every route in the book.
   */
+ /*
+  * Stacked, both pages span the whole grid.
+  *
+  * The columns collapse to zero here and the pages become rows, so a page
+  * pinned to column 1 -- which is what the explicit placement upstairs does,
+  * because the working page needs it once the turning leaf shares its cell --
+  * lands in a track with no width. The contents page rendered as a 38px sliver
+  * with its own heading spilling out of it.
+  */
  .leaf{
+  grid-column:1 / -1;
   grid-row:1;
   overflow:visible;
   border-radius:var(--r-page) var(--r-page) 0 0;
@@ -583,7 +603,7 @@
   padding-bottom:var(--s5);
  }
  .leaf:has(.leafSlot:empty){display:none}
- .recto{grid-row:2;border-radius:0 0 var(--r-page) var(--r-page)}
+ .recto{grid-column:1 / -1;grid-row:2;border-radius:0 0 var(--r-page) var(--r-page)}
  /* With the two pages stacked there is no gutter for either to curve into. */
  .leaf::after,.recto::before{display:none}
 

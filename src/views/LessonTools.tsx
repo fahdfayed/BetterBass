@@ -3,7 +3,9 @@ import {courseTabsFor} from "../tab/course-exercises";
 
 const HarmonyFretboard=lazy(()=>import("../HarmonyFretboard"));
 const TheoryReference=lazy(()=>import("../TheoryReference"));
-const ExerciseTabs=lazy(()=>import("../tab/ExerciseTabs"));
+/* Static: see JacoMasterclass. Five other views import it eagerly, so the
+   dynamic import here could not move it into a chunk of its own. */
+import ExerciseTabs from "../tab/ExerciseTabs";
 
 /** Everything the panes need, threaded from BassLab in one bundle. */
 export type ToolBridge={

@@ -11,7 +11,7 @@
  *
  *   1. A snapshot has one side. A view transition cross-fades an old image
  *      against a new one, and there is no moment in that where the back of the
- *      sheet exists -- which is the only part of a page turn that says "page".
+ *      sheet exists -- and the back of the sheet is half of what a turn is.
  *   2. This world's paper is one flat ivory, so a real sheet and a captured one
  *      are indistinguishable to the eye, and the real one costs one element and
  *      two gradients instead of two full-page rasters.
@@ -93,35 +93,36 @@
  */
 @keyframes leafOver{
  from{transform:rotateY(0);opacity:1}
- 80%{opacity:1}
+ 92%{opacity:1}
  to{transform:rotateY(-180deg);opacity:0}
 }
 @keyframes leafOverVerso{
  from{transform:rotateY(0);opacity:1}
- 80%{opacity:1}
+ 92%{opacity:1}
  to{transform:rotateY(180deg);opacity:0}
 }
 
-/* ================================================================== face == */
+/* ================================================================= faces == */
 
 /*
- * The sheet has one side, and it is the reverse.
+ * The sheet has two sides, and it needs both.
  *
- * A turning page shows you its front for the first half of the arc, and the
- * front of this one would be blank: the leaf is real paper rather than a
- * snapshot, so there is nothing printed on it. Lying flat over the working
- * page at ten degrees, blank paper does not read as a page lifting. It reads
- * as the screen having gone empty, which is the one thing a transition must
- * never look like.
+ * This carried only a reverse for a while, on the reasoning that the front
+ * would be blank -- the leaf is real paper rather than a snapshot, so there is
+ * nothing printed on it -- and that blank paper lying over the working page
+ * would read as an empty screen. That reasoning came from looking at single
+ * paused frames, where it is true and obvious. It is not true in motion. At
+ * this speed the front is on screen for about a fifth of a second while it is
+ * visibly rotating, and what a reader sees is a page lifting; take it away and
+ * the first half of the arc has nothing in it at all, which is a fade.
  *
- * So the leaf carries no front. For the first half of the turn there is
- * nothing over the page but the shadow of something passing; at the vertical
- * the reverse comes into view and sweeps off toward the binding. The reader is
- * told the same two facts either way -- the page changed, and which way it
- * went -- and is never shown a blank sheet of their own content.
- *
- * `backface-visibility` is what does it: rotated a half turn, the face is
- * pointing away from the reader until the leaf passes ninety degrees.
+ * So both faces, and the front does its share of the work by not being flat:
+ * it carries the gutter shading on its binding edge, because that shading
+ * belongs to the sheet and travels with it; it darkens toward the free edge,
+ * the way paper does as it curves away from the lamp; and the free edge takes
+ * a soft shadow, which is the page's own thickness. Those three are the
+ * difference between a sheet of paper coming up off a book and a white
+ * rectangle lying on one.
  */
 .turnFace{
  position:absolute;
@@ -131,13 +132,23 @@
  box-shadow:var(--depth-book);
 }
 
+.turnFront{
+ background:
+  /* the page's own thickness, along the edge you would lift */
+  linear-gradient(to left,rgba(27,26,23,.14) 0,transparent 20%),
+  /* the gutter, travelling with the sheet */
+  linear-gradient(to right,var(--fold-shade) 0,transparent var(--fold-curl)),
+  /* curving away from the light */
+  linear-gradient(to right,var(--paper) 0,var(--paper-2) 100%);
+ border-radius:0 var(--r-page) var(--r-page) 0;
+}
+
 /*
- * A shade cooler than the page, because the back of a lifted sheet faces away
- * from the light. Its gutter shading is mirrored: rotated a half turn, the
- * sheet's binding edge is on the right, so that is where the fold falls. The
- * outer edge takes a hairline of catch-light -- the trimmed edge of the paper
- * turning through the lamp, and the detail that stops it reading as a
- * rectangle rotating.
+ * The reverse: a shade cooler, because the back of a lifted sheet faces away
+ * from the light. Its shading is mirrored -- rotated a half turn, the sheet's
+ * binding edge is on the right, so that is where the fold falls -- and the
+ * outer edge takes a hairline of catch-light, the trimmed edge of the paper
+ * turning through the lamp.
  */
 .turnBack{
  transform:rotateY(180deg);
@@ -148,6 +159,14 @@
  border-radius:var(--r-page) 0 0 var(--r-page);
 }
 
+/* Hinged on the right instead, so every gradient runs the other way. */
+.turnLayer.is-verso .turnFront{
+ background:
+  linear-gradient(to right,rgba(27,26,23,.14) 0,transparent 20%),
+  linear-gradient(to left,var(--fold-shade) 0,transparent var(--fold-curl)),
+  linear-gradient(to left,var(--paper) 0,var(--paper-2) 100%);
+ border-radius:var(--r-page) 0 0 var(--r-page);
+}
 .turnLayer.is-verso .turnBack{
  background:
   linear-gradient(to right,var(--fold-shade) 0,transparent var(--fold-curl)),

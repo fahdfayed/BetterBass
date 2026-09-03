@@ -242,3 +242,198 @@ body.isSplitting{user-select:none;cursor:col-resize}
  .checkBar{flex-direction:column;align-items:stretch;gap:var(--s4)}
  .checkAction{justify-content:space-between}
 }
+
+/* ================================================ the head of the reading = */
+
+/*
+ * A page of a method book is headed the way a system is: a rehearsal number
+ * struck at the start of a stave, the stave running out to the fore-edge, and
+ * the name of the section stamped on it. That replaces a bar of chrome — a
+ * title between two arrows with a duration chip — which said the same things
+ * in the vocabulary of an application toolbar rather than of a book.
+ */
+/*
+ * Scoped to the page it heads, and stating its direction.
+ *
+ * `lesson-content.css` styles every `header` inside `.lessonRead` as a stacked
+ * column, which is right for the headers inside the instruction and wrong for
+ * this one. At (0,1,1) it outranked a bare `.stageHead`, so the numeral, the
+ * stave and the name piled up on top of each other and the stave — a flex item
+ * with a zero basis on the wrong axis — collapsed to nothing.
+ */
+.lessonRead .stageHead{
+ display:flex;
+ flex-direction:row;
+ align-items:center;
+ gap:var(--s4);
+ min-width:0;
+}
+
+/*
+ * The struck numeral, and the one place on this page a figure is set large.
+ *
+ * Playfair, because it is the didone's job to strike a title and a numeral big
+ * enough to read from the stand, and vermillion because the stage you are on
+ * is what is live.
+ */
+.lessonRead .stageNumeral{
+ flex:none;
+ font-family:var(--font-title);
+ font-weight:400;
+ font-size:clamp(2.5rem,1.6rem + 2.6vw,3.75rem);
+ line-height:.82;
+ letter-spacing:var(--track-title);
+ font-variant-numeric:lining-nums tabular-nums;
+ color:var(--vermillion);
+}
+
+/* Five ruled lines, at the height they are everywhere else in the design. */
+.lessonRead .stageHeadStave{
+ flex:1;
+ min-width:2rem;
+ height:calc(var(--stave-h) + var(--stave-line));
+ background-image:repeating-linear-gradient(
+  to bottom,
+  var(--stave) 0,var(--stave) var(--stave-line),
+  transparent var(--stave-line),transparent var(--stave-gap)
+ );
+ background-repeat:no-repeat;
+}
+
+/* Stamped on the stave, so the ruling stops behind the word. */
+.lessonRead .stageHeadName{
+ flex:none;
+ color:var(--ink-3);
+ text-shadow:0 0 3px var(--paper),0 0 3px var(--paper),0 0 7px var(--paper);
+}
+
+/* ---- the lesson title --------------------------------------------------- */
+
+.lessonRead .lessonTitle{
+ margin:var(--s4) 0 0;
+ font-family:var(--font-title);
+ font-style:italic;
+ font-weight:400;
+ font-size:clamp(1.75rem,1.25rem + 1.9vw,2.75rem);
+ line-height:1.06;
+ letter-spacing:var(--track-title);
+ color:var(--ink);
+ max-width:22ch;
+}
+.lessonTitle:focus{outline:none}
+
+/* ---- where you are in the twenty-eight ---------------------------------- */
+
+/*
+ * The numerals and the rule are the same fact twice, which is the point: the
+ * figure answers "which one" and the rule answers "how far", and a reader takes
+ * the second off the line without doing the division.
+ */
+.lessonRead .lessonMeter{
+ display:flex;
+ align-items:center;
+ gap:var(--s3);
+ margin:var(--s4) 0 0;
+ min-width:0;
+}
+.lessonMeterNow{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ font-weight:600;
+ letter-spacing:var(--track-label);
+ color:var(--vermillion);
+ font-variant-numeric:tabular-nums;
+}
+.lessonMeterTotal{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-label);
+ color:var(--ink-3);
+ font-variant-numeric:tabular-nums;
+}
+.lessonMeterRule{
+ flex:1;
+ min-width:3rem;
+ height:2px;
+ background:var(--rule);
+ position:relative;
+}
+.lessonMeterRule>i{
+ position:absolute;
+ left:0;top:0;bottom:0;
+ background:var(--vermillion);
+ transition:width var(--m-panel) var(--ease-page);
+}
+.lessonMeterStep{
+ flex:none;
+ display:flex;
+ align-items:center;
+ gap:var(--s2);
+}
+.lessonMeterMins{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ color:var(--ink-3);
+ white-space:nowrap;
+}
+
+/* ---- the criterion ------------------------------------------------------ */
+
+/*
+ * The standard, in a ruled box at the foot of the page.
+ *
+ * It was a label over a sentence with the tape beside it, which read as two
+ * unrelated things sharing a row. Boxed, with the label divided off by a rule
+ * and the criterion marked by a tick, it reads as one statement: here is what
+ * counts as done, here is whether it is, here is the thing to press.
+ */
+.checkBar{
+ border:1px solid var(--rule-2);
+ border-radius:var(--r-surface);
+ padding:var(--s4) var(--s5);
+ gap:var(--s5);
+}
+/*
+ * The criterion gets a measure or it gets a line of its own.
+ *
+ * `flex:1` alone gave it whatever the tape did not want, and the tape is
+ * 248px of it: the sentence was landing in 77px and wrapping one word per
+ * line, with the label and the tick already spoken for. Asking for a real
+ * basis makes the row overflow at that width instead, and the bar — which
+ * wraps — puts the tape underneath where it has room.
+ */
+.checkCriteria{
+ flex-direction:row;
+ align-items:center;
+ gap:var(--s4);
+ flex:1 1 21rem;
+ min-width:0;
+}
+.checkBar{align-items:center;row-gap:var(--s4)}
+.checkAction{flex:0 0 auto;margin-left:auto}
+.checkCriteria .label{
+ flex:none;
+ max-width:5.5rem;
+ line-height:1.35;
+}
+.checkRule{
+ flex:none;
+ align-self:stretch;
+ width:1px;
+ background:var(--rule);
+}
+.checkMark{
+ flex:none;
+ display:flex;
+ color:var(--ink-3);
+}
+.checkBar .checkCriteria b{flex:1;min-width:0}
+
+/* Under the breakpoint the box keeps its rule but stacks its contents. */
+@media (max-width:52rem){
+ .checkCriteria{flex-wrap:wrap;gap:var(--s3)}
+ .checkCriteria .label{max-width:none}
+ .checkRule{display:none}
+}

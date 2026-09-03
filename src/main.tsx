@@ -49,6 +49,10 @@ import "./styles/home.css";
 import "./styles/game.css";
 import "./styles/lesson.css";
 import "./styles/lesson-content.css";
+
+// The lesson stacked: brief, task strip, instrument at full page width. After
+// lesson.css, which it replaces the split half of.
+import "./styles/lesson-stack.css";
 import "./styles/library.css";
 import "./styles/tab.css";
 import "./styles/legacy-bridge.css";

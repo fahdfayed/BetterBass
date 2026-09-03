@@ -1,0 +1,211 @@
+/**
+ * The lesson, stacked.
+ *
+ * This replaces a two-pane split. The split was the right idea in the wrong
+ * container: the panes sat inside the working page, which sits inside the
+ * book, which lies on the stand, so by the time the neck was measured it had
+ * about five hundred pixels to draw twenty-one frets in. Everything after that
+ * was a way of making something too small slightly less too small — narrower
+ * frets, smaller labels, a scrollbar under the board. The instrument is the
+ * centre of this product and it was the thing being squeezed.
+ *
+ * Stacked, nothing competes for width. The brief reads at a proper measure,
+ * the instrument spans the whole page, and the one thing the split existed to
+ * protect — not losing the task the moment you go and do it — is carried by a
+ * strip between them that stays put while you work.
+ */
+
+/* ================================================================= stack == */
+
+/*
+ * The shell aligns its children to the start, which sized each one to its own
+ * content. That is harmless for a paragraph and fatal for the stage: it is a
+ * size container, so containment stops its contents deciding its width, and
+ * with nothing else to take the width from it resolved to zero and the neck
+ * inside it went with it. The stacked parts take the page.
+ */
+.lessonShell>.stageHead,
+.lessonShell>.lessonTitle,
+.lessonShell>.lessonMeter,
+.lessonShell>.stageTabs,
+.lessonShell>.lessonBrief,
+.lessonShell>.taskStrip,
+.lessonShell>.lessonStage,
+.lessonShell>.lessonRead{align-self:stretch;width:100%}
+
+/* ================================================================= brief == */
+
+/*
+ * The stage in two sentences, at a reading measure.
+ *
+ * Capped rather than full-bleed: prose set across a thousand pixels is a
+ * paragraph you lose your place in, and this is the part a player reads once
+ * before putting their hands back on the instrument.
+ */
+.lessonBrief{
+ max-width:var(--measure-text);
+ display:flex;
+ flex-direction:column;
+ gap:var(--s3);
+}
+.lessonBrief h2{
+ font-size:var(--t-h3);
+ font-weight:620;
+ letter-spacing:-.01em;
+}
+.lessonBrief p{line-height:1.65;color:var(--ink-2)}
+
+/* ============================================================ task strip == */
+
+/*
+ * What you are doing and what counts as done, and it does not scroll away.
+ *
+ * Sticky to the head of the page, so once you are down among the strings the
+ * task is still the top line of the screen. It carries a final barline above
+ * it — this is the end of the reading and the start of the work — and the page
+ * colour behind it, because a sticky bar that lets the paragraph above show
+ * through is two sentences sharing four lines.
+ */
+.taskStrip{
+ position:sticky;
+ top:0;
+ z-index:6;
+ display:flex;
+ align-items:center;
+ gap:var(--s4);
+ flex-wrap:wrap;
+ row-gap:var(--s3);
+ margin-top:var(--s6);
+ padding:var(--s4) 0;
+ background:var(--paper);
+ border-top:1px solid var(--rule);
+ box-shadow:0 3px 0 -2px var(--rule);
+}
+
+/* The rehearsal letter, struck the way the rail strikes it. */
+.taskMark{
+ flex:none;
+ display:grid;
+ place-items:center;
+ min-width:1.6rem;height:1.6rem;
+ border:1px solid var(--vermillion);
+ border-radius:var(--r);
+ color:var(--vermillion);
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ font-weight:600;
+ line-height:1;
+}
+.taskStage{flex:none;color:var(--ink-2)}
+.taskRule{flex:none;align-self:stretch;width:1px;background:var(--rule)}
+.taskMet{flex:none;display:flex;color:var(--ink-3)}
+
+/*
+ * The criterion takes the room. It asks for a real basis so that when the
+ * strip cannot fit everything on one line it is the button that drops, not the
+ * sentence that gets shredded into one word per line.
+ */
+.taskCriterion{
+ flex:1 1 22rem;
+ min-width:0;
+ font-size:var(--t-body);
+ font-weight:500;
+ color:var(--ink);
+ line-height:1.4;
+}
+.taskGo{flex:none;margin-left:auto}
+
+/* ============================================================ the stage === */
+
+/*
+ * The instrument, at the width it needs.
+ *
+ * No pane, no maximum height, no inner scroller. It is a container so the
+ * tools inside it still answer to a real width on a narrow window, but on a
+ * page this wide there is nothing left for that query to rescue.
+ */
+.lessonStage{
+ margin-top:var(--s6);
+ min-width:0;
+ container-type:inline-size;
+ container-name:stage;
+}
+
+.stageBar{
+ display:flex;
+ align-items:baseline;
+ justify-content:space-between;
+ gap:var(--s3);
+ padding-bottom:var(--s4);
+}
+.stageBar b{font-size:var(--t-small);font-weight:500;color:var(--ink-2)}
+
+/* ======================================================== the instrument == */
+
+/*
+ * The board keeps its own design; the page just stops squeezing it.
+ *
+ * Everything here is width, not looks: the fret column and the nut are the
+ * board's own, and the only thing this adds is permission to use the page.
+ * `min-width:0` is the important one -- the board carries a 1280px floor for
+ * the days it lived on a full-bleed screen, and inside a page that floor is
+ * what puts a scrollbar under it however wide the page gets.
+ */
+.lessonStage .hfBoard{padding-inline:0}
+
+/*
+ * The stage hands the board its whole width.
+ *
+ * The tools were built for a full-bleed screen and each carries its own page
+ * inset -- the legacy screen wrapper, the neck's section, the board's frame.
+ * Stacked inside a page that already has margins of its own, those insets are
+ * charged twice, and between the stage at 952px and the board's scroller at
+ * 831px a hundred and twenty pixels went missing. That is the difference
+ * between a neck that fits and one with a scrollbar under it.
+ */
+.lessonStage>.osScreen,
+.lessonStage .hfNeckSection,
+.lessonStage .hfNeckSection>div{padding-inline:0;margin-inline:0}
+.lessonStage .hfBoardWrap{padding-inline:0}
+
+/*
+ * The last thirty pixels.
+ *
+ * The rows are a grid of `--hf-nut` plus thirteen columns with a real minimum,
+ * so the board needs exactly 1150px and no less. The page had 1156 and was
+ * giving the rows 1126, because the board and its wrapper each kept the inset
+ * they were designed with when this lived on a full-bleed screen. Inside a page
+ * that inset is the whole difference between a board that fits and a board with
+ * a scrollbar under it.
+ */
+.lessonStage .hfString,
+.lessonStage .hfFretNumbers{margin-inline:0}
+
+/* ============================================================ narrow ===== */
+
+/*
+ * Below the breakpoint the page is already one column and the strip is already
+ * stacked; what is left is to stop the neck asking for more than the screen.
+ */
+@container stage (max-width:46rem){
+ .hfNoteTutor,
+ .hfBuilderControls,
+ .hfCustomInput,
+ .hfVoiceGrid,
+ .hfVoiceLeading>footer,
+ .hfChordDecode,
+ .hfVoiceLeading,
+ .hfCurrent,
+ .hfIntro,
+ .hfBuilder{grid-template-columns:minmax(0,1fr) !important}
+ /* A role word will not go in 38px, so a narrow page scrolls the board rather
+    than shredding its labels. That is the one place a scroller is correct. */
+ .lessonStage .hfBoardWrap{overflow-x:auto}
+}
+
+@media (max-width:52rem){
+ .taskStrip{gap:var(--s3)}
+ .taskRule{display:none}
+ .taskCriterion{flex:1 1 100%}
+ .taskGo{margin-left:0}
+}
