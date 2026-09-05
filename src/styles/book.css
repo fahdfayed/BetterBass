@@ -23,7 +23,7 @@
  flex-direction:column;
  gap:.625rem;
  height:100dvh;
- padding:.5rem;
+ padding:1.5rem;
  background:var(--stand);
  /* A stand is not a document. Nothing here scrolls; the pages do. */
  overflow:hidden;
@@ -67,8 +67,19 @@
 .leaf,.recto,.dock{
  background:var(--paper);
  border-radius:var(--r-page);
- box-shadow:var(--depth-book);
 }
+.dock{box-shadow:var(--depth-book)}
+/*
+ * The block, cast in the same trimmed corner as the page it backs.
+ *
+ * A box-shadow inherits the border-radius of the box that casts it, so each
+ * stepped layer below reads as its own trimmed sheet rather than a rectangle
+ * poking out from behind a rounded one. Verso and recto recede in opposite
+ * directions — see --depth-block-verso/-recto in tokens.css — because a
+ * bound book's two fore-edges fall on opposite sides of the spine.
+ */
+.leaf{box-shadow:var(--depth-block-verso),var(--depth-book)}
+.recto{box-shadow:var(--depth-block-recto),var(--depth-book)}
 
 /*
  * The instrument strip is the one surface here that is not paper.
@@ -607,7 +618,7 @@
  /* With the two pages stacked there is no gutter for either to curve into. */
  .leaf::after,.recto::before{display:none}
 
- .stand{padding:.375rem;gap:.375rem}
+ .stand{padding:1rem;gap:.375rem}
  .page{padding:var(--s5) var(--page-pad) var(--s7)}
 }
 
@@ -616,7 +627,7 @@
  * corners are trimmed and the shadow is cast once, by the pair.
  */
 @media (max-width:62rem){
- .book{box-shadow:var(--depth-book);border-radius:var(--r-page)}
+ .book{box-shadow:var(--depth-block-single),var(--depth-book);border-radius:var(--r-page)}
  .leaf,.recto{box-shadow:none}
 }
 

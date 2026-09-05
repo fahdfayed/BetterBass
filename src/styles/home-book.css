@@ -64,10 +64,24 @@
 }
 .homeWord em{font-style:italic}
 
+/*
+ * The claim, set at the weight PRODUCT.md gives it.
+ *
+ * This carried `.sectionMark` — the stamped Inter label a contents page uses
+ * for its own section name — which put the single sentence the whole
+ * product's positioning rests on at label size, in the sans that "never sets
+ * a sentence," in vermillion. Vermillion marks what is running or pressable,
+ * never what is important, so the colour was a second rule this broke on top
+ * of the first. Printer's serif, headline scale, full ink: the same claim,
+ * finally read as one.
+ */
 .homeClaim{
- font-size:var(--t-small);
- line-height:1.5;
- letter-spacing:var(--track-label);
+ font-family:var(--font);
+ font-size:var(--t-h2);
+ font-weight:600;
+ line-height:1.15;
+ letter-spacing:0;
+ color:var(--ink);
  max-width:none;
 }
 .homeStatement .redRule{margin:var(--s2) 0 var(--s4)}

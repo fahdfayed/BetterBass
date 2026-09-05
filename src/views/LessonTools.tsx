@@ -119,7 +119,7 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
     <button className={bridge.playing?"action action-quiet":"action-primary"} onClick={bridge.startRuntime}>
      {bridge.playing?"■ Stop band":"▶ Start band"}
     </button>
-    <div className="barBeat" aria-live="off" aria-label={`Bar ${bridge.bar}, beat ${bridge.beat}`}>
+    <div className={`barBeat ${bridge.livePitch?"hearing":""}`} aria-live="off" aria-label={`Bar ${bridge.bar}, beat ${bridge.beat}`}>
      <span className="barNumber">bar</span>
      <b>{String(bridge.bar).padStart(2,"0")}</b><span>:</span><b>{bridge.beat}</b>
     </div>
@@ -143,7 +143,7 @@ export default function LessonTools({stage,bridge}:{stage:number;bridge:ToolBrid
     <button className={bridge.recording?"action action-quiet":"action-primary"} onClick={bridge.recording?bridge.endTake:bridge.beginTake}>
      {bridge.recording?"■ End & analyse":"● Record the take"}
     </button>
-    <div className="takeCount mono">
+    <div className={`takeCount mono ${bridge.livePitch?"hearing":""}`}>
      <b>{bridge.eventCount}</b><small>notes</small>
     </div>
    </div>

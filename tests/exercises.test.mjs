@@ -236,10 +236,11 @@ test("the whole written library is accounted for",()=>{
  // Only the equal-tempered maqamat can honestly be written as frets.
  assert.deepEqual(Object.keys(MAQAM_TABS).sort(),["ajam","hijaz","kurd","nahawand"]);
  // Every masterclass module carries exercises, and every id is unique.
- // The masterclass follows the book's eight chapters; two of them are prose in
- // the book and carry no exercises here either.
- assert.equal(JACO_CHAPTERS.length,8);
- assert.deepEqual(JACO_CHAPTERS.map(chapter=>chapter.n),[1,2,3,4,5,6,7,8]);
+ // The book has an eighth chapter and a third section of its first, both pure
+ // prose with nothing to drill — dropped rather than kept as a tab with
+ // nothing in it, so every chapter and section left here earns its place.
+ assert.equal(JACO_CHAPTERS.length,7);
+ assert.deepEqual(JACO_CHAPTERS.map(chapter=>chapter.n),[1,2,3,4,5,6,7]);
  assert.ok(JACO_SECTIONS.length>=30,`only ${JACO_SECTIONS.length} sections`);
  assert.ok(JACO_EXERCISES.length>=50,`only ${JACO_EXERCISES.length} masterclass exercises`);
  assert.equal(new Set(everyExercise.map(x=>x.id)).size,everyExercise.length,"duplicate exercise id");

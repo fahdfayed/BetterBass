@@ -1,5 +1,16 @@
-/* Tab reader. */
-.tab{display:flex;flex-direction:column;gap:var(--s5)}
+/*
+ * Tab reader.
+ *
+ * Named `.tabPlayer` rather than the shorter `.tab` on purpose: the book's
+ * own top-nav tabs (AppShell.tsx) already own that exact class, in book.css,
+ * with `align-items:center` for a horizontal label-and-icon row. A bare
+ * English word is exactly the class name most likely to already be taken —
+ * this reader's root silently inherited that `align-items` instead of its
+ * own column layout, which zeroed its width (`align-items:center` sizes a
+ * flex item to its content instead of stretching it) and left every
+ * exercise on the site showing "Setting the score…" forever.
+ */
+.tabPlayer{display:flex;flex-direction:column;gap:var(--s5)}
 .tabBar{display:flex;align-items:center;gap:var(--s5);flex-wrap:wrap;padding-bottom:var(--s4);border-bottom:1px solid var(--rule)}
 .tabPlay{min-width:7rem;justify-content:center}
 

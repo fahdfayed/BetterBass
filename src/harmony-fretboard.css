@@ -694,15 +694,13 @@
 .hfFretNumbers {
   height: 27px;
 }
+/* Colour retired here too -- see fretboard-workstation.css, the one place
+   this is declared now. */
 .hfFretNumbers > b,
 .hfFretNumbers > span {
   display: grid;
   place-items: center;
   font: var(--t-micro) var(--mono);
-  color: var(--ink-3);
-}
-.hfFretNumbers > span.marked {
-  color: var(--lime);
 }
 .hfString {
   position: relative;

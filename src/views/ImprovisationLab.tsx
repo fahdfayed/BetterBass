@@ -12,7 +12,7 @@ const TABS:[string,string][]=[
  ["voice","VOICE LEADING"],["tension","TENSION ARC"],["diagnose","MODAL OR FUNCTIONAL?"],
 ];
 
-const MUTATIONS=["ORIGINAL","RETROGRADE","+1 SEMITONE","−1 SEMITONE","ALTER END"];
+const MUTATIONS=["ORIGINAL","RETROGRADE","INVERSION","ROTATE","+1 SEMITONE","−1 SEMITONE","ALTER END"];
 
 const SLIP_WINDOWS=["","½ beat","1 beat","2 beats","1 bar"];
 
@@ -102,6 +102,13 @@ export default function ImprovisationLab(
 
  const mutated=
   mutation==="RETROGRADE" ? [...motif].reverse() :
+  // Every interval from the first note flips direction — the classic partner
+  // to retrograde in motivic development, and a genuinely different shape
+  // rather than the same one shifted or reversed.
+  mutation==="INVERSION" ? motif.map(x=>((2*motif[0]-x)%12+12)%12) :
+  // Starts the phrase from its own second note, which is what "develop the
+  // motif" means the first time nobody tells you to transpose or reverse it.
+  mutation==="ROTATE" ? [...motif.slice(1),motif[0]] :
   mutation==="+1 SEMITONE" ? motif.map(x=>(x+1)%12) :
   mutation==="−1 SEMITONE" ? motif.map(x=>(x+11)%12) :
   mutation==="ALTER END" ? motif.map((x,i)=>i===motif.length-1?(x+2)%12:x) :

@@ -94,7 +94,7 @@ export default function Home({percent:_,completed,lesson,stage,flow,units,onOpen
    <PageLeaf>
     <div className="homeStatement">
      <h1 id="outside-in-title" className="homeWord" data-page-heading tabIndex={-1}>Outside <em>In</em></h1>
-     <p className="sectionMark homeClaim">Progression first. Scale second.</p>
+     <p className="homeClaim">Progression first. Scale second.</p>
      <hr className="redRule"/>
      <p className="homeSupport">
       See what every note is doing against the chord you are on and the one you are moving toward.

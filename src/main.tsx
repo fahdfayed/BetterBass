@@ -79,7 +79,6 @@ import "./styles/practice-fascia.css";
 
 /* The instrument labs, each given the same treatment against its own structure. */
 import "./styles/lab-slap.css";
-import "./styles/lab-index.css";
 import "./styles/home-book.css";
 
 // The bound spread: the binding a split workspace opens at and the index cut

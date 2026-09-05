@@ -160,7 +160,10 @@ test("each place says what its degree actually does",()=>{
  const quest=questFor(11); // Lydian: the tritone is its landmark
  const bridge=quest.steps.find(item=>item.degree===6);
  assert.ok(bridge,"the Lydian walk should pass through its ♯4");
- assert.match(bridge.beat,/half the octave/i);
+ // Two tellings of this degree exist (quest-data.ts's PLACES), chosen by
+ // lesson index, so this checks the concept rather than one exact phrasing.
+ assert.match(bridge.beat,/half/i);
+ assert.match(bridge.beat,/octave/i);
  assert.match(bridge.place,/far point/,"and mark it as what the lesson is about");
 
  for(const item of quest.steps){

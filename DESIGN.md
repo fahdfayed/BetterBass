@@ -511,6 +511,10 @@ system: nothing here is glass, so nothing has anything to blur.
   recessed, never emphasised.
 - **Press** (`inset 0 2px 4px rgba(27,26,23,.18)`): the active state of a ruled
   control. The press goes into the page.
+- **Block** (`-4px 6px 0 0 var(--paper-edge), -8px 12px 0 0 var(--rule-2),
+  -12px 18px 0 0 var(--rule-3)` on the verso, mirrored straight down with no
+  `x` on the recto): three crisp, unblurred steps, each further and a shade
+  duller than the last, not a shadow — see The block (signature), below.
 
 ### Named Rules
 
@@ -637,6 +641,29 @@ thing keeping it from reading flat; and the curl, a `2.75rem` wash of
 under it. Nothing in the fold takes a pointer, so it sits above the page rather
 than under it — a sticky element at the foot of the reading page would otherwise
 punch a rectangle of flat paper through the middle of the binding.
+
+### The block (signature)
+
+The spread is not two loose sheets resting on the stand — it is cut from a
+book, and a book has a block: the stack of every page behind the one open to
+right now. The block only shows where no other sheet is bound to it, which is
+every edge but the spine, so three crisp, unblurred steps trail off the verso
+and the recto — `--paper-edge`, then `--rule-2`, then `--rule-3` — each one
+further out and a shade duller than the last, cast in the same `10px` trim as
+the page itself since a box-shadow inherits its caster's radius. Three steps
+and a widening gap between them, not one, because a stack this shallow reads
+as a smudge on the edge of the page rather than as more pages behind it; the
+darkening is what tells the eye it is looking at depth and not dirt. The two
+pages recede in opposite directions because a bound book's two fore-edges
+fall on opposite sides of the spine: the verso's steps trail down and further
+left, toward the outer edge of the stand where nothing else is docked; the
+recto's trail straight down, never right, because its fore-edge is where the
+index tabs are already cut into the stand. The stand's own padding was
+widened to `1.5rem` (desktop) and `1rem` (stacked) to give the deepest step
+room to land clear of the stand's edge rather than being clipped by it.
+Below the point the spread closes into one page, the two recede as a single
+set of steps under the whole book, the same way the two pages already
+collapse into one shadow there.
 
 ### Index tabs (signature)
 
@@ -812,3 +839,7 @@ hairline a pixel to its right reads as the nut printed twice.
   hidden, so the address arrives late and the motion does not arrive at all.
 - **Don't** reach for `--bg` when you mean the page. The legacy token file
   repoints it at the shaded stock; the page is `--paper`.
+- **Don't** widen the block's steps past what `.stand`'s own padding can hold.
+  The stand clips — it is not a document — so a deepest step past `1.5rem`
+  (desktop) or `1rem` (stacked) is a step silently cut short rather than a
+  thicker book. Widen the padding to match if the block ever needs more.

@@ -17,6 +17,87 @@
         ],
         "createdAt": "2026-09-02T16:21:11.946Z",
         "reason": "Both hits are border-right:3px solid var(--ink) closing a musical system: the final barline. Ink, not an accent; the containers are a row of bars and a row of movements, not cards; comp 7 (user-pinned) shows the heavy black bar at the end of both; manuscript.css already defines .barline-final as the same 3px ink."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/labs.css"
+        ],
+        "createdAt": "2026-09-03T23:12:02.870Z",
+        "reason": "Agent: .questKeyFlag (labs.css) is a CSS-drawn triangle (0x0 box, border trick) used as a legend glyph beside .questKeyDot, not a card/list accent border. Confirmed false positive across two edits."
+      },
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "src/labs.css"
+        ],
+        "createdAt": "2026-09-03T23:12:42.220Z",
+        "reason": "Agent: same questKeyFlag triangle glyph has no border-radius; detector likely attributing the adjacent questKeyDot border-radius to it"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "noto naskh arabic",
+        "createdAt": "2026-09-03T23:31:06.560Z",
+        "reason": "Agent: Arabic maqam content (PRODUCT.md) needs real Arabic script; not part of the core 5-face system DESIGN.md documents, but required by shipped Arabic labels"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "leland",
+        "createdAt": "2026-09-03T23:31:08.540Z",
+        "reason": "Agent: DESIGN.md's own Notation registers section names Leland as the engraved data-register symbol face"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "petaluma",
+        "createdAt": "2026-09-03T23:31:13.000Z",
+        "reason": "Agent: DESIGN.md's Notation registers section names Petaluma as the jazz data-register symbol face"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "petaluma script",
+        "createdAt": "2026-09-03T23:31:15.217Z",
+        "reason": "Agent: paired handwriting face for the jazz data-register, same DESIGN.md Notation registers section"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "musejazz",
+        "createdAt": "2026-09-03T23:31:19.162Z",
+        "reason": "Agent: DESIGN.md's Notation registers section names MuseJazz as the chart data-register symbol face"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "musejazz text",
+        "createdAt": "2026-09-03T23:31:20.892Z",
+        "reason": "Agent: paired handwriting face for the chart data-register, same DESIGN.md Notation registers section"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#000",
+        "files": [
+          "src/styles/game.css"
+        ],
+        "createdAt": "2026-09-03T23:32:46.606Z",
+        "reason": "Agent: used as a mask-image gradient stop, not paint - only its alpha (opaque->transparent) matters, any hue is visually identical here"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(0,0,0,.7)",
+        "files": [
+          "src/styles/intime.css"
+        ],
+        "createdAt": "2026-09-03T23:33:00.808Z",
+        "reason": "Agent: contact-shadow literal for the transport's downbeat lift, matching DESIGN.md's own Shadow Vocabulary convention of bespoke rgba(0,0,0,X)/rgba(27,26,23,X) shadow values (Book, Press, etc.) rather than a paint colour needing a palette token"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/redesign.css"
+        ],
+        "createdAt": "2026-09-04T00:01:06.482Z",
+        "reason": "Agent: .hfString>b's border-right is the string-name column's own divider, functionally the fretboard's 'nut' per DESIGN.md's Nut Is The Line Rule and the neck section's documented left-border-is-the-fret convention -- structural, not a decorative card accent"
       }
     ]
   }

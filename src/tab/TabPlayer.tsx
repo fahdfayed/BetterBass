@@ -334,7 +334,7 @@ export default function TabPlayer({source,title,initialLooping=false,root}:Props
  };
 
  return (
-  <section className="tab" aria-label={title?`Tab: ${title}`:"Tab"}>
+  <section className="tabPlayer" aria-label={title?`Tab: ${title}`:"Tab"}>
    <header className="tabBar">
     <button
      className="action-primary tabPlay"

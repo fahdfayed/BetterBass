@@ -219,6 +219,19 @@ body.isSplitting{user-select:none;cursor:col-resize}
 .tempoControl{display:flex;flex-direction:column;gap:var(--s3)}
 .tempoControl input{width:100%;accent-color:var(--accent)}
 
+/*
+ * The instrument is being heard, mid-lesson.
+ *
+ * Practice and Pass never judge a note in real time — Prove is scored from
+ * the take afterward, not note by note — but the reading already on screen
+ * (the bar count, the take's note count) can still say the mic is live and
+ * catching something right now, which is enough to make the room feel
+ * occupied without a verdict riding along on top of it.
+ */
+.barBeat.hearing b,.barBeat.hearing span,.takeCount.hearing b{
+ color:var(--accent);transition:color .2s var(--ease,ease);
+}
+
 /* ---- responsive --------------------------------------------------------- */
 
 @media (max-width:68rem){

@@ -275,6 +275,35 @@
   * glass, so nothing has anything to blur.
   */
  --depth-book:0 28px 70px -24px rgba(0,0,0,.62),0 3px 10px rgba(0,0,0,.28);
+ /*
+  * The block: the stack of pages the spread is cut from.
+  *
+  * A book this size is not two loose sheets resting on the stand — every page
+  * behind the one being read has its own edge, and that edge only shows where
+  * no other sheet is bound to it: the fore-edge and the tail of the block,
+  * never the spine side, since that is the one edge nothing is trimmed from.
+  * Traced as crisp, unblurred steps in real paper tones rather than as a
+  * blur, because paper has edges and only light gets a blur — the same
+  * distinction `--depth-raise`'s lit top edge already draws. Three steps,
+  * each one further and a shade duller than the last, because a stack this
+  * shallow would read as a smudge — the darkening is what says "more sheets,
+  * not just a thicker edge." Verso recedes toward the outer edge of the
+  * stand; recto recedes straight down, away from the fore-edge index docked
+  * against its right side. `.stand`'s own padding is sized to hold the reach
+  * of these at every breakpoint — see the Don't in DESIGN.md.
+  */
+ --depth-block-verso:
+  -4px 6px 0 0 var(--paper-edge),
+  -8px 12px 0 0 var(--rule-2),
+  -12px 18px 0 0 var(--rule-3);
+ --depth-block-recto:
+  0 6px 0 0 var(--paper-edge),
+  0 12px 0 0 var(--rule-2),
+  0 18px 0 0 var(--rule-3);
+ --depth-block-single:
+  0 4px 0 0 var(--paper-edge),
+  0 8px 0 0 var(--rule-2),
+  0 12px 0 0 var(--rule-3);
  --depth-raise:0 1px 0 rgba(255,255,255,.75),0 1px 3px rgba(27,26,23,.14);
  --depth-tape:0 2px 4px -1px rgba(27,26,23,.28);
  --depth-tape-lift:0 4px 8px -2px rgba(27,26,23,.32);

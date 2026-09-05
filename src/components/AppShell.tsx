@@ -101,7 +101,7 @@ const TABS=NAV.map(group=>({label:group.label,item:group.items[0]}))
  */
 const INDEX:Array<{view:string;label:string;icon:IconName}>=[
  {view:"reference",label:"Theory",icon:"theory"},
- {view:"map",label:"Map",icon:"map"},
+ {view:"roadmap",label:"Course",icon:"course"},
  {view:"games",label:"Ear",icon:"games"},
  {view:"courseProgress",label:"Log",icon:"progress"},
 ];
@@ -118,8 +118,9 @@ const READING_ORDER=new Map(ALL_DESTINATIONS.map((entry,index)=>[entry.view,inde
 const FOCUS:Record<string,string[]>={
  Learn:["Read it once.","Play it slowly.","Then read it again."],
  Practice:["Clarity over speed.","Always neutral."],
+ Play:["Guess by ear.","Recover fast.","Stay musical."],
  Specialties:["Listen deeply.","Play expressively."],
- Labs:["Start with the","smallest useful step.","Keep it musical."],
+ Tools:["Start with the","smallest useful step.","Keep it musical."],
  You:["Six movements.","One standard","at a time."],
 };
 

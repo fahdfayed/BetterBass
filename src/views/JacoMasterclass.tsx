@@ -16,9 +16,16 @@ import ExerciseTabs from "../tab/ExerciseTabs";
 /**
  * The masterclass, laid out as the method it follows.
  *
- * Eight chapters in the book's order, each opening to its own subsections. One
+ * Seven chapters in the book's order, each opening to its own subsections. One
  * chapter is open at a time so the sequence stays legible; nothing is locked,
  * because the book itself says not to work through it a page at a time.
+ *
+ * The book's own eighth chapter, "Food for Thought," closed its teaching with
+ * a page of biography and no exercises. Worth reading once, not worth a
+ * permanent tab in a masterclass whose every other tab opens onto something
+ * to play — dropped rather than kept as a chapter with nothing in it. "The
+ * Sound," a gear-description subsection of chapter 1 with the same shape
+ * (real content, zero exercises), is dropped for the same reason.
  */
 export default function JacoMasterclass(){
  const [openChapter,setOpenChapter]=useState(JACO_CHAPTERS[0].id);

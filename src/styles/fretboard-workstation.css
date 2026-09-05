@@ -134,11 +134,18 @@
  color:var(--bone);
  text-align:center;
 }
-/* Declared explicitly rather than left to inherit the row's own colour:
-   redesign.css still carries `.hfFretNumbers>span.marked{color:var(--lime)}`
-   from the world this replaced, and omitting colour here let that leftover
-   rule win the cascade -- it is the only declaration of that property once
-   this one stops stating it, whichever file loaded first. */
+/*
+ * Declared explicitly rather than left to inherit the row's own colour.
+ *
+ * This selector used to exist in three stylesheets at once -- here, in
+ * redesign.css, and in harmony-fretboard.css -- each from a different era of
+ * the design, two of them still pointing at --ink-3 and --lime. Whichever
+ * loaded last silently won, which is how a colour fix could be correct on
+ * disk and still render grey: Vite's dev-mode style-tag order does not
+ * always match source import order. The other two declarations are gone now
+ * rather than merely losing the cascade, so there is one place this can be
+ * set and no ordering left to depend on.
+ */
 .hfFretNumbers>span.marked{color:var(--bone);font-weight:700}
 .hfFretNumbers>b{text-align:left;font-family:var(--font-display);letter-spacing:var(--track-legend);text-transform:uppercase}
 /* The inlay dot is what marks a fret; the number stays the same ink either

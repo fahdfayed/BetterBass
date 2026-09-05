@@ -25,21 +25,73 @@ const mod=(value:number)=>((value%12)+12)%12;
 
 type Place={place:string;beat:string};
 
-/** What each degree is, told as somewhere you can stand. */
-const PLACES:Place[]=[
- {place:"Home",beat:"Everything after this is measured from here."},
- {place:"The Near Gate",beat:"One semitone out. Close enough that it feels like pressure on the door rather than distance."},
- {place:"The Rise",beat:"A whole step. Far enough to have left, near enough to fall back without trying."},
- {place:"The Grey Fork",beat:"The road turns minor here. Whatever happens next, it happens in the dark."},
- {place:"The Bright Fork",beat:"The road turns major here. This is the note that decided it."},
- {place:"The Ford",beat:"A crossing, not a place to stand. Over a major third it pulls down onto it."},
- {place:"The Tritone Bridge",beat:"Exactly half the octave. From here home is the same distance in either direction."},
- {place:"The Waystone",beat:"The most solid ground outside home, and it decides nothing, no major, no minor."},
- {place:"The Long Shadow",beat:"It leans downward onto the fifth. This is the weight in a minor key."},
- {place:"The High Meadow",beat:"Bright, and it still has not changed whether the road is major or minor."},
- {place:"The Open Gate",beat:"No pull homeward at all. You could stay out here, and some music does."},
- {place:"The Last Light",beat:"A semitone under home. It wants to resolve and it will not wait long."},
+/**
+ * What each degree is, told as somewhere you can stand.
+ *
+ * Two tellings per degree, not one. A player who walks several lessons was
+ * landing on "The Near Gate" and reading the identical sentence about it
+ * every single time — the same fact, worth telling more than one way. One
+ * variant is chosen per lesson (see `placeFor`), deterministically, so a
+ * single walk stays internally consistent across replays and only a
+ * different lesson ever shows the other telling.
+ */
+const PLACES:Place[][]=[
+ [ // 0: home
+  {place:"Home",beat:"Everything after this is measured from here."},
+  {place:"Home",beat:"The one note every distance on this walk is counted from, and the only one that never needs a name."},
+ ],
+ [ // 1: minor second
+  {place:"The Near Gate",beat:"One semitone out. Close enough that it feels like pressure on the door rather than distance."},
+  {place:"The Near Gate",beat:"The smallest step there is, and the loudest one. Nothing else on this walk moves this little and means this much."},
+ ],
+ [ // 2: major second
+  {place:"The Rise",beat:"A whole step. Far enough to have left, near enough to fall back without trying."},
+  {place:"The Rise",beat:"Two frets from home and still inside its gravity — a passing note more often than a place to rest."},
+ ],
+ [ // 3: minor third
+  {place:"The Grey Fork",beat:"The road turns minor here. Whatever happens next, it happens in the dark."},
+  {place:"The Grey Fork",beat:"Flatten this one interval and a major key becomes a minor one. Everything else in the scale can stay exactly where it was."},
+ ],
+ [ // 4: major third
+  {place:"The Bright Fork",beat:"The road turns major here. This is the note that decided it."},
+  {place:"The Bright Fork",beat:"Sharpen the third of any minor chord and it opens into major. One semitone carries the whole decision."},
+ ],
+ [ // 5: perfect fourth
+  {place:"The Ford",beat:"A crossing, not a place to stand. Over a major third it pulls down onto it."},
+  {place:"The Ford",beat:"Suspend it over a triad and it leans down toward the third. Let it fall, and the chord was never really there."},
+ ],
+ [ // 6: tritone
+  {place:"The Tritone Bridge",beat:"Exactly half the octave. From here home is the same distance in either direction."},
+  {place:"The Tritone Bridge",beat:"The one interval that splits the octave exactly in half, which is why it resolves in two directions and belongs to neither."},
+ ],
+ [ // 7: perfect fifth
+  {place:"The Waystone",beat:"The most solid ground outside home, and it decides nothing, no major, no minor."},
+  {place:"The Waystone",beat:"Present in almost every triad this walk will ever build, major or minor, and voting for neither."},
+ ],
+ [ // 8: minor sixth
+  {place:"The Long Shadow",beat:"It leans downward onto the fifth. This is the weight in a minor key."},
+  {place:"The Long Shadow",beat:"A semitone above the fifth, leaning back down onto it — minor keys lean on this note the way major keys lean on the sixth two frets higher."},
+ ],
+ [ // 9: major sixth
+  {place:"The High Meadow",beat:"Bright, and it still has not changed whether the road is major or minor."},
+  {place:"The High Meadow",beat:"The same distance above the fifth as the second is above home, and just as unable to settle an argument about mode on its own."},
+ ],
+ [ // 10: minor seventh
+  {place:"The Open Gate",beat:"No pull homeward at all. You could stay out here, and some music does."},
+  {place:"The Open Gate",beat:"A whole step under home with none of the near gate's urgency. Whole genres never resolve it and nobody minds."},
+ ],
+ [ // 11: major seventh
+  {place:"The Last Light",beat:"A semitone under home. It wants to resolve and it will not wait long."},
+  {place:"The Last Light",beat:"The closest note to home that is not home, which is exactly what makes the difference audible."},
+ ],
 ];
+
+/** One telling of a degree, chosen deterministically per lesson so a single
+ *  walk cannot show two different tellings of the same place. */
+const placeFor=(degree:number,lessonIndex:number):Place=>{
+ const variants=PLACES[mod(degree)];
+ return variants[lessonIndex%variants.length];
+};
 
 export type QuestStep={
  /** Semitones above the root. Matched by pitch class, so any octave counts. */
@@ -128,7 +180,7 @@ export function questFor(index:number):Quest{
  const turn=path.indexOf(summit);
 
  const steps:QuestStep[]=path.map((degree,position)=>{
-  const at=PLACES[mod(degree)];
+  const at=placeFor(degree,safe);
   const isFar=degree===far&&position>0&&path.indexOf(degree)===position;
   const isEnd=position===path.length-1;
   return {
@@ -149,7 +201,7 @@ export function questFor(index:number):Quest{
   title:lesson.title,
   premise:`Leave ${PITCH_NAMES[root]}, climb as far as the path goes${far?`, by way of `+
           // the place names carry their own article
-          `${PLACES[mod(far)].place.toLowerCase()}`:""}, and find a different way home. `+
+          `${placeFor(far,safe).place.toLowerCase()}`:""}, and find a different way home. `+
           `Nothing moves until the bass plays the right note.`,
   root,mode,
   rootName:PITCH_NAMES[root],
