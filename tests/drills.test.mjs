@@ -113,11 +113,14 @@ test("the enclosure ends on its target, having surrounded it",()=>{
   assert.ok(ask.notes.length>=2,"an approach and a target at least");
 
   const target=ask.notes.at(-1);
-  // Every approach note is a semitone from the target, which is what makes it
-  // an approach rather than a leap.
+  // Every approach note sits within a whole tone of the target, which is what
+  // makes it an approach rather than a leap. The pool now includes the
+  // Chromatic Gym's wide devices (a whole tone on one side, a semitone on the
+  // other), not only the all-semitone enclosures, so two semitones is the
+  // real ceiling rather than one.
   for(const note of ask.notes.slice(0,-1)){
    const gap=Math.min(mod(note-target),mod(target-note));
-   assert.equal(gap,1,`${note} is ${gap} semitones from the target`);
+   assert.ok(gap>=1&&gap<=2,`${note} is ${gap} semitones from the target`);
   }
   assert.equal(new Set(ask.notes).size,ask.notes.length,"no note twice");
  }

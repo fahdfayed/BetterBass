@@ -19,7 +19,11 @@ export default function TheoryReference({embedded=false,root,onSetMode,onAuditio
   </header>
 
   <section className="theoryCoverage" aria-label={"Reference coverage"}>
-   {[["18","THEORY DOMAINS"],["72","CONCEPT CLUSTERS"],["5","WORKING DICTIONARIES"],["BASS","FIRST"],["EAR","BEFORE SHAPE"],["PROOF","OVER BROWSING"]].map(([value,label])=><article key={`${value}-${label}`}><b>{value}</b><span>{label}</span></article>)}
+   {/* Counted off the data rather than typed in, so this stops being the
+       one place in the file that can go stale when a domain gains a
+       concept — which is exactly how it read "72" after diatonic grew to
+       seven. */}
+   {[[String(THEORY_DOMAINS.length),"THEORY DOMAINS"],[String(THEORY_DOMAINS.reduce((n,d)=>n+d.concepts.length,0)),"CONCEPT CLUSTERS"],[String(THEORY_DICTIONARIES.length),"WORKING DICTIONARIES"],["BASS","FIRST"],["EAR","BEFORE SHAPE"],["PROOF","OVER BROWSING"]].map(([value,label])=><article key={`${value}-${label}`}><b>{value}</b><span>{label}</span></article>)}
   </section>
 
   <section className="theoryUseFlow">

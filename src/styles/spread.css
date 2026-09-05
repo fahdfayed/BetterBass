@@ -1,0 +1,270 @@
+/**
+ * The bound spread, and the index cut into its outer edge.
+ *
+ * A split workspace is not two panes with a rule between them. It is the book
+ * open at a spread: the instruction printed on the verso, the instrument
+ * worked on the recto, and a real binding down the middle that both pages
+ * curve into. The rule this replaces was a hairline with a hit area, which is
+ * a divider between two panels — correct for an application, and wrong for a
+ * page you play from.
+ *
+ * The fold is drawn in three parts, and all three are needed or it reads as a
+ * dark stripe rather than as a gutter:
+ *
+ *   1. the gutter itself, darker than the stand, because you are looking into
+ *      a binding rather than at the surface the book lies on;
+ *   2. the curl, a shading wash over the last few centimetres of each page,
+ *      painted on the pages so it darkens the paper rather than sitting on
+ *      top of the content;
+ *   3. one lit hairline down the centre of the gutter, which is the light
+ *      catching the fold and the only thing that keeps it from reading flat.
+ */
+
+/* ============================================================== the spread = */
+
+.lessonSplit{
+ position:relative;
+ /* The pages turn about the binding, so the container carries the depth. */
+ perspective:2400px;
+ perspective-origin:50% 45%;
+ /*
+  * No gap. The pages meet the fold, and a gutter with clean paper either side
+  * of it is a dark stripe laid on a page rather than the page curving into a
+  * binding. The air the gap used to give is padding on the pages instead,
+  * where the curl can darken it.
+  */
+ gap:0;
+}
+
+/*
+ * The verso and the recto of the spread.
+ *
+ * Each page carries its own curl on the edge that meets the fold, painted as a
+ * background wash so the ink on the page darkens with the paper instead of
+ * floating over a shadow. The outer edges stay clean: a bound page curves at
+ * the spine and lies flat at the trim.
+ */
+.lessonRead{padding-right:var(--s6)}
+
+/*
+ * The rule between the panes is gone with the panes. A page that curves into a
+ * binding does not also need a line drawn where it meets it, and the two
+ * together read as a fold with a scratch down one side of it. Stated at the
+ * weight ui-audit.css uses, because that is what it is answering.
+ */
+.page .lessonDo,.lessonDo{
+ border-left:0 !important;
+ padding-left:var(--s7) !important;
+}
+
+/* ================================================================= the fold */
+
+/*
+ * The binding, in the grid column the rule used to occupy.
+ *
+ * `pointer-events:none` is inherited from the rule this replaces and stays
+ * correct: the split is fixed, so nothing here invites a drag, and a gutter
+ * that swallowed clicks would be a dead strip down the middle of the page.
+ */
+.splitter{
+ position:relative;
+ /*
+  * Above the page, because the curl is light falling across the sheet rather
+  * than a layer of it. The criterion at the foot of the verso is lifted to
+  * z-index 5 so it can stick over the reading, and at 4 the shading stopped
+  * dead at its edge -- a rectangle of flat paper in the middle of the fold.
+  * Nothing here takes a pointer, so sitting on top costs no interaction.
+  */
+ z-index:6;
+ align-self:stretch;
+ width:var(--fold-w);
+ min-height:12rem;
+ display:block;
+ padding:0;
+ border:0;
+ background:
+  /* the light caught along the fold */
+  linear-gradient(to right,transparent 0 44%,var(--fold-line) 44% 56%,transparent 56% 100%),
+  /* the gutter, deepest at the centre */
+  linear-gradient(to right,
+   rgba(12,17,19,.60) 0,
+   var(--fold) 40%,
+   var(--fold) 60%,
+   rgba(12,17,19,.60) 100%);
+ pointer-events:none;
+}
+
+/*
+ * The curl belongs to the fold, not to the two panes.
+ *
+ * Painted on the pages it stopped wherever the shorter pane stopped — the
+ * workspace is sticky and capped at the viewport, so below its foot the paper
+ * went flat while the gutter kept running, and a binding that is only shaded
+ * for the top two thirds of its length is a stripe again. Hung off the fold it
+ * is one shading, the full height of the spread, on whichever page is under
+ * it. It darkens the ink with the paper, which is what happens when a page
+ * curves away from the light.
+ */
+.splitter::before,.splitter::after{
+ content:"";
+ position:absolute;
+ top:0;bottom:0;
+ width:var(--fold-curl);
+ pointer-events:none;
+}
+.splitter::before{
+ right:100%;
+ background:linear-gradient(to right,transparent,var(--fold-shade));
+}
+.splitter::after{
+ left:100%;
+ background:linear-gradient(to left,transparent,var(--fold-shade));
+}
+
+/* The rule's inner line is the fold's own shadow now, not a second stroke. */
+.splitter i{display:none}
+
+/* ======================================================== the index tabs == */
+
+/*
+ * The index cut into the fore-edge of the book.
+ *
+ * A ring binder has tabs down its outer edge and you reach for the one you
+ * want without reading the others, which is exactly the job here: four places
+ * a player goes mid-lesson, always in the same order, always in the same
+ * position. They are set in the label hand, rotated to run up the edge, and
+ * they sit on the stand rather than on the page — a tab is behind the sheet,
+ * not printed on it.
+ */
+.indexRail{
+ position:relative;
+ flex:none;
+ width:var(--index-w);
+ display:flex;
+ flex-direction:column;
+ align-items:stretch;
+ justify-content:center;
+ gap:var(--s2);
+ padding-block:var(--s6);
+}
+
+.indexTab{
+ position:relative;
+ flex:0 1 7.5rem;
+ min-height:4.5rem;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:var(--s3);
+ padding:var(--s4) 0;
+ border:0;
+ /* Trimmed on the outer corners only: the inner edge is under the page. */
+ border-radius:0 var(--r-page) var(--r-page) 0;
+ background:var(--paper-2);
+ color:var(--ink-3);
+ box-shadow:var(--depth-book);
+ cursor:pointer;
+ transition:background var(--m-click) var(--ease-page),
+            color var(--m-click) var(--ease-page),
+            transform var(--m-click) var(--ease-page);
+}
+
+/*
+ * The tab slides out of the book when you reach for it, which is what a hand
+ * does to a tab. It is the whole hover state; nothing about the label changes,
+ * because a label that changes weight on hover reads as a different label.
+ */
+.indexTab:hover{
+ background:var(--paper);
+ color:var(--ink);
+ transform:translateX(3px);
+}
+.indexTab:active{transform:translateX(1px)}
+
+.indexTab[aria-current="page"]{
+ background:var(--paper);
+ color:var(--vermillion);
+}
+/* The current tab is pulled clear of the edge and marked in the margin. */
+.indexTab[aria-current="page"]::before{
+ content:"";
+ position:absolute;
+ left:0;top:14%;bottom:14%;
+ width:2px;
+ background:var(--vermillion);
+}
+
+.indexTab .indexLabel{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ font-weight:500;
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ line-height:1;
+ /* Up the edge, the way a tab is read with the book on a stand. */
+ writing-mode:vertical-rl;
+ transform:rotate(180deg);
+}
+
+.indexTab svg{flex:none;width:1rem;height:1rem;stroke:currentColor;fill:none;stroke-width:1.5;
+ stroke-linecap:round;stroke-linejoin:round}
+
+/* =========================================================== the page turn = */
+
+/*
+ * The turn itself is in page-turn.css: a real sheet of paper going over,
+ * hinged on the binding this file draws. What was here before was an eight
+ * degree tilt on a fade, which is what a page turn looks like when the thing
+ * doing the turning has only one side.
+ *
+ * What remains here is the geometry that turn needs from the spread: the
+ * container has to establish 3D depth, and the reading page has to be a grid
+ * cell the leaf can be laid into.
+ */
+
+/* ======================================================== reduced motion == */
+
+/* The tab still lights and still marks itself current; it just stops sliding. */
+@media (prefers-reduced-motion:reduce){
+ .indexTab:hover,.indexTab:active{transform:none}
+}
+
+/* ============================================================= stacked === */
+
+/*
+ * Below the breakpoint the spread stacks, and a stacked spread has no gutter:
+ * the two pages are one column, so the curl, the fold and the turn all go.
+ * A fold drawn across a single column is a dark band through the middle of
+ * the reading, which is the opposite of what it means.
+ */
+@media (max-width:84rem){
+ .lessonRead{padding-right:0}
+ .lessonSplit{perspective:none}
+ /* One column has no verso to turn, and a sheet laid over a stacked page would
+    cover the reading rather than lift off it. The route-level leaf still runs;
+    this is only the spread's own. */
+ .turnLayer.is-verso{display:none}
+}
+
+/*
+ * Below the breakpoint the spread collapses to a single page, and a single
+ * page has no fore-edge to cut an index into. The four destinations are all in
+ * the contents palette, which is what a phone reaches navigation through
+ * anyway; a second bar of them competing with the instrument strip along the
+ * same edge would be two navigations in one thumb's reach.
+ */
+@media (max-width:64rem){
+ .indexRail{display:none}
+}
+
+/* ==================================================== the workspace pane == */
+
+/*
+ * Gone with the pane.
+ *
+ * These rules collapsed the tools' two-column layouts because the workspace
+ * was half a page wide. The lesson does not split any more -- the instrument
+ * has the whole page -- so the container that needed rescuing is the one in
+ * lesson-stack.css, scoped to the stage itself.
+ */

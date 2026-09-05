@@ -2,10 +2,8 @@ import {lazy,Suspense,useEffect,useMemo,useRef,useState} from "react";
 import {fadeAndClose,startAudioClock,type AudioClock} from "./audio-clock";
 import AppShell from "./components/AppShell";
 import Home from "./views/Home";
-import WorldMap from "./views/WorldMap";
 const TabStudio=lazy(()=>import("./tab/TabStudio"));
 const JacoMasterclass=lazy(()=>import("./views/JacoMasterclass"));
-import ThemeToggle from "./components/ThemeToggle";
 import CourseLibrary from "./views/CourseLibrary";
 import LessonWorkspace from "./views/LessonWorkspace";
 import LessonTools,{WORKSPACE_LABELS} from "./views/LessonTools";
@@ -13,7 +11,6 @@ import PacedReader from "./views/PacedReader";
 import ChromaticGym from "./views/ChromaticGym";
 import TechniqueLab from "./views/TechniqueLab";
 import NoteQuest from "./views/NoteQuest";
-import ToolLibrary from "./views/ToolLibrary";
 import CourseProgress from "./views/CourseProgress";
 import TodaySession from "./views/TodaySession";
 import RescueGames from "./views/RescueGames";
@@ -23,7 +20,6 @@ import AdaptivePlan from "./views/AdaptivePlan";
 import BackingBand from "./views/BackingBand";
 import ListeningEngine from "./views/ListeningEngine";
 import ProgressionAnalyser from "./views/ProgressionAnalyser";
-import {territoryStates} from "./game/progression";
 import {MODES} from "./harmony-fretboard-data";
 import Formula from "./components/Formula";
 import {degreeAt,SHORT_NAMES as DEG} from "./theory/degrees";
@@ -57,7 +53,7 @@ const NAV_GROUPS=[
 const VIEW_META:Record<string,{eyebrow:string,title:string}>={
  course:{eyebrow:"Your learning path",title:"Home"},courseLesson:{eyebrow:"Guided course",title:"Current lesson"},roadmap:{eyebrow:"28-LESSON CURRICULUM",title:"Full course"},
  practice:{eyebrow:"Hands-free training",title:"Practice studio"},coach:{eyebrow:"Listening + feedback",title:"Live coach"},maqam:{eyebrow:"Arabic music",title:"Maqam lab"},slap:{eyebrow:"Technique + groove",title:"Slap bass"},
- tools:{eyebrow:"All existing tools",title:"Tool library"},courseProgress:{eyebrow:"Your development",title:"Progress"},fret:{eyebrow:"Harmony tool",title:"Fretboard map"},runtime:{eyebrow:"Play with a band",title:"Backing band"},
+ courseProgress:{eyebrow:"Your development",title:"Progress"},fret:{eyebrow:"Harmony tool",title:"Fretboard map"},runtime:{eyebrow:"Play with a band",title:"Backing band"},
  engine:{eyebrow:"Record + understand",title:"Take analysis"},advanced:{eyebrow:"Controlled tension",title:"Improvisation lab"},chromatic:{eyebrow:"Approach and arrive",title:"Chromatic gym"},technique:{eyebrow:"Before the notes",title:"The hands"},quest:{eyebrow:"Play it to pass it",title:"The long way home"},reference:{eyebrow:"Look something up",title:"Theory reference"},adaptive:{eyebrow:"Personal curriculum",title:"Adaptive plan"},
  progression:{eyebrow:"Read a progression",title:"Progression reader"},
  today:{eyebrow:"Today's training",title:"Practice plan"},live:{eyebrow:"Real-time practice",title:"Live session"},games:{eyebrow:"Ear + fretboard",title:"Training games"},
@@ -103,7 +99,6 @@ export default function BassLab(){
   setChord(ground.chord);
  },[courseIndex]);
 
- const territories=useMemo(()=>territoryStates(courseCompleted,courseIndex),[courseCompleted,courseIndex]);
  const audio=useRef<{ctx:AudioContext,stream:MediaStream,raf:number}|null>(null),eventRef=useRef<{midi:number,start:number,amp:number}|null>(null),eventsRef=useRef<NoteEvent[]>([]),recordRef=useRef(false),runtimeRef=useRef<{ctx:AudioContext,clock:AudioClock,master:GainNode}|null>(null),auditionRef=useRef<AudioContext|null>(null); const ri=root, scale=useMemo(()=>MODES[mode].s.map(x=>(x+ri)%12),[mode,ri]), color=(ri+MODES[mode].s[MODES[mode].c])%12, chordTones=useMemo(()=>[0,3,7,10].map(x=>(x+ri)%12),[ri]);
  // The microphone loop and the backing band both outlive the render that starts
  // them, so anything they read has to come from a ref. Reading the state values
@@ -202,7 +197,7 @@ export default function BassLab(){
  const randomJam=()=>{const styles=["Psychedelic","Funk","Grunge","Fusion","Ambient","Reggae","Disco"],meters=[4,4,4,5,7];setStyle(styles[Math.floor(Math.random()*styles.length)]);setMeter(meters[Math.floor(Math.random()*meters.length)]);setBpm(70+Math.floor(Math.random()*45));setRoot(Math.floor(Math.random()*12));setMode(Math.floor(Math.random()*7));setProgression([[0,0,5,0],[0,3,5,0],[0,-2,-4,0],[0,1,0,0]][Math.floor(Math.random()*4)])};
  const answerDiagnostic=(score:number)=>{const next=diag.map((v,i)=>i===diagStep?score:v);setDiag(next);if(diagStep<4)setDiagStep(diagStep+1);else{const ev=events.length?events:eventsRef.current,inside=ev.length?Math.round(ev.filter(e=>e.tension<4).length/ev.length*100):72,timing=ev.length?Math.max(35,100-Math.round(ev.reduce((a,e)=>a+Math.abs(e.offset),0)/ev.length)):68,resolution=ev.filter(e=>e.tension===4).length?Math.round(ev.filter(e=>e.resolution==="recovered").length/ev.filter(e=>e.tension===4).length*100):64,computed=[Math.round((next[0]+next[1])/2),next[2],Math.round((next[1]+inside)/2),timing,Math.round((next[3]+next[4]+resolution)/3)];setFreedom(computed);setAdaptiveReady(true);saveLearningState("basslab-adaptive",JSON.stringify({freedom:computed,matrix:keyMatrix,diag:next,date:Date.now()}))}};
  const buildAdaptiveDay=()=>{const weakest=freedom.indexOf(Math.min(...freedom)),weakKey=keyMatrix.indexOf(Math.min(...keyMatrix)),axis=["Ear","Fretboard","Theory","Execution","Creation"][weakest];const p=[{m:8,t:`${N[weakKey]} ear calibration`,d:`Identify degree, function and best resolution in ${N[weakKey]}`,tag:"Hear"},{m:10,t:"Upper-register recall",d:"Frets 12-20; random targets; two-second limit",tag:"SEE"},{m:12,t:`${axis} repair block`,d:"One constraint, three clean passes, immediate transfer",tag:"Focus"},{m:10,t:"Chromatic recovery",d:"One forced outside note every two bars",tag:"Play"},{m:15,t:"Anti-habit mission",d:antiHabit?"No beat 1, no root starts, no ascending fills":"Build one motif through inside and outside versions",tag:"Create"},{m:5,t:"Boss fight",d:"No visual help; score all five Freedom axes",tag:"Prove"}];setPlan(p);setView("today")};
- const course=COURSE_LESSONS[courseIndex],courseDetail=LESSON_DETAILS[courseIndex],courseUnit=COURSE_UNITS[course.unit-1],courseSteps=["LEARN","HEAR","MAP","PRACTICE","APPLY","PASS"],coursePct=Math.round(courseCompleted/COURSE_LESSONS.length*100),mapTargets=Array.from(new Set([0,...course.character])).slice(0,4),juryAverage=Math.round(juryScores.reduce((a,b)=>a+b,0)/juryScores.length),juryMinimum=Math.min(...juryScores),juryPassed=juryAverage>=80&&juryMinimum>=70,weakJury=["HEAR","KNOW","SEE","PLAY","CREATE"][juryScores.indexOf(juryMinimum)],toolMeta:Record<string,{name:string,desc:string}>={runtime:{name:"Backing Band",desc:"Apply the current lesson over a musical vamp."},live:{name:"Live Coach",desc:"Connect bass and receive function-aware feedback."},engine:{name:"Record & Analyze",desc:"Capture the required take and inspect every event."},fret:{name:"Fretboard Map",desc:"See the lesson’s functions across the full neck."},games:{name:"Ear & Target Games",desc:"Test interval, target and resolution recall."},advanced:{name:"Advanced Lab",desc:"Use the focused motif, enclosure or voice-leading tool."}};
+ const course=COURSE_LESSONS[courseIndex],courseDetail=LESSON_DETAILS[courseIndex],courseSteps=["LEARN","HEAR","MAP","PRACTICE","APPLY","PASS"],coursePct=Math.round(courseCompleted/COURSE_LESSONS.length*100),mapTargets=Array.from(new Set([0,...course.character])).slice(0,4),juryAverage=Math.round(juryScores.reduce((a,b)=>a+b,0)/juryScores.length),juryMinimum=Math.min(...juryScores),juryPassed=juryAverage>=80&&juryMinimum>=70,weakJury=["HEAR","KNOW","SEE","PLAY","CREATE"][juryScores.indexOf(juryMinimum)],toolMeta:Record<string,{name:string,desc:string}>={runtime:{name:"Backing Band",desc:"Apply the current lesson over a musical vamp."},live:{name:"Live Coach",desc:"Connect bass and receive function-aware feedback."},engine:{name:"Record & Analyze",desc:"Capture the required take and inspect every event."},fret:{name:"Fretboard Map",desc:"See the lesson’s functions across the full neck."},games:{name:"Ear & Target Games",desc:"Test interval, target and resolution recall."},advanced:{name:"Advanced Lab",desc:"Use the focused motif, enclosure or voice-leading tool."}};
  const courseStageGuides=[
   {title:"Understand the idea",body:"Read the core concept and put it into your own words.",finish:"You can explain it without looking."},
   {title:"Recognise the sound",body:"Listen, predict and sing before touching the bass.",finish:"You hear the colour before you play it."},
@@ -230,17 +225,11 @@ export default function BassLab(){
    <label><span className="label">Key</span><select aria-label="Key centre" value={root} onChange={e=>{setRoot(+e.target.value);setChord(`${N[+e.target.value]}m7`)}}>{N.map((n,i)=><option value={i} key={n}>{n}</option>)}</select></label>
    <label><span className="label">Sound</span><select aria-label="Home mode" value={mode} onChange={e=>setMode(+e.target.value)}>{MODES.map((m,i)=><option value={i} key={m.n}>{m.n}</option>)}</select></label>
   </div>}
-  <ThemeToggle/>
+
   <VoiceControl/>
  </>;
 
  return <AppShell
-  course={{percent:coursePct,index:courseIndex,total:COURSE_LESSONS.length,title:course.title}}
-  chart={{
-   keyName:N[root],keyIndex:root,onKey:index=>{setRoot(index);setChord(`${N[index]}m7`)},keyOptions:N,
-   sound:MODES[mode].n,soundIndex:mode,onSound:setMode,soundOptions:MODES.map(m=>m.n),
-   meter,chord,feel:style,
-  }}
   input={{listening,detail:pitch?`${pitch.n}${pitch.oct} at ${Math.round(pitch.hz)} Hz`:"Connect only when a tool asks"}}
   onToggleInput={()=>void startAudio()}
   inputBusy={connecting}
@@ -305,13 +294,6 @@ export default function BassLab(){
  {view==="tabs"&&<Suspense fallback={<ToolLoading/>}><TabStudio/></Suspense>}
  {view==="jaco"&&<Suspense fallback={<ToolLoading/>}><JacoMasterclass/></Suspense>}
 
- {view==="map"&&<WorldMap
-  territories={territories}
-  lessonTitles={COURSE_LESSONS.map(lesson=>lesson.title)}
-  currentLesson={courseIndex}
-  onOpenLesson={openCourseLesson}
- />}
-
  {view==="course"&&<Home
   percent={coursePct}
   completed={courseCompleted}
@@ -328,8 +310,6 @@ export default function BassLab(){
  {view==="quest"&&<NoteQuest lesson={courseIndex} heard={heard} listening={listening}
    connecting={connecting} onListen={()=>void startAudio()}
    onPickLesson={setCourseIndex} audition={audition}/>}
- {view==="tools"&&<ToolLibrary onOpen={setView}/>}
-
  {view==="courseLesson"&&<LessonWorkspace
   lesson={{index:courseIndex,total:COURSE_LESSONS.length,title:course.title,unit:course.unit,outcome:course.outcome,duration:course.duration}}
   stageIndex={courseStep}
@@ -420,7 +400,7 @@ export default function BassLab(){
   onOpen={openCourseLesson}
  />}
 
- {view==="practice"&&<Suspense fallback={<ToolLoading/>}><BeastPractice currentLesson={course.title} courseTools={course.tools} toolMeta={toolMeta} onOpenTool={openCourseTool}/></Suspense>} 
+ {(view==="practice"||view==="manual")&&<Suspense fallback={<ToolLoading/>}><BeastPractice surface={view==="manual"?"manual":"session"} currentLesson={course.title} courseTools={course.tools} toolMeta={toolMeta} onOpenTool={openCourseTool}/></Suspense>} 
 
  {view==="coach"&&<Suspense fallback={<ToolLoading/>}><PerformanceCoach root={root} modeName={MODES[mode].n} courseTitle={course.title} courseCompleted={courseCompleted} courseTotal={COURSE_LESSONS.length} events={events} livePitch={pitch} listening={listening} recording={recording} onStartRecording={beginTake} onStopRecording={endTake} onSetRoot={key=>{setRoot(key);setChord(`${N[key]}m7`)}} modeIntervals={MODES[mode].s} characterInterval={MODES[mode].s[MODES[mode].c]} onOpen={openCoachTool} onAudition={notes=>audition(notes,.35)}/></Suspense>} 
 
@@ -428,9 +408,8 @@ export default function BassLab(){
  {view==="slap"&&<Suspense fallback={<ToolLoading/>}><SlapLab livePitch={pitch} listening={listening} onToggleListening={startAudio} events={events}/></Suspense>} 
 
  {view==="courseProgress"&&<CourseProgress
-  percent={coursePct} completed={courseCompleted} lessonIndex={courseIndex}
-  lessonTitle={course.title} unitNumber={course.unit} unitTitle={courseUnit.title}
-  onContinue={()=>setView("courseLesson")} onRecordTake={()=>setView("engine")}/>}
+  percent={coursePct} completed={courseCompleted}
+  onRecordTake={()=>setView("engine")}/>}
 
  {view==="reference"&&<Suspense fallback={<ToolLoading/>}><TheoryReference root={root} onSetMode={setMode} onAudition={audition}/></Suspense>}
 

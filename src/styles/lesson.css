@@ -48,7 +48,7 @@
  gap:var(--s2);
  padding:0 0 var(--s3);
  white-space:nowrap;
- color:var(--ink-4);
+ color:var(--ink-3);
  font-size:var(--t-small);
  transition:color var(--t-base) var(--ease);
 }
@@ -71,7 +71,49 @@
 
 /* ---- the split ---------------------------------------------------------- */
 
-.lessonSplit{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:var(--s5);align-items:start}
+/*
+ * Reading and working, in fixed proportion.
+ *
+ * Both tracks state a real minimum rather than sharing the width evenly, which
+ * is what lets neither pane be starved. The fretboard is the widest tool the
+ * workspace ever holds and takes 666px once its own columns are at their
+ * smallest, and the panel's heading and padding cost a further 165px, so the
+ * floor is 52rem. Both numbers are measured rather than derived: the board's
+ * own grid adds 36px of gaps over the sum of its columns, and forgetting the
+ * container is how the first two attempts still overflowed.
+ *
+ * Below 84rem the whole thing stacks, which is the width at which both floors
+ * plus the reading minimum stop fitting. They only ever coexist on a screen
+ * wide enough for both.
+ */
+.lessonSplit{
+ display:grid;
+ /*
+  * The minimums are what has to fit inside the recto, not inside the window.
+  * The verso, the gutter and the page padding take roughly 400px before this
+  * grid is measured, so 24rem + 52rem asked for a 1760px window and blew a
+  * 1440px one out past the page edge, taking the workspace column with it.
+  * These two stops add up to the width the recto actually has at the 84rem
+  * breakpoint below, which is where the split stacks.
+  */
+ grid-template-columns:minmax(20rem,1fr) auto minmax(30rem,1.2fr);
+ grid-template-rows:minmax(0,auto);
+ gap:var(--s5);
+ align-items:start;
+ min-width:0;
+}
+
+/*
+ * Explicit cells, for the same reason the book's are.
+ *
+ * The reading page has a second occupant: the leaf that turns lies in its cell
+ * so that it hinges on the binding. One explicitly placed item is enough to
+ * push every flowed sibling a column along, and it did — the reading page
+ * landed in the binding's column and the binding in the workspace's.
+ */
+.lessonRead{grid-column:1;grid-row:1}
+.splitter{grid-column:2;grid-row:1}
+.lessonDo{grid-column:3;grid-row:1}
 
 /*
  * The divider between reading and working.
@@ -81,17 +123,16 @@
  * the reader's to set, and it is remembered. The hit area is wider than the
  * line it draws, because a two-pixel target is not a target.
  */
+/* A rule, not a handle: the split is fixed, so nothing here invites a drag. */
 .splitter{
  align-self:stretch;width:var(--s5);min-height:12rem;
- display:grid;place-items:center;cursor:col-resize;
- background:none;border:0;touch-action:none;
+ display:grid;place-items:center;
+ background:none;border:0;pointer-events:none;
 }
 .splitter i{
  display:block;width:2px;height:100%;border-radius:var(--r);
  background:var(--rule);transition:background var(--t-base) var(--ease);
 }
-.splitter:hover i,.splitter:focus-visible i{background:var(--accent)}
-.splitter:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r)}
 /* While dragging, the pointer must not select the text it crosses. */
 body.isSplitting{user-select:none;cursor:col-resize}
 .lessonRead{display:flex;flex-direction:column;gap:var(--s5);min-width:0}
@@ -127,7 +168,18 @@ body.isSplitting{user-select:none;cursor:col-resize}
  flex-wrap:wrap;
  padding:var(--s5) 0;
  border-top:1px solid var(--rule);
- background:color-mix(in oklab,var(--bg) 88%,transparent);
+ /*
+  * Opaque, and the page's own colour.
+  *
+  * Sticky, with the lesson scrolling underneath, so any transparency here is
+  * the paragraph above showing through the criterion -- on a phone that put
+  * two different sentences on the same four lines. And the colour has to be
+  * --paper rather than --bg: the legacy token file repoints --bg at the
+  * shaded stock, which made the bar a tinted rectangle with two hard edges
+  * sitting in the middle of the reading. What should be visible here is the
+  * final barline above it, and nothing else.
+  */
+ background:var(--paper);
 }
 .checkCriteria{display:flex;flex-direction:column;gap:var(--s1);min-width:0;flex:1}
 .checkCriteria b{font-size:var(--t-small);font-weight:400;color:var(--ink-2)}
@@ -151,21 +203,34 @@ body.isSplitting{user-select:none;cursor:col-resize}
 .earKey:hover{background:var(--wash);color:var(--accent)}
 .earKey:active{transform:scale(.97)}
 .earKey b{font-size:var(--t-lead);font-weight:400;font-family:var(--font-mono)}
-.earKey small{font-size:var(--t-micro);color:var(--ink-4)}
+.earKey small{font-size:var(--t-micro);color:var(--ink-3)}
 
 /* ---- transport ---------------------------------------------------------- */
 
-.transport{display:flex;flex-direction:column;gap:var(--s5)}
-.transport p{font-size:var(--t-small)}
+.toolDeck{display:flex;flex-direction:column;gap:var(--s5)}
+.toolDeck p{font-size:var(--t-small)}
 .transportRow{display:flex;align-items:center;gap:var(--s5)}
 .transportRow>button{flex:1;justify-content:center}
 .barBeat,.takeCount{display:flex;align-items:baseline;gap:2px;flex:none;font-family:var(--font-mono)}
 .barBeat b,.takeCount b{font-size:var(--t-h3);font-weight:300;letter-spacing:-.03em}
-.barBeat span{color:var(--ink-4)}
+.barBeat span{color:var(--ink-3)}
 .takeCount{flex-direction:column;align-items:flex-end;gap:0}
-.takeCount small{font-size:var(--t-micro);color:var(--ink-4);letter-spacing:var(--track-label);}
+.takeCount small{font-size:var(--t-micro);color:var(--ink-3);letter-spacing:var(--track-label);}
 .tempoControl{display:flex;flex-direction:column;gap:var(--s3)}
 .tempoControl input{width:100%;accent-color:var(--accent)}
+
+/*
+ * The instrument is being heard, mid-lesson.
+ *
+ * Practice and Pass never judge a note in real time — Prove is scored from
+ * the take afterward, not note by note — but the reading already on screen
+ * (the bar count, the take's note count) can still say the mic is live and
+ * catching something right now, which is enough to make the room feel
+ * occupied without a verdict riding along on top of it.
+ */
+.barBeat.hearing b,.barBeat.hearing span,.takeCount.hearing b{
+ color:var(--accent);transition:color .2s var(--ease,ease);
+}
 
 /* ---- responsive --------------------------------------------------------- */
 
@@ -185,4 +250,203 @@ body.isSplitting{user-select:none;cursor:col-resize}
 @media (max-width:52rem){
  .stageTabs{gap:var(--s5)}
  .missionId h1{font-size:var(--t-h3)}
+ /* Criterion above, action below. Side by side, the standard wrapped to four
+    lines against a full-width strip of tape. */
+ .checkBar{flex-direction:column;align-items:stretch;gap:var(--s4)}
+ .checkAction{justify-content:space-between}
+}
+
+/* ================================================ the head of the reading = */
+
+/*
+ * A page of a method book is headed the way a system is: a rehearsal number
+ * struck at the start of a stave, the stave running out to the fore-edge, and
+ * the name of the section stamped on it. That replaces a bar of chrome — a
+ * title between two arrows with a duration chip — which said the same things
+ * in the vocabulary of an application toolbar rather than of a book.
+ */
+/*
+ * Scoped to the page it heads, and stating its direction.
+ *
+ * `lesson-content.css` styles every `header` inside `.lessonRead` as a stacked
+ * column, which is right for the headers inside the instruction and wrong for
+ * this one. At (0,1,1) it outranked a bare `.stageHead`, so the numeral, the
+ * stave and the name piled up on top of each other and the stave — a flex item
+ * with a zero basis on the wrong axis — collapsed to nothing.
+ */
+.lessonRead .stageHead{
+ display:flex;
+ flex-direction:row;
+ align-items:center;
+ gap:var(--s4);
+ min-width:0;
+}
+
+/*
+ * The struck numeral, and the one place on this page a figure is set large.
+ *
+ * Playfair, because it is the didone's job to strike a title and a numeral big
+ * enough to read from the stand, and vermillion because the stage you are on
+ * is what is live.
+ */
+.lessonRead .stageNumeral{
+ flex:none;
+ font-family:var(--font-title);
+ font-weight:400;
+ font-size:clamp(2.5rem,1.6rem + 2.6vw,3.75rem);
+ line-height:.82;
+ letter-spacing:var(--track-title);
+ font-variant-numeric:lining-nums tabular-nums;
+ color:var(--vermillion);
+}
+
+/* Five ruled lines, at the height they are everywhere else in the design. */
+.lessonRead .stageHeadStave{
+ flex:1;
+ min-width:2rem;
+ height:calc(var(--stave-h) + var(--stave-line));
+ background-image:repeating-linear-gradient(
+  to bottom,
+  var(--stave) 0,var(--stave) var(--stave-line),
+  transparent var(--stave-line),transparent var(--stave-gap)
+ );
+ background-repeat:no-repeat;
+}
+
+/* Stamped on the stave, so the ruling stops behind the word. */
+.lessonRead .stageHeadName{
+ flex:none;
+ color:var(--ink-3);
+ text-shadow:0 0 3px var(--paper),0 0 3px var(--paper),0 0 7px var(--paper);
+}
+
+/* ---- the lesson title --------------------------------------------------- */
+
+.lessonRead .lessonTitle{
+ margin:var(--s4) 0 0;
+ font-family:var(--font-title);
+ font-style:italic;
+ font-weight:400;
+ font-size:clamp(1.75rem,1.25rem + 1.9vw,2.75rem);
+ line-height:1.06;
+ letter-spacing:var(--track-title);
+ color:var(--ink);
+ max-width:22ch;
+}
+.lessonTitle:focus{outline:none}
+
+/* ---- where you are in the twenty-eight ---------------------------------- */
+
+/*
+ * The numerals and the rule are the same fact twice, which is the point: the
+ * figure answers "which one" and the rule answers "how far", and a reader takes
+ * the second off the line without doing the division.
+ */
+.lessonRead .lessonMeter{
+ display:flex;
+ align-items:center;
+ gap:var(--s3);
+ margin:var(--s4) 0 0;
+ min-width:0;
+}
+.lessonMeterNow{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ font-weight:600;
+ letter-spacing:var(--track-label);
+ color:var(--vermillion);
+ font-variant-numeric:tabular-nums;
+}
+.lessonMeterTotal{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-label);
+ color:var(--ink-3);
+ font-variant-numeric:tabular-nums;
+}
+.lessonMeterRule{
+ flex:1;
+ min-width:3rem;
+ height:2px;
+ background:var(--rule);
+ position:relative;
+}
+.lessonMeterRule>i{
+ position:absolute;
+ left:0;top:0;bottom:0;
+ background:var(--vermillion);
+ transition:width var(--m-panel) var(--ease-page);
+}
+.lessonMeterStep{
+ flex:none;
+ display:flex;
+ align-items:center;
+ gap:var(--s2);
+}
+.lessonMeterMins{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ color:var(--ink-3);
+ white-space:nowrap;
+}
+
+/* ---- the criterion ------------------------------------------------------ */
+
+/*
+ * The standard, in a ruled box at the foot of the page.
+ *
+ * It was a label over a sentence with the tape beside it, which read as two
+ * unrelated things sharing a row. Boxed, with the label divided off by a rule
+ * and the criterion marked by a tick, it reads as one statement: here is what
+ * counts as done, here is whether it is, here is the thing to press.
+ */
+.checkBar{
+ border:1px solid var(--rule-2);
+ border-radius:var(--r-surface);
+ padding:var(--s4) var(--s5);
+ gap:var(--s5);
+}
+/*
+ * The criterion gets a measure or it gets a line of its own.
+ *
+ * `flex:1` alone gave it whatever the tape did not want, and the tape is
+ * 248px of it: the sentence was landing in 77px and wrapping one word per
+ * line, with the label and the tick already spoken for. Asking for a real
+ * basis makes the row overflow at that width instead, and the bar — which
+ * wraps — puts the tape underneath where it has room.
+ */
+.checkCriteria{
+ flex-direction:row;
+ align-items:center;
+ gap:var(--s4);
+ flex:1 1 21rem;
+ min-width:0;
+}
+.checkBar{align-items:center;row-gap:var(--s4)}
+.checkAction{flex:0 0 auto;margin-left:auto}
+.checkCriteria .label{
+ flex:none;
+ max-width:5.5rem;
+ line-height:1.35;
+}
+.checkRule{
+ flex:none;
+ align-self:stretch;
+ width:1px;
+ background:var(--rule);
+}
+.checkMark{
+ flex:none;
+ display:flex;
+ color:var(--ink-3);
+}
+.checkBar .checkCriteria b{flex:1;min-width:0}
+
+/* Under the breakpoint the box keeps its rule but stacks its contents. */
+@media (max-width:52rem){
+ .checkCriteria{flex-wrap:wrap;gap:var(--s3)}
+ .checkCriteria .label{max-width:none}
+ .checkRule{display:none}
 }

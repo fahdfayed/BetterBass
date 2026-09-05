@@ -84,29 +84,88 @@
 }
 .hfBoardWrap::-webkit-scrollbar{height:8px}
 
+/*
+ * The fret grid, in one place.
+ *
+ * The component used to hard-code `58px repeat(n, minmax(44px, 1fr))` into an
+ * inline style, which put the neck's only real measurement somewhere no
+ * stylesheet could answer. It reads these two instead.
+ *
+ * A fret is sized by the widest thing it has to hold, and that is a different
+ * width in each view. The priority view puts a word in the cell: APPROACH is
+ * 61px at the label's own size, so a 44px fret cut it off mid-word and left it
+ * butted against the label of the next fret, with no wire between them to say
+ * where one ended. The degree view has the two-name accidentals, ♯4 / ♭5 at
+ * 39px. The note and next-target views are two or three characters and keep
+ * the tighter spacing.
+ *
+ * These are px on purpose. Fret spacing is a physical measurement of an
+ * instrument, not a step on the type scale.
+ */
+.hfBoard{--hf-nut:58px;--hf-fret:44px}
+.hfBoard[data-labels="priority"]{--hf-fret:84px}
+.hfBoard[data-labels="degree"]{--hf-fret:56px}
+
 /* Fret numbers read as engraved into the top edge of the board. */
 .hfFretNumbers{
  display:grid;
  align-items:center;
  padding-bottom:var(--s2);
+ border-bottom:1px solid var(--groove);
 }
+/*
+ * Every fret number is read, not glanced at, and that means every one of
+ * them -- not only the marked frets. A player scanning for fret eight is not
+ * helped by fret eight being dimmer than fret nine.
+ *
+ * A one-step-down grey for the unmarked majority was tried here and reported
+ * back twice as too faint to read, which is the right call: at eleven pixels
+ * on a stand, a step that clears a contrast checker can still read as a
+ * watermark once it is the minority ink surrounded by darker neighbours. So
+ * the whole row is struck in full ink now, at one weight, and the marked
+ * frets are told apart the way a real fingerboard tells them apart -- by the
+ * inlay dot underneath, plus a heavier stroke on the number itself.
+ */
 .hfFretNumbers>b,.hfFretNumbers>span{
  font-family:var(--font-mono);
  font-size:var(--t-micro);
+ font-weight:500;
  font-variant-numeric:tabular-nums;
- color:var(--bone-4);
+ color:var(--bone);
  text-align:center;
 }
+/*
+ * Declared explicitly rather than left to inherit the row's own colour.
+ *
+ * This selector used to exist in three stylesheets at once -- here, in
+ * redesign.css, and in harmony-fretboard.css -- each from a different era of
+ * the design, two of them still pointing at --ink-3 and --lime. Whichever
+ * loaded last silently won, which is how a colour fix could be correct on
+ * disk and still render grey: Vite's dev-mode style-tag order does not
+ * always match source import order. The other two declarations are gone now
+ * rather than merely losing the cascade, so there is one place this can be
+ * set and no ordering left to depend on.
+ */
+.hfFretNumbers>span.marked{color:var(--bone);font-weight:700}
 .hfFretNumbers>b{text-align:left;font-family:var(--font-display);letter-spacing:var(--track-legend);text-transform:uppercase}
-/* The inlay positions carry a real dot, the way a neck does. */
-.hfFretNumbers>span.marked{color:var(--bone-2)}
+/* The inlay dot is what marks a fret; the number stays the same ink either
+   way and only steps up in weight. */
 .hfFretNumbers>span.marked i{
  display:block;width:5px;height:5px;border-radius:50%;
  background:var(--bone-4);margin:3px auto 0;
 }
 .hfFretNumbers>span:not(.marked) i{display:block;height:8px}
 
-/* A string row. The name sits on the nut; the frets run right from it. */
+/*
+ * A string row. The name sits on the nut; the frets run right from it.
+ *
+ * The rule between rows stays, and it was tried without. The string line looks
+ * like it should be the row's own boundary, but it runs through the middle of
+ * the row, behind the notes, which is where a string actually is — so pulling
+ * the rule left nothing at all between one string and the next. It is a step
+ * lighter than the fret wires above it, which is the right order for a neck:
+ * frets are the thing you are counting.
+ */
 .hfString{
  display:grid;
  align-items:stretch;
@@ -124,7 +183,7 @@
  font-size:var(--t-micro);
  letter-spacing:var(--track-legend);
  text-transform:uppercase;
- color:var(--bone-4);
+ color:var(--bone-3);
 }
 /*
  * String gauge. The low E is a visibly heavier line than the G, which is the
@@ -149,9 +208,25 @@
  display:grid;
  place-items:center;
  gap:0;
+ /*
+  * The fret wire. Every pad carries the line on its leading edge, so the wires
+  * land exactly on the grid columns however the neck is sized, and the nut is
+  * the heavier rule the string-name column already draws.
+  *
+  * `legacy-views.css` sets `border:0 !important` on every legacy control and
+  * takes this with it; `ui-audit.css` puts it back for the neck alone. It has
+  * to be stated in both places: this is the value, that is the exception.
+  */
  border:0;
- border-left:1px solid var(--groove);
+ border-left:1px solid var(--rule-strong);
  border-radius:0;
+ /*
+  * Nothing leaves the fret. Labels are clipped by their own cell rather than
+  * running across the wire into the next one, and the padding keeps them off
+  * the wire instead of touching it.
+  */
+ overflow:hidden;
+ padding-inline:var(--s2);
  background:none;
  color:var(--bone-4);
  cursor:pointer;
@@ -161,13 +236,32 @@
             transform var(--m-click) var(--ease-snap);
 }
 /* The string itself, drawn through the pad. */
+/*
+ * `redesign.css` still draws this element as a 48px note disc, which in a 44px
+ * cell was both wider than the fret and, against the height and inset set
+ * here, a flattened oval with a border. This is the newer language: the ring
+ * around a note is drawn by the role's ::after, and `i` is only the string.
+ */
 .hfString button>i{
  position:absolute;left:0;right:0;top:50%;
+ width:auto;
+ border:0;
+ border-radius:0;
  height:var(--gauge,1.5px);
  transform:translateY(-50%);
  background:linear-gradient(var(--steel),var(--bone-4));
- opacity:.32;
+ opacity:.5;
  pointer-events:none;
+}
+/*
+ * The same stale disc in its hover and picked states, where redesign.css
+ * re-centres and scales it. On a string line that reads as the string sliding
+ * half a fret sideways and thickening under the pointer. A string does not
+ * move when you choose a note on it.
+ */
+.hfString button:hover>i,
+.hfString button.picked>i{
+ transform:translateY(-50%);
 }
 .hfString button>b{
  font-family:var(--font-mono);
@@ -175,6 +269,16 @@
  font-variant-numeric:tabular-nums;
  line-height:1;
  z-index:1;
+ /*
+  * The fret is sized to fit every label above, so this is the backstop, not
+  * the plan: if a label ever outgrows its fret it ends in an ellipsis inside
+  * its own cell. A word cut mid-glyph at the wire reads as the next word's
+  * first letters, which is how APPROACH and GUIDE became APPROACGUIDE.
+  */
+ max-width:100%;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap;
 }
 .hfString button>small{
  font-family:var(--font-mono);
@@ -183,60 +287,168 @@
  line-height:1;
  margin-top:2px;
  z-index:1;
+ max-width:100%;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap;
 }
-.hfString button:hover{background:var(--groove-lip);color:var(--bone-2)}
+/*
+ * Hover was `--groove-lip`, which is transparent on the dark ground, so the
+ * neck answered the pointer with nothing at all. A cell you can click has to
+ * say so. (redesign.css held the cell background at `transparent !important`,
+ * which is why this and the selected wash below both did nothing; the
+ * important is dropped there rather than answered with another one here.)
+ */
+.hfString button.visible:hover,
+.hfString button:hover{--pad-fill:var(--lift-2);color:var(--bone-2)}
 
 /* Hidden by the current filter: still present, still an anchor, not shouting. */
 .hfString button.hidden>b,.hfString button.hidden>small{opacity:.14}
 
 /* -- roles ------------------------------------------------------------- */
 /*
- * Five distinguishable treatments, not eleven. Rank collapses into: the
- * target, the notes that state the change, the notes that belong, the notes
- * merely available, and the notes outside. Shape and outline carry as much of
- * that as colour does.
+ * Rank, in one flame and four greys.
+ *
+ * The eleven roles are real and the tutor panel still names all of them. The
+ * neck does not: at a glance a player resolves maybe five steps, and the board
+ * was spending eleven treatments to deliver three. Root and approach both came
+ * out flame, so the note you build on and the note you pass through were the
+ * same colour; guide, chord and specified were all pure white, so the note
+ * that defines the quality and the note that merely belongs were the same
+ * weight. Two of the three values the eye could actually separate pointed the
+ * wrong way, and the loudest mark on the board — a dashed flame ring — sat on
+ * the notes that matter least.
+ *
+ * So the neck ranks by ink and nothing else. Every step down is a step dimmer,
+ * monotonically, and the flame is spent once on the thing the line is built
+ * from. This is DESIGN.md's Four Greys Rule read literally: if a distinction
+ * is not "press this", white at one of four opacities carries it.
+ *
+ *   flame   root, bass          the anchor
+ *   ink     guide               3rd and 7th: what makes the chord that chord
+ *   ink-2   chord, specified    written into the symbol
+ *   ink-3   colour, voice, available   in the scale, optional
+ *   ink-4   context, approach, outside not the material
+ */
+/*
+ * The highlight ladder.
+ *
+ * Ink alone ranks the notes, but it does not aim the hand: a player reading
+ * the neck between changes needs to see where to go, not only what each note
+ * is. So the ranks worth aiming at carry a wash, and the wash weakens as the
+ * reason to play the note weakens.
+ *
+ * Every hue token in this project resolves to flame or to ink, so the neck
+ * declares its own four, in `tokens.css` beside the flame and composed per
+ * theme there. This is a deliberate exception to DESIGN.md's One Flame Rule
+ * and it is scoped to the board alone: on a fretboard the job the note is
+ * doing is the content, not decoration, and four jobs told apart only by
+ * opacity are four jobs a player has to stop and decode. Nothing outside
+ * `.hfString` may read these.
+ *
+ *   root, bass   flame   22%   the anchor
+ *   voice        cyan    18%   what the next chord needs; aim here
+ *   colour       violet  13%   the degree that makes this mode this mode
+ *   guide        blue    10%   3rd and 7th, stated rather than aimed at
+ *   chord, spec. ink      5%   written into the symbol
+ */
+.hfString button.role-root,
+.hfString button.role-bass{--pad-fill:var(--pad-root-fill)}
+.hfString button.role-voice{--pad-fill:var(--pad-voice-fill)}
+.hfString button.role-colour{--pad-fill:var(--pad-colour-fill)}
+.hfString button.role-guide{--pad-fill:var(--pad-guide-fill)}
+.hfString button.role-chord,
+.hfString button.role-specified,
+.hfString button.role-written{--pad-fill:var(--pad-chord-fill)}
+
+/*
+ * Root reads its ink from the pad palette rather than from the flame directly:
+ * on cream the label sits on its own 14% flame fill, and the flame that clears
+ * AA on the bare well does not clear it there.
  */
 .hfString button.role-root>b,
-.hfString button.role-bass>b{color:var(--oxide-ink);font-weight:700}
+.hfString button.role-bass>b{color:var(--pad-root-ink);font-weight:700}
+.hfString button.role-guide>b{color:var(--pad-guide-ink);font-weight:600}
+.hfString button.role-chord>b,
+.hfString button.role-specified>b,
+.hfString button.role-written>b{color:var(--pad-chord-ink);font-weight:500}
+.hfString button.role-voice>b{color:var(--pad-voice-ink)}
+.hfString button.role-colour>b{color:var(--pad-colour-ink)}
+.hfString button.role-available>b{color:var(--pad-available-ink)}
+.hfString button.role-context>b,
+.hfString button.role-approach>b,
+.hfString button.role-outside>b{color:var(--pad-outside-ink)}
+
+/*
+ * Two rings on the neck, and they are ranked the way the ink is.
+ *
+ * There were five: root, guide, approach, outside, and the destination — on a
+ * 52-cell board that is a ring on nearly every fret, which is the same as no
+ * ring anywhere. Worse, root and destination both drew into ::after, so a root
+ * that was also the next chord's target silently lost one of its two marks.
+ *
+ * Root takes the flame ring, because finding the anchor is the one thing a
+ * player does without reading. Guide keeps a hairline, quiet enough to be a
+ * texture rather than a second shout. Approach and outside get no ring at all:
+ * they are already the dimmest ink on the board, and that is the mark.
+ */
 .hfString button.role-root::after{
  content:"";position:absolute;inset:15% 10%;
  border-radius:var(--r);
  box-shadow:inset 0 0 0 1.5px var(--oxide);
  pointer-events:none;
 }
-.hfString button.role-guide>b{color:var(--signal);font-weight:600}
 .hfString button.role-guide::after{
  content:"";position:absolute;inset:18% 14%;
  border-radius:50%;
- box-shadow:inset 0 0 0 1.5px var(--signal-dim);
+ box-shadow:inset 0 0 0 1px var(--hairline);
  pointer-events:none;
 }
-.hfString button.role-chord>b,
-.hfString button.role-specified>b,
-.hfString button.role-written>b{color:var(--bone)}
-.hfString button.role-colour>b,
-.hfString button.role-voice>b{color:var(--tobacco-ink)}
-.hfString button.role-available>b,
-.hfString button.role-context>b{color:var(--bone-3)}
-/* Outside and approach are dashed: a different texture, not just a hue. */
-.hfString button.role-outside>b,
-.hfString button.role-approach>b{color:var(--alert-ink)}
-.hfString button.role-outside::after,
-.hfString button.role-approach::after{
- content:"";position:absolute;inset:18% 14%;
- border:1px dashed color-mix(in oklab,var(--alert) 55%,transparent);
- border-radius:var(--r);
- pointer-events:none;
-}
+/*
+ * redesign.css drew a second destination ring here, a 56px dashed circle, on
+ * the same ::after the role rings use and at a higher specificity, so a root
+ * that was also the next chord's target lost its flame ring to it without
+ * saying so. That rule is deleted rather than overridden: ::after now belongs
+ * to role, ::before to destination, and neither can eat the other.
+ */
 
 /* -- states ------------------------------------------------------------ */
 
+/*
+ * The neck's own focus ring.
+ *
+ * The global one is `:where(button,…):focus-visible`, and `:where()` carries
+ * zero specificity — any element-level `outline` beats it, and two rules right
+ * here set one: `.sounding` and `.under`. A ring that a note being played can
+ * silently switch off is not a focus indicator.
+ *
+ * It draws inward. The pads sit flush against each other inside a scroll
+ * container, so a ring at a positive offset would be drawn over the neighbour
+ * on both sides and clipped at either end of the board.
+ */
+.hfString button:focus-visible{
+ outline:2px solid var(--flame);
+ outline-offset:-3px;
+ z-index:2;
+}
+
 /* Selected by the player: pressed into the neck. */
 .hfString button.picked{
- background:var(--oxide-wash);
- box-shadow:var(--depth-press);
+ /*
+  * A fill, not a fourth outline. The inset hairline that used to draw here
+  * landed on a square cell, so the one mark on the neck that was not an
+  * ellipse was the one the player puts there themselves.
+  */
+ --pad-fill:var(--oxide-wash);
+ box-shadow:none;
 }
-.hfString button.picked>b{color:var(--oxide-ink)}
+/*
+ * The picked cell states itself in the accent whatever role it holds, and on a
+ * root or bass pad it is stating it inside a 13% vermillion wash of its own.
+ * Vermillion on that wash is 4.18:1; the deeper step is 5.90 and is the same
+ * red. This is the pairing --pad-root-ink already exists for.
+ */
+.hfString button.picked>b{color:var(--vermillion-deep)}
 
 /*
  * Where the line has to arrive next.
@@ -261,7 +473,7 @@
  * it is telling you something has changed when nothing has.
  */
 .hfString button.under{
- background:var(--signal-wash);
+ --pad-fill:var(--signal-wash);
  box-shadow:var(--depth-press),0 0 8px -2px var(--signal);
  transform:translateY(1px);
 }
@@ -389,20 +601,22 @@
 /* ================================================ context column fixes == */
 
 /*
- * The panels in here were built to sit at full page width and carry their own
- * multi-column grids. In a 20rem column those grids collapse to ribbons of two
- * words per line, so inside the context panel everything is a single column
- * and the type steps down to match the measure.
+ * These panels were built to sit at full page width and carry their own
+ * multi-column grids, and when this was a 20rem column those grids collapsed
+ * into ribbons of two words per line. The answer then was to flatten every
+ * descendant to a single column and forbid anything from claiming a floor
+ * wider than the rail.
+ *
+ * The rail is gone. This is a full-width band under the neck now, and those
+ * two defences turned into the bug they were written to prevent: the scale
+ * recommendations ask for four columns and were being forced into one, so each
+ * card rendered as a 1380 by 374 slab with every line running the full width.
+ *
+ * What survives is the part that is still true at any width: nothing may
+ * exceed the band, and prose keeps a comfortable measure.
  */
-.hfContext :is(header,div,ul,ol,dl,article,footer){
- grid-template-columns:1fr!important;
- grid-template-areas:none!important;
-}
-/* Flex rows of prose collapse too; rows of switches are handled below. */
 .hfContext :is(header,section)>div{min-width:0}
-.hfContext *{min-width:0;max-width:100%}
-/* Nothing in a 20rem column may set its own floor wider than the column. */
-.hfContext :is(section,div,article,table,pre){min-width:0!important}
+.hfContext *{max-width:100%}
 .hfContext h2,.hfContext h3{
  font-size:var(--t-h3);
  line-height:1.15;
@@ -447,23 +661,32 @@
  font-size:var(--t-micro);
  letter-spacing:var(--track-legend);
  text-transform:uppercase;
- color:var(--bone-4);
+ /* These name the group of controls under them -- "Labels", "Show", "Neck
+    area". --bone-4 is the mark ink, and it printed them at 2.69:1. */
+ color:var(--bone-3);
 }
 
 /* ===================================================== pad label sizing == */
 
 /*
- * A role name is up to seven characters and the cell is 54px wide, so at body
- * size the label was being cut mid-word: WRITTEN arrived as WRITTI. The label
- * steps down and is allowed to compress slightly rather than being clipped,
- * because a truncated role name is worse than a small one.
+ * The role name steps down a size and compresses slightly. This block predates
+ * `--hf-fret` and was written when the cell was a fixed 54px and WRITTEN was
+ * arriving as WRITTI; the fret is now sized to the widest label its mode can
+ * produce, so nothing is cut. The smaller size stays because it is what buys
+ * that fret its width — at body size the priority view would need a 100px
+ * fret and a 1.4m neck.
+ *
+ * `text-overflow` is the ellipsis, not `clip`: this rule sits after the one
+ * that sets it, and a clip here would silently undo the backstop DESIGN.md
+ * records — a label cut mid-glyph at the wire reads as the next fret's first
+ * letters.
  */
 .hfString button>b{
  font-size:var(--t-micro);
  letter-spacing:-.02em;
  max-width:100%;
  overflow:hidden;
- text-overflow:clip;
+ text-overflow:ellipsis;
  white-space:nowrap;
 }
 /*
@@ -515,3 +738,183 @@
 .harmonyFretboard>*,
 .hfWork>*,
 .hfContext>*{width:100%;max-width:100%;box-sizing:border-box}
+
+/* ======================================================= touch targets == */
+
+/*
+ * The workstation is dense on purpose: a 30px pill is right for a mouse on a
+ * screen this full of controls, and shrinking the neck to fit a phone would
+ * make it unplayable, which is why the board scrolls instead.
+ *
+ * But PRODUCT.md is explicit about the scene — the player is at the
+ * instrument with both hands occupied, and every touch happens in a gap
+ * between playing. A control you have to look at twice to hit costs a bar.
+ *
+ * So the gate is the input device, not the viewport. A tablet propped on a
+ * stand and a touchscreen laptop need this as much as a phone does, and a
+ * 1200px window with a mouse does not.
+ */
+@media (pointer:coarse){
+ .hfMapControls button,
+ .hfContext .hfHear,
+ .hfNoteTutor>button,
+ .hfChordRail button,
+ .hfBandMixer>div button,
+ .hfTimingControls input,
+ .hfTimingControls select{
+  /*
+   * 44px, not 2.75rem. The root is 15px here, so the rem lands at 41 and
+   * quietly misses the target it was written to hit. A touch target is a
+   * measurement of a fingertip, like the fret grid above it — neither one
+   * belongs on the type scale.
+   */
+  min-height:44px;
+  padding-inline:var(--s3);
+ }
+
+ /*
+  * The slider is the worst of them at 16px, and it is the one control that is
+  * dragged rather than tapped. The input grows to a 44px hit area while the
+  * track it draws stays a line: the target is the finger's, the mark is the
+  * eye's, and they do not have to be the same size.
+  */
+ .hfHarmonyLevel input[type="range"]{
+  height:44px;
+  background:none;
+  -webkit-appearance:none;
+  appearance:none;
+ }
+ .hfHarmonyLevel input[type="range"]::-webkit-slider-runnable-track{
+  height:3px;
+  border-radius:var(--r);
+  background:var(--lift-2);
+ }
+ .hfHarmonyLevel input[type="range"]::-moz-range-track{
+  height:3px;
+  border-radius:var(--r);
+  background:var(--lift-2);
+ }
+ .hfHarmonyLevel input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  appearance:none;
+  width:1.5rem;
+  height:1.5rem;
+  margin-top:-.66rem;
+  border:0;
+  border-radius:50%;
+  background:var(--flame);
+ }
+ .hfHarmonyLevel input[type="range"]::-moz-range-thumb{
+  width:1.5rem;
+  height:1.5rem;
+  border:0;
+  border-radius:50%;
+  background:var(--flame);
+ }
+}
+
+/* ================================================== the board that fits === */
+
+/*
+ * The neck sizes itself to the room it is given.
+ *
+ * The board's width is not a style, it is arithmetic: the nut column plus
+ * thirteen fret columns, each with a real minimum, and the inline min-width on
+ * the board states exactly that sum. So the board fits or it does not, and
+ * when it does not the wrapper puts a scrollbar under it and the player reads
+ * two thirds of a neck.
+ *
+ * Both halves of that sum come from `--hf-fret`, which is the lever: the grid
+ * takes it as each column's minimum and the min-width calc multiplies it. Step
+ * it down and the whole board steps down with it -- no override of the inline
+ * style, no guessing at the fret count, which is dynamic.
+ *
+ * The ladder is set against the wrapper rather than the window, because the
+ * board sits in a page inside a book and the window has never been what it has
+ * to fit inside. A role name is the widest thing a pad ever carries, so the
+ * priority and voice-leading views get the roomier steps; note and degree
+ * labels are two characters and stay comfortable much further down.
+ */
+.hfBoardWrap{
+ container-type:inline-size;
+ container-name:neck;
+}
+
+/*
+ * The word "String" is said four times too many.
+ *
+ * The header cell says "String" and every row says "G String", "D String" --
+ * in a column that has to be narrow enough to leave the frets their width. At
+ * 46px the word does not fit, so it clipped to "TRING" and bled toward the
+ * first fret, which is what made the numbering look out of step with the rows
+ * under it. The letter is the label; the word is scaffolding. Hidden to the
+ * eye, kept for a screen reader, and the column drops to what a letter needs.
+ */
+.hfFretNumbers>b{font-size:0}
+.hfString>b small{font-size:0}
+
+/*
+ * The ladder stops where the words do.
+ *
+ * APPROACH is the longest thing a pad ever carries, and it needs about sixty
+ * pixels of column. Stepping below that does not make the board fit -- it
+ * makes the board fit while saying WRIT and APPRO, which is a scrollbar's
+ * problem solved by creating a worse one. The steps end at seventy, and under
+ * that the board scrolls rather than abbreviating what it is there to teach.
+ */
+@container neck (max-width:74rem){
+ .hfBoard{--hf-nut:40px;--hf-fret:40px}
+ .hfBoard[data-labels="priority"],
+ .hfBoard[data-labels="voice"]{--hf-fret:78px}
+}
+
+@container neck (max-width:62rem){
+ .hfBoard{--hf-nut:40px;--hf-fret:36px}
+ .hfBoard[data-labels="priority"],
+ .hfBoard[data-labels="voice"]{--hf-fret:70px}
+}
+
+/*
+ * Note and degree labels are one or two characters, so they keep shrinking
+ * long after a role name has stopped. Only the wordy views hold at seventy.
+ */
+/*
+ * Note and degree labels are one or two characters, so they keep shrinking
+ * long after a role name has stopped. Priority and voice-leading views hold
+ * at seventy pixels here on purpose -- see the 62rem tier above -- and scroll
+ * rather than step down further: a board that keeps shrinking a role word
+ * eventually abbreviates it, and a scrollbar is the honest trade once the
+ * word itself has nowhere left to give.
+ */
+@container neck (max-width:48rem){
+ .hfBoard{--hf-nut:36px;--hf-fret:30px}
+}
+
+@container neck (max-width:34rem){
+ .hfBoard{--hf-nut:32px;--hf-fret:26px}
+}
+
+/*
+ * The last thirty pixels, and the twelve.
+ *
+ * Two insets were quietly spending the width the labels needed. The board
+ * carried fifteen pixels either side -- thirty across, which was exactly the
+ * overflow that put a scrollbar under a board otherwise a pixel from fitting.
+ * And every pad spent nearly nine pixels either side, so a seventy pixel fret
+ * offered its label fifty-two, and APPROACH needs sixty-four.
+ *
+ * A fret is a slot between two wires. It does not have a margin, and the pad
+ * has a fret wire down its left edge to separate it from its neighbour, so the
+ * padding was never doing the work of keeping the columns apart.
+ */
+.hfBoard{padding-inline:0}
+.hfString>button{padding-inline:2px}
+
+/*
+ * And the wrapper's own seventeen either side.
+ *
+ * This is the element that scrolls, so every pixel of horizontal padding on it
+ * is a pixel taken off the board and handed back as scroll distance. The
+ * vertical inset stays -- the board needs air above and below it on the page.
+ */
+.hfBoardWrap{padding-inline:0}

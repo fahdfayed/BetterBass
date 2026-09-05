@@ -1,14 +1,31 @@
-import {lazy,Suspense,useState} from "react";
+import {Suspense,useState} from "react";
 import {JACO_CHAPTERS} from "../tab/jaco-masterclass";
 
-const ExerciseTabs=lazy(()=>import("../tab/ExerciseTabs"));
+/*
+ * Statically imported, like the five other views that use it.
+ *
+ * It was lazy here and in LessonTools, and that dynamic import could never
+ * split: BeastPractice, MaqamLab, SlapLab, ChromaticGym and TechniqueLab all
+ * pull the same module in eagerly, so the bundler kept it in the shared chunk
+ * and warned that the dynamic import did nothing. Every one of those views is
+ * itself lazily loaded, so the module already arrives only when a view that
+ * needs it does -- the second boundary bought nothing but a spinner.
+ */
+import ExerciseTabs from "../tab/ExerciseTabs";
 
 /**
  * The masterclass, laid out as the method it follows.
  *
- * Eight chapters in the book's order, each opening to its own subsections. One
+ * Seven chapters in the book's order, each opening to its own subsections. One
  * chapter is open at a time so the sequence stays legible; nothing is locked,
  * because the book itself says not to work through it a page at a time.
+ *
+ * The book's own eighth chapter, "Food for Thought," closed its teaching with
+ * a page of biography and no exercises. Worth reading once, not worth a
+ * permanent tab in a masterclass whose every other tab opens onto something
+ * to play — dropped rather than kept as a chapter with nothing in it. "The
+ * Sound," a gear-description subsection of chapter 1 with the same shape
+ * (real content, zero exercises), is dropped for the same reason.
  */
 export default function JacoMasterclass(){
  const [openChapter,setOpenChapter]=useState(JACO_CHAPTERS[0].id);

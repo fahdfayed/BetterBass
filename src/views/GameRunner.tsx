@@ -167,8 +167,16 @@ export default function GameRunner({
 
  const clock12=useMemo(()=>[0,1,2,3],[]);
 
+ /*
+  * Landing and Rhythm run their own click and judge against it directly
+  * (see beatNow/judge above) — `.runnerBeats` already carries their pulse.
+  * The other six have no clock of their own, so `beat-ambient` opts them
+  * into the book's shared one instead: a beat-pulse borrowed from whatever
+  * transport the player already has running, pure CSS, nothing here to
+  * score against. NoteQuest's target card wears the same class.
+  */
  return (
-  <section className="runner">
+  <section className={`runner ${drill.timed?"runner-timed":"beat-ambient"}`}>
    <header>
     <div>
      <h2>{drill.desc}</h2>

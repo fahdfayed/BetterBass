@@ -1,4 +1,5 @@
 import {useMemo,useState} from "react";
+import {unitLessonsToUnlock} from "../course-data";
 
 export type LibraryLesson={
  index:number;
@@ -144,7 +145,18 @@ export default function CourseLibrary({lessons,units,completed,current,onOpen}:P
            <h2>{unit.title}</h2>
            <p className="dim">{unit.subtitle}</p>
           </div>
-          <span className="mono libUnitCount">{done}/{inUnit.length}</span>
+          {/*
+            * "0/7" and "not started yet" read the same at a glance, and a
+            * unit nobody has reached is not the same as one somebody is
+            * failing. This is the fact `/map` used to carry on a second,
+            * separate page — how many lessons stand between here and this
+            * unit — printed on the unit's own row instead, where it is
+            * actually actionable.
+            */}
+          <span className="mono libUnitCount">
+           {(()=>{const toUnlock=unitLessonsToUnlock(unit,completed);
+            return toUnlock>0?`${toUnlock} to unlock`:`${done}/${inUnit.length}`;})()}
+          </span>
          </header>
          <ol className="libRows stagger" key={`${filter}-${query}`}>{inUnit.map(row)}</ol>
         </section>

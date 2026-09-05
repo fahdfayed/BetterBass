@@ -43,7 +43,7 @@
  border-radius:0 !important;
  background:none !important;
  padding:0 0 var(--s3) !important;
- color:var(--ink-4) !important;
+ color:var(--ink-3) !important;
  white-space:nowrap;
 }
 .maqamTabs button:hover{color:var(--ink-2) !important}
@@ -87,60 +87,13 @@
  padding-left:var(--s5) !important;
 }
 
-/* Maqam's gold was a second accent. There is only one now. */
+/* maqam.css now carries the full token migration itself — every rule in this
+   file that used to patch the lab's old gold/teal palette from outside is
+   gone. This is a fallback only, for any bold text the lab's own stylesheet
+   doesn't already colour. */
 .maqamNextStep b,
 .maqamNextStep strong,
-.maqamProfile b{color:var(--mq-gold) !important}
-
-/* Buttons throughout the maqam lab were framed chips. They become flat controls
-   that light on hover, with the active one carrying the accent — scoped to the
-   lab root so the rebuilt vocabulary elsewhere is untouched. */
-.maqamLab button:not(.action):not(.action-primary){
- border:0 !important;
- border-radius:var(--r-control) !important;
- background:none !important;
- color:var(--ink-3) !important;
- transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
-}
-.maqamLab button:not(.action):not(.action-primary):hover{
- color:var(--ink) !important;
- background:var(--wash) !important;
-}
-.maqamLab button.active:not(.action){
- color:var(--mq-gold) !important;
- background:var(--accent-wash) !important;
-}
-
-/* The lab's gold second accent, wherever it survived as a literal. */
-.maqamLab [style*="#d6a84a"],
-.maqamLab [style*="#c8a24a"]{color:var(--accent) !important}
-
-/**
- * The lab carries its own scoped palette — gold, a second gold and a teal — used
- * 66 times between them. Repointing those three at the single accent converts
- * the whole view at once, and keeps the distinctions they were drawing (a
- * microtonal marker still reads differently from body text) rather than
- * flattening them away.
- */
-.maqamLab{
- /* Lifted a little off the accent: as small text on the dark ground the
-    accent itself lands at 4.49:1, which is a hundredth short. */
- --mq-gold:color-mix(in oklab,var(--accent) 88%,white);
- --mq-gold2:color-mix(in oklab,var(--accent) 72%,white);
-}
-
-/* On cream the accent is already dark, so lightening it toward white is what
-   makes it unreadable — 3.3:1 at small sizes. It goes the other way here and
-   still reads apart from the body ink. */
-:root[data-theme="cream"] .maqamLab{
- --mq-gold:var(--accent);
- --mq-gold2:color-mix(in oklab,var(--accent) 72%,black);
- --mq-teal:var(--ink-3);
- --mq-line:var(--rule);
- --mq-panel:transparent;
- --mq-ink:var(--bg);
- --mq-wine:var(--warn);
-}
+.maqamProfile b{color:var(--vermillion) !important}
 
 /* ======================================================= Practice studio == */
 
@@ -169,9 +122,16 @@
  padding:var(--s4) 0 !important;
 }
 
-/* Segmented switch and section tabs: labels on a line, active one underlined. */
+/* Segmented switch and section tabs: labels on a line, active one underlined.
+
+   "On a line" has to be stated. Underneath, these are two-column card grids,
+   and flattening the cards to labels left the labels sharing a 169px track
+   they need 284px for -- clipped, with an overflow rule that had nothing to
+   scroll because the tracks themselves were the constraint. */
 .practiceTrackSwitch,
 .beastSections{
+ display:flex !important;
+ align-items:baseline;
  border:0 !important;
  border-bottom:1px solid var(--rule) !important;
  border-radius:0 !important;
@@ -183,14 +143,19 @@
 }
 .practiceTrackSwitch::-webkit-scrollbar,
 .beastSections::-webkit-scrollbar{display:none}
+/* `white-space:nowrap` keeps the label on one line but does not stop the flex
+   item shrinking around it, so on the practice page a 284px switch label was
+   being compressed into a 169px grid track and clipped. The rail already
+   scrolls; `flex:none` is what gives it something to scroll. */
 .practiceTrackSwitch button,
 .beastSections button{
  position:relative;
+ flex:none;
  border:0 !important;
  border-radius:0 !important;
  background:none !important;
  padding:0 0 var(--s3) !important;
- color:var(--ink-4) !important;
+ color:var(--ink-3) !important;
  white-space:nowrap;
 }
 .practiceTrackSwitch button:hover,
@@ -217,7 +182,7 @@
 }
 .practiceConsole button:not(.action):not(.action-primary):hover{
  color:var(--ink) !important;
- background:var(--wash) !important;
+ background-color:var(--wash) !important;
 }
 .practiceConsole button.complete{color:var(--done) !important}
 
@@ -259,7 +224,6 @@
 }
 
 /* Article blocks inside those screens: hairline separated, not framed. */
-.progressHero article,
 .slapHero article,
 .coachHero article,
 .rescueGame article,
@@ -276,20 +240,25 @@
 }
 
 /* Controls across the remaining legacy screens. .mega stays filled — it is the
-   one action on its screen. */.page .osScreen button:not(.mega):not(.action):not(.action-primary), .slapLab button:not(.action):not(.action-primary), .ghostButton{
+   one action on its screen. slap.css now carries its own full token migration,
+   so slapLab's buttons are excluded here — this generic flatten no longer
+   speaks for them. */.page .osScreen button:not(.mega):not(.action):not(.action-primary), .ghostButton{
  border:0 !important;
  border-radius:var(--r-control) !important;
- background:none !important;
+ /* background-color, not background: the shorthand also resets
+    background-image, and this rule reaches every button on a legacy screen —
+    including the rows the book prints on a stave. It only ever meant the fill. */
+ background-color:transparent !important;
  color:var(--ink-3) !important;
  transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
 }
-.page .osScreen button:not(.mega):not(.action):not(.action-primary):hover, .slapLab button:not(.action):not(.action-primary):hover, .ghostButton:hover{
+.page .osScreen button:not(.mega):not(.action):not(.action-primary):hover, .ghostButton:hover{
  color:var(--ink) !important;
- background:var(--wash) !important;
+ background-color:var(--wash) !important;
 }
-.page .osScreen button.active, .slapLab button.active{
+.page .osScreen button.active{
  color:var(--accent) !important;
- background:var(--accent-wash) !important;
+ background-color:var(--accent-wash) !important;
 }
 
 /* The one filled action per legacy screen keeps its weight, on the new accent. */.page .osScreen button.mega{
@@ -301,7 +270,9 @@
 
 /* ============================ Theory · Fretboard · Band · Outside · Live == */
 
-/* The layer revealed once the outer frames came off. Same treatment. */.theoryCoverage, .theoryChapter, .runtimeHero, .progressionBuilder, .referenceExercises, .hfBuilder, .hfTimingControls, .hfBandStyle, .hfIntro, .hfChordRail, .hfVoiceLeading, .hfNoteTutor, .hfMapControls, .hfVoiceGrid, .gps, .slapNextStep, .slapSafety, .abilities, .exerciseStage, .takeAnalysis, .coachBlocks{
+/* The layer revealed once the outer frames came off. Same treatment. slapNextStep
+   and slapSafety are excluded — slap.css now sets their border and, for the
+   caution-toned safety note, background directly. */.theoryCoverage, .theoryChapter, .runtimeHero, .progressionBuilder, .referenceExercises, .hfBuilder, .hfTimingControls, .hfBandStyle, .hfIntro, .hfChordRail, .hfVoiceLeading, .hfNoteTutor, .hfMapControls, .hfVoiceGrid, .gps, .abilities, .exerciseStage, .takeAnalysis, .coachBlocks{
  border:0 !important;
  border-top:1px solid var(--rule) !important;
  border-radius:0 !important;
@@ -332,7 +303,7 @@
  border-radius:0 !important;
  background:none !important;
  padding:0 0 var(--s3) !important;
- color:var(--ink-4) !important;
+ color:var(--ink-3) !important;
 }
 .labTabs button:hover{color:var(--ink-2) !important}
 .labTabs button.active{color:var(--ink) !important}
@@ -373,13 +344,19 @@
  padding:0 !important;
  gap:var(--s6) !important;
 }
+/* The rail scrolls sideways rather than compressing: as flex items with the
+   default shrink these labels were squeezed to 34px of a 57px word inside the
+   lesson workspace, and the overflow the container already declares had
+   nothing left to scroll. */
 .theoryDictionaryTabs button{
  position:relative;
+ flex:none;
+ white-space:nowrap;
  border:0 !important;
  border-radius:0 !important;
  background:none !important;
  padding:0 0 var(--s3) !important;
- color:var(--ink-4) !important;
+ color:var(--ink-3) !important;
 }
 .theoryDictionaryTabs button.active{color:var(--ink) !important}
 .theoryDictionaryTabs button.active::after{
@@ -391,12 +368,10 @@
 
 /* ============================================================= Slap bass == */
 
-/* Same shape as maqam: a scoped palette the global remap never saw. */
+/* slap.css now carries its own full token migration — the scoped palette this
+   used to repoint is gone from the source. Its own 1500px cap fought the
+   workspace measure, which is the one override still needed here. */
 .slapLab{
- --acid:var(--accent);
- --orange:var(--warn);
- --cyan:var(--ink-3);
- /* Its own 1500px cap fought the workspace measure. */
  max-width:none !important;
 }
 
@@ -433,7 +408,7 @@
  background:none !important;
 }
 .page .osScreen .slapFlowRail article:last-child{border-right:0 !important}
-.page .osScreen .slapFlowRail article>b{color:var(--ink-4) !important}
+.page .osScreen .slapFlowRail article>b{color:var(--ink-3) !important}
 .page .osScreen .slapFlowRail article.done>b,
 .page .osScreen .slapFlowRail article.active>b{color:var(--accent) !important}
 
@@ -516,7 +491,7 @@
  border-radius:0 !important;
  background:none !important;
  padding:0 0 var(--s3) !important;
- color:var(--ink-4) !important;
+ color:var(--ink-3) !important;
  font-weight:500 !important;
  white-space:nowrap;
 }
@@ -535,7 +510,7 @@
 }
 /* The strips stack a small index above the label; inline keeps them on one line. */
 .slapTabs button i,
-.coachTabs button i{display:inline !important;margin:0 var(--s2) 0 0 !important;opacity:1 !important;color:var(--ink-4)}
+.coachTabs button i{display:inline !important;margin:0 var(--s2) 0 0 !important;opacity:1 !important;color:var(--ink-3)}
 .slapTabs button span,
 .coachTabs button span{display:inline !important}
 
@@ -571,8 +546,41 @@
  * the `.liveHead h1` rule still sitting in globals.css.
  */
 .liveHead .livePitch{display:block;font:900 6.25rem/1 var(--font-mono);margin:20px 0 0}
-.liveHead .livePitch small{font-size:1.875rem}
+.liveHead .livePitch small{font-size:var(--t-h1)}
 .liveHead h1.liveTitle{font:max(11px,.6875rem) var(--font-mono);letter-spacing:.14em;margin:0}
+
+/*
+ * Correct-note feedback, live.
+ *
+ * The mission text already names the one note worth featuring; this is that
+ * ask, answered the instant it happens, instead of only as a percentage in
+ * the report on the right. Any chord tone tints the readout — you are inside
+ * the harmony — and the colour tone specifically gets the tension marker's
+ * own brief flash, since that is the one note the mission is actually about.
+ */
+.liveHead .livePitch.inside{color:var(--lime)}
+.tensionMeter i.hit{background:var(--lime);animation:tensionHit .4s ease-out}
+@keyframes tensionHit{from{box-shadow:0 0 0 7px color-mix(in oklab,var(--lime) 35%,transparent)}to{box-shadow:0 0 0 0 transparent}}
+@media(prefers-reduced-motion:reduce){.tensionMeter i.hit{animation:none}}
+
+/*
+ * Two wrong/right pairs, caught by the generic resets above.
+ *
+ * `.page .osScreen>div>article,.page .osScreen section>article{border:0
+ * !important}` flattens every leftover framed article on a legacy screen, and
+ * `.page .osScreen article>span:first-child{color:var(--ink-3)}` repaints
+ * every eyebrow label the same ink-3 -- both by tag shape, with no way to
+ * know that The hands' myth/fix diagnosis and the quest road's missed/arrived
+ * marker are a state, not decoration. Losing the colour left both telling
+ * wrong from right by prose alone, which neither builder intended. Restored,
+ * scoped to just these four classes rather than touching the general rule.
+ */
+.page .osScreen .techDiagnosis .myth{border:1px solid color-mix(in oklab,var(--stop) 65%,var(--ink)) !important}
+.page .osScreen .techDiagnosis .myth>span{color:var(--red) !important}
+.page .osScreen .techDiagnosis .fix{border:1px solid color-mix(in oklab,var(--moss) 65%,var(--ink)) !important}
+.page .osScreen .techDiagnosis .fix>span{color:var(--lime) !important}
+.page .osScreen .questTarget.missed{border-color:color-mix(in oklab,var(--stop) 65%,var(--ink)) !important}
+.page .osScreen .questTarget.arrived{border-color:color-mix(in oklab,var(--moss) 65%,var(--ink)) !important}
 
 /*
  * Tools embedded in the lesson workspace.

@@ -32,7 +32,7 @@ html{
 
 body{
  min-height:100dvh;
- background:var(--bg);
+ background:var(--stand);
  color:var(--ink);
  font-family:var(--font);
  font-size:var(--t-body);
@@ -93,12 +93,20 @@ small{font-size:max(var(--t-micro),.85em)}
 .dim{color:var(--ink-3)}
 .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 
-/* Numerals used as content rather than as data: big, thin, tabular. */
+/*
+ * Numerals used as content rather than as data.
+ *
+ * The engraver's face, because a number this size is being read from the
+ * stand rather than scanned in a column. It was set in the UI sans at weight
+ * 300 and tracked to -.04em, which belonged to a design whose display voice
+ * was a tightly tracked grotesque; here it is the same face the page title is
+ * struck in.
+ */
 .figure{
- font-family:var(--font-mono);
- font-variant-numeric:tabular-nums;
- font-weight:300;
- letter-spacing:-.04em;
+ font-family:var(--font-num);
+ font-variant-numeric:tabular-nums lining-nums;
+ font-weight:500;
+ letter-spacing:var(--track-title);
  line-height:1;
 }
 
@@ -244,8 +252,22 @@ small{font-size:max(var(--t-micro),.85em)}
  */
 .formula{display:inline-flex;flex-direction:column;gap:var(--s2);align-items:flex-start}
 .formulaLine{display:inline}
+/*
+ * A scale degree, pressable, inside a sentence.
+ *
+ * It measures about eleven by eighteen, under the 24px target floor, and it
+ * stays that way on purpose: this is a word in running text, which is the
+ * explicit exception in WCAG 2.2's target-size rule. Setting it to 24px would
+ * space the formula out into a row of buttons and stop it reading as the
+ * sentence it is.
+ *
+ * What it can have is a bigger box without a bigger footprint. Vertical
+ * padding on an inline element grows the hit area and leaves the line box
+ * where it was, so the formula still sets on one line and the target roughly
+ * doubles.
+ */
 .degree{
- font:inherit;color:inherit;padding:0 .12em;border-radius:var(--r);
+ font:inherit;color:inherit;padding:.35em .25em;border-radius:var(--r);
  border-bottom:1px dotted var(--ink-4);
  transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
 }
@@ -373,3 +395,15 @@ a,button{
     for the decorative loops, which are declared unconditionally. */
  .reveal-ready .revealed>*{animation:none}
 }
+
+/* ============================================================== sliders == */
+
+/*
+ * A fader is a control, so it is a target.
+ *
+ * A range input with its track styled and nothing else keeps the browser's own
+ * box, which is sixteen pixels tall -- under the floor, and on a touch screen
+ * a line you have to hit rather than a handle you can grab. The height here is
+ * the hit area; the track and thumb inside it stay whatever each fader draws.
+ */
+input[type="range"]{min-height:1.5rem}

@@ -1,6 +1,5 @@
 import {inTime} from "./conductor";
 import {useSyncExternalStore} from "react";
-import {flushSync} from "react-dom";
 
 /**
  * Minimal History-API router.
@@ -21,10 +20,10 @@ type Pattern={path:string;view:string};
 // Order matters: static segments are matched before dynamic ones.
 const ROUTES:Pattern[]=[
  {path:"/",view:"course"},
- {path:"/map",view:"map"},
  {path:"/course",view:"roadmap"},
  {path:"/course/:lesson",view:"courseLesson"},
  {path:"/practice",view:"practice"},
+ {path:"/practice/manual",view:"manual"},
  {path:"/practice/today",view:"today"},
  {path:"/practice/live",view:"live"},
  {path:"/coach",view:"coach"},
@@ -32,7 +31,6 @@ const ROUTES:Pattern[]=[
  {path:"/maqam",view:"maqam"},
  {path:"/slap",view:"slap"},
  {path:"/masterclass/jaco",view:"jaco"},
- {path:"/labs",view:"tools"},
  {path:"/labs/fretboard",view:"fret"},
  {path:"/labs/band",view:"runtime"},
  {path:"/labs/analyze",view:"engine"},
@@ -47,7 +45,11 @@ const ROUTES:Pattern[]=[
  {path:"/progress",view:"courseProgress"},
 ];
 
-const ROUTE_EVENT="basslab-route";
+/**
+ * Broadcast on every route change. Exported because the error boundary listens
+ * for it too: leaving a broken address is what releases the crash screen.
+ */
+export const ROUTE_EVENT="basslab-route";
 const FALLBACK:Route={view:"course",params:{},path:"/"};
 
 const segments=(path:string)=>path.replace(/\/+$/,"").split("/").filter(Boolean);
@@ -81,23 +83,24 @@ export function currentRoute():Route{
  return matchPath(window.location.pathname)??FALLBACK;
 }
 
-const reduceMotion=()=>typeof window!=="undefined"&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-type ViewTransitionDocument=Document&{startViewTransition?:(update:()=>void)=>unknown};
-
 /**
- * Run a route change inside a View Transition where the browser supports one.
+ * Apply a route change.
  *
- * React renders asynchronously, so the DOM update has to be flushed *inside* the
- * callback — otherwise the browser snapshots the old page twice and the
- * transition animates nothing. Falls back to a plain update when the API is
- * missing or the reader asked for reduced motion.
+ * This used to run inside a View Transition, and does not any more. The turn
+ * between two pages is a real sheet of paper now (page-turn.css), so the API
+ * was drawing nothing — and it was not free to keep:
+ *
+ *   - Its update callback runs at the next rendering opportunity, not
+ *     synchronously. A document that is not being rendered — a background tab,
+ *     a hidden embed — has few of those, so the address changed a whole click
+ *     late and the screen followed the click before it.
+ *   - It aborts outright when the document is hidden or another transition is
+ *     still in flight, which is why every navigation used to reject `ready`
+ *     with InvalidStateError.
+ *
+ * A route change is now what it looks like: update the address, tell the app.
  */
-function withTransition(update:()=>void){
- const start=(document as ViewTransitionDocument).startViewTransition;
- if(!start||reduceMotion()){update();return}
- start.call(document,()=>{flushSync(update)});
-}
+function applyRoute(update:()=>void){update()}
 
 export function navigate(path:string,{replace=false}={}){
  if(typeof window==="undefined")return;
@@ -109,7 +112,7 @@ export function navigate(path:string,{replace=false}={}){
   * than happening at the arbitrary instant a finger moved. Musicians do not
   * change at random moments. Stopped, this is immediate and costs nothing.
   */
- inTime(()=>withTransition(()=>{
+ inTime(()=>applyRoute(()=>{
   if(replace)window.history.replaceState({},"",path);
   else window.history.pushState({},"",path);
   window.dispatchEvent(new Event(ROUTE_EVENT));
@@ -129,9 +132,8 @@ const readSnapshot=()=>{
 };
 
 const subscribe=(onChange:()=>void)=>{
- // Back and forward deserve the same transition as a click. The ROUTE_EVENT
- // listener must not wrap again — navigate() already opened one around it.
- const onPop=()=>withTransition(onChange);
+ // Back and forward take the same path as a click.
+ const onPop=()=>applyRoute(onChange);
  window.addEventListener("popstate",onPop);
  window.addEventListener(ROUTE_EVENT,onChange);
  return()=>{window.removeEventListener("popstate",onPop);window.removeEventListener(ROUTE_EVENT,onChange)};

@@ -1,434 +1,801 @@
 {
-  "schemaVersion": 2,
-  "generatedAt": "2026-09-01T07:34:08.845Z",
-  "title": "Design System: Outside In Bass Lab",
-  "extensions": {
-    "colorMeta": {
-      "rack": {
-        "role": "neutral",
-        "displayName": "Rack",
-        "purpose": "Behind everything; the gap between units.",
-        "canonical": "oklch(18.3% 0.009 84.6)",
-        "tonalRamp": [
-          "oklch(15.0% 0.009 84.6)",
-          "oklch(26.4% 0.009 84.6)",
-          "oklch(37.9% 0.009 84.6)",
-          "oklch(49.3% 0.009 84.6)",
-          "oklch(60.7% 0.009 84.6)",
-          "oklch(72.1% 0.009 84.6)",
-          "oklch(83.6% 0.009 84.6)",
-          "oklch(95.0% 0.009 84.6)"
-        ]
-      },
-      "face": {
-        "role": "neutral",
-        "displayName": "Face",
-        "purpose": "A faceplate. The working surface of a screen.",
-        "canonical": "oklch(24.1% 0.012 84.6)",
-        "tonalRamp": [
-          "oklch(15.0% 0.012 84.6)",
-          "oklch(26.4% 0.012 84.6)",
-          "oklch(37.9% 0.012 84.6)",
-          "oklch(49.3% 0.012 84.6)",
-          "oklch(60.7% 0.012 84.6)",
-          "oklch(72.1% 0.012 84.6)",
-          "oklch(83.6% 0.012 84.6)",
-          "oklch(95.0% 0.012 84.6)"
-        ]
-      },
-      "face-2": {
-        "role": "neutral",
-        "displayName": "Face 2",
-        "purpose": "A module raised off the plate: head and transport.",
-        "canonical": "oklch(27.5% 0.014 81.7)",
-        "tonalRamp": [
-          "oklch(15.0% 0.014 81.7)",
-          "oklch(26.4% 0.014 81.7)",
-          "oklch(37.9% 0.014 81.7)",
-          "oklch(49.3% 0.014 81.7)",
-          "oklch(60.7% 0.014 81.7)",
-          "oklch(72.1% 0.014 81.7)",
-          "oklch(83.6% 0.014 81.7)",
-          "oklch(95.0% 0.014 81.7)"
-        ]
-      },
-      "well": {
-        "role": "neutral",
-        "displayName": "Well",
-        "purpose": "Milled out. Readouts, neck, tab, tables, fields.",
-        "canonical": "oklch(16.3% 0.008 95.5)",
-        "tonalRamp": [
-          "oklch(15.0% 0.008 95.5)",
-          "oklch(26.4% 0.008 95.5)",
-          "oklch(37.9% 0.008 95.5)",
-          "oklch(49.3% 0.008 95.5)",
-          "oklch(60.7% 0.008 95.5)",
-          "oklch(72.1% 0.008 95.5)",
-          "oklch(83.6% 0.008 95.5)",
-          "oklch(95.0% 0.008 95.5)"
-        ]
-      },
-      "bone": {
-        "role": "neutral",
-        "displayName": "Bone",
-        "purpose": "Silkscreen. Four steps of printing hierarchy.",
-        "canonical": "oklch(91.3% 0.022 89.8)",
-        "tonalRamp": [
-          "oklch(15.0% 0.022 89.8)",
-          "oklch(26.4% 0.022 89.8)",
-          "oklch(37.9% 0.022 89.8)",
-          "oklch(49.3% 0.022 89.8)",
-          "oklch(60.7% 0.022 89.8)",
-          "oklch(72.1% 0.022 89.8)",
-          "oklch(83.6% 0.022 89.8)",
-          "oklch(95.0% 0.022 89.8)"
-        ]
-      },
-      "oxide": {
-        "role": "primary",
-        "displayName": "Oxide",
-        "purpose": "The next move. One per screen, or none.",
-        "canonical": "oklch(59.7% 0.155 43.6)",
-        "tonalRamp": [
-          "oklch(15.0% 0.155 43.6)",
-          "oklch(26.4% 0.155 43.6)",
-          "oklch(37.9% 0.155 43.6)",
-          "oklch(49.3% 0.155 43.6)",
-          "oklch(60.7% 0.155 43.6)",
-          "oklch(72.1% 0.155 43.6)",
-          "oklch(83.6% 0.155 43.6)",
-          "oklch(95.0% 0.155 43.6)"
-        ]
-      },
-      "signal": {
-        "role": "secondary",
-        "displayName": "Signal",
-        "purpose": "Amplifier green. Present, correct, in key, passed.",
-        "canonical": "oklch(66.6% 0.119 128.6)",
-        "tonalRamp": [
-          "oklch(15.0% 0.119 128.6)",
-          "oklch(26.4% 0.119 128.6)",
-          "oklch(37.9% 0.119 128.6)",
-          "oklch(49.3% 0.119 128.6)",
-          "oklch(60.7% 0.119 128.6)",
-          "oklch(72.1% 0.119 128.6)",
-          "oklch(83.6% 0.119 128.6)",
-          "oklch(95.0% 0.119 128.6)"
-        ]
-      },
-      "alert": {
-        "role": "tertiary",
-        "displayName": "Alert",
-        "purpose": "Missed, avoid, outside, out of tolerance.",
-        "canonical": "oklch(53.0% 0.166 29.5)",
-        "tonalRamp": [
-          "oklch(15.0% 0.166 29.5)",
-          "oklch(26.4% 0.166 29.5)",
-          "oklch(37.9% 0.166 29.5)",
-          "oklch(49.3% 0.166 29.5)",
-          "oklch(60.7% 0.166 29.5)",
-          "oklch(72.1% 0.166 29.5)",
-          "oklch(83.6% 0.166 29.5)",
-          "oklch(95.0% 0.166 29.5)"
-        ]
-      },
-      "tobacco": {
-        "role": "tertiary",
-        "displayName": "Tobacco",
-        "purpose": "Secondary quantities and tape labels.",
-        "canonical": "oklch(58.6% 0.082 72.6)",
-        "tonalRamp": [
-          "oklch(15.0% 0.082 72.6)",
-          "oklch(26.4% 0.082 72.6)",
-          "oklch(37.9% 0.082 72.6)",
-          "oklch(49.3% 0.082 72.6)",
-          "oklch(60.7% 0.082 72.6)",
-          "oklch(72.1% 0.082 72.6)",
-          "oklch(83.6% 0.082 72.6)",
-          "oklch(95.0% 0.082 72.6)"
-        ]
-      },
-      "olive": {
-        "role": "tertiary",
-        "displayName": "Olive",
-        "purpose": "Tertiary marks and meter minor ticks.",
-        "canonical": "oklch(53.4% 0.058 109.4)",
-        "tonalRamp": [
-          "oklch(15.0% 0.058 109.4)",
-          "oklch(26.4% 0.058 109.4)",
-          "oklch(37.9% 0.058 109.4)",
-          "oklch(49.3% 0.058 109.4)",
-          "oklch(60.7% 0.058 109.4)",
-          "oklch(72.1% 0.058 109.4)",
-          "oklch(83.6% 0.058 109.4)",
-          "oklch(95.0% 0.058 109.4)"
-        ]
-      },
-      "steel": {
-        "role": "tertiary",
-        "displayName": "Steel",
-        "purpose": "Inactive hardware, dividers, scrollbar thumbs.",
-        "canonical": "oklch(66.1% 0.008 151.8)",
-        "tonalRamp": [
-          "oklch(15.0% 0.008 151.8)",
-          "oklch(26.4% 0.008 151.8)",
-          "oklch(37.9% 0.008 151.8)",
-          "oklch(49.3% 0.008 151.8)",
-          "oklch(60.7% 0.008 151.8)",
-          "oklch(72.1% 0.008 151.8)",
-          "oklch(83.6% 0.008 151.8)",
-          "oklch(95.0% 0.008 151.8)"
-        ]
-      }
-    },
-    "typographyMeta": {
-      "display": {
-        "displayName": "Display",
-        "purpose": "The one statement at the top of a screen. Barlow Condensed 700."
-      },
-      "title": {
-        "displayName": "Title",
-        "purpose": "Section headings, written as statements rather than labels."
-      },
-      "body": {
-        "displayName": "Body",
-        "purpose": "Barlow, capped at a 38rem measure inside any workspace width."
-      },
-      "label": {
-        "displayName": "Legend",
-        "purpose": "Nomenclature above a control. Never above a heading."
-      },
-      "readout": {
-        "displayName": "Readout",
-        "purpose": "Azeret Mono, tabular. Every quantity on the instrument."
-      }
-    },
-    "shadows": [
-      {
-        "name": "depth-panel",
-        "value": "inset 0 1px 0 var(--edge-lit), inset 0 -1px 0 var(--edge-dark)",
-        "purpose": "A faceplate: lit on top, shadowed under. Bolted, not floating."
-      },
-      {
-        "name": "depth-well",
-        "value": "inset 0 1px 2px rgba(0,0,0,.55), inset 0 -1px 0 var(--groove-lip)",
-        "purpose": "Milled out. Readouts, fields, tables, the neck."
-      },
-      {
-        "name": "depth-press",
-        "value": "inset 0 2px 3px rgba(0,0,0,.6), inset 0 -1px 0 var(--groove-lip)",
-        "purpose": "A switch pressed in; the light moves to the bottom lip."
-      },
-      {
-        "name": "depth-go",
-        "value": "inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.45)",
-        "purpose": "The oxide committing control."
-      },
-      {
-        "name": "depth-chassis",
-        "value": "0 -1px 0 var(--edge-lit), 0 -6px 14px -8px rgba(0,0,0,.7)",
-        "purpose": "The only outer shadow: where the transport meets the plate."
-      },
-      {
-        "name": "bezel",
-        "value": "inset 0 0 0 1px rgba(0,0,0,.5)",
-        "purpose": "The ring a seated lamp or screw sits in."
-      },
-      {
-        "name": "lamp-lit",
-        "value": "0 0 6px -1px <lamp colour>",
-        "purpose": "A tight bleed onto the paint. Never a bloom."
-      }
-    ],
-    "motion": [
-      {
-        "name": "m-click",
-        "value": "120ms",
-        "purpose": "Switch throw, key press, lamp on."
-      },
-      {
-        "name": "m-panel",
-        "value": "200ms",
-        "purpose": "Drawer, disclosure, rail reveal."
-      },
-      {
-        "name": "m-sweep",
-        "value": "300ms",
-        "purpose": "Needle travel, progression change, note reseat."
-      },
-      {
-        "name": "ease-mech",
-        "value": "cubic-bezier(.2,.8,.3,1)",
-        "purpose": "Mechanical settle. Fast off the mark, no overshoot: a detent, not a spring."
-      },
-      {
-        "name": "ease-snap",
-        "value": "cubic-bezier(.35,0,.2,1)",
-        "purpose": "State changes on controls."
-      },
-      {
-        "name": "reduced-motion",
-        "value": "all durations collapse to 1ms",
-        "purpose": "Non-negotiable, honoured across the system."
-      }
-    ],
-    "breakpoints": [
-      {
-        "name": "phone",
-        "value": "768px"
-      },
-      {
-        "name": "wide-phone",
-        "value": "820px"
-      },
-      {
-        "name": "tablet",
-        "value": "1024px"
-      },
-      {
-        "name": "landscape-short",
-        "value": "520px tall"
-      }
+ "schemaVersion": 2,
+ "generatedAt": "2026-09-03T08:42:03Z",
+ "title": "Design System: Outside In Bass Lab",
+ "extensions": {
+  "colorMeta": {
+   "stand": {
+    "role": "neutral",
+    "displayName": "Stand",
+    "canonical": "oklch(19.5% 0.011 229.6)",
+    "tonalRamp": [
+     "oklch(15% 0.007 229.6)",
+     "oklch(26% 0.009 229.6)",
+     "oklch(38% 0.010 229.6)",
+     "oklch(49% 0.011 229.6)",
+     "oklch(61% 0.011 229.6)",
+     "oklch(72% 0.010 229.6)",
+     "oklch(84% 0.009 229.6)",
+     "oklch(95% 0.007 229.6)"
     ]
+   },
+   "stand-2": {
+    "role": "neutral",
+    "displayName": "Strip",
+    "canonical": "oklch(16.4% 0.010 234.6)",
+    "tonalRamp": [
+     "oklch(15% 0.007 234.6)",
+     "oklch(26% 0.008 234.6)",
+     "oklch(38% 0.010 234.6)",
+     "oklch(49% 0.010 234.6)",
+     "oklch(61% 0.010 234.6)",
+     "oklch(72% 0.010 234.6)",
+     "oklch(84% 0.008 234.6)",
+     "oklch(95% 0.007 234.6)"
+    ]
+   },
+   "fold": {
+    "role": "neutral",
+    "displayName": "Fold",
+    "canonical": "oklch(17.3% 0.009 224.1)",
+    "tonalRamp": [
+     "oklch(15% 0.006 224.1)",
+     "oklch(26% 0.007 224.1)",
+     "oklch(38% 0.008 224.1)",
+     "oklch(49% 0.009 224.1)",
+     "oklch(61% 0.009 224.1)",
+     "oklch(72% 0.008 224.1)",
+     "oklch(84% 0.007 224.1)",
+     "oklch(95% 0.006 224.1)"
+    ]
+   },
+   "paper": {
+    "role": "neutral",
+    "displayName": "Paper",
+    "canonical": "oklch(97.7% 0.010 87.5)",
+    "tonalRamp": [
+     "oklch(15% 0.006 87.5)",
+     "oklch(26% 0.008 87.5)",
+     "oklch(38% 0.009 87.5)",
+     "oklch(49% 0.010 87.5)",
+     "oklch(61% 0.010 87.5)",
+     "oklch(72% 0.009 87.5)",
+     "oklch(84% 0.008 87.5)",
+     "oklch(95% 0.006 87.5)"
+    ]
+   },
+   "paper-2": {
+    "role": "neutral",
+    "displayName": "Shaded Paper",
+    "canonical": "oklch(95.3% 0.017 88.0)",
+    "tonalRamp": [
+     "oklch(15% 0.011 88.0)",
+     "oklch(26% 0.014 88.0)",
+     "oklch(38% 0.016 88.0)",
+     "oklch(49% 0.017 88.0)",
+     "oklch(61% 0.017 88.0)",
+     "oklch(72% 0.016 88.0)",
+     "oklch(84% 0.014 88.0)",
+     "oklch(95% 0.011 88.0)"
+    ]
+   },
+   "paper-3": {
+    "role": "neutral",
+    "displayName": "Well Stock",
+    "canonical": "oklch(92.9% 0.021 88.7)",
+    "tonalRamp": [
+     "oklch(15% 0.014 88.7)",
+     "oklch(26% 0.017 88.7)",
+     "oklch(38% 0.020 88.7)",
+     "oklch(49% 0.021 88.7)",
+     "oklch(61% 0.021 88.7)",
+     "oklch(72% 0.020 88.7)",
+     "oklch(84% 0.017 88.7)",
+     "oklch(95% 0.014 88.7)"
+    ]
+   },
+   "paper-edge": {
+    "role": "neutral",
+    "displayName": "Trim",
+    "canonical": "oklch(89.2% 0.025 89.2)",
+    "tonalRamp": [
+     "oklch(15% 0.016 89.2)",
+     "oklch(26% 0.021 89.2)",
+     "oklch(38% 0.024 89.2)",
+     "oklch(49% 0.025 89.2)",
+     "oklch(61% 0.025 89.2)",
+     "oklch(72% 0.024 89.2)",
+     "oklch(84% 0.021 89.2)",
+     "oklch(95% 0.016 89.2)"
+    ]
+   },
+   "ink": {
+    "role": "neutral",
+    "displayName": "Warm Black",
+    "canonical": "oklch(21.8% 0.006 91.6)",
+    "tonalRamp": [
+     "oklch(15% 0.004 91.6)",
+     "oklch(26% 0.005 91.6)",
+     "oklch(38% 0.006 91.6)",
+     "oklch(49% 0.006 91.6)",
+     "oklch(61% 0.006 91.6)",
+     "oklch(72% 0.006 91.6)",
+     "oklch(84% 0.005 91.6)",
+     "oklch(95% 0.004 91.6)"
+    ]
+   },
+   "ink-2": {
+    "role": "neutral",
+    "displayName": "Ink Two",
+    "canonical": "oklch(38.7% 0.010 91.6)",
+    "tonalRamp": [
+     "oklch(15% 0.007 91.6)",
+     "oklch(26% 0.008 91.6)",
+     "oklch(38% 0.010 91.6)",
+     "oklch(49% 0.010 91.6)",
+     "oklch(61% 0.010 91.6)",
+     "oklch(72% 0.010 91.6)",
+     "oklch(84% 0.008 91.6)",
+     "oklch(95% 0.007 91.6)"
+    ]
+   },
+   "ink-3": {
+    "role": "neutral",
+    "displayName": "Ink Three",
+    "canonical": "oklch(51.4% 0.014 91.6)",
+    "tonalRamp": [
+     "oklch(15% 0.009 91.6)",
+     "oklch(26% 0.012 91.6)",
+     "oklch(38% 0.013 91.6)",
+     "oklch(49% 0.014 91.6)",
+     "oklch(61% 0.014 91.6)",
+     "oklch(72% 0.013 91.6)",
+     "oklch(84% 0.012 91.6)",
+     "oklch(95% 0.009 91.6)"
+    ]
+   },
+   "ink-4": {
+    "role": "neutral",
+    "displayName": "Mark Ink",
+    "canonical": "oklch(68.0% 0.018 91.6)",
+    "tonalRamp": [
+     "oklch(15% 0.012 91.6)",
+     "oklch(26% 0.015 91.6)",
+     "oklch(38% 0.017 91.6)",
+     "oklch(49% 0.018 91.6)",
+     "oklch(61% 0.018 91.6)",
+     "oklch(72% 0.017 91.6)",
+     "oklch(84% 0.015 91.6)",
+     "oklch(95% 0.012 91.6)"
+    ]
+   },
+   "rule": {
+    "role": "neutral",
+    "displayName": "Rule",
+    "canonical": "oklch(87.6% 0.023 89.8)",
+    "tonalRamp": [
+     "oklch(15% 0.015 89.8)",
+     "oklch(26% 0.019 89.8)",
+     "oklch(38% 0.021 89.8)",
+     "oklch(49% 0.022 89.8)",
+     "oklch(61% 0.022 89.8)",
+     "oklch(72% 0.021 89.8)",
+     "oklch(84% 0.019 89.8)",
+     "oklch(95% 0.015 89.8)"
+    ]
+   },
+   "rule-2": {
+    "role": "neutral",
+    "displayName": "Enclosing Rule",
+    "canonical": "oklch(79.5% 0.029 90.9)",
+    "tonalRamp": [
+     "oklch(15% 0.019 90.9)",
+     "oklch(26% 0.023 90.9)",
+     "oklch(38% 0.027 90.9)",
+     "oklch(49% 0.028 90.9)",
+     "oklch(61% 0.028 90.9)",
+     "oklch(72% 0.027 90.9)",
+     "oklch(84% 0.023 90.9)",
+     "oklch(95% 0.019 90.9)"
+    ]
+   },
+   "rule-3": {
+    "role": "neutral",
+    "displayName": "Heavy Rule",
+    "canonical": "oklch(70.7% 0.033 88.4)",
+    "tonalRamp": [
+     "oklch(15% 0.021 88.4)",
+     "oklch(26% 0.027 88.4)",
+     "oklch(38% 0.031 88.4)",
+     "oklch(49% 0.032 88.4)",
+     "oklch(61% 0.032 88.4)",
+     "oklch(72% 0.031 88.4)",
+     "oklch(84% 0.027 88.4)",
+     "oklch(95% 0.021 88.4)"
+    ]
+   },
+   "stave": {
+    "role": "neutral",
+    "displayName": "Stave",
+    "canonical": "oklch(88.3% 0.021 88.7)",
+    "tonalRamp": [
+     "oklch(15% 0.014 88.7)",
+     "oklch(26% 0.017 88.7)",
+     "oklch(38% 0.020 88.7)",
+     "oklch(49% 0.021 88.7)",
+     "oklch(61% 0.021 88.7)",
+     "oklch(72% 0.020 88.7)",
+     "oklch(84% 0.017 88.7)",
+     "oklch(95% 0.014 88.7)"
+    ]
+   },
+   "vermillion": {
+    "role": "primary",
+    "displayName": "Vermillion",
+    "canonical": "oklch(54.5% 0.184 32.7)",
+    "tonalRamp": [
+     "oklch(15% 0.120 32.7)",
+     "oklch(26% 0.151 32.7)",
+     "oklch(38% 0.172 32.7)",
+     "oklch(49% 0.183 32.7)",
+     "oklch(61% 0.183 32.7)",
+     "oklch(72% 0.172 32.7)",
+     "oklch(84% 0.151 32.7)",
+     "oklch(95% 0.120 32.7)"
+    ]
+   },
+   "vermillion-deep": {
+    "role": "primary",
+    "displayName": "Deep Vermillion",
+    "canonical": "oklch(46.2% 0.157 32.9)",
+    "tonalRamp": [
+     "oklch(15% 0.102 32.9)",
+     "oklch(26% 0.129 32.9)",
+     "oklch(38% 0.147 32.9)",
+     "oklch(49% 0.156 32.9)",
+     "oklch(61% 0.156 32.9)",
+     "oklch(72% 0.147 32.9)",
+     "oklch(84% 0.129 32.9)",
+     "oklch(95% 0.102 32.9)"
+    ]
+   },
+   "on-vermillion": {
+    "role": "primary",
+    "displayName": "On Vermillion",
+    "canonical": "oklch(98.8% 0.009 67.7)",
+    "tonalRamp": [
+     "oklch(15% 0.006 67.7)",
+     "oklch(26% 0.007 67.7)",
+     "oklch(38% 0.008 67.7)",
+     "oklch(49% 0.008 67.7)",
+     "oklch(61% 0.008 67.7)",
+     "oklch(72% 0.008 67.7)",
+     "oklch(84% 0.007 67.7)",
+     "oklch(95% 0.006 67.7)"
+    ]
+   },
+   "pencil": {
+    "role": "secondary",
+    "displayName": "Pencil Blue",
+    "canonical": "oklch(47.7% 0.118 258.0)",
+    "tonalRamp": [
+     "oklch(15% 0.077 258.0)",
+     "oklch(26% 0.097 258.0)",
+     "oklch(38% 0.110 258.0)",
+     "oklch(49% 0.117 258.0)",
+     "oklch(61% 0.117 258.0)",
+     "oklch(72% 0.110 258.0)",
+     "oklch(84% 0.097 258.0)",
+     "oklch(95% 0.077 258.0)"
+    ]
+   },
+   "pencil-2": {
+    "role": "secondary",
+    "displayName": "Deep Pencil",
+    "canonical": "oklch(40.7% 0.100 258.0)",
+    "tonalRamp": [
+     "oklch(15% 0.065 258.0)",
+     "oklch(26% 0.083 258.0)",
+     "oklch(38% 0.094 258.0)",
+     "oklch(49% 0.100 258.0)",
+     "oklch(61% 0.100 258.0)",
+     "oklch(72% 0.094 258.0)",
+     "oklch(84% 0.083 258.0)",
+     "oklch(95% 0.065 258.0)"
+    ]
+   },
+   "moss": {
+    "role": "secondary",
+    "displayName": "Moss",
+    "canonical": "oklch(51.7% 0.108 118.0)",
+    "tonalRamp": [
+     "oklch(15% 0.070 118.0)",
+     "oklch(26% 0.089 118.0)",
+     "oklch(38% 0.101 118.0)",
+     "oklch(49% 0.108 118.0)",
+     "oklch(61% 0.108 118.0)",
+     "oklch(72% 0.101 118.0)",
+     "oklch(84% 0.089 118.0)",
+     "oklch(95% 0.070 118.0)"
+    ]
+   },
+   "moss-line": {
+    "role": "secondary",
+    "displayName": "Moss Line",
+    "canonical": "oklch(65.3% 0.128 117.7)",
+    "tonalRamp": [
+     "oklch(15% 0.083 117.7)",
+     "oklch(26% 0.105 117.7)",
+     "oklch(38% 0.120 117.7)",
+     "oklch(49% 0.127 117.7)",
+     "oklch(61% 0.127 117.7)",
+     "oklch(72% 0.120 117.7)",
+     "oklch(84% 0.105 117.7)",
+     "oklch(95% 0.083 117.7)"
+    ]
+   },
+   "caution": {
+    "role": "tertiary",
+    "displayName": "Ochre",
+    "canonical": "oklch(52.4% 0.107 80.1)",
+    "tonalRamp": [
+     "oklch(15% 0.069 80.1)",
+     "oklch(26% 0.088 80.1)",
+     "oklch(38% 0.100 80.1)",
+     "oklch(49% 0.106 80.1)",
+     "oklch(61% 0.106 80.1)",
+     "oklch(72% 0.100 80.1)",
+     "oklch(84% 0.088 80.1)",
+     "oklch(95% 0.069 80.1)"
+    ]
+   },
+   "stop": {
+    "role": "tertiary",
+    "displayName": "Deep Oxide",
+    "canonical": "oklch(44.4% 0.135 35.9)",
+    "tonalRamp": [
+     "oklch(15% 0.088 35.9)",
+     "oklch(26% 0.111 35.9)",
+     "oklch(38% 0.127 35.9)",
+     "oklch(49% 0.134 35.9)",
+     "oklch(61% 0.134 35.9)",
+     "oklch(72% 0.127 35.9)",
+     "oklch(84% 0.111 35.9)",
+     "oklch(95% 0.088 35.9)"
+    ]
+   },
+   "neck-voice": {
+    "role": "tertiary",
+    "displayName": "Neck Teal",
+    "canonical": "oklch(48.5% 0.080 210.0)",
+    "tonalRamp": [
+     "oklch(15% 0.052 210.0)",
+     "oklch(26% 0.066 210.0)",
+     "oklch(38% 0.075 210.0)",
+     "oklch(49% 0.080 210.0)",
+     "oklch(61% 0.080 210.0)",
+     "oklch(72% 0.075 210.0)",
+     "oklch(84% 0.066 210.0)",
+     "oklch(95% 0.052 210.0)"
+    ]
+   },
+   "neck-colour": {
+    "role": "tertiary",
+    "displayName": "Neck Plum",
+    "canonical": "oklch(45.5% 0.128 308.6)",
+    "tonalRamp": [
+     "oklch(15% 0.083 308.6)",
+     "oklch(26% 0.105 308.6)",
+     "oklch(38% 0.119 308.6)",
+     "oklch(49% 0.127 308.6)",
+     "oklch(61% 0.127 308.6)",
+     "oklch(72% 0.119 308.6)",
+     "oklch(84% 0.105 308.6)",
+     "oklch(95% 0.083 308.6)"
+    ]
+   }
   },
-  "components": [
-    {
-      "name": "Rocker",
-      "kind": "button",
-      "refersTo": "rocker",
-      "description": "The switch. Default state of every control that is not the one next action.",
-      "html": "<button class=\"ds-rocker\">Loop</button><button class=\"ds-rocker\" aria-pressed=\"true\">Count in</button>",
-      "css": ".ds-rocker{font-family:\"Barlow Condensed\",system-ui,sans-serif;font-weight:600;font-size:.875rem;letter-spacing:.08em;text-transform:uppercase;color:#918b7c;background:#2b2720;border:0;border-radius:2px;padding:.5rem 1rem;min-height:2.25rem;margin-right:.5rem;cursor:pointer;box-shadow:inset 0 1px 0 rgba(232,226,210,.085),inset 0 -1px 0 rgba(0,0,0,.62);transition:color 120ms cubic-bezier(.35,0,.2,1),background 120ms cubic-bezier(.35,0,.2,1),box-shadow 120ms cubic-bezier(.35,0,.2,1),transform 120ms cubic-bezier(.35,0,.2,1)}.ds-rocker:hover{color:#e8e2d2}.ds-rocker[aria-pressed=\"true\"]{color:#e8e2d2;background:#0f0e0a;box-shadow:inset 0 2px 3px rgba(0,0,0,.6),inset 0 -1px 0 rgba(232,226,210,.06)}.ds-rocker:active{transform:translateY(1px)}.ds-rocker:focus-visible{outline:2px solid #c85a24;outline-offset:2px}"
-    },
-    {
-      "name": "Go Rocker",
-      "kind": "button",
-      "refersTo": "rocker-go",
-      "description": "The one committing control. Oxide, one per screen, none when there is no next action.",
-      "html": "<button class=\"ds-go\">Begin <svg viewBox=\"0 0 12 12\" width=\"9\" height=\"9\" aria-hidden=\"true\"><path d=\"M2 1 10 6 2 11Z\" fill=\"currentColor\"/></svg></button>",
-      "css": ".ds-go{display:inline-flex;align-items:center;gap:.5rem;font-family:\"Barlow Condensed\",system-ui,sans-serif;font-weight:600;font-size:.875rem;letter-spacing:.08em;text-transform:uppercase;background:#c85a24;color:#17130f;border:0;border-radius:2px;padding:.5rem 1rem;min-height:2.25rem;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.45);transition:background 120ms cubic-bezier(.35,0,.2,1),transform 120ms cubic-bezier(.35,0,.2,1)}.ds-go:hover{background:#d4682f}.ds-go:active{transform:translateY(1px)}.ds-go svg{transition:transform 120ms cubic-bezier(.35,0,.2,1)}.ds-go:hover svg{transform:translateX(2px)}.ds-go:focus-visible{outline:2px solid #c85a24;outline-offset:2px}"
-    },
-    {
-      "name": "Lamp Row",
-      "kind": "custom",
-      "refersTo": "lamp-lit",
-      "description": "Indicator lamps. An unlit lamp is still visibly a lamp, because a panel with none and a panel with one dark are different objects.",
-      "html": "<div class=\"ds-lamps\"><i class=\"ds-lamp\" data-on=\"true\"></i><i class=\"ds-lamp\"></i><i class=\"ds-lamp\"></i><i class=\"ds-lamp\"></i></div>",
-      "css": ".ds-lamps{display:flex;gap:.375rem;align-items:center;padding:.5rem;background:#221f19;border-radius:2px}.ds-lamp{width:8px;height:8px;border-radius:50%;background:#41562a;box-shadow:inset 0 0 0 1px rgba(0,0,0,.5);transition:background 120ms cubic-bezier(.35,0,.2,1),box-shadow 120ms cubic-bezier(.35,0,.2,1)}.ds-lamp[data-on=\"true\"]{background:#7ea24f;box-shadow:inset 0 0 0 1px rgba(0,0,0,.4),0 0 6px -1px #7ea24f}"
-    },
-    {
-      "name": "Well Readout",
-      "kind": "custom",
-      "refersTo": "well-readout",
-      "description": "A quantity milled into the plate. Tabular so a changing number never shifts its neighbours.",
-      "html": "<div class=\"ds-readouts\"><div><span class=\"ds-legend\">Tempo</span><b class=\"ds-well\">84</b><span class=\"ds-fine\">BPM</span></div><div><span class=\"ds-legend\">Bar</span><b class=\"ds-well\">07</b></div></div>",
-      "css": ".ds-readouts{display:flex;gap:2rem;padding:.75rem;background:#221f19;border-radius:2px}.ds-readouts>div{display:flex;flex-direction:column;gap:2px;align-items:flex-start}.ds-legend{font-family:\"Barlow Condensed\",system-ui,sans-serif;font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#918b7c}.ds-well{font-family:\"Azeret Mono\",monospace;font-variant-numeric:tabular-nums;font-weight:500;font-size:1.5rem;color:#e8e2d2;background:#0f0e0a;border-radius:3px;padding:.125rem .5rem;box-shadow:inset 0 1px 2px rgba(0,0,0,.55),inset 0 -1px 0 rgba(232,226,210,.06)}.ds-fine{font-family:\"Azeret Mono\",monospace;font-size:11px;color:#6d6759}"
-    },
-    {
-      "name": "Engraved Section",
-      "kind": "custom",
-      "refersTo": "typography.title",
-      "description": "The system signature: one plate, sections divided by a routed groove. Not a card, and no kicker above the heading.",
-      "html": "<div class=\"ds-plate\"><h2 class=\"ds-h\">Several can be correct. Their jobs are different.</h2><p class=\"ds-p\">The board is driven by where the harmony is going, not by a scale you selected.</p><hr class=\"ds-groove\"/><h2 class=\"ds-h\">Progression first. Scale second.</h2></div>",
-      "css": ".ds-plate{background:#221f19;padding:1.5rem;border-radius:2px;box-shadow:inset 0 1px 0 rgba(232,226,210,.085),inset 0 -1px 0 rgba(0,0,0,.62)}.ds-h{font-family:\"Barlow Condensed\",system-ui,sans-serif;font-weight:700;font-size:1.75rem;line-height:1.1;letter-spacing:.005em;color:#e8e2d2;margin:0 0 .5rem}.ds-p{font-family:\"Barlow\",system-ui,sans-serif;font-size:1rem;line-height:1.5;color:#bdb7a6;margin:0;max-width:38rem}.ds-groove{height:2px;border:0;margin:1.5rem 0;background:linear-gradient(rgba(0,0,0,.5) 0 1px,rgba(232,226,210,.06) 1px 2px)}"
-    },
-    {
-      "name": "Field",
-      "kind": "input",
-      "refersTo": "well-readout",
-      "description": "A slot cut in the plate. Recessed rather than raised; the hairline strengthens on hover.",
-      "html": "<input class=\"ds-field\" type=\"text\" value=\"Dm9 | G13 | Cmaj9\" aria-label=\"Chord progression\" />",
-      "css": ".ds-field{background:#0f0e0a;color:#e8e2d2;border:0;border-radius:3px;font-family:\"Azeret Mono\",monospace;font-size:.9375rem;padding:.5rem .75rem;width:100%;box-shadow:inset 0 1px 2px rgba(0,0,0,.55),inset 0 -1px 0 rgba(232,226,210,.06)}.ds-field:focus-visible{outline:2px solid #c85a24;outline-offset:2px}"
-    },
-    {
-      "name": "Note Role Marker",
-      "kind": "custom",
-      "refersTo": "colors.oxide",
-      "description": "From the harmony fretboard. Role is carried by ink level and outline as much as by colour; only the current position takes oxide.",
-      "html": "<div class=\"ds-neck\"><span class=\"ds-note ds-now\">F&sharp;</span><span class=\"ds-note ds-guide\">A</span><span class=\"ds-note ds-chord\">D</span><span class=\"ds-note ds-avail\">G</span><span class=\"ds-note ds-out\">E&flat;</span></div>",
-      "css": ".ds-neck{display:flex;gap:.375rem;padding:.75rem;background:#0f0e0a;border-radius:3px;box-shadow:inset 0 1px 2px rgba(0,0,0,.55)}.ds-note{font-family:\"Azeret Mono\",monospace;font-size:.875rem;width:2.25rem;height:2.25rem;display:grid;place-items:center;border-radius:2px;box-shadow:inset 0 0 0 1px rgba(232,226,210,.09)}.ds-now{background:#c85a24;color:#17130f;box-shadow:none}.ds-guide{color:#7ea24f;box-shadow:inset 0 0 0 1px #41562a}.ds-chord{color:#e8e2d2}.ds-avail{color:#918b7c}.ds-out{color:#b8392c;box-shadow:inset 0 0 0 1px rgba(184,57,44,.4)}"
-    }
+  "typographyMeta": {
+   "display": {
+    "displayName": "Display",
+    "purpose": "Playfair, struck. The title at the head of a page and the wordmark. Never below --t-h3: a didone's hairlines disappear."
+   },
+   "headline": {
+    "displayName": "Headline",
+    "purpose": "Source Serif. A section within a page."
+   },
+   "title": {
+    "displayName": "Title",
+    "purpose": "Source Serif. A subsection or a card heading."
+   },
+   "body": {
+    "displayName": "Body",
+    "purpose": "Source Serif, tracking zero. Everything read, at 65-75ch."
+   },
+   "label": {
+    "displayName": "Label",
+    "purpose": "Inter, 11px uppercase tracked .14em. The engraved plate above a control. Never sets a sentence."
+   },
+   "hand": {
+    "displayName": "Margin Hand",
+    "purpose": "Caveat in pencil blue, rotated -1.5deg. Asides only, never load-bearing."
+   },
+   "readout": {
+    "displayName": "Readout",
+    "purpose": "Playfair, tabular lining figures. A number read from across the room: tempo, bar, cents."
+   },
+   "notation": {
+    "displayName": "Notation",
+    "purpose": "Bravura SMuFL. Real clefs, noteheads and time signatures on real staves."
+   }
+  },
+  "shadows": [
+   {
+    "name": "book",
+    "value": "0 28px 70px -24px rgba(0,0,0,.62),0 3px 10px rgba(0,0,0,.28)",
+    "purpose": "The two pages and the instrument strip, cast onto the stand. Used three times in the whole design."
+   },
+   {
+    "name": "raise",
+    "value": "0 1px 0 rgba(255,255,255,.75),0 1px 3px rgba(27,26,23,.14)",
+    "purpose": "A lit top edge and a short shadow, for something resting on the page."
+   },
+   {
+    "name": "tape",
+    "value": "0 2px 4px -1px rgba(27,26,23,.28)",
+    "purpose": "The strip of vermillion tape at rest."
+   },
+   {
+    "name": "tape-lift",
+    "value": "0 4px 8px -2px rgba(27,26,23,.32)",
+    "purpose": "The tape on hover: the only thing in the design that rises."
+   },
+   {
+    "name": "tape-press",
+    "value": "0 1px 2px -1px rgba(27,26,23,.30)",
+    "purpose": "The tape pressed."
+   },
+   {
+    "name": "well",
+    "value": "inset 0 1px 3px rgba(27,26,23,.12),inset 0 0 0 1px var(--rule)",
+    "purpose": "A well cut into the page. Means recessed, never emphasised."
+   },
+   {
+    "name": "press",
+    "value": "inset 0 2px 4px rgba(27,26,23,.18)",
+    "purpose": "The active state of a ruled control. The press goes into the page."
+   },
+   {
+    "name": "knob",
+    "value": "0 1px 2px rgba(27,26,23,.35)",
+    "purpose": "The travelling knob of a switch."
+   }
   ],
-  "narrative": {
-    "northStar": "The Rack Unit",
-    "overview": "This is a piece of equipment, not a page about one. Warm charcoal faceplates under tungsten, aged bone nomenclature silkscreened onto them, wells milled out where a quantity has to be read, and lamps that are either lit or not. A screen is a single faceplate with its sections engraved into it, not a stack of tiles. Depth comes from one inversion: a panel catches light on its top edge, a well catches it on the bottom lip, and that difference carries every relationship in the interface. Colour is a signal path. Green reports present and correct, oxide says this is the next move, red says a miss.",
-    "keyCharacteristics": [
-      "One faceplate per screen, divided by engraved grooves rather than by gaps.",
-      "Two depths only: bolted panel, milled well. Nothing floats.",
-      "Colour is a lamp. Green correct, oxide next, red missed.",
-      "Square corners at 2px, the radius a router bit actually leaves.",
-      "Condensed nomenclature, upright prose, mono for every measurement.",
-      "Hardware time: nothing moves for longer than 300ms."
-    ],
-    "rules": [
-      {
-        "name": "The One Oxide Rule",
-        "body": "A screen has one oxide element, and none when there is no next action. Two oxide elements means one of them is wrong.",
-        "section": "colors"
-      },
-      {
-        "name": "The Lamp Rule",
-        "body": "Colour reports state. If an element is not telling the player something true right now, it is bone or unpainted.",
-        "section": "colors"
-      },
-      {
-        "name": "The Warm Ground Rule",
-        "body": "Every neutral carries the olive-brown cast. A cool grey or blue-black reads as a screen instead of painted steel.",
-        "section": "colors"
-      },
-      {
-        "name": "The Legend Rule",
-        "body": "A legend names a control or a readout. It never sits above a section heading. Kickers are banned outright.",
-        "section": "typography"
-      },
-      {
-        "name": "The Tabular Rule",
-        "body": "Every quantity is mono with tabular figures. A tempo that shifts its neighbours going from 99 to 100 is a broken instrument.",
-        "section": "typography"
-      },
-      {
-        "name": "The One Plate Rule",
-        "body": "A screen is one faceplate with grooves cut across it. Sections are separated by a routed line, never by a gap between boxes.",
-        "section": "layout"
-      },
-      {
-        "name": "The Transport Never Hides",
-        "body": "The strip may drop labels as width shrinks, but never a function. A player mid-take cannot go looking for stop.",
-        "section": "layout"
-      },
-      {
-        "name": "The Two Depths Rule",
-        "body": "Bolted or milled. A third elevation, a floating card, or a resting drop shadow does not exist in this system.",
-        "section": "elevation"
-      },
-      {
-        "name": "The Milled Corner Rule",
-        "body": "2px everywhere, 3px in a well. A pill or a 12px card radius belongs to a different object.",
-        "section": "shapes"
-      }
-    ],
-    "dos": [
-      "Do treat a screen as one faceplate with grooves cut across it.",
-      "Do keep one oxide control per screen, and none when there is no next action.",
-      "Do mill a well for anything that reports a quantity, and only for that.",
-      "Do set every number in Azeret Mono with tabular figures.",
-      "Do put a legend above a control and nowhere else.",
-      "Do keep motion between 120ms and 300ms, on transform and opacity.",
-      "Do self-host any new face as WOFF2 under /fonts with its licence.",
-      "Do clear 44px on every target under a coarse pointer.",
-      "Do collapse all motion to 1ms under prefers-reduced-motion."
-    ],
-    "donts": [
-      "Don't give a section its own background, border and padding. That is the card layout in costume.",
-      "Don't add a resting drop shadow, a third elevation, or a radius above 3px.",
-      "Don't put a kicker above a heading. This one has no exception.",
-      "Don't use a text arrow as an icon. Transport and caret glyphs are drawn.",
-      "Don't colour anything that is not reporting state.",
-      "Don't introduce a cool grey or a blue-black; every neutral is warm.",
-      "Don't use a bounce or elastic easing. Mechanisms have detents, not springs.",
-      "Don't link a font, script or stylesheet from a third-party CDN.",
-      "Don't hide a transport function to save width. Drop the label instead.",
-      "Don't number a section in its heading, or use an em-dash in visible text."
-    ]
+  "motion": [
+   {
+    "name": "ease-page",
+    "value": "cubic-bezier(.2,.8,.2,1)",
+    "purpose": "Paper motion: a decelerating curve that settles. The default for everything."
+   },
+   {
+    "name": "ease-mech",
+    "value": "cubic-bezier(.3,.7,.2,1)",
+    "purpose": "Mechanical travel: a switch knob, a transport key."
+   },
+   {
+    "name": "ease-snap",
+    "value": "cubic-bezier(.4,0,.2,1)",
+    "purpose": "A value that lands rather than settles."
+   },
+   {
+    "name": "m-click",
+    "value": "140ms",
+    "purpose": "A control answering a press. A thirty-second note while the clock runs."
+   },
+   {
+    "name": "m-panel",
+    "value": "260ms",
+    "purpose": "A pane changing; the verso turning on a stage change. A sixteenth."
+   },
+   {
+    "name": "m-sweep",
+    "value": "420ms",
+    "purpose": "A sweep across the page. An eighth."
+   },
+   {
+    "name": "m-enter",
+    "value": "620ms",
+    "purpose": "Ink landing on paper: the arrival of a page."
+   },
+   {
+    "name": "page-turn",
+    "value": "rotateY(0 -> 180deg) about the binding, 460ms cubic-bezier(.46,.03,.24,1)",
+    "purpose": "A leaf of the book goes over. The sheet is a real element rather than a snapshot and has two faces: a front that carries the gutter shading and darkens toward its free edge, and a cooler reverse with a hairline of catch-light on its trimmed edge. Direction follows the reading order in nav.ts."
+   },
+   {
+    "name": "beat-ms",
+    "value": "published from the transport at runtime",
+    "purpose": "While the clock runs, conductor.ts publishes the live tempo and its subdivisions, motion constants become musical values, and a route change lands on the next eighth. Stopped, everything falls back to the fixed values above."
+   }
+  ],
+  "breakpoints": [
+   {
+    "name": "phone",
+    "value": "34rem"
+   },
+   {
+    "name": "compact",
+    "value": "44rem"
+   },
+   {
+    "name": "narrow",
+    "value": "52rem"
+   },
+   {
+    "name": "tablet",
+    "value": "62rem"
+   },
+   {
+    "name": "spread-collapse",
+    "value": "64rem"
+   },
+   {
+    "name": "wide",
+    "value": "68rem"
+   },
+   {
+    "name": "split-stack",
+    "value": "84rem"
+   }
+  ]
+ },
+ "components": [
+  {
+   "name": "Rocker",
+   "kind": "button",
+   "refersTo": "rocker",
+   "description": "The default control: a ruled rectangle with a stamped label. The press goes into the page.",
+   "html": "<button class=\"ds-rocker\">Count in</button>",
+   "css": ".ds-rocker{font-family:var(--font-label);font-size:max(11px,.6875rem);font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);background:transparent;border:1px solid var(--rule-2);border-radius:2px;padding:.5rem 1.25rem;min-height:2.375rem;cursor:pointer;transition:color 140ms cubic-bezier(.2,.8,.2,1),background 140ms cubic-bezier(.2,.8,.2,1),border-color 140ms cubic-bezier(.2,.8,.2,1),box-shadow 140ms cubic-bezier(.2,.8,.2,1)}.ds-rocker:hover{color:var(--ink);background:var(--paper-2);border-color:var(--rule-3)}.ds-rocker:active{box-shadow:inset 0 2px 4px rgba(27,26,23,.18)}.ds-rocker:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px}"
+  },
+  {
+   "name": "Rocker, engaged",
+   "kind": "button",
+   "refersTo": "rocker-on",
+   "description": "The same control latched on. Vermillion label, border and wash, because it is running.",
+   "html": "<button class=\"ds-rocker-on\" aria-pressed=\"true\">Loop</button>",
+   "css": ".ds-rocker-on{font-family:var(--font-label);font-size:max(11px,.6875rem);font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--vermillion);background:rgba(196,53,26,.10);border:1px solid var(--vermillion);border-radius:2px;padding:.5rem 1.25rem;min-height:2.375rem;cursor:pointer}.ds-rocker-on:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px}"
+  },
+  {
+   "name": "Tape",
+   "kind": "button",
+   "refersTo": "tape",
+   "description": "The one that commits. A strip of vermillion tape stuck to the page, torn at both ends by two fixed-width pseudo-elements so the tear stays the same size whatever the label says.",
+   "html": "<button class=\"ds-tape\">Complete stage &#9654;</button>",
+   "css": ".ds-tape{position:relative;font-family:var(--font-label);font-size:max(11px,.6875rem);font-weight:600;letter-spacing:.22em;text-transform:uppercase;background:var(--vermillion);color:var(--on-vermillion);border:0;border-radius:0;padding:1rem 2.5rem;min-height:2.75rem;cursor:pointer;box-shadow:0 2px 4px -1px rgba(27,26,23,.28);transition:background 140ms cubic-bezier(.2,.8,.2,1),box-shadow 140ms cubic-bezier(.2,.8,.2,1),transform 140ms cubic-bezier(.2,.8,.2,1)}.ds-tape::before,.ds-tape::after{content:\"\";position:absolute;top:0;bottom:0;width:5px;background:inherit;pointer-events:none}.ds-tape::before{left:-6px;clip-path:polygon(100% 0,55% 9%,95% 20%,45% 32%,88% 44%,52% 56%,97% 67%,48% 79%,85% 91%,100% 100%)}.ds-tape::after{right:-6px;clip-path:polygon(0 0,48% 10%,8% 22%,55% 34%,12% 46%,50% 58%,5% 69%,52% 81%,15% 92%,0 100%)}.ds-tape:hover{background:var(--vermillion-deep);transform:translateY(-1px);box-shadow:0 4px 8px -2px rgba(27,26,23,.32)}.ds-tape:active{transform:translateY(1px);box-shadow:0 1px 2px -1px rgba(27,26,23,.30)}.ds-tape:disabled{background:var(--rule-2);color:var(--ink-2);transform:none;box-shadow:none;cursor:not-allowed}.ds-tape:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px}"
+  },
+  {
+   "name": "Chalk",
+   "kind": "button",
+   "refersTo": "chalk",
+   "description": "The second commitment: the same rectangle struck in ink rather than vermillion, for an action that matters but is not the one thing the page is asking for.",
+   "html": "<button class=\"ds-chalk\">Open lesson</button>",
+   "css": ".ds-chalk{font-family:var(--font-label);font-size:max(11px,.6875rem);font-weight:600;letter-spacing:.14em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:0;border-radius:2px;padding:.75rem 1.75rem;min-height:2.5rem;cursor:pointer;transition:background 140ms cubic-bezier(.2,.8,.2,1)}.ds-chalk:hover{background:var(--ink-2)}.ds-chalk:active{box-shadow:inset 0 2px 4px rgba(27,26,23,.18)}.ds-chalk:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px}"
+  },
+  {
+   "name": "Switch",
+   "kind": "custom",
+   "refersTo": "switch",
+   "description": "The one fully rounded control in the design, because a switch is a switch: a rounded slot with a travelling knob.",
+   "html": "<button class=\"ds-switch\" role=\"switch\" aria-checked=\"true\" aria-label=\"Count in\"></button>",
+   "css": ".ds-switch{--sw-w:2.5rem;--sw-h:1.375rem;position:relative;width:var(--sw-w);height:var(--sw-h);border:1px solid var(--rule-2);border-radius:9999px;background:var(--paper-3);cursor:pointer;transition:background 140ms cubic-bezier(.2,.8,.2,1),border-color 140ms cubic-bezier(.2,.8,.2,1)}.ds-switch::after{content:\"\";position:absolute;top:50%;left:2px;width:calc(var(--sw-h) - 6px);height:calc(var(--sw-h) - 6px);border-radius:50%;background:var(--paper);box-shadow:0 1px 2px rgba(27,26,23,.35);transform:translateY(-50%);transition:transform 140ms cubic-bezier(.2,.8,.2,1)}.ds-switch[aria-checked=\"true\"]{background:var(--vermillion);border-color:var(--vermillion-deep)}.ds-switch[aria-checked=\"true\"]::after{transform:translate(calc(var(--sw-w) - var(--sw-h)),-50%)}.ds-switch:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px}"
+  },
+  {
+   "name": "Field",
+   "kind": "input",
+   "refersTo": "field",
+   "description": "A ruled box on the page, set in the reading face, with its plate label engraved above it.",
+   "html": "<label class=\"ds-field-wrap\"><span class=\"ds-field-plate\">Progression</span><input class=\"ds-field\" value=\"Am9 &#8594; D13\"></label>",
+   "css": ".ds-field-wrap{display:flex;flex-direction:column;gap:.5rem}.ds-field-plate{font-family:var(--font-label);font-size:max(11px,.6875rem);font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);line-height:1}.ds-field{background:var(--paper);color:var(--ink);border:1px solid var(--rule-2);border-radius:2px;padding:.5rem 1rem;font-family:var(--font);font-size:1rem;letter-spacing:0}.ds-field:hover{border-color:var(--rule-3)}.ds-field::placeholder{color:var(--ink-3)}.ds-field:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px}"
+  },
+  {
+   "name": "Stave row",
+   "kind": "custom",
+   "refersTo": "page",
+   "description": "A contents entry printed on its own five-line stave with a real Bravura bass clef at its head. The ruling is the paper the row sits on, knocked out behind the words; the entry you are on takes a vermillion rule in the margin, because a fill would cover the ruling that makes it a stave.",
+   "html": "<ol class=\"ds-stave-list\"><li><button class=\"ds-stave-row\"><i class=\"ds-clef\"></i><b class=\"ds-stave-num\">02</b><span class=\"ds-stave-text\"><span class=\"ds-stave-name\">Fretboard map</span><small class=\"ds-stave-blurb\">See functions across the whole neck</small></span></button></li><li><button class=\"ds-stave-row ds-here\"><i class=\"ds-clef\"></i><b class=\"ds-stave-num\">03</b><span class=\"ds-stave-text\"><span class=\"ds-stave-name\">Backing band</span><small class=\"ds-stave-blurb\">Vamps, progressions and tempo</small></span></button></li></ol>",
+   "css": ".ds-stave-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}.ds-stave-row{position:relative;width:100%;display:grid;grid-template-columns:1rem 1.9rem minmax(0,1fr);align-items:center;gap:.5rem;padding:.5rem .25rem;min-height:calc(28px + 1.5rem);text-align:left;border:0;background:transparent;color:var(--ink-2);cursor:pointer;background-image:repeating-linear-gradient(to bottom,var(--stave) 0,var(--stave) 1px,transparent 1px,transparent 7px);background-repeat:no-repeat;background-position:left center;background-size:100% 29px;transition:color 140ms cubic-bezier(.2,.8,.2,1)}.ds-stave-row:hover{color:var(--ink)}.ds-clef{font-family:\"Bravura\",serif;font-style:normal;font-size:1.375rem;line-height:1;color:var(--ink-4);transform:translateY(-.06em)}.ds-clef::before{content:\"\\E062\"}.ds-stave-num{font-family:var(--font-title);font-size:1.25rem;font-weight:500;font-variant-numeric:lining-nums tabular-nums;color:var(--ink-3)}.ds-stave-text{display:flex;flex-direction:column;gap:1px;min-width:0}.ds-stave-name{font-family:var(--font);font-size:1rem;text-shadow:0 0 3px var(--paper),0 0 3px var(--paper),0 0 7px var(--paper)}.ds-stave-blurb{font-family:var(--font);font-size:.8125rem;color:var(--ink-3);text-shadow:0 0 3px var(--paper),0 0 3px var(--paper),0 0 7px var(--paper)}.ds-stave-row.ds-here{color:var(--ink)}.ds-stave-row.ds-here::before{content:\"\";position:absolute;left:-.5rem;top:12%;bottom:12%;width:2px;background:var(--vermillion)}.ds-stave-row:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px}"
+  },
+  {
+   "name": "Section tabs",
+   "kind": "nav",
+   "refersTo": "tab",
+   "description": "The section rail across the head of the working page. Divided by vertical rules rather than gaps, so it reads as one strip cut from the same sheet.",
+   "html": "<nav class=\"ds-tabs\"><button class=\"ds-tab\" aria-current=\"page\">Learn</button><button class=\"ds-tab\">Practice</button><button class=\"ds-tab\">Specialties</button><button class=\"ds-tab\">Labs</button></nav>",
+   "css": ".ds-tabs{display:flex;align-items:stretch;height:3.5rem;border-bottom:1px solid var(--rule);background:var(--paper)}.ds-tab{position:relative;flex:none;display:flex;align-items:center;padding:0 1.25rem;border:0;border-right:1px solid var(--rule);background:transparent;font-family:var(--font);font-size:1rem;color:var(--ink-3);white-space:nowrap;cursor:pointer;transition:color 140ms cubic-bezier(.2,.8,.2,1),background 140ms cubic-bezier(.2,.8,.2,1)}.ds-tab:first-child{border-left:1px solid var(--rule)}.ds-tab:hover{color:var(--ink);background:var(--paper-2)}.ds-tab[aria-current=\"page\"]{color:var(--vermillion)}.ds-tab[aria-current=\"page\"]::after{content:\"\";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--vermillion)}.ds-tab:focus-visible{outline:2px solid var(--vermillion);outline-offset:-3px}"
+  },
+  {
+   "name": "Fore-edge index",
+   "kind": "nav",
+   "refersTo": "index-tab",
+   "description": "Tabs cut into the outer edge of the book, sitting on the stand rather than on the page. Rotated to run up the edge; hovering slides one out, which is what a hand does to a tab.",
+   "html": "<div class=\"ds-index-ground\"><nav class=\"ds-index\"><button class=\"ds-index-tab\" aria-current=\"page\"><svg viewBox=\"0 0 24 24\"><path d=\"M5 4h11l3 3v13H5z\"/><path d=\"M9 9h6\"/><path d=\"M9 13h6\"/><path d=\"M9 17h4\"/></svg><span class=\"ds-index-label\">Theory</span></button><button class=\"ds-index-tab\"><svg viewBox=\"0 0 24 24\"><path d=\"M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4Z\"/><path d=\"M9 4v13\"/><path d=\"M15 6.5v13\"/></svg><span class=\"ds-index-label\">Map</span></button><button class=\"ds-index-tab\"><svg viewBox=\"0 0 24 24\"><path d=\"M4 20V10\"/><path d=\"M10 20V4\"/><path d=\"M16 20v-7\"/><path d=\"M22 20H2\"/></svg><span class=\"ds-index-label\">Log</span></button></nav></div>",
+   "css": ".ds-index-ground{background:var(--stand);padding:1rem 0 1rem 1.5rem;display:flex;justify-content:flex-end;border-radius:2px}.ds-index{display:flex;flex-direction:column;gap:.5rem;width:2.5rem}.ds-index-tab{position:relative;min-height:4.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;padding:1rem 0;border:0;border-radius:0 10px 10px 0;background:var(--paper-2);color:var(--ink-3);box-shadow:0 28px 70px -24px rgba(0,0,0,.62),0 3px 10px rgba(0,0,0,.28);cursor:pointer;transition:background 140ms cubic-bezier(.2,.8,.2,1),color 140ms cubic-bezier(.2,.8,.2,1),transform 140ms cubic-bezier(.2,.8,.2,1)}.ds-index-tab:hover{background:var(--paper);color:var(--ink);transform:translateX(3px)}.ds-index-tab[aria-current=\"page\"]{background:var(--paper);color:var(--vermillion)}.ds-index-tab[aria-current=\"page\"]::before{content:\"\";position:absolute;left:0;top:14%;bottom:14%;width:2px;background:var(--vermillion)}.ds-index-label{font-family:var(--font-label);font-size:max(11px,.6875rem);font-weight:500;letter-spacing:.14em;text-transform:uppercase;line-height:1;writing-mode:vertical-rl;transform:rotate(180deg)}.ds-index-tab svg{flex:none;width:1rem;height:1rem;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}.ds-index-tab:focus-visible{outline:2px solid var(--vermillion);outline-offset:3px}"
+  },
+  {
+   "name": "The binding",
+   "kind": "custom",
+   "refersTo": "page",
+   "description": "Where a workspace opens as a spread the two pages meet at a real fold: the gutter itself, one lit hairline down its centre, and a curl hung off each side that darkens whichever page is under it. Drawn in three parts, or it reads as a dark stripe.",
+   "html": "<div class=\"ds-spread\"><div class=\"ds-spread-page\"><p class=\"ds-spread-copy\">Say degree, note name and expected function before every click. The objective is not one memorised box.</p></div><div class=\"ds-fold\"></div><div class=\"ds-spread-page\"><span class=\"ds-spread-plate\">Workspace</span></div></div>",
+   "css": ".ds-spread{display:grid;grid-template-columns:minmax(0,1fr) .625rem minmax(0,1fr);gap:0;min-height:12rem;background:var(--paper);border-radius:10px;overflow:hidden}.ds-spread-page{padding:1.75rem}.ds-spread-copy{font-family:var(--font);font-size:1rem;line-height:1.65;color:var(--ink-2);margin:0}.ds-spread-plate{font-family:var(--font-label);font-size:max(11px,.6875rem);font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);line-height:1}.ds-fold{position:relative;z-index:6;align-self:stretch;background:linear-gradient(to right,transparent 0 44%,rgba(250,247,240,.07) 44% 56%,transparent 56% 100%),linear-gradient(to right,rgba(12,17,19,.60) 0,#0c1113 40%,#0c1113 60%,rgba(12,17,19,.60) 100%);pointer-events:none}.ds-fold::before,.ds-fold::after{content:\"\";position:absolute;top:0;bottom:0;width:2.75rem;pointer-events:none}.ds-fold::before{right:100%;background:linear-gradient(to right,transparent,rgba(27,26,23,.11))}.ds-fold::after{left:100%;background:linear-gradient(to left,transparent,rgba(27,26,23,.11))}"
+  },
+  {
+   "name": "Transport strip",
+   "kind": "custom",
+   "refersTo": "transport-strip",
+   "description": "The instrument along the bottom edge: a machine bolted to the stand, not a page with controls printed on it. The play key is full-bleed into the corner so it can be hit by feel, and it is the one vermillion fill in the chrome. While the clock runs it goes to ink, so a stopped transport and a running one are never the same colour in the same place.",
+   "html": "<div class=\"ds-strip\"><button class=\"ds-key\" aria-label=\"Play\"><svg viewBox=\"0 0 18 18\" width=\"18\" height=\"18\"><path d=\"M4 2.2 16 9 4 15.8Z\" fill=\"currentColor\"/></svg></button><div class=\"ds-strip-group\"><span class=\"ds-strip-plate\">Bar</span><b class=\"ds-strip-readout\">1</b></div><i class=\"ds-barline\"></i><div class=\"ds-strip-group\"><span class=\"ds-strip-plate\">&#9833; =</span><b class=\"ds-strip-readout\">84</b></div><i class=\"ds-barline\"></i><div class=\"ds-strip-group\"><span class=\"ds-strip-mode\">Loop</span><span class=\"ds-strip-mode\">Count in</span></div></div>",
+   "css": ".ds-strip{display:flex;align-items:stretch;height:4.25rem;border-radius:10px;overflow:hidden;background:#0a0f12;font-family:var(--font-label);color:rgba(250,247,240,.90)}.ds-key{flex:none;width:5.25rem;display:grid;place-items:center;border:0;border-radius:10px 0 0 10px;background:var(--vermillion);color:var(--on-vermillion);cursor:pointer;transition:background 140ms cubic-bezier(.2,.8,.2,1)}.ds-key:hover{background:var(--vermillion-deep)}.ds-key:active{box-shadow:inset 0 2px 4px rgba(27,26,23,.18)}.ds-key:focus-visible{outline:2px solid var(--on-vermillion);outline-offset:-4px}.ds-strip-group{display:flex;align-items:center;gap:.75rem;padding:0 1.25rem}.ds-strip-plate{font-size:max(11px,.6875rem);font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:rgba(250,247,240,.55);line-height:1}.ds-strip-readout{font-family:var(--font-num);font-size:2rem;font-weight:500;line-height:1;letter-spacing:-.015em;font-variant-numeric:tabular-nums lining-nums;color:rgba(250,247,240,.90)}.ds-barline{width:1px;align-self:stretch;margin-block:1rem;background:rgba(250,247,240,.16)}.ds-strip-mode{font-size:max(11px,.6875rem);letter-spacing:.14em;text-transform:uppercase;color:rgba(250,247,240,.66);cursor:pointer}.ds-strip-mode:hover{color:rgba(250,247,240,.90)}"
   }
+ ],
+ "narrative": {
+  "northStar": "The Working Page",
+  "overview": "This is not a page you read. It is a page you play from, propped on a stand with both of your hands on an instrument, and every decision in the system follows from that. The book is open to a spread: the section's contents on the left, today's work on the right, the instrument docked in a strip along the bottom edge. Nothing floats over anything, because nothing on a stand does.\n\nThe material is warm ivory paper on a dark blue-black stand, and paper is the material rather than a theme. Two things are dark, and both are objects rather than themes: the stand the book lies on, and the instrument strip bolted to the foot of it, which is a machine and reads as one. Depth is what paper does: the book casts a real shadow onto the stand, a raised element takes a fine white top edge, and a well is cut into the sheet as darker stock. Nothing here is glass, so nothing has anything to blur.\n\nThree things carry the look. The stave is the grid: lists are set on real five-line staves with a real SMuFL clef at the head of each line, and the ruling is the paper a row is printed on rather than a divider drawn between rows. Four hands, never mixed: Playfair strikes the title, Source Serif prints everything read, Inter is stamped small and tracked as the engraved plate label above a control, and Caveat writes in the margin in pencil blue. Vermillion is live: the red marks what is running, what is current and what to press — never what is important — so a page with nothing running and nothing to press carries no red at all, and that is the correct amount.",
+  "keyCharacteristics": [
+   "Paper is the ground. Two things are dark and both are objects rather than themes: the stand the book lies on, and the instrument strip bolted to the foot of it. There is one ground; a book does not have a night mode.",
+   "A workspace opens as a spread. Reading on the verso, the instrument on the recto, and a real binding down the middle that both pages curve into.",
+   "The page is printed first, annotated in pencil second, and worked from third. Anything the interface must communicate is printed; the pencil is beside it.",
+   "Lists are set on staves. Rules are what a row sits on, not what separates it.",
+   "Everything interactive is a ruled rectangle at a 2px trim. The only fully rounded control is a switch.",
+   "Four inks with four jobs: ink reads, vermillion is live, pencil annotates, moss is a measurement taken off the player.",
+   "Depth is cast shadow, a lit top edge, and a milled well. No backdrop-filter anywhere.",
+   "Ink lands on paper, and pages turn. Arrival is a settle and a darkening; changing what is on a page turns it about the binding.",
+   "The fore-edge carries an index. Four tabs cut into the outer edge of the book, always in the same order and the same position.",
+   "Motion is governed by the transport. While the clock runs, durations are musical values and a route change lands on the next eighth."
+  ],
+  "rules": [
+   {
+    "name": "The Vermillion Is Live Rule",
+    "section": "colors",
+    "body": "Red marks what is running, what is current, and what to press. It never marks what is important. Audit test: if you removed every running clock and every pressable control from a screen and any vermillion remained, that vermillion is wrong."
+   },
+   {
+    "name": "The Four Jobs Rule",
+    "section": "colors",
+    "body": "Every colour on the page answers one question. Ink: is this read? Vermillion: is this live? Pencil: is this an aside in the margin? Moss: was this measured off the player? A value that answers two of them has been reached for out of habit."
+   },
+   {
+    "name": "The Mark Ink Rule",
+    "section": "colors",
+    "body": "--ink-4 is for marks, never for words. It measures 2.7:1 on paper. If it is setting a word, the word is not meant to be read, and the answer is --ink-3 rather than a lighter grey."
+   },
+   {
+    "name": "The Redundant Code Rule",
+    "section": "colors",
+    "body": "Every colour signal is paired with a word or a glyph in the markup. On the neck a role carries hue, an ink step, a ring and a fill, never hue alone."
+   },
+   {
+    "name": "The Four Hands Rule",
+    "section": "typography",
+    "body": "Playfair strikes, Source Serif prints, Inter stamps, Caveat writes in the margin. Reach for Playfair through --font-title only, and only for a struck page title, the wordmark, or a numeral. --font-display stays on the printer's serif: fourteen stylesheets ask for it by name, and pointing it at the didone puts the entire interface into italic — lesson titles and the word PASSED included."
+   },
+   {
+    "name": "The Positive Tracking Rule",
+    "section": "typography",
+    "body": "Tracking is zero on anything set in a serif, because a serif on a page wants its designed fit. The didone comes in a hair at display size (-.015em) where its own fit opens up. The only place tracking goes far is the stamped label, where it goes far positive (.14em, .22em) — 11px uppercase without tracking is a smudge."
+   },
+   {
+    "name": "The Small Didone Rule",
+    "section": "typography",
+    "body": "A didone has hairlines. Set it small and they disappear. Playfair below --t-h3 is a bug."
+   },
+   {
+    "name": "The Real Glyph Rule",
+    "section": "typography",
+    "body": "A clef, a notehead, a time signature and a repeat sign are drawn in Bravura, never in a Unicode lookalike. Every symbol stack ends in Bravura, so a register whose first-choice face is missing loses its handwriting and keeps its engraving rather than falling through to a text font that draws a quarter note as a lowercase box."
+   },
+   {
+    "name": "The Scrolling Column Rule",
+    "section": "layout",
+    "body": "A scrolling flex column never shrinks what it is scrolling: .page > * and .leaf > * are flex-shrink: 0. Without it a child whose automatic minimum is zero — anything with an overflow of its own, or an explicit min-height: 0 — collapses to its padding and lets its contents spill out and be clipped, silently."
+   },
+   {
+    "name": "The Independent Pages Rule",
+    "section": "layout",
+    "body": "The stand does not scroll. The verso scrolls, the recto scrolls, and the transport is not part of the document."
+   },
+   {
+    "name": "The Recto Measures Itself Rule",
+    "section": "layout",
+    "body": "Any minimum inside the right page is measured against the recto, not the viewport. A grid that adds up to less than the window can still add up to more than the page it is printed on."
+   },
+   {
+    "name": "The Fold Owns The Curl Rule",
+    "section": "layout",
+    "body": "The shading either side of the binding hangs off the fold, not off the two pages. Painted on the panes it stops wherever the shorter pane stops — the workspace is sticky and capped at the viewport — and a binding shaded for two thirds of its length is a stripe again."
+   },
+   {
+    "name": "The No Glass Rule",
+    "section": "elevation",
+    "body": "--blur is none and --depth-panel is none. Do not apply backdrop-filter to anything. A panel is a ruled box, not a pane."
+   },
+   {
+    "name": "The Press Goes In Rule",
+    "section": "elevation",
+    "body": "Active states push into the surface with an inset shadow. Nothing lifts on press; only the strip of tape, which is stuck to the page rather than printed on it, rises a pixel on hover."
+   },
+   {
+    "name": "The Flat Panel Rule",
+    "section": "elevation",
+    "body": "A panel carries no fill and no shadow — the page is already the right colour, and a second ivory inside the first only muddies the rule that separates them."
+   },
+   {
+    "name": "The Ruled Rectangle Rule",
+    "section": "shapes",
+    "body": "Interactive means a hard-cornered rectangle at 2px. The switch is the one exception, and it earns it by being a switch."
+   },
+   {
+    "name": "The Trimmed Corner Rule",
+    "section": "shapes",
+    "body": "10px belongs to the three physical objects — verso, recto, transport — and to nothing inside them."
+   },
+   {
+    "name": "The No Radius In Focus Rule",
+    "section": "shapes",
+    "body": "Never set border-radius inside a focus rule. It reshapes the element rather than the outline."
+   },
+   {
+    "name": "The Plate Label Rule",
+    "section": "components",
+    "body": "A control's label is engraved above it and does not change. What the control currently says goes inside the control."
+   },
+   {
+    "name": "The Margin Is Never Load-Bearing Rule",
+    "section": "components",
+    "body": "Anything the interface must communicate is printed. The pencil hand is written next to it, and a screen that still works with every .annot deleted is correct."
+   },
+   {
+    "name": "The Nut Is The Line Rule",
+    "section": "components",
+    "body": "The first fret in a row drops its left border, because the string-name column already draws the nut as a heavy rule and a hairline a pixel to its right reads as the nut printed twice."
+   }
+  ],
+  "dos": [
+   "Do let paper be the ground and keep the stand as the only dark surface.",
+   "Do spend vermillion only on what is running, current, or pressable. If nothing on the screen is any of those, the screen carries no red.",
+   "Do set every list on staves, with a real Bravura clef at the head of each line and the ruling knocked out behind the words.",
+   "Do give every interactive element a 2px hard corner, and reserve 10px for the verso, the recto and the transport strip.",
+   "Do engrave a plate label above a control in Inter at 11px uppercase, tracked .14em.",
+   "Do keep --ink-3 as the floor for anything read, and --ink-4 for marks only.",
+   "Do self-host every face and every symbol font under /fonts.",
+   "Do put flex-shrink: 0 on the children of any scrolling flex column.",
+   "Do theme the browser's own furniture — selection, caret, scrollbar, focus ring, and tabular figures — from this palette.",
+   "Do open a split workspace as a spread, with the binding between the pages and no gap standing them off it.",
+   "Do turn a page about the binding when what is printed on it changes, and turn it the way the reading order went.",
+   "Do keep the fore-edge index in one order and one position.",
+   "Do collapse every entrance to its final state under prefers-reduced-motion."
+  ],
+  "donts": [
+   "Don't point --font-display at Playfair. The didone is reached through --font-title only.",
+   "Don't set Playfair below --t-h3; its hairlines disappear.",
+   "Don't apply backdrop-filter to anything. There is no glass here.",
+   "Don't set border-radius inside a focus rule.",
+   "Don't track a serif. Tracking is zero on anything set in Source Serif or Playfair body copy, and far positive only on the stamped label.",
+   "Don't use --ink-4 for words. It measures 2.7:1.",
+   "Don't rank a note's role by hue alone — the ink step, the ring and the fill have to carry it too.",
+   "Don't introduce a second ground or a theme attribute. There is one ground; a rule gated on a theme that is never set is a rule that does nothing while the value it was written to correct stays live.",
+   "Don't put a fill behind a row that is set on a stave. It covers the ruling that makes it a stave; mark it in the margin instead.",
+   "Don't let a control inside a page borrow the page's 10px corner.",
+   "Don't hotlink a font, image, script or stylesheet from a third-party host. They are blocked outright here and the failure is silent.",
+   "Don't measure a minimum inside the right page against the viewport.",
+   "Don't put a rule between two pages of a spread. The fold is the divider, and a line beside it reads as a scratch down the binding.",
+   "Don't draw the fold on a stacked layout. One column has no gutter.",
+   "Don't turn the stand, the fore-edge index or the instrument strip. Only pages turn.",
+   "Don't remount a live tool to animate it. Hold the turn as state.",
+   "Don't reach for --bg when you mean the page. The legacy token file repoints it at the shaded stock; the page is --paper.",
+   "Don't route a navigation through a View Transition. It defers the DOM update to the next rendering opportunity and aborts when the document is hidden, so the address arrives late and the motion does not arrive at all.",
+   "Don't judge motion from a paused frame. Blank paper over the page looks broken in a still and reads as a page in motion; a turn assessed by scrubbing loses the half of itself that only exists at speed."
+  ]
+ }
 }

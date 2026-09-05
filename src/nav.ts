@@ -20,14 +20,20 @@ export type Destination={
 export type NavGroup={label:string;items:Destination[]};
 
 export type IconName=
- |"home"|"course"|"practice"|"coach"|"maqam"|"slap"|"labs"|"progress"
- |"fretboard"|"band"|"analyze"|"outside"|"theory"|"games"|"search"|"menu"|"map"|"tabs"|"masterclass";
+ |"home"|"course"|"practice"|"coach"|"maqam"|"slap"|"progress"
+ |"fretboard"|"band"|"analyze"|"outside"|"theory"|"games"|"search"|"menu"|"tabs"|"masterclass";
 
 export const NAV:NavGroup[]=[
  {label:"Learn",items:[
   {view:"course",label:"Home",blurb:"Your next step and today's route",icon:"home",keywords:["dashboard","start","overview"]},
-  {view:"map",label:"The map",blurb:"Six territories and the route through them",icon:"map",keywords:["map","territory","territories","route","units","unlock","overview"]},
-  {view:"roadmap",label:"Full course",blurb:"All 28 lessons across six units",icon:"course",keywords:["curriculum","lessons","syllabus","map"],children:[
+  /*
+   * "The map" used to sit here as its own destination: six territories on a
+   * node graph, gated by the same lesson-count thresholds this entry already
+   * shows per unit. Two pages answering "where am I in the six units" was the
+   * redundancy the course-as-spine restructure exists to remove, so the map's
+   * job folds into this entry, and its search terms move onto it below.
+   */
+  {view:"roadmap",label:"Full course",blurb:"All 28 lessons across six units",icon:"course",keywords:["curriculum","lessons","syllabus","map","territory","territories","unlock"],children:[
    {view:"courseLesson",label:"Current lesson",blurb:"The lesson you are working through",icon:"course",keywords:["continue","resume"]},
   ]},
  ]},
@@ -39,39 +45,54 @@ export const NAV:NavGroup[]=[
   {view:"coach",label:"Live coach",blurb:"Listen, detect and correct your playing",icon:"coach",keywords:["listen","feedback","microphone","correct"],children:[
    {view:"adaptive",label:"Adaptive plan",blurb:"A route built from your weakest areas",icon:"progress",keywords:["personal","weakness","diagnostic"]},
   ]},
+  {view:"tabs",label:"Tab studio",blurb:"Open a Guitar Pro file, or write your own",icon:"tabs",keywords:["tab","tabs","guitar pro","gp5","gp4","gpx","musicxml","import","upload","notation","songsterr","write"]},
+  {view:"technique",label:"The hands",blurb:"Position, tension, muting and how to practise",icon:"outside",keywords:["technique","hands","posture","ergonomics","injury","tension","left hand","right hand","muting","shifting","fingering","practice","warm up","independence"]},
+ ]},
+ {label:"Play",items:[
+  {view:"games",label:"Training games",blurb:"Rescue a wrong note, snipe an interval, by ear",icon:"games",keywords:["game","ear","quiz","drill","interval","sniper","rescue","recovery","recall","by ear","listen"]},
+  {view:"quest",label:"The long way home",blurb:"Play the lesson note by note; wrong notes cost ground",icon:"games",keywords:["game","quest","play","bass input","listen","note","story","journey","walk","adventure","checkpoint","lives","map"]},
  ]},
  {label:"Specialties",items:[
   {view:"maqam",label:"Arabic maqam",blurb:"Sayr, hand routes and backing",icon:"maqam",keywords:["arabic","maqam","quarter tone","egyptian","oriental"]},
   {view:"slap",label:"Slap bass",blurb:"Beginner through advanced routines",icon:"slap",keywords:["thumb","pop","funk","technique"]},
-  {view:"jaco",label:"Jaco masterclass",blurb:"Eight techniques, with the exercises to build them",icon:"masterclass",keywords:["jaco","pastorius","fretless","harmonics","tenths","bebop","weather report","masterclass","portrait of tracy","donna lee"]},
- ]},
- {label:"Labs",items:[
-  {view:"tools",label:"Tool library",blurb:"Every focused tool in one place",icon:"labs",keywords:["tools","all"],children:[
-   {view:"fret",label:"Fretboard map",blurb:"See functions across the whole neck",icon:"fretboard",keywords:["neck","notes","positions","harmony"]},
-   {view:"runtime",label:"Backing band",blurb:"Vamps, progressions and tempo",icon:"band",keywords:["play along","jam","backing","drums","metronome"]},
-   {view:"engine",label:"Record & analyze",blurb:"Capture a take and inspect every note",icon:"analyze",keywords:["record","take","analysis","timing"]},
-   {view:"advanced",label:"Outside lab",blurb:"Motif, enclosure and side-slip work",icon:"outside",keywords:["outside","tension","chromatic","motif"]},
-   {view:"reference",label:"Theory reference",blurb:"Look up a scale, mode or chord",icon:"theory",keywords:["theory","scales","modes","chords","reference"]},
-   {view:"quest",label:"The long way home",blurb:"Play the lesson note by note; wrong notes cost ground",icon:"games",keywords:["game","quest","play","bass input","listen","note","story","journey","walk","adventure","checkpoint","lives","map"]},
-   {view:"technique",label:"The hands",blurb:"Position, tension, muting and how to practise",icon:"outside",keywords:["technique","hands","posture","ergonomics","injury","tension","left hand","right hand","muting","shifting","fingering","practice","warm up","independence"]},
-   {view:"progression",label:"Progression reader",blurb:"Type a progression and read what it is doing",icon:"course",keywords:["progression","chords","roman numerals","numerals","key","function","analyse","analyze","ii-v-i","changes","borrowed"]},
-   {view:"chromatic",label:"Chromatic gym",blurb:"Every approach, chord tone and key",icon:"outside",keywords:["chromatic","approach","enclosure","bebop","target","drill","exercises","lines","jazz"]},
-   {view:"games",label:"Training games",blurb:"Rescue a wrong note, snipe an interval, by ear",icon:"games",keywords:["game","ear","quiz","drill","interval","sniper","rescue","recovery","recall","by ear","listen"]},
-   {view:"tabs",label:"Tab studio",blurb:"Open a Guitar Pro file, or write your own",icon:"tabs",keywords:["tab","tabs","guitar pro","gp5","gp4","gpx","musicxml","import","upload","notation","songsterr","write"]},
-  ]},
+  {view:"jaco",label:"Jaco masterclass",blurb:"Seven chapters, with the exercises to build them",icon:"masterclass",keywords:["jaco","pastorius","fretless","harmonics","tenths","bebop","weather report","masterclass","portrait of tracy","donna lee"]},
+  {view:"chromatic",label:"Chromatic gym",blurb:"Every approach, chord tone and key",icon:"outside",keywords:["chromatic","approach","enclosure","bebop","target","drill","exercises","lines","jazz"]},
+  {view:"advanced",label:"Improvisation lab",blurb:"Motif, enclosure and side-slip work",icon:"outside",keywords:["outside","tension","chromatic","motif","improvisation","improv"]},
+  {view:"progression",label:"Progression reader",blurb:"Type a progression and read what it is doing",icon:"course",keywords:["progression","chords","roman numerals","numerals","key","function","analyse","analyze","ii-v-i","changes","borrowed"]},
  ]},
  {label:"You",items:[
   {view:"courseProgress",label:"Progress",blurb:"What you have proved so far",icon:"progress",keywords:["stats","history","achievements"]},
  ]},
 ];
 
+/**
+ * Reachable, but not a nav destination.
+ *
+ * These four already open in place, mid-lesson, from `LessonTools` — the
+ * fretboard, the theory shelf, the band and the take recorder each answer to
+ * a specific stage of a lesson before a player ever needs an address of their
+ * own. Their routes stay live for practising outside a lesson (a bookmark, or
+ * the palette), but a listing of their own in the sidebar would be the same
+ * redundancy Wave 1 removed from `/map`: one destination told twice, once by
+ * the lesson stage that calls for it and once by a shelf of its own.
+ */
+const CONTEXTUAL_DESTINATIONS:Destination[]=[
+ {view:"fret",label:"Fretboard map",blurb:"See functions across the whole neck",icon:"fretboard",keywords:["neck","notes","positions","harmony"]},
+ {view:"runtime",label:"Backing band",blurb:"Vamps, progressions and tempo",icon:"band",keywords:["play along","jam","backing","drums","metronome"]},
+ {view:"engine",label:"Record & analyze",blurb:"Capture a take and inspect every note",icon:"analyze",keywords:["record","take","analysis","timing"]},
+ {view:"reference",label:"Theory reference",blurb:"Look up a scale, mode or chord",icon:"theory",keywords:["theory","scales","modes","chords","reference"]},
+];
+
 /** Flattened, for the palette and for reverse lookups. */
-export const ALL_DESTINATIONS:Array<Destination&{group:string;parent?:string}>=NAV.flatMap(group=>
- group.items.flatMap(item=>[
-  {...item,group:group.label},
-  ...(item.children??[]).map(child=>({...child,group:group.label,parent:item.label})),
- ]),
-);
+export const ALL_DESTINATIONS:Array<Destination&{group:string;parent?:string}>=[
+ ...NAV.flatMap(group=>
+  group.items.flatMap(item=>[
+   {...item,group:group.label},
+   ...(item.children??[]).map(child=>({...child,group:group.label,parent:item.label})),
+  ]),
+ ),
+ ...CONTEXTUAL_DESTINATIONS.map(item=>({...item,group:"Tools"})),
+];
 
 const BY_VIEW=new Map(ALL_DESTINATIONS.map(item=>[item.view,item]));
 export const destinationFor=(view:string)=>BY_VIEW.get(view);

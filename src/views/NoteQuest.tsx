@@ -101,7 +101,12 @@ export default function NoteQuest({
    <QuestScene quest={quest} at={at} done={done} missed={!!wrong}
                misses={misses} allowed={MISSES_ALLOWED}/>
 
-   <section className={`questTarget ${wrong?"missed":""} ${done?"arrived":""}`} aria-live="polite">
+   {/*
+     * beat-ambient is the same shared pulse RescueGames' untimed drills wear
+     * (see intime.css) — this card is exactly that shape, a chassis waiting
+     * for a note, so it takes the site's clock rather than inventing its own.
+     */}
+   <section className={`questTarget beat-ambient ${wrong?"missed":""} ${done?"arrived":""}`} aria-live="polite">
     {done?(
      <>
       <h2>Home, from the other side.</h2>

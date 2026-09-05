@@ -1,0 +1,532 @@
+/**
+ * The material vocabulary: paper, rule, stave, tape.
+ *
+ * This replaces lithos.css, which built the same components out of glass and
+ * pills over a photograph. The component names carry over unchanged, because
+ * markup should not have to be rewritten for the surface to change: a lamp is
+ * still a lamp and a rocker is still a rocker. What changed is what they are
+ * made of.
+ *
+ * Four rules run through all of it.
+ *
+ * A BOX IS RULED, NOT FILLED. Structure is a one-pixel engraver's rule on bare
+ * paper. Where something must sit apart it goes a step darker in stock or
+ * takes a well, never a border plus a fill plus a shadow.
+ *
+ * A CONTROL IS A RECTANGLE. The pill rule is reversed completely. Two pixels
+ * of trim, which reads as a printed box rather than as a soft UI shape. The
+ * one exception is a switch, because a switch is a switch.
+ *
+ * THE LABEL IS STAMPED. Every control states what it does above what it
+ * currently says, in Inter, eleven pixels, uppercase, tracked far. That is the
+ * engraved plate label on a panel, and it never moves or changes size.
+ *
+ * VERMILLION IS LIVE. Red marks what is running and what to press. Moss marks
+ * what was measured off the player. Pencil blue is the margin hand. Ink does
+ * everything else, and most of a page is ink.
+ */
+
+/* ================================================================= base == */
+
+body{
+ background:var(--stand);
+ color:var(--ink);
+ font-family:var(--font);
+ font-size:var(--t-body);
+ line-height:1.6;
+ letter-spacing:var(--track);
+ -webkit-font-smoothing:antialiased;
+}
+
+/*
+ * The tracking is no longer global and no longer negative. The previous world
+ * tracked the whole document to -.02em and called it the cheapest thing in the
+ * design; on a serif page it is the most expensive, because a text face set
+ * tight loses the fit its designer drew. Zero here, and the only place it goes
+ * anywhere is the stamped label, where it goes wide.
+ */
+:root{letter-spacing:var(--track)}
+
+/*
+ * The struck title. Playfair, and italic by default because that is the cut
+ * the head of a page is set in; a roman override is one class away for the
+ * clause that has to stand up straight inside it.
+ */
+.font-playfair,.display-serif,.struck{
+ font-family:var(--font-title);
+ font-style:italic;
+ font-weight:400;
+ letter-spacing:var(--track-title);
+}
+.struck em,.struck .roman{font-style:normal}
+
+/* ================================================================ paper == */
+
+/*
+ * A panel is a ruled box on the page. No fill, because the page is already
+ * the right colour and a second ivory inside the first only muddies the rule
+ * that separates them.
+ */
+.panel,.glassPane{
+ background:transparent;
+ border:1px solid var(--rule);
+ border-radius:var(--r-surface);
+ box-shadow:none;
+}
+.panel-2{background:var(--paper-2)}
+
+/*
+ * A well is cut into the page: darker stock, with the light caught along its
+ * inner top edge. This is the one place the design admits an inset shadow,
+ * and it means "recessed", never "emphasised".
+ */
+.well{
+ background:var(--paper-3);
+ border:0;
+ border-radius:var(--r-well);
+ box-shadow:var(--depth-well);
+}
+
+/* ================================================================ rules == */
+
+/*
+ * Rules, in three weights. --rule separates, --rule-2 encloses, and the ink
+ * one is a final barline: it ends a system rather than dividing one.
+ *
+ * .staff keeps its old meaning as a single hairline, because markup across
+ * eleven screens already uses it that way. The five-line stave that gives
+ * this design its grid is .stave, below.
+ */
+.groove,.staff,.rule-1{height:1px;border:0;margin:0;background:var(--rule)}
+.groove-v{width:1px;align-self:stretch;background:var(--rule)}
+.barline{width:1px;align-self:stretch;background:var(--rule-2)}
+.barline-final{width:3px;align-self:stretch;background:var(--ink)}
+
+/*
+ * The red rule under a section name. Short, heavy, and the mark that says
+ * which section of the book you have opened to.
+ */
+.redRule{width:2.75rem;height:2px;border:0;margin:0;background:var(--vermillion)}
+
+/* ================================================================ stave == */
+
+/*
+ * Five lines, drawn as a repeating gradient rather than as five elements, so
+ * a list of forty rows costs forty backgrounds and not two hundred nodes.
+ *
+ * The lines are painted from the top of the box down, and --stave-gap is a
+ * pixel measurement rather than a type step: a stave that scales with the
+ * text stops being a stave and becomes an underline pattern.
+ */
+.stave{
+ position:relative;
+ background-image:repeating-linear-gradient(
+  to bottom,
+  var(--stave) 0,var(--stave) var(--stave-line),
+  transparent var(--stave-line),transparent var(--stave-gap)
+ );
+ background-repeat:no-repeat;
+ background-size:100% calc(var(--stave-h) + var(--stave-line));
+}
+
+/*
+ * A stave that carries a row of text: the lines run behind it, centred.
+ *
+ * Painted on the element rather than on a ::before, and that is not a
+ * refinement — an element has one ::before, and the row that marks where you
+ * are needs it. Drawn as a pseudo-element the stave and the current-row mark
+ * silently overwrote each other, and the row you were actually on was the one
+ * row with no stave under it.
+ */
+.staveRow{
+ position:relative;
+ min-height:calc(var(--stave-h) + 1.5rem);
+ display:flex;
+ align-items:center;
+ background-image:repeating-linear-gradient(
+  to bottom,
+  var(--stave) 0,var(--stave) var(--stave-line),
+  transparent var(--stave-line),transparent var(--stave-gap)
+ );
+ background-repeat:no-repeat;
+ background-position:left center;
+ background-size:100% calc(var(--stave-h) + var(--stave-line));
+}
+
+/*
+ * Text knocks the stave out behind it.
+ *
+ * This is what an engraver does and what every engraving program does: where a
+ * word crosses a staff line, the line stops. Done with a halo of the paper
+ * colour rather than by breaking the gradient, because the gradient does not
+ * know where the words are — and giving the text a background instead would
+ * draw a visible rectangle around every entry.
+ *
+ * The halo is the page colour, so it is invisible on paper and only ever
+ * removes ruling.
+ */
+.staveKnock,.staveRow .knock{
+ text-shadow:0 0 3px var(--paper),0 0 3px var(--paper),0 0 7px var(--paper);
+}
+
+/*
+ * The clef at the head of a line.
+ *
+ * Bravura, so this is U+E050 the treble clef and U+E062 the bass clef, drawn
+ * on the same baseline and at the same stem weight as everything else on the
+ * stave. A Unicode lookalike would be a text character shaped like a clef,
+ * set in whatever face happened to have it, and that difference is most of
+ * why engraving looks engraved.
+ */
+.clef{
+ font-family:var(--smufl),serif;
+ font-style:normal;
+ font-weight:400;
+ line-height:1;
+ color:var(--ink-2);
+ -webkit-font-smoothing:antialiased;
+}
+.clef-treble::before{content:"\E050"}
+.clef-bass::before{content:"\E062"}
+.clef-perc::before{content:"\E069"}
+
+/* ============================================================== controls = */
+
+/*
+ * The default control: a ruled rectangle with a stamped label. Press feedback
+ * is a press — it goes into the page — because unlike the glass world this
+ * replaces, everything here does sit on a surface it can be pushed into.
+ */
+.rocker,.action,.action-quiet{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ font-weight:500;
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ color:var(--ink-2);
+ background:transparent;
+ border:1px solid var(--rule-2);
+ border-radius:var(--r);
+ padding:var(--s2) var(--s5);
+ min-height:2.375rem;
+ cursor:pointer;
+ transition:color var(--m-click) var(--ease-page),
+            background var(--m-click) var(--ease-page),
+            border-color var(--m-click) var(--ease-page),
+            box-shadow var(--m-click) var(--ease-page);
+}
+.rocker:hover,.action:hover,.action-quiet:hover{
+ color:var(--ink);
+ background:var(--paper-2);
+ border-color:var(--rule-3);
+}
+.rocker:active{box-shadow:var(--depth-press)}
+.rocker[aria-pressed="true"],.rocker.on{
+ color:var(--vermillion);
+ background:var(--vermillion-wash);
+ border-color:var(--vermillion);
+}
+.rocker:disabled{color:var(--ink-4);border-color:var(--rule);cursor:not-allowed}
+.rocker:disabled:hover{color:var(--ink-4);background:transparent}
+
+/* The listening action, outlined in the margin hand: hear it before you commit. */
+.rocker-pencil{color:var(--pencil);border-color:var(--pencil)}
+.rocker-pencil:hover{color:var(--pencil-2);background:var(--pencil-wash);border-color:var(--pencil-2)}
+
+/*
+ * The one that commits: a strip of vermillion tape stuck to the page.
+ *
+ * The torn ends are two fixed-width pseudo-elements rather than a percentage
+ * polygon on the button itself, so the tear stays the same size whether the
+ * label is one word or four. A percentage zigzag stretches with the button
+ * and turns into a smooth wave, which reads as a decorative shape rather than
+ * as torn paper.
+ */
+.rocker-go,.action-primary,.osScreen button.action-primary,.tape{
+ position:relative;
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ font-weight:600;
+ letter-spacing:var(--track-label-wide);
+ text-transform:uppercase;
+ background:var(--vermillion);
+ color:var(--on-vermillion);
+ border:0;
+ border-radius:0;
+ padding:var(--s4) var(--s7);
+ min-height:2.75rem;
+ cursor:pointer;
+ box-shadow:var(--depth-tape);
+ transition:background var(--m-click) var(--ease-page),
+            box-shadow var(--m-click) var(--ease-page),
+            transform var(--m-click) var(--ease-page);
+}
+.rocker-go::before,.action-primary::before,.tape::before,
+.rocker-go::after,.action-primary::after,.tape::after{
+ content:"";
+ position:absolute;
+ top:0;bottom:0;
+ width:5px;
+ background:inherit;
+ pointer-events:none;
+}
+.rocker-go::before,.action-primary::before,.tape::before{
+ left:-6px;
+ clip-path:polygon(100% 0,55% 9%,95% 20%,45% 32%,88% 44%,52% 56%,97% 67%,48% 79%,85% 91%,100% 100%);
+}
+.rocker-go::after,.action-primary::after,.tape::after{
+ right:-6px;
+ clip-path:polygon(0 0,48% 10%,8% 22%,55% 34%,12% 46%,50% 58%,5% 69%,52% 81%,15% 92%,0 100%);
+}
+.rocker-go:hover,.action-primary:hover,.tape:hover{
+ background:var(--vermillion-deep);
+ transform:translateY(-1px);
+ box-shadow:var(--depth-tape-lift);
+}
+.rocker-go:active,.action-primary:active,.tape:active{
+ transform:translateY(1px);
+ box-shadow:var(--depth-tape-press);
+}
+.action-primary:disabled,.tape:disabled{
+ /* Unavailable, still readable. Paper on this fill measured 1.77:1, which is a
+    label you can see the shape of and not read. Ink on it is 5.14:1. */
+ background:var(--rule-2);color:var(--ink-2);transform:none;box-shadow:none;
+}
+
+/*
+ * The second commitment: the same rectangle struck in ink rather than
+ * vermillion. Used where an action matters but is not the one thing this page
+ * is asking for.
+ */
+.chalkPill{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ font-weight:600;
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ background:var(--ink);
+ color:var(--paper);
+ border:0;
+ border-radius:var(--r);
+ padding:var(--s3) var(--s6);
+ min-height:2.5rem;
+ cursor:pointer;
+ transition:background var(--m-click) var(--ease-page),box-shadow var(--m-click) var(--ease-page);
+}
+.chalkPill:hover{background:var(--ink-2)}
+.chalkPill:active{box-shadow:var(--depth-press)}
+
+/*
+ * The switch, and the one fully rounded thing in the design.
+ *
+ * It is a switch: a physical one is a rounded slot with a travelling knob, and
+ * squaring it to satisfy a rule about rectangles would make it read as a
+ * checkbox that had lost its tick.
+ */
+.switch{
+ --sw-w:2.5rem;
+ --sw-h:1.375rem;
+ position:relative;
+ flex:none;
+ width:var(--sw-w);height:var(--sw-h);
+ border:1px solid var(--rule-2);
+ border-radius:var(--r-switch);
+ background:var(--paper-3);
+ cursor:pointer;
+ transition:background var(--m-click) var(--ease-page),border-color var(--m-click) var(--ease-page);
+}
+.switch::after{
+ content:"";
+ position:absolute;
+ top:50%;left:2px;
+ width:calc(var(--sw-h) - 6px);height:calc(var(--sw-h) - 6px);
+ border-radius:var(--r-lamp);
+ background:var(--paper);
+ box-shadow:var(--depth-knob);
+ transform:translateY(-50%);
+ transition:transform var(--m-click) var(--ease-page);
+}
+.switch[aria-checked="true"],.switch[data-on="true"]{
+ background:var(--vermillion);border-color:var(--vermillion-deep);
+}
+.switch[aria-checked="true"]::after,.switch[data-on="true"]::after{
+ transform:translate(calc(var(--sw-w) - var(--sw-h)),-50%);
+}
+.switch:disabled{opacity:.4;cursor:not-allowed}
+
+/* ================================================================ marks == */
+
+.lamp{
+ width:8px;height:8px;border-radius:var(--r-lamp);
+ background:transparent;
+ border:1px solid var(--rule-3);
+ flex:none;
+ transition:background var(--m-click) var(--ease-page),border-color var(--m-click) var(--ease-page);
+}
+.lamp[data-on="true"]{background:var(--ink);border-color:var(--ink)}
+.lamp-oxide[data-on="true"],.lamp-alert[data-on="true"]{background:var(--vermillion);border-color:var(--vermillion)}
+.lamp-pass[data-on="true"]{background:var(--moss);border-color:var(--moss)}
+
+/*
+ * The engraved plate label. Small, uppercase, tracked far, and permanent: it
+ * states what a control does above whatever the control currently says.
+ */
+.legend,.label{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ font-weight:500;
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ color:var(--ink-3);
+ line-height:1;
+}
+/* The section name at the head of the left page, under its red rule. */
+.sectionMark{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ font-weight:600;
+ letter-spacing:var(--track-label-wide);
+ text-transform:uppercase;
+ color:var(--vermillion);
+ line-height:1;
+}
+.fineprint{font-family:var(--font);font-size:var(--t-small);color:var(--ink-3)}
+
+/*
+ * The margin hand.
+ *
+ * Caveat in pencil blue, tilted a degree and a half, and it says something a
+ * printed label cannot: an aside, a reminder, an instruction the player is
+ * giving himself. It is never load-bearing — anything the interface must
+ * communicate is printed, and this is written next to it.
+ */
+.annot,.direction{
+ font-family:var(--font-hand);
+ font-style:normal;
+ font-size:1.0625rem;
+ line-height:1.25;
+ color:var(--pencil);
+ transform:rotate(-1.5deg);
+ transform-origin:left center;
+}
+.annot-right{transform:rotate(1.2deg)}
+.annot-flat{transform:none}
+
+/* The readout: what a number looks like when it is read from across the room. */
+.readout{
+ font-family:var(--font-num);
+ font-variant-numeric:tabular-nums lining-nums;
+ letter-spacing:var(--track-title);
+ color:var(--ink);
+ font-weight:500;
+}
+.readout-lg{font-size:var(--t-h2);line-height:1}
+.readout-oxide,.readout-alert{color:var(--vermillion)}
+.readout-signal{color:var(--moss)}
+
+/* ================================================================ fields = */
+
+.osScreen select,.osScreen input:not([type="range"]):not([type="checkbox"]),
+.osScreen textarea,.field{
+ background:var(--paper);
+ color:var(--ink);
+ border:1px solid var(--rule-2);
+ border-radius:var(--r);
+ padding:var(--s2) var(--s4);
+ font-family:var(--font);
+ font-size:var(--t-body);
+ letter-spacing:var(--track);
+}
+.osScreen select:hover,.osScreen input:hover,.field:hover{border-color:var(--rule-3)}
+.osScreen option{background:var(--paper);color:var(--ink)}
+
+/* ================================================================ focus == */
+
+/*
+ * The ring follows whatever shape the element already has. Never set a radius
+ * in a focus rule: it reshapes the element rather than the outline, and under
+ * the pill radius this design replaced it drew an ellipse around the page
+ * heading on every navigation.
+ */
+:where(button,a,input,select,textarea,[tabindex]):focus-visible{
+ outline:2px solid var(--vermillion);
+ outline-offset:3px;
+}
+
+/* Programmatic focus on route change announces without drawing a ring. */
+[data-page-heading]:focus,[data-page-heading]:focus-visible{outline:none}
+
+/* ==================================================== browser furniture == */
+
+/*
+ * The parts nobody draws. A selection, a caret, a scrollbar and the figures in
+ * a data column all ship with browser defaults that belong to no design
+ * system, and on a paper ground the defaults are the loudest wrong note: a
+ * blue system highlight over ivory is the one colour in this document that
+ * was not chosen.
+ */
+::selection{background:var(--vermillion-wash-2);color:var(--ink)}
+:root{
+ accent-color:var(--vermillion);
+ caret-color:var(--vermillion);
+ color-scheme:light;
+ scrollbar-color:var(--rule-3) transparent;
+ scrollbar-width:thin;
+}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--rule-2);border-radius:var(--r);
+ border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:var(--rule-3);background-clip:content-box}
+/* Every figure in a column of figures lines up, everywhere, without asking. */
+table,.readout,.tabular,[class*="count"],[class*="tempo"]{font-variant-numeric:tabular-nums}
+
+/* =========================================================== entrances == */
+
+/*
+ * Ink lands on paper. It does not arrive out of blur and it does not zoom:
+ * both belonged to a photographic world, and a photograph is what this design
+ * removed. A line of type settles down onto the page and the ink darkens as
+ * it touches, which is one authored moment reused rather than a different
+ * effect per section.
+ */
+@keyframes inkLand{
+ 0%{opacity:0;transform:translateY(10px)}
+ 100%{opacity:1;transform:translateY(0)}
+}
+/*
+ * A rule drawn in from the left.
+ *
+ * Clipped rather than scaled, and with no fill-mode, which together are what
+ * make it safe. A scaleX(0) keyframe with `both` holds the element at zero
+ * width whenever the animation does not actually run — a throttled background
+ * tab, a paint that happens before the sheet lands — and an entrance that can
+ * leave its element invisible is not an entrance, it is a missing element.
+ * With no fill-mode the rule is drawn at full width before and after, and the
+ * clip only exists while the animation is playing.
+ */
+@keyframes ruleDraw{
+ from{clip-path:inset(0 100% 0 0)}
+ to{clip-path:inset(0 0 0 0)}
+}
+
+.hero-anim{
+ opacity:0;
+ animation-fill-mode:forwards;
+ animation-timing-function:var(--ease-page);
+}
+.hero-reveal,.hero-fade{animation-name:inkLand;animation-duration:var(--m-enter)}
+/*
+ * The zoom is retired. The class survives because markup still carries it,
+ * and it now does nothing rather than scaling a page of type, which is what
+ * it would do if it were left pointed at the old keyframes.
+ */
+.hero-zoom{animation:none}
+
+/* A red rule draws itself in from the left, once, at the head of a section. */
+.redRule{animation:ruleDraw var(--m-sweep) var(--ease-page)}
+
+@media (prefers-reduced-motion:reduce){
+ .hero-anim,.hero-zoom{animation:none;opacity:1;transform:none;filter:none}
+ .redRule{animation:none;clip-path:none}
+}

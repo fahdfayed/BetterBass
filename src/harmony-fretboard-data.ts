@@ -120,6 +120,8 @@ export const PROGRESSION_PRESETS:ProgressionPreset[]=[
  {id:"diminished",name:"Diminished connector",brief:"A symmetrical passing chord connects tonic to ii.",center:0,homeMode:0,lens:"functional",chords:["Cmaj9","C#dim7","Dm9","G13"]},
  {id:"augmented",name:"Augmented colours",brief:"Maj7♯5, half-diminished and altered dominant movement.",center:4,homeMode:0,lens:"modern",chords:["Cmaj7#5","F#m7b5","B7alt","Emaj9#11"]},
  {id:"chromatic",name:"Chromatic mediants",brief:"Remote major colours joined by common tones and dominant return.",center:0,homeMode:0,lens:"modern",chords:["Cmaj9","Emaj7#11","A♭maj7#5","G13b9"]},
+ {id:"backdoor",name:"Backdoor turnaround",brief:"A ♭VII dominant resolves home from the direction a ii-V never approaches from.",center:0,homeMode:0,lens:"functional",chords:["Dm9","B♭13","Cmaj9","Dm9"]},
+ {id:"tritone-sub",name:"Tritone substitution",brief:"The V chord is replaced by the dominant a tritone away — the same guide tones, opposite root motion into home.",center:0,homeMode:0,lens:"functional",chords:["Dm7","D♭7","Cmaj7","Dm7"]},
 ];
 
 const scaleById=(id:string)=>SCALE_LIBRARY.find(x=>x.id===id)!;

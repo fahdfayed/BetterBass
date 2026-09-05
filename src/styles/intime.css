@@ -71,6 +71,25 @@
  transition:color var(--thirtysecond-ms,90ms) var(--ease-snap);
 }
 
+/* ======================================================= ambient practice = */
+
+/*
+ * Six of the eight rescue drills keep no clock of their own — nothing in
+ * them is judged against a beat, so nothing there earns a private click.
+ * What they get instead is a pulse borrowed from whatever transport the
+ * player already has running elsewhere in the book: the drill's own chassis
+ * edge, lit on the downbeat exactly like the transport dock's above, so a
+ * page of ear-training still breathes in time without a scoring system
+ * riding along on top of it.
+ */
+:root[data-running="true"] .beat-ambient{
+ transition:box-shadow var(--beat-ms,714ms) var(--ease-mech);
+}
+:root[data-running="true"][data-downbeat="true"] .beat-ambient{
+ box-shadow:inset 0 0 0 1px var(--lime),inset 0 0 32px -18px var(--lime);
+ transition:box-shadow var(--thirtysecond-ms,90ms) var(--ease-snap);
+}
+
 /* ===================================================== arriving in time == */
 
 /*
@@ -95,7 +114,8 @@
 @media (prefers-reduced-motion:reduce){
  :root[data-running="true"][data-downbeat="true"] .railLink[aria-current="page"],
  :root[data-running="true"][data-downbeat="true"] .transport,
- :root[data-running="true"][data-downbeat="true"] .tTempoValue{
+ :root[data-running="true"][data-downbeat="true"] .tTempoValue,
+ :root[data-running="true"][data-downbeat="true"] .beat-ambient{
   box-shadow:none;
   color:inherit;
  }

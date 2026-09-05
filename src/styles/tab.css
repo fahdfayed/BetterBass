@@ -1,10 +1,21 @@
-/* Tab reader. */
-.tab{display:flex;flex-direction:column;gap:var(--s5)}
+/*
+ * Tab reader.
+ *
+ * Named `.tabPlayer` rather than the shorter `.tab` on purpose: the book's
+ * own top-nav tabs (AppShell.tsx) already own that exact class, in book.css,
+ * with `align-items:center` for a horizontal label-and-icon row. A bare
+ * English word is exactly the class name most likely to already be taken —
+ * this reader's root silently inherited that `align-items` instead of its
+ * own column layout, which zeroed its width (`align-items:center` sizes a
+ * flex item to its content instead of stretching it) and left every
+ * exercise on the site showing "Setting the score…" forever.
+ */
+.tabPlayer{display:flex;flex-direction:column;gap:var(--s5)}
 .tabBar{display:flex;align-items:center;gap:var(--s5);flex-wrap:wrap;padding-bottom:var(--s4);border-bottom:1px solid var(--rule)}
 .tabPlay{min-width:7rem;justify-content:center}
 
 .tabToggles{display:flex;gap:var(--s4);margin-left:auto}
-.tabToggle{font-size:var(--t-small);color:var(--ink-4);transition:color var(--t-base) var(--ease)}
+.tabToggle{font-size:var(--t-small);color:var(--ink-3);transition:color var(--t-base) var(--ease)}
 .tabToggle:hover{color:var(--ink-2)}
 .tabToggle.on{color:var(--accent)}
 .tabViewport{overflow:auto;max-height:70vh;overscroll-behavior:contain}
@@ -58,7 +69,7 @@
 .tabSeek{display:flex;align-items:center;gap:var(--s4)}
 .tabTime{font-size:var(--t-tiny);color:var(--ink-3);min-width:2.6rem;font-variant-numeric:tabular-nums}
 .tabTime:last-child{text-align:right}
-.tabScrub{flex:1;-webkit-appearance:none;appearance:none;height:1.25rem;background:transparent;cursor:pointer}
+.tabScrub{flex:1;-webkit-appearance:none;appearance:none;height:1.5rem;background:transparent;cursor:pointer}
 .tabScrub:disabled{cursor:default;opacity:.45}
 /* The filled portion is driven by --played, set from the playhead. */
 .tabScrub::-webkit-slider-runnable-track{height:3px;border-radius:var(--r);
@@ -75,7 +86,7 @@
 .exercises{display:flex;flex-direction:column;gap:var(--s5)}
 .exercisePick{display:flex;flex-wrap:wrap;gap:var(--s4)}
 .exerciseChip{display:inline-flex;align-items:baseline;gap:var(--s2);font-size:var(--t-small);color:var(--ink-3);padding-bottom:var(--s1);border-bottom:1px solid transparent;transition:color var(--t-base) var(--ease),border-color var(--t-base) var(--ease)}
-.exerciseChip i{font-family:var(--font-mono);font-style:normal;font-size:var(--t-tiny);color:var(--ink-4)}
+.exerciseChip i{font-family:var(--font-mono);font-style:normal;font-size:var(--t-tiny);color:var(--ink-3)}
 .exerciseChip:hover{color:var(--ink)}
 .exerciseChip.on{color:var(--ink);border-bottom-color:var(--accent)}
 .exerciseChip.on i{color:var(--accent)}
@@ -100,10 +111,10 @@
 .chapterHead{display:flex;align-items:baseline;gap:var(--s5);width:100%;text-align:left;
  padding:var(--s5) 0;color:var(--ink-2);transition:color var(--t-base) var(--ease)}
 .chapterHead:hover,.chapter.is-open .chapterHead{color:var(--ink)}
-.chapterHead .figure{font-style:normal;font-size:var(--t-tiny);color:var(--ink-4);min-width:1.4rem}
+.chapterHead .figure{font-style:normal;font-size:var(--t-tiny);color:var(--ink-3);min-width:1.4rem}
 .chapter.is-open .chapterHead .figure{color:var(--accent)}
 .chapterTitle{flex:1;font-size:var(--t-h3);font-weight:500;letter-spacing:-.01em}
-.chapterCount{font-size:var(--t-tiny);color:var(--ink-4)}
+.chapterCount{font-size:var(--t-tiny);color:var(--ink-3)}
 .chapterBody{padding:0 0 var(--s6) calc(1.4rem + var(--s5))}
 .chapterNote,.epigraph{max-width:var(--measure);margin:0 0 var(--s5)}
 .epigraph{font-style:italic;color:var(--ink-3)}

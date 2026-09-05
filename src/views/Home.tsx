@@ -1,6 +1,5 @@
-import SpotlightHero from "../components/SpotlightHero";
-import ContainerScroll from "../components/ui/container-scroll-animation";
 import Glyph from "../components/Glyph";
+import PageLeaf from "../components/PageLeaf";
 import Icon from "../components/Icon";
 import {Fragment} from "react";
 import {goToView} from "../router";
@@ -16,15 +15,6 @@ type Props={
  onOpenUnit:(lessonIndex:number)=>void;
 };
 
-/**
- * The neck the landing panel tilts up: A minor 9, with what each note is doing.
- *
- * Not a decorative graphic and not a screenshot. It is the product's actual
- * claim in one glance, which is that a note has a job here rather than a
- * permission. Roles and positions are real: fifth to tenth fret, standard
- * tuning, with the root on the A string and the guide tones a player would
- * actually reach for.
- */
 /** Rehearsal letters, as a conductor gives them. I is skipped: it reads as a 1. */
 const MARKS=["A","B","C","D","E","F","G","H","J","K","L","M"];
 
@@ -59,7 +49,7 @@ function NeckPreview(){
    </div>
    <p className="neckKey">
     <span><i className="is-root"/>Root</span>
-    <span><i className="is-guide"/>Guide tone, the note that names the chord</span>
+    <span><i className="is-guide"/>Guide tone</span>
     <span><i/>Chord tone</span>
     <span><i/>Colour</span>
    </p>
@@ -75,83 +65,50 @@ const ELSEWHERE=[
 ] as const;
 
 /**
- * Home states one thing loudly — the next lesson — and lists everything else
- * quietly beneath it. No panels: sections are separated by air and a hairline,
- * and every secondary destination is a row that lights up under the cursor.
+ * Home is one branded product statement first, then the session underneath.
+ * The fretboard is not decoration: it demonstrates the central Outside In
+ * claim by showing what each note is doing against the harmony.
  */
-/**
- * Hero imagery, served from this origin.
- *
- * Still the brief's own subject, rock strata, and still placeholders: the
- * spotlight wants two photographs of the same frame that differ in some
- * meaningful way, which for this product would be a neck lit two ways or the
- * same bar written two ways. Replace both files and nothing else changes.
- *
- * They are local rather than hotlinked for the same reason the typefaces are.
- * External images are blocked outright here (img-src 'self' data: blob:), so
- * the hotlinked version renders a black rectangle, and the design system's own
- * rules already refuse third-party CDNs.
- */
-const HERO_BASE="/hero/hero-base.webp";
-const HERO_REVEAL="/hero/hero-reveal.webp";
-
-export default function Home({percent,completed,lesson,stage,flow,units,onOpenLesson,onOpenUnit}:Props){
+export default function Home({percent:_,completed,lesson,stage,flow,units,onOpenLesson,onOpenUnit}:Props){
  const here=Math.min(flow.length-1,Math.floor(stage.index/1.5));
 
  return (
   <>
    {/*
-     * PLACEHOLDER IMAGERY. These two URLs came with the design brief and are
-     * geology photographs, which is the wrong subject for this product. The
-     * mechanic and the composition are right; the pictures need replacing with
-     * something of an instrument. Swap both constants and nothing else changes.
+     * The statement is the left page.
+     *
+     * It was a full-bleed hero: 100vw wide, pulled out of the content column
+     * with a negative margin, a neck rotated three degrees bleeding off the
+     * right, and a radial wash behind the whole thing. That arrangement needs
+     * the viewport, and inside a bound spread it does not have one — the
+     * escape hatch measured the window rather than the page and dragged the
+     * first screen of the product a hundred and fifty pixels off its own
+     * left edge.
+     *
+     * On a book the argument goes on the facing page and the work goes on the
+     * right, which is what the rest of this section already does. The neck
+     * stays, but it stops being atmosphere behind the words and becomes the
+     * first thing on the working page: it is the demonstration, so it should
+     * be legible rather than rotated and faded under a headline.
      */}
-   <SpotlightHero base={HERO_BASE} reveal={HERO_REVEAL}>
-    <div className="heroHead">
-     <h1 data-page-heading tabIndex={-1}>
-      <span className="heroLineSerif hero-anim hero-reveal" style={{animationDelay:"0.25s"}}>
-       Progression first.
-      </span>
-      <span className="heroLineSans hero-anim hero-reveal" style={{animationDelay:"0.42s"}}>
-       Scale second.
-      </span>
-     </h1>
-    </div>
-
-    <div className="heroNoteLeft hero-anim hero-fade" style={{animationDelay:"0.7s"}}>
-     <p>
-      The neck shows what every note is doing against the chord you are on and
-      the one you are going to, so the answer changes when the harmony does.
+   <PageLeaf>
+    <div className="homeStatement">
+     <h1 id="outside-in-title" className="homeWord" data-page-heading tabIndex={-1}>Outside <em>In</em></h1>
+     <p className="homeClaim">Progression first. Scale second.</p>
+     <hr className="redRule"/>
+     <p className="homeSupport">
+      See what every note is doing against the chord you are on and the one you are moving toward.
      </p>
-    </div>
-
-    <div className="heroNoteRight hero-anim hero-fade" style={{animationDelay:"0.85s"}}>
-     <p>
-      {lesson.outcome}
-     </p>
-     <button className="action-primary" onClick={onOpenLesson}>
-      {stage.index?"Continue":"Begin"} lesson {lesson.index+1}
+     <button className="action-primary homeBegin" onClick={onOpenLesson}>
+      {stage.index?"Continue":"Begin"} lesson <span className="caret" aria-hidden="true">&#8594;</span>
      </button>
-     <span className="fineprint">
-      {lesson.duration} min · {stage.names[stage.index]} · {completed} of {lesson.total} passed
-     </span>
     </div>
-   </SpotlightHero>
+   </PageLeaf>
 
-   <ContainerScroll
-    title={
-     <>
-      <h2>A note is not <em>allowed</em>. It has a job.</h2>
-      <p>
-       Every other diagram shows you which notes fit. This one shows you what
-       each one is doing, and where the line has to arrive next.
-      </p>
-     </>
-    }
-   >
+   <section className="homeDemo" aria-label="What a note is doing">
     <NeckPreview/>
-   </ContainerScroll>
-
+    <p className="annot homeDemoNote">Notes in context.</p>
+   </section>
    <section className="band reveal">
     <div className="band-head">
      <h2 className="label">Today</h2>
@@ -159,14 +116,6 @@ export default function Home({percent,completed,lesson,stage,flow,units,onOpenLe
       Open lesson <svg className="caret" viewBox="0 0 12 12" width="9" height="9" aria-hidden="true"><path d="M2 1 10 6 2 11Z" fill="currentColor"/></svg>
      </button>
     </div>
-    {/*
-      * The session read as a chart. Each block takes a rehearsal letter in the
-      * left margin, the way a player is told to take it from B, and the last
-      * one is the coda: it is the thing the session is for, and on paper the
-      * coda is where the chart resolves. The numbers the blocks carried before
-      * were a list index wearing a serif; a letter is how the instruction is
-      * actually given in a room.
-      */}
     <ol className="chartRows" data-register="chart">
      {flow.map((block,index)=>{
       const last=index===flow.length-1;
@@ -201,7 +150,7 @@ export default function Home({percent,completed,lesson,stage,flow,units,onOpenLe
     </ol>
    </section>
 
-   <section className="band reveal">
+   <section className="band reveal homeElsewhere">
     <h2 className="label band-head">Elsewhere</h2>
     <ol className="rows stagger">
      {ELSEWHERE.map(item=>(
@@ -219,7 +168,7 @@ export default function Home({percent,completed,lesson,stage,flow,units,onOpenLe
     </ol>
    </section>
 
-   <section className="band reveal">
+   <section className="band reveal homeCourse">
     <div className="band-head">
      <h2 className="label">The course</h2>
      <button className="action action-quiet" onClick={()=>goToView("roadmap")}>
