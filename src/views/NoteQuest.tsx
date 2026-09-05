@@ -32,10 +32,12 @@ type Props={
  onPickLesson:(index:number)=>void;
  /** Sound a pitch class, so the player can hear the target before hunting it. */
  audition:(pitchClasses:number[],hold?:number)=>void;
+ /** Tell the mic loop which pitch class this step wants, to resolve otherwise-ambiguous readings. */
+ onExpectedPitch:(pitchClass:number|null)=>void;
 };
 
 export default function NoteQuest({
- lesson,heard,listening,connecting,onListen,onPickLesson,audition,
+ lesson,heard,listening,connecting,onListen,onPickLesson,audition,onExpectedPitch,
 }:Props){
  const quest=useMemo(()=>questFor(lesson),[lesson]);
 
@@ -57,6 +59,15 @@ export default function NoteQuest({
 
  const reset=()=>{setWalk(startWalk());setWrong(null);ignorePast()};
  useEffect(()=>{setWalk(startWalk());setWrong(null);ignorePast()},[lesson,ignorePast]);
+
+ // The mic loop lives above this component and has no way to know what note
+ // the walk currently wants — tell it, so it can resolve the fundamental/
+ // harmonic ambiguity a free-running detector can't. Clear the hint whenever
+ // it would otherwise go stale: the walk finishes, or this view goes away.
+ useEffect(()=>{
+  onExpectedPitch(done?null:targetPitch);
+  return()=>onExpectedPitch(null);
+ },[targetPitch,done,onExpectedPitch]);
 
  const spent=misses>=MISSES_ALLOWED;
 

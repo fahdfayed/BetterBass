@@ -24,7 +24,12 @@ import {MODES} from "./harmony-fretboard-data";
 import Formula from "./components/Formula";
 import {degreeAt,SHORT_NAMES as DEG} from "./theory/degrees";
 import {goToView,navigate,pathForView,useRoute} from "./router";
-import {autoCorrelate,centsToNote,createPitchTracker,labelFor,midiHz,NOTE_NAMES,PITCH_MAX_HZ,PITCH_MIN_HZ,PITCH_RMS_GATE,tensionFor,type Harmony,type NoteEvent} from "./pitch";
+import {autoCorrelate,createPitchTracker,labelFor,midiHz,NOTE_NAMES,PITCH_RMS_GATE,tensionFor,type Harmony,type NoteEvent} from "./pitch";
+import {
+ bassMidiFor,beatPosition,chordRootPc,computeNoteEvent,droneVoicing,forceCloseNote,
+ INITIAL_DETECTOR_STATE,noiseEnvelope,shouldClick,stepDetector,weatherLabel,
+ type ClickMode,type DetectorEffect,type DetectorState,
+} from "./synth";
 import {COURSE_LESSONS,COURSE_UNITS} from "./course-data";
 import {lessonContext} from "./course-context";
 import {LESSON_DETAILS} from "./course-details";
@@ -99,7 +104,7 @@ export default function BassLab(){
   setChord(ground.chord);
  },[courseIndex]);
 
- const audio=useRef<{ctx:AudioContext,stream:MediaStream,raf:number}|null>(null),eventRef=useRef<{midi:number,start:number,amp:number}|null>(null),eventsRef=useRef<NoteEvent[]>([]),recordRef=useRef(false),runtimeRef=useRef<{ctx:AudioContext,clock:AudioClock,master:GainNode}|null>(null),auditionRef=useRef<AudioContext|null>(null); const ri=root, scale=useMemo(()=>MODES[mode].s.map(x=>(x+ri)%12),[mode,ri]), color=(ri+MODES[mode].s[MODES[mode].c])%12, chordTones=useMemo(()=>[0,3,7,10].map(x=>(x+ri)%12),[ri]);
+ const audio=useRef<{ctx:AudioContext,stream:MediaStream,raf:number}|null>(null),detectorStateRef=useRef<DetectorState>(INITIAL_DETECTOR_STATE),eventsRef=useRef<NoteEvent[]>([]),recordRef=useRef(false),runtimeRef=useRef<{ctx:AudioContext,clock:AudioClock,master:GainNode}|null>(null),auditionRef=useRef<AudioContext|null>(null); const ri=root, scale=useMemo(()=>MODES[mode].s.map(x=>(x+ri)%12),[mode,ri]), color=(ri+MODES[mode].s[MODES[mode].c])%12, chordTones=useMemo(()=>[0,3,7,10].map(x=>(x+ri)%12),[ri]);
  // The microphone loop and the backing band both outlive the render that starts
  // them, so anything they read has to come from a ref. Reading the state values
  // directly would freeze them at whatever they were when playback began.
@@ -121,10 +126,10 @@ export default function BassLab(){
  const [sentToFretboard,setSentToFretboard]=useState<string[]|undefined>();
  const [fretCentre,setFretCentre]=useState<number|undefined>();
  const [heard,setHeard]=useState<{midi:number;at:number}|null>(null);
- const heardRef=useRef(-1);
  const takeStartRef=useRef(0),bpmRef=useRef(bpm),noiseRef=useRef(noise),calibrationRef=useRef<{until:number,samples:number[]}|null>(null);
  const runtimeSettingsRef=useRef({bpm,meter,style,clickMode,density,progression,ri});
  const harmonyRef=useRef<Harmony>({ri,chordTones,color,scale});
+ const expectedPitchRef=useRef<number|null>(null);
  useEffect(()=>{bpmRef.current=bpm},[bpm]);
  useEffect(()=>{noiseRef.current=noise},[noise]);
  useEffect(()=>{harmonyRef.current={ri,chordTones,color,scale}},[ri,chordTones,color,scale]);
@@ -136,20 +141,45 @@ export default function BassLab(){
  useEffect(()=>{try{const p=JSON.parse(localStorage.getItem("basslab-adaptive")||"null");if(p&&typeof p==="object"){setFreedom(numberArray(p.freedom,5,[72,89,94,86,63]));setKeyMatrix(numberArray(p.matrix,12,[78,42,69,45,75,57,41,81,44,86,48,71]));setDiag(numberArray(p.diag,5,[76,82,71,68,64]));setAdaptiveReady(true)}}catch{}},[]);
  useEffect(()=>{try{const p=JSON.parse(localStorage.getItem("basslab-course")||"null");if(p&&typeof p==="object"){const done=clampIndex(p.completed,0,COURSE_LESSONS.length);setCourseCompleted(done);setCourseIndex(clampIndex(p.index??done,0,COURSE_LESSONS.length-1));setCourseStep(clampIndex(p.step,0,5))}}catch{}},[]);
  useEffect(()=>{setJuryScores([70,70,70,70,70]);setPracticeTempo(55+COURSE_LESSONS[courseIndex].unit*5)},[courseIndex]);
- const finishEvent=(end:number)=>{const e=eventRef.current;if(!e||!recordRef.current)return;const pc=(e.midi%12+12)%12,liveBpm=bpmRef.current,elapsed=(e.start-takeStartRef.current)/1000,beatFloat=elapsed/(60/liveBpm),beat=Math.floor(beatFloat)%4+1,offset=Math.round((beatFloat-Math.round(beatFloat))*60000/liveBpm),harmony=harmonyRef.current,t=tensionFor(pc,harmony),next:NoteEvent={id:eventId(),midi:e.midi,n:N[pc],oct:Math.floor(e.midi/12)-1,start:e.start,end,dur:Math.max(30,end-e.start),amp:e.amp,beat,offset,fn:labelFor(pc,harmony),tension:t,resolution:"pending"};eventsRef.current=[...eventsRef.current,next];setEvents([...eventsRef.current]);eventRef.current=null};
- const startAudio=async()=>{if(listening){finishEvent(performance.now());if(audio.current){cancelAnimationFrame(audio.current.raf);audio.current.stream.getTracks().forEach(t=>t.stop());audio.current.ctx.close();audio.current=null}setListening(false);return false}setConnecting(true);try{const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}),ctx=new AudioContext(),src=ctx.createMediaStreamSource(stream),an=ctx.createAnalyser();/*
+ // The detector's own decisions (stable note found, note ended, silence) come
+ // back as a plain effect list from synth.ts; this is the one place that list
+ // is turned into actual state updates and, for a closed note, a scored event.
+ const applyDetectorEffects=(effects:DetectorEffect[])=>{
+  for(const effect of effects){
+   if(effect.type==="pitch")setPitch(effect.note);
+   else if(effect.type==="historyAppend")setHistory(h=>h[h.length-1]===effect.midi?h:[...h.slice(-63),effect.midi]);
+   else if(effect.type==="heard")setHeard({midi:effect.midi,at:effect.at});
+   else if(effect.type==="heardCleared")setHeard(null);
+   else if(effect.type==="noteOff"&&recordRef.current){
+    const next=computeNoteEvent(effect.note,effect.end,bpmRef.current,takeStartRef.current,harmonyRef.current,eventId());
+    eventsRef.current=[...eventsRef.current,next];
+    setEvents([...eventsRef.current]);
+   }
+  }
+ };
+ // Ending a take or toggling the mic off both need to flush a note that is
+ // still open — not just wait for the detector to notice silence on its own.
+ const flushOpenNote=(end:number)=>{
+  const{state,effects}=forceCloseNote(detectorStateRef.current,end);
+  detectorStateRef.current=state;
+  applyDetectorEffects(effects);
+ };
+ const startAudio=async()=>{if(listening){flushOpenNote(performance.now());if(audio.current){cancelAnimationFrame(audio.current.raf);audio.current.stream.getTracks().forEach(t=>t.stop());audio.current.ctx.close();audio.current=null}setListening(false);return false}setConnecting(true);try{const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}),ctx=new AudioContext(),src=ctx.createMediaStreamSource(stream),an=ctx.createAnalyser();/*
     * 8192 rather than 4096: a low B is 1555 samples long at 48 kHz, and a
     * period detector cannot see a period it does not hold several cycles of.
     */
-   an.fftSize=8192;an.smoothingTimeConstant=.15;src.connect(an);const b=new Float32Array(an.fftSize);let stable=-1,frames=0,silence=0;const tracker=createPitchTracker();const tick=()=>{an.getFloatTimeDomainData(b);let rms=0;for(const x of b)rms+=x*x;rms=Math.sqrt(rms/b.length);
+   an.fftSize=8192;an.smoothingTimeConstant=.15;src.connect(an);const b=new Float32Array(an.fftSize);detectorStateRef.current=INITIAL_DETECTOR_STATE;const tracker=createPitchTracker();const tick=()=>{an.getFloatTimeDomainData(b);let rms=0;for(const x of b)rms+=x*x;rms=Math.sqrt(rms/b.length);
   const measuring=calibrationRef.current;
   if(measuring){measuring.samples.push(rms);if(performance.now()>=measuring.until){calibrationRef.current=null;const sorted=[...measuring.samples].sort((a,z)=>a-z),floor=sorted[Math.floor(sorted.length*.9)]??0;setNoise(floor);setCalibrated(true)}if(audio.current)audio.current.raf=requestAnimationFrame(tick);return}
-  const raw=autoCorrelate(b,ctx.sampleRate);const loud=rms>Math.max(PITCH_RMS_GATE,noiseRef.current*1.8);const hz=tracker.feed(loud?raw:-1);if(hz>PITCH_MIN_HZ&&hz<PITCH_MAX_HZ){silence=0;const p=centsToNote(hz);setPitch(p);if(p.midi===stable)frames++;else{stable=p.midi;frames=1}if(frames>=2){if(eventRef.current&&eventRef.current.midi!==p.midi)finishEvent(performance.now());if(!eventRef.current)eventRef.current={midi:p.midi,start:performance.now(),amp:rms};setHistory(h=>h[h.length-1]===p.midi?h:[...h.slice(-63),p.midi]);if(heardRef.current!==p.midi){heardRef.current=p.midi;setHeard({midi:p.midi,at:performance.now()})}}}else if(++silence>5&&eventRef.current){finishEvent(performance.now());stable=-1;frames=0}if(silence>5)heardRef.current=-1;if(audio.current)audio.current.raf=requestAnimationFrame(tick)};audio.current={ctx,stream,raf:requestAnimationFrame(tick)};setAudioError("");setConnecting(false);setListening(true);return true}catch(error){setConnecting(false);setPitch(null);setListening(false);setAudioError(error instanceof DOMException&&(error.name==="NotAllowedError"||error.name==="SecurityError")?"Microphone access was blocked. Allow it for this site, then choose your audio-interface input and try again.":"The audio input could not start. Check that an input device is connected and free, then try again.");return false}};
+  const raw=autoCorrelate(b,ctx.sampleRate,expectedPitchRef.current??undefined);const loud=rms>Math.max(PITCH_RMS_GATE,noiseRef.current*1.8);const hz=tracker.feed(loud?raw:-1);
+  const{state,effects}=stepDetector(detectorStateRef.current,{hz,rms,now:performance.now()});
+  detectorStateRef.current=state;applyDetectorEffects(effects);
+  if(audio.current)audio.current.raf=requestAnimationFrame(tick)};audio.current={ctx,stream,raf:requestAnimationFrame(tick)};setAudioError("");setConnecting(false);setListening(true);return true}catch(error){setConnecting(false);setPitch(null);setListening(false);setAudioError(error instanceof DOMException&&(error.name==="NotAllowedError"||error.name==="SecurityError")?"Microphone access was blocked. Allow it for this site, then choose your audio-interface input and try again.":"The audio input could not start. Check that an input device is connected and free, then try again.");return false}};
  // Measure the real noise floor from the running input. The previous fixed .006
  // sat below the detector's own gate, so calibrating changed nothing at all.
  const calibrate=async()=>{if(!listening){const started=await startAudio();if(!started)return}setCalibrated(false);calibrationRef.current={until:performance.now()+1800,samples:[]}};
  const beginTake=async()=>{eventsRef.current=[];setEvents([]);setHistory([]);takeStartRef.current=performance.now();recordRef.current=true;setRecording(true);if(!listening){const started=await startAudio();if(!started){recordRef.current=false;setRecording(false);return false}}return true};
- const endTake=()=>{finishEvent(performance.now());recordRef.current=false;setRecording(false);const ev=eventsRef.current.map((e,i,a)=>{const nxt=a[i+1],resolved=e.tension===4&&nxt&&nxt.tension<=1&&nxt.start-e.end<900?"recovered":e.tension===4?"unresolved":"-";return {...e,resolution:resolved}});eventsRef.current=ev;setEvents([...ev]);saveLearningState("basslab-last-take",JSON.stringify(ev));};
+ const endTake=()=>{flushOpenNote(performance.now());recordRef.current=false;setRecording(false);const ev=eventsRef.current.map((e,i,a)=>{const nxt=a[i+1],resolved=e.tension===4&&nxt&&nxt.tension<=1&&nxt.start-e.end<900?"recovered":e.tension===4?"unresolved":"-";return {...e,resolution:resolved}});eventsRef.current=ev;setEvents([...ev]);saveLearningState("basslab-last-take",JSON.stringify(ev));};
  // Render reads the harmony directly; only the microphone loop goes via the ref.
  const harmony:Harmony={ri,chordTones,color,scale};
  const tension=(ni:number)=>tensionFor(ni,harmony);
@@ -166,10 +196,10 @@ export default function BassLab(){
   if(ctx.state==="suspended")void ctx.resume();
   const now=ctx.currentTime+.05;
   baseDrone(ctx,now,pcs.length*hold+.45,droneRoot);
-  pcs.forEach((pc,i)=>{const midi=36+((pc+12)%12)+((pc+12)%12<4?12:0);tone(ctx,midiHz(midi),now+.18+i*hold,hold*.82,.18,"triangle")});
+  pcs.forEach((pc,i)=>tone(ctx,midiHz(bassMidiFor(pc)),now+.18+i*hold,hold*.82,.18,"triangle"));
  };
- const baseDrone=(ctx:AudioContext,when:number,dur:number,droneRoot=ri)=>{const midi=36+droneRoot+(droneRoot<4?12:0);tone(ctx,midiHz(midi),when,dur,.045,"sine");tone(ctx,midiHz(midi+7),when,dur,.018,"sine")};
- const noiseHit=(ctx:AudioContext,when:number,vol:number,out:AudioNode)=>{const len=Math.floor(ctx.sampleRate*.08),buf=ctx.createBuffer(1,len,ctx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);const s=ctx.createBufferSource(),g=ctx.createGain();s.buffer=buf;g.gain.value=vol;s.connect(g).connect(out);s.start(when)};
+ const baseDrone=(ctx:AudioContext,when:number,dur:number,droneRoot=ri)=>{const voicing=droneVoicing(droneRoot);tone(ctx,midiHz(voicing.root),when,dur,.045,"sine");tone(ctx,midiHz(voicing.fifth),when,dur,.018,"sine")};
+ const noiseHit=(ctx:AudioContext,when:number,vol:number,out:AudioNode)=>{const len=Math.floor(ctx.sampleRate*.08),buf=ctx.createBuffer(1,len,ctx.sampleRate);buf.getChannelData(0).set(noiseEnvelope(len));const s=ctx.createBufferSource(),g=ctx.createGain();s.buffer=buf;g.gain.value=vol;s.connect(g).connect(out);s.start(when)};
  const stopRuntime=()=>{const runtime=runtimeRef.current;if(runtime){runtimeRef.current=null;runtime.clock.stop();fadeAndClose(runtime.ctx,runtime.master)}setPlaying(false);setBar(1);setBeat(1);setWeather("Stable")};
  const startRuntime=()=>{
   if(playing){stopRuntime();return}
@@ -179,17 +209,16 @@ export default function BassLab(){
   // frozen into the closure until the band is stopped and restarted.
   const schedule=(step:number,when:number)=>{
    const {meter,style,clickMode,density,progression,ri,bpm}=runtimeSettingsRef.current;
-   const b=step%meter+1,ba=Math.floor(step/meter)%4+1,sec=60/bpm;
-   const rootPc=(ri+progression[ba-1]+12)%12,rootMidi=36+rootPc+(rootPc<4?12:0);
-   const shouldClick=clickMode==="Every beat"||clickMode==="2 & 4"&&(b===2||b===4)||clickMode==="Beat 4"&&b===4||clickMode==="Every 2 bars"&&ba%2===0&&b===1||clickMode==="Disappearing"&&Math.floor(step/meter)%8<4;
-   if(shouldClick)tone(ctx,b===1?1400:950,when,.045,.16,"square",master);
+   const {beat:b,bar:ba}=beatPosition(step,meter),sec=60/bpm;
+   const rootMidi=bassMidiFor(chordRootPc(ba,progression,ri));
+   if(shouldClick(clickMode as ClickMode,b,ba,step,meter))tone(ctx,b===1?1400:950,when,.045,.16,"square",master);
    if(b===1){tone(ctx,midiHz(rootMidi),when,sec*meter*.92,.08,"sine",master);[0,3,7,10].slice(0,density+1).forEach((iv,i)=>tone(ctx,midiHz(rootMidi+12+iv),when+i*.008,sec*meter*.8,.025,"triangle",master))}
    if(style!=="Ambient"){if(b===1||b===3)tone(ctx,55,when,.09,.22,"sine",master);if(b===2||b===4)noiseHit(ctx,when,.13,master);if(style==="Funk"||style==="Disco")noiseHit(ctx,when+sec/2,.045,master)}
   };
   const display=(step:number)=>{
-   const {meter}=runtimeSettingsRef.current,b=step%meter+1,ba=Math.floor(step/meter)%4+1;
+   const {beat:b,bar:ba}=beatPosition(step,runtimeSettingsRef.current.meter);
    setBeat(b);setBar(ba);
-   if(b===1)setWeather(ba===1?"Stable":ba===2?"Darkening":ba===3?"Increasing tension":"Release");
+   if(b===1)setWeather(weatherLabel(ba));
   };
   const clock=startAudioClock(ctx,()=>runtimeSettingsRef.current.bpm,{schedule,display});
   runtimeRef.current={ctx,clock,master};setPlaying(true);
@@ -309,7 +338,8 @@ export default function BassLab(){
  {view==="technique"&&<TechniqueLab/>}
  {view==="quest"&&<NoteQuest lesson={courseIndex} heard={heard} listening={listening}
    connecting={connecting} onListen={()=>void startAudio()}
-   onPickLesson={setCourseIndex} audition={audition}/>}
+   onPickLesson={setCourseIndex} audition={audition}
+   onExpectedPitch={pc=>{expectedPitchRef.current=pc}}/>}
  {view==="courseLesson"&&<LessonWorkspace
   lesson={{index:courseIndex,total:COURSE_LESSONS.length,title:course.title,unit:course.unit,outcome:course.outcome,duration:course.duration}}
   stageIndex={courseStep}
