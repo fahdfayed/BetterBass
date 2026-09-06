@@ -98,6 +98,38 @@
         ],
         "createdAt": "2026-09-04T00:01:06.482Z",
         "reason": "Agent: .hfString>b's border-right is the string-name column's own divider, functionally the fretboard's 'nut' per DESIGN.md's Nut Is The Line Rule and the neck section's documented left-border-is-the-fret convention -- structural, not a decorative card accent"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "27px",
+        "files": [
+          "src/course.css"
+        ],
+        "createdAt": "2026-09-05T19:41:04.773Z"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "37px",
+        "files": [
+          "src/course.css"
+        ],
+        "createdAt": "2026-09-05T19:41:11.732Z"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "20px",
+        "files": [
+          "src/course.css"
+        ],
+        "createdAt": "2026-09-05T19:41:11.830Z"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "26px",
+        "files": [
+          "src/course.css"
+        ],
+        "createdAt": "2026-09-05T19:41:11.922Z"
       }
     ]
   }

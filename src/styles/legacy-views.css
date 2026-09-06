@@ -95,96 +95,10 @@
 .maqamNextStep strong,
 .maqamProfile b{color:var(--vermillion) !important}
 
-/* ======================================================= Practice studio == */
-
-/* This view had already picked up the new rule colour, so only the frames
-   themselves were left. Blocks become bands; the two tab strips become
-   underlines; controls go flat. */
-.guidedDay,
-.dayContext,
-.practiceConsole,
-.beastBodyCheck,
-.practiceControlBar,
-.tempoLadderBeast,
-.stateModel,
-.sessionRowCard,
-.errorDock,
-.blockExecutionFlow{
- border:0 !important;
- border-top:1px solid var(--rule) !important;
- border-radius:0 !important;
- background:none !important;
- padding:var(--s6) 0 0 !important;
-}
-/* The control bar reads as a strip, closed on both sides. */
-.practiceControlBar{
- border-block:1px solid var(--rule) !important;
- padding:var(--s4) 0 !important;
-}
-
-/* Segmented switch and section tabs: labels on a line, active one underlined.
-
-   "On a line" has to be stated. Underneath, these are two-column card grids,
-   and flattening the cards to labels left the labels sharing a 169px track
-   they need 284px for -- clipped, with an overflow rule that had nothing to
-   scroll because the tracks themselves were the constraint. */
-.practiceTrackSwitch,
-.beastSections{
- display:flex !important;
- align-items:baseline;
- border:0 !important;
- border-bottom:1px solid var(--rule) !important;
- border-radius:0 !important;
- background:none !important;
- padding:0 !important;
- gap:var(--s6) !important;
- overflow-x:auto;
- scrollbar-width:none;
-}
-.practiceTrackSwitch::-webkit-scrollbar,
-.beastSections::-webkit-scrollbar{display:none}
-/* `white-space:nowrap` keeps the label on one line but does not stop the flex
-   item shrinking around it, so on the practice page a 284px switch label was
-   being compressed into a 169px grid track and clipped. The rail already
-   scrolls; `flex:none` is what gives it something to scroll. */
-.practiceTrackSwitch button,
-.beastSections button{
- position:relative;
- flex:none;
- border:0 !important;
- border-radius:0 !important;
- background:none !important;
- padding:0 0 var(--s3) !important;
- color:var(--ink-3) !important;
- white-space:nowrap;
-}
-.practiceTrackSwitch button:hover,
-.beastSections button:hover{color:var(--ink-2) !important}
-.practiceTrackSwitch button.active,
-.beastSections button.active,
-.practiceTrackSwitch button[aria-pressed="true"]{color:var(--ink) !important}
-.practiceTrackSwitch button.active::after,
-.beastSections button.active::after,
-.practiceTrackSwitch button[aria-pressed="true"]::after{
- content:"";
- position:absolute;
- left:0;bottom:-1px;
- width:100%;height:1px;
- background:var(--accent);
- animation:tabMark var(--t-base) var(--ease-out) both;
-}
-
-/* Remaining controls in the studio. */.practiceConsole button:not(.action):not(.action-primary){
- border:0 !important;
- border-radius:var(--r-control) !important;
- background:none !important;
- color:var(--ink-3) !important;
-}
-.practiceConsole button:not(.action):not(.action-primary):hover{
- color:var(--ink) !important;
- background-color:var(--wash) !important;
-}
-.practiceConsole button.complete{color:var(--done) !important}
+/* Practice studio (beast.css/beast-extra.css) now carries its own full token
+   migration and feeds the sitewide button-flatten consumer via --btn-fill/
+   --btn-ink directly, so every rule that used to patch it from outside is
+   gone. */
 
 /* ================================== Progress · Slap · Coach · Labs · Games */
 
@@ -195,11 +109,9 @@
 
 .progressHero,
 .slapHero,
-.coachHero,
 .rescueGame,
 .calStats,
 .pipeline,
-.coachControlStrip,
 .freedomMini,
 .sessionStrip,
 .weakness,
@@ -217,7 +129,6 @@
 }
 
 /* Strips read as bounded on both edges rather than as slabs. */
-.coachControlStrip,
 .calStats{
  border-block:1px solid var(--rule) !important;
  padding:var(--s4) 0 !important;
@@ -242,14 +153,18 @@
 /* Controls across the remaining legacy screens. .mega stays filled — it is the
    one action on its screen. slap.css now carries its own full token migration,
    so slapLab's buttons are excluded here — this generic flatten no longer
-   speaks for them. */.page .osScreen button:not(.mega):not(.action):not(.action-primary), .ghostButton{
+   speaks for them. Reads through --btn-fill/--btn-ink rather than hardcoding
+   the fill: a screen with no opinion gets exactly the old transparent/ink-3
+   default, and a screen that sets those two custom properties on its own
+   button selectors (the same seam Coach and Practice Studio already use) is
+   heard here without needing its own copy of this whole rule. */.page .osScreen button:not(.mega):not(.action):not(.action-primary), .ghostButton{
  border:0 !important;
  border-radius:var(--r-control) !important;
  /* background-color, not background: the shorthand also resets
     background-image, and this rule reaches every button on a legacy screen —
     including the rows the book prints on a stave. It only ever meant the fill. */
- background-color:transparent !important;
- color:var(--ink-3) !important;
+ background-color:var(--btn-fill,transparent) !important;
+ color:var(--btn-ink,var(--ink-3)) !important;
  transition:color var(--t-base) var(--ease),background var(--t-base) var(--ease);
 }
 .page .osScreen button:not(.mega):not(.action):not(.action-primary):hover, .ghostButton:hover{
@@ -272,7 +187,7 @@
 
 /* The layer revealed once the outer frames came off. Same treatment. slapNextStep
    and slapSafety are excluded — slap.css now sets their border and, for the
-   caution-toned safety note, background directly. */.theoryCoverage, .theoryChapter, .runtimeHero, .progressionBuilder, .referenceExercises, .hfBuilder, .hfTimingControls, .hfBandStyle, .hfIntro, .hfChordRail, .hfVoiceLeading, .hfNoteTutor, .hfMapControls, .hfVoiceGrid, .gps, .abilities, .exerciseStage, .takeAnalysis, .coachBlocks{
+   caution-toned safety note, background directly. */.runtimeHero, .progressionBuilder, .referenceExercises, .hfBuilder, .hfTimingControls, .hfBandStyle, .hfIntro, .hfVoiceLeading, .hfNoteTutor, .hfMapControls, .hfVoiceGrid, .gps, .abilities, .exerciseStage, .takeAnalysis{
  border:0 !important;
  border-top:1px solid var(--rule) !important;
  border-radius:0 !important;
@@ -451,68 +366,9 @@
  margin-top:var(--s3);
 }
 
-/* ---- tucked tab strips --------------------------------------------------- */
-
-/**
- * redesign.css offset these two strips with position:relative and top:82px
- * (132px and 128px at narrower widths) so they tucked under the hero's bottom
- * edge. The hero no longer has that edge, so the offset simply pushed the
- * strips 82px down onto the section beneath them — which is the overlap on
- * /slap and /coach.
- *
- * The offset goes, and both strips join every other tab bar in the app:
- * labels on a line with the active one underlined.
- */
-.slapTabs,
-.coachTabs{
- top:0 !important;
- position:static !important;
- display:flex !important;
- grid-template-columns:none !important;
- border:0 !important;
- border-bottom:1px solid var(--rule) !important;
- border-radius:0 !important;
- background:none !important;
- margin-bottom:var(--s6) !important;
- gap:var(--s6) !important;
- overflow-x:auto;
- scrollbar-width:none;
-}
-.slapTabs::-webkit-scrollbar,
-.coachTabs::-webkit-scrollbar{display:none}
-
-.slapTabs button,
-.coachTabs button{
- position:relative;
- flex:0 0 auto !important;
- min-width:0 !important;
- min-height:0 !important;
- border:0 !important;
- border-radius:0 !important;
- background:none !important;
- padding:0 0 var(--s3) !important;
- color:var(--ink-3) !important;
- font-weight:500 !important;
- white-space:nowrap;
-}
-.slapTabs button:hover,
-.coachTabs button:hover{color:var(--ink-2) !important;background:none !important}
-.slapTabs button.active,
-.coachTabs button.active{color:var(--ink) !important;background:none !important}
-.slapTabs button.active::after,
-.coachTabs button.active::after{
- content:"";
- position:absolute;
- left:0;bottom:-1px;
- width:100%;height:1px;
- background:var(--accent);
- animation:tabMark var(--t-base) var(--ease-out) both;
-}
-/* The strips stack a small index above the label; inline keeps them on one line. */
-.slapTabs button i,
-.coachTabs button i{display:inline !important;margin:0 var(--s2) 0 0 !important;opacity:1 !important;color:var(--ink-3)}
-.slapTabs button span,
-.coachTabs button span{display:inline !important}
+/* Both slap.css and performance.css now carry their own complete tab
+   treatment (an equal-width grid with dividers, matching maqamTabs), each
+   with the `position:static` this block used to force from outside. */
 
 /* ---- grid overflow ------------------------------------------------------- */
 
