@@ -39,6 +39,7 @@ import VoiceControl from "./VoiceControl";
 const BeastPractice=lazy(()=>import("./BeastPractice"));
 const PerformanceCoach=lazy(()=>import("./PerformanceCoach"));
 const MaqamLab=lazy(()=>import("./MaqamLab"));
+const FretboardNeck3D=lazy(()=>import("./views/FretboardNeck3D"));
 const SlapLab=lazy(()=>import("./SlapLab"));
 const HarmonyFretboard=lazy(()=>import("./HarmonyFretboard"));
 const TheoryReference=lazy(()=>import("./TheoryReference"));
@@ -52,18 +53,18 @@ const sessions=[{m:8,t:"Ear calibration",d:"Drone degree: inside / outside → n
 const NAV_GROUPS=[
  {label:"Learn",items:[{id:"course",icon:"home",label:"Home"},{id:"roadmap",icon:"course",label:"Full course"}]},
  {label:"Practice",items:[{id:"practice",icon:"practice",label:"Practice studio"},{id:"coach",icon:"coach",label:"Live coach"}]},
- {label:"Specialties",items:[{id:"maqam",icon:"maqam",label:"Arabic maqam"},{id:"slap",icon:"slap",label:"Slap bass"}]},
+ {label:"Specialties",items:[{id:"maqam",icon:"maqam",label:"Arabic maqam"},{id:"slap",icon:"slap",label:"Slap bass"},{id:"neck3d",icon:"neck3d",label:"3D neck"}]},
  {label:"Your space",items:[{id:"tools",icon:"library",label:"Tool library"},{id:"courseProgress",icon:"progress",label:"Progress"}]},
 ];
 const VIEW_META:Record<string,{eyebrow:string,title:string}>={
  course:{eyebrow:"Your learning path",title:"Home"},courseLesson:{eyebrow:"Guided course",title:"Current lesson"},roadmap:{eyebrow:"28-LESSON CURRICULUM",title:"Full course"},
- practice:{eyebrow:"Hands-free training",title:"Practice studio"},coach:{eyebrow:"Listening + feedback",title:"Live coach"},maqam:{eyebrow:"Arabic music",title:"Maqam lab"},slap:{eyebrow:"Technique + groove",title:"Slap bass"},
+ practice:{eyebrow:"Hands-free training",title:"Practice studio"},coach:{eyebrow:"Listening + feedback",title:"Live coach"},maqam:{eyebrow:"Arabic music",title:"Maqam lab"},slap:{eyebrow:"Technique + groove",title:"Slap bass"},neck3d:{eyebrow:"Spatial practice",title:"3D neck"},
  courseProgress:{eyebrow:"Your development",title:"Progress"},fret:{eyebrow:"Harmony tool",title:"Fretboard map"},runtime:{eyebrow:"Play with a band",title:"Backing band"},
  engine:{eyebrow:"Record + understand",title:"Take analysis"},advanced:{eyebrow:"Controlled tension",title:"Improvisation lab"},chromatic:{eyebrow:"Approach and arrive",title:"Chromatic gym"},technique:{eyebrow:"Before the notes",title:"The hands"},quest:{eyebrow:"Play it to pass it",title:"The long way home"},reference:{eyebrow:"Look something up",title:"Theory reference"},adaptive:{eyebrow:"Personal curriculum",title:"Adaptive plan"},
  progression:{eyebrow:"Read a progression",title:"Progression reader"},
  today:{eyebrow:"Today's training",title:"Practice plan"},live:{eyebrow:"Real-time practice",title:"Live session"},games:{eyebrow:"Ear + fretboard",title:"Training games"},
 };
-const NAV_ACTIVE:Record<string,string[]>={course:["course"],roadmap:["roadmap","courseLesson"],practice:["practice","today","live"],coach:["coach","adaptive"],maqam:["maqam"],slap:["slap"],tools:["tools","fret","runtime","engine","advanced","reference","games","progression"],courseProgress:["courseProgress"]};
+const NAV_ACTIVE:Record<string,string[]>={course:["course"],roadmap:["roadmap","courseLesson"],practice:["practice","today","live"],coach:["coach","adaptive"],maqam:["maqam"],slap:["slap"],neck3d:["neck3d"],tools:["tools","fret","runtime","engine","advanced","reference","games","progression"],courseProgress:["courseProgress"]};
 
 function ToolLoading(){return <div className="toolLoading" role="status"><i/><span>Opening your workspace…</span></div>}
 const outsideLevels=["Chromatic approach","Two-note enclosure","Chromatic passing run","½-beat side-slip","Two-beat side-slip","Outside motif","Semitone sequence","Outside pentatonic","Superimposed triad","Free controlled phrase"];
@@ -452,7 +453,8 @@ export default function BassLab(){
  {view==="coach"&&<Suspense fallback={<ToolLoading/>}><PerformanceCoach root={root} modeName={MODES[mode].n} courseTitle={course.title} courseCompleted={courseCompleted} courseTotal={COURSE_LESSONS.length} events={events} livePitch={pitch} listening={listening} recording={recording} onStartRecording={beginTake} onStopRecording={endTake} onSetRoot={key=>{setRoot(key);setChord(`${N[key]}m7`)}} modeIntervals={MODES[mode].s} characterInterval={MODES[mode].s[MODES[mode].c]} onOpen={openCoachTool} onAudition={notes=>audition(notes,.35)}/></Suspense>} 
 
  {view==="maqam"&&<Suspense fallback={<ToolLoading/>}><MaqamLab livePitch={pitch} listening={listening} onToggleListening={startAudio}/></Suspense>} 
- {view==="slap"&&<Suspense fallback={<ToolLoading/>}><SlapLab livePitch={pitch} listening={listening} onToggleListening={startAudio} events={events}/></Suspense>} 
+ {view==="slap"&&<Suspense fallback={<ToolLoading/>}><SlapLab livePitch={pitch} listening={listening} onToggleListening={startAudio} events={events}/></Suspense>}
+ {view==="neck3d"&&<Suspense fallback={<ToolLoading/>}><FretboardNeck3D root={root} mode={mode} onSetRoot={setRoot} onSetMode={setMode} audition={audition}/></Suspense>}
 
  {view==="courseProgress"&&<CourseProgress
   percent={coursePct} completed={courseCompleted}
