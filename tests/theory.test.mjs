@@ -65,10 +65,10 @@ test("interval rows agree with the distance they name",()=>{
  for(const dictionary of THEORY_DICTIONARIES)for(const row of dictionary.rows){
   if(row.semitones===undefined)continue;
   const stated=/^(\d+)\s+SEMITONES?/i.exec(row.formula);
-  assert.ok(stated,`${row.name.en}: "${row.formula}" does not open with a semitone count`);
+  assert.ok(stated,`${row.name}: "${row.formula}" does not open with a semitone count`);
   assert.equal(row.semitones,Number(stated[1]),
-   `${row.name.en}: formula says ${stated[1]} semitones, the field says ${row.semitones}`);
-  assert.ok(row.semitones>=0&&row.semitones<=12,`${row.name.en}: ${row.semitones} is outside an octave`);
+   `${row.name}: formula says ${stated[1]} semitones, the field says ${row.semitones}`);
+  assert.ok(row.semitones>=0&&row.semitones<=12,`${row.name}: ${row.semitones} is outside an octave`);
   checked++;
  }
  assert.equal(checked,13,`expected the thirteen intervals of the octave, found ${checked}`);
@@ -85,7 +85,7 @@ test("degree formulas everywhere are written in degrees the system knows",()=>{
   const tokens=row.formula.trim().split(/\s+/);
   parseFormula(row.formula);
   assert.equal(new Set(tokens).size,tokens.length,
-   `${dictionary.id} / ${row.name.en}: "${row.formula}" names a degree twice`);
+   `${dictionary.id} / ${row.name}: "${row.formula}" names a degree twice`);
   checked++;
  }
  assert.ok(checked>=30,`only ${checked} degree formulas were measurable`);

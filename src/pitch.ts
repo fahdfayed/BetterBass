@@ -87,11 +87,15 @@ const PEAK_RATIO=.8;
 /**
  * The weakest peak worth reporting.
  *
- * A note buried under a subharmonic can peak as low as .28, so this sits under
- * that — the caller decides what to trust, and refusing to read a note that is
- * plainly there is worse than reading it with a caveat.
+ * A deliberately played note — even a noisy or subharmonic-obscured one —
+ * reliably clears .75 in this signal. Incidental noise that never was a note
+ * (a hand landing on the strings, an unplucked string brushed while moving
+ * between positions) sits distinctly lower, around .5-.6, because the
+ * analysis window is never purely that noise: real silence bleeds into it
+ * from before the contact started. .6 sits in the gap between the two,
+ * measured against synthetic reproductions of both.
  */
-const MIN_CLARITY=.22;
+const MIN_CLARITY=.6;
 
 // Reused across frames: this runs on every animation frame while the mic is on.
 let decimated=new Float32Array(0);
@@ -129,7 +133,7 @@ function refine(before:number,at:number,after:number){
  * Detected frequency, or -1 when the buffer is too quiet or nothing repeats
  * clearly enough to name.
  */
-export function autoCorrelate(b:Float32Array,rate:number){
+export function autoCorrelate(b:Float32Array,rate:number,expectedPitchClass?:number){
  let rms=0;for(const x of b)rms+=x*x;rms=Math.sqrt(rms/b.length);
  if(rms<PITCH_RMS_GATE)return -1;
 
@@ -195,14 +199,33 @@ export function autoCorrelate(b:Float32Array,rate:number){
  }
  if(!peaks.length)return -1;
 
- let tallest=0;
- for(const [,value] of peaks)if(value>tallest)tallest=value;
+ let tallest=0,strongestLag=peaks[0][0];
+ for(const [at,value] of peaks)if(value>tallest){tallest=value;strongestLag=at}
  if(tallest<MIN_CLARITY)return -1;
 
  // The first peak that comes near the tallest, which is the McLeod rule.
  const threshold=tallest*PEAK_RATIO;
- const chosen=(peaks.find(([,value])=>value>=threshold)??peaks[0])[0];
+ let chosen=(peaks.find(([,value])=>value>=threshold)??peaks[0])[0];
 
+ /*
+  * `chosen !== strongestLag` is exactly the case where the McLeod rule above
+  * overrode the naive "pick the tallest peak" answer — which is to say,
+  * exactly the ambiguity the file's own comments admit is undecidable from
+  * the curve alone. A caller that already knows what note it is listening
+  * for (a game asking for a specific target, not a free-running tuner) can
+  * break that tie the curve cannot. This only ever narrows an existing
+  * ambiguity: with no hint, or when the two candidates agree, behaviour is
+  * unchanged.
+  */
+ if(expectedPitchClass!==undefined&&chosen!==strongestLag){
+  const pc=(lag:number)=>{
+   const midi=Math.round(69+12*Math.log2((coarseRate/lag)/440));
+   return ((midi%12)+12)%12;
+  };
+  const chosenMatches=pc(chosen)===expectedPitchClass;
+  const strongestMatches=pc(strongestLag)===expectedPitchClass;
+  if(strongestMatches&&!chosenMatches)chosen=strongestLag;
+ }
 
  /*
   * The coarse lag is only accurate to four samples, so the neighbourhood is

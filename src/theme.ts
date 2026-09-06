@@ -1,54 +1,36 @@
-import {useSyncExternalStore} from "react";
-
 /**
- * Ground selection: the dark studio default, or cream for lit rooms.
+ * The ground, which is no longer a choice.
  *
- * The choice is written to the root element as data-theme and to localStorage,
- * and applied before first paint from index.html so the page never flashes the
- * wrong ground on load.
+ * This module used to switch between a dark studio ground and a cream one,
+ * persist the pick, follow the operating system when there was none, and apply
+ * it before first paint so the page never flashed the wrong colour.
+ *
+ * The music book has one ground, because paper is the material rather than a
+ * theme and a book does not have a night mode. Everything that made the choice
+ * is gone: the stored preference, the `data-theme` attribute, the media query,
+ * the toggle in the nav, and the second palette in tokens.css that every
+ * contrast measurement had to be taken against twice.
+ *
+ * What survives is the one line that was never about theming: the browser's
+ * own chrome should match the surface it frames, and the surface around the
+ * page is the dark stand the book lies on.
+ *
+ * Any stored preference from the previous design is cleared on the way past,
+ * so a reader who last visited under the dark ground does not carry a dead key
+ * in local storage forever.
  */
 
-export type Theme="dark"|"cream";
+const LEGACY_KEY = "basslab-theme";
 
-const KEY="basslab-theme";
-const EVENT="basslab-theme-change";
-
-const readStore=()=>{
- try{return localStorage.getItem(KEY)}catch{return null}
-};
-
-export function currentTheme():Theme{
- if(typeof document==="undefined")return "dark";
- return document.documentElement.dataset.theme==="cream"?"cream":"dark";
-}
-
-export function applyTheme(theme:Theme){
- if(typeof document==="undefined")return;
- if(theme==="cream")document.documentElement.dataset.theme="cream";
- else delete document.documentElement.dataset.theme;
- // The browser chrome around the page should match the ground it frames.
- document.querySelector('meta[name="theme-color"]')?.setAttribute("content",theme==="cream"?"#f5f0e8":"#08080a");
- try{localStorage.setItem(KEY,theme)}catch{/* storage may be unavailable */}
- window.dispatchEvent(new Event(EVENT));
-}
-
-/** Called once at start-up, before React mounts. */
-export function initTheme(){
- const saved=readStore();
- if(saved==="cream"||saved==="dark"){applyTheme(saved);return}
- // No stored preference: follow the operating system.
- const prefersLight=typeof window!=="undefined"&&window.matchMedia("(prefers-color-scheme: light)").matches;
- applyTheme(prefersLight?"cream":"dark");
-}
-
-export const toggleTheme=()=>applyTheme(currentTheme()==="cream"?"dark":"cream");
-
-const subscribe=(onChange:()=>void)=>{
- window.addEventListener(EVENT,onChange);
- window.addEventListener("storage",onChange);
- return()=>{window.removeEventListener(EVENT,onChange);window.removeEventListener("storage",onChange)};
-};
-
-export function useTheme(){
- return useSyncExternalStore(subscribe,currentTheme,()=>"dark" as Theme);
+export function initTheme() {
+  if (typeof document === "undefined") return;
+  delete document.documentElement.dataset.theme;
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute("content", "#101619");
+  try {
+    localStorage.removeItem(LEGACY_KEY);
+  } catch {
+    /* storage may be unavailable, and nothing here depends on it */
+  }
 }

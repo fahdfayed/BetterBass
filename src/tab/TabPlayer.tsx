@@ -1,5 +1,4 @@
 import {type CSSProperties,useEffect,useRef,useState} from "react";
-import {useTheme} from "../theme";
 import {type Degree,degreeAt} from "../theory/degrees";
 import {noteName} from "./notation";
 import * as alphaTab from "@coderline/alphatab";
@@ -150,7 +149,6 @@ export default function TabPlayer({source,title,initialLooping=false,root}:Props
  const [sounding,setSounding]=useState<{name:string;degree:Degree}[]>([]);
  const [labels,setLabels]=useState<StringLabel[]>([]);
  const stage=useRef<HTMLDivElement>(null);
- const theme=useTheme();
  // The engine is created once; the root can change when the caller swaps
  // exercise, so the beat handler reads it through a ref rather than closing
  // over the value it was built with.
@@ -285,27 +283,13 @@ export default function TabPlayer({source,title,initialLooping=false,root}:Props
   // eslint-disable-next-line react-hooks/exhaustive-deps
  },[sourceKey]);
 
- // The reader can switch ground mid-exercise, so the ink follows it.
- const inkedFor=useRef(theme);
- useEffect(()=>{
-  const instance=api.current;
-  // The constructor already used the current ground, so there is nothing to do
-  // until the reader actually changes it.
-  if(!instance||inkedFor.current===theme)return;
-  inkedFor.current=theme;
+ /*
+  * The ground no longer changes, so nothing re-inks the score after it is
+  * built. The colours are applied once in the constructor from scoreColours();
+  * the effect that used to watch a theme signal and re-render the whole surface
+  * on every flip is gone with the second ground it existed for.
+  */
 
-  // The resources hold Color objects rather than strings, so the CSS values
-  // have to be parsed on the way in — assigning the strings straight across is
-  // accepted silently and then ignored by the renderer.
-  const resources=instance.settings.display.resources as unknown as Record<string,unknown>;
-  for(const [key,value] of Object.entries(scoreColours())){
-   const colour=alphaTab.model.Color.fromJson(value);
-   if(colour)resources[key]=colour;
-  }
-  instance.updateSettings();
-  clearSurface();
-  instance.render();
- },[theme]);
 
  // Transport settings the learner changes while the engine is already running.
  useEffect(()=>{
@@ -350,7 +334,7 @@ export default function TabPlayer({source,title,initialLooping=false,root}:Props
  };
 
  return (
-  <section className="tab" aria-label={title?`Tab: ${title}`:"Tab"}>
+  <section className="tabPlayer" aria-label={title?`Tab: ${title}`:"Tab"}>
    <header className="tabBar">
     <button
      className="action-primary tabPlay"

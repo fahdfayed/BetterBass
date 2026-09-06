@@ -3,54 +3,60 @@
  <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#000000" />
+  <meta name="theme-color" content="#101619" />
   <meta name="description" content="A complete interactive bass-learning environment for harmony, time, fretboard command, Arabic maqamat, slap technique and guided practice." />
   <!--
    The faces are declared in src/styles/fonts.css and served from this origin.
-   They came from a Google Fonts <link> until now, which never arrived in some
-   contexts and left the page silently wearing system-ui: the layout is
-   identical when that happens, so it is easy to ship and never notice.
+   Nothing is hotlinked: a third-party font stylesheet does not arrive in this
+   project and the failure is silent, so the page keeps its layout and quietly
+   wears system-ui, which is how a design ships in the wrong face unnoticed.
 
-   Inter carries everything, set hard and tracked tight. Playfair appears only
-   as an italic, for the second voice in a heading.
-
-   Preload only the two that render above the fold. The pair preloaded here
-   before this belonged to a design two worlds ago, and no @font-face declared
-   either of them, so the browser fetched both on every load and could not use
-   them for anything.
+   Preload only what renders above the fold on the opening page: the printer's
+   serif that sets the reading, and the engraver's italic that strikes the
+   title across the head of it. Inter is stamped at label size and Caveat only
+   appears in the margins, so both can arrive a beat late. Bravura is 313K and
+   the first stave is below the fold.
   -->
   <link rel="preload" as="font" type="font/woff2" crossorigin
-        href="/fonts/inter-400.woff2" />
+        href="/fonts/sourceserif-var.woff2" />
   <link rel="preload" as="font" type="font/woff2" crossorigin
-        href="/fonts/playfair-display-400-italic.woff2" />
+        href="/fonts/playfair-var-italic.woff2" />
   <title>Outside In: Bass Lab</title>
  </head>
  <body>
   <!--
    DIRECTION CONTRACT
 
-   THESIS: The instrument photographed, not diagrammed. It refuses the flat
-   working surface it replaces and the equipment panel before that: this is a
-   dark full-bleed image with the interface floating over it, and the loudest
-   thing on any screen is the picture rather than the chrome.
+   THESIS: This is a music book, open on a stand, with the instrument along the
+   bottom edge. It refuses the dark photographic world it replaces — the
+   picture is gone, and so is the glass floating over it — and it refuses the
+   web application both of them were wearing underneath. Paper is the ground,
+   not a theme; the stave is the grid; and the page is printed, annotated in
+   pencil, and worked from, in that order.
 
-   OWN-WORLD: True black under photography. White at four opacities carrying
-   every distinction, and one oxide orange spent on the single thing to press.
-   Inter set hard negative, with Playfair Display italic as an accent voice
-   used on a wordmark and one line of a two-voice heading and nowhere else.
-   Everything interactive is a pill. Glass and blur only where the interface
-   floats over the picture, never on a scrolling surface.
+   OWN-WORLD: Warm ivory paper on a dark stand. Ink at four steps, ruled in
+   engraver's grey, with one vermillion that marks what is live and what to
+   press. Playfair Display strikes the titles and the large numerals; Source
+   Serif prints everything read; Inter is stamped small, uppercase and tracked,
+   as the engraved plate label above every control; Caveat writes the margin in
+   pencil blue; Bravura engraves real SMuFL clefs, noteheads and time
+   signatures on real five-line staves. Boxes are ruled rectangles. Nothing is
+   a pill except a switch, because a switch is a switch.
 
-   STORY: A player sees the neck lit, moves the light across it, and starts.
+   STORY: A player opens the book to today's page, reads the standard on the
+   right, works down the list on the left, and proves it on the instrument
+   docked along the bottom.
 
-   FIRST VIEWPORT: A full-height photograph with a cursor-following spotlight
-   revealing a second image inside a soft circle. The headline centred at
-   fourteen percent, set in two voices; a note bottom left; the lesson and its
-   orange call to action bottom right. Nav floating clear of the top edge with
-   the sections centred in a glass pill.
+   FIRST VIEWPORT: The bound spread, edge to edge on the stand. Left page: the
+   wordmark, the section in vermillion under a red rule, the ordered list set
+   on staves with a clef per line, and the focus note pencilled at the foot.
+   Right page: the five section tabs across the head, then the title struck
+   large in Playfair italic with its one-line standard beneath. The transport
+   runs the full width along the bottom, its play key the one vermillion fill.
 
-   FORM: Lithos. Pinned by the brief, which supersedes the roll: the deal
-   assigned Dubplate (seed 73d2fa7c, index 4) and a pinned direction beats it.
+   FORM: The music book. Pinned by the user with seven comps and confirmed in
+   words — no roll ran, and none was owed: a brief-pinned direction beats the
+   deal, always.
 
    FINISH: unreviewed and undocumented is unfinished; this build ends with the
    finish review, the verdict, DESIGN.md, and every shipping raster carrying

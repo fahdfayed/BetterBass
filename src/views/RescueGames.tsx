@@ -1,5 +1,8 @@
-import {useState} from "react";
+import {memo,useState} from "react";
 import GameRunner from "./GameRunner";
+import BossFight from "./BossFight";
+import FogOfWar from "./FogOfWar";
+import WrongNoteRescue from "./WrongNoteRescue";
 import {DRILLS} from "../game/drills";
 import {type Heard} from "../useHeardNote";
 
@@ -24,24 +27,22 @@ type Props={
  audition:(pitchClasses:number[],hold?:number)=>void;
 };
 
-export default function RescueGames({root,heard,listening,connecting,onListen,audition}:Props){
+/** `memo`d against BassLab's per-frame pitch re-renders — see NoteQuest.tsx's note on the same pattern. */
+function RescueGames({root,heard,listening,connecting,onListen,audition}:Props){
  const [openId,setOpenId]=useState<string|null>(null);
  const open=DRILLS.find(drill=>drill.id===openId);
 
- if(open)return (
-  <div className="osScreen">
-   <GameRunner
-    drill={open}
-    root={root}
-    heard={heard}
-    listening={listening}
-    connecting={connecting}
-    onListen={onListen}
-    audition={audition}
-    onExit={()=>setOpenId(null)}
-   />
-  </div>
- );
+ if(open){
+  const common={root,heard,listening,connecting,onListen,audition,onExit:()=>setOpenId(null)};
+  return (
+   <div className="osScreen">
+    {open.id==="boss"?<BossFight drill={open} {...common}/>
+     :open.id==="fog"?<FogOfWar {...common}/>
+     :open.id==="rescue"?<WrongNoteRescue {...common}/>
+     :<GameRunner drill={open} {...common}/>}
+   </div>
+  );
+ }
 
  return (
   <div className="osScreen">
@@ -71,3 +72,5 @@ export default function RescueGames({root,heard,listening,connecting,onListen,au
   </div>
  );
 }
+
+export default memo(RescueGames);

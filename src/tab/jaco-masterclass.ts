@@ -150,11 +150,6 @@ export const JACO_CHAPTERS:Chapter[]=[
     ],
    },
    {
-    id:"the-sound",title:"The Sound",
-    note:"A pre-CBS Fender Jazz or a faithful replica, Rotosound Swing Bass strings, the neck pickup off, the bridge pickup wide open, and the volume set at the amp. The hands are most of it, but this is the signal chain underneath them.",
-    exercises:[],
-   },
-   {
     id:"fretless",title:"The Fretless Bass",
     note:"Two things carry across: play exactly where the fret would be, and hit the note first and put the vibrato on afterwards, not at the same time as the attack.",
     exercises:[
@@ -815,14 +810,7 @@ export const JACO_CHAPTERS:Chapter[]=[
 
  /* ============================================================= */
  {
-  n:7,id:"food-for-thought",title:"Food for Thought",
-  note:"The book closes its teaching with a chapter that has no exercises in it, an argument that the man deserves to be remembered for more than the wreckage of his last years. He was generous with his time, competitive at sport, serious about being a decent citizen, and convinced that attitude was most of playing well: about seventy-five percent mental, as he put it, if you are thinking you are happening, you are always swinging. The point for a student is that the character and the playing were not separable, and the strengths worth copying are not only the musical ones.",
-  sections:[],
- },
-
- /* ============================================================= */
- {
-  n:8,id:"sketchbook",title:"Sketchbook",
+  n:7,id:"sketchbook",title:"Sketchbook",
   note:"The last chapter reproduces pages from his own practice book. Scrawled staves with instructions to himself in the margins. The ideas on them are worth working even without the handwriting: diminished fourths inside Dorian harmony, everything also played backwards, fifths taken in reverse, and the standing note to practise it all in triplets.",
   sections:[
    {

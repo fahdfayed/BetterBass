@@ -1,4 +1,4 @@
-import {useEffect,useMemo,useState} from "react";
+import {memo,useEffect,useMemo,useState} from "react";
 import {MISSES_ALLOWED,questFor,startWalk,step,targetPitchOf,type Walk} from "../quest-data";
 import QuestScene from "./QuestScene";
 import {type Heard,useHeardNote} from "../useHeardNote";
@@ -32,10 +32,19 @@ type Props={
  onPickLesson:(index:number)=>void;
  /** Sound a pitch class, so the player can hear the target before hunting it. */
  audition:(pitchClasses:number[],hold?:number)=>void;
+ /** Tell the mic loop which pitch class this step wants, to resolve otherwise-ambiguous readings. */
+ onExpectedPitch:(pitchClass:number|null)=>void;
 };
 
-export default function NoteQuest({
- lesson,heard,listening,connecting,onListen,onPickLesson,audition,
+/**
+ * The mic loop that owns `heard`/`listening` re-renders on every animation
+ * frame a note rings out, whether or not it's the note this screen cares
+ * about. `memo` keeps that churn from reaching this component's own subtree,
+ * as long as every prop passed in stays referentially stable across those
+ * renders — see BassLab.tsx's toggleListening/stableAudition/onExpectedPitch.
+ */
+function NoteQuest({
+ lesson,heard,listening,connecting,onListen,onPickLesson,audition,onExpectedPitch,
 }:Props){
  const quest=useMemo(()=>questFor(lesson),[lesson]);
 
@@ -57,6 +66,15 @@ export default function NoteQuest({
 
  const reset=()=>{setWalk(startWalk());setWrong(null);ignorePast()};
  useEffect(()=>{setWalk(startWalk());setWrong(null);ignorePast()},[lesson,ignorePast]);
+
+ // The mic loop lives above this component and has no way to know what note
+ // the walk currently wants — tell it, so it can resolve the fundamental/
+ // harmonic ambiguity a free-running detector can't. Clear the hint whenever
+ // it would otherwise go stale: the walk finishes, or this view goes away.
+ useEffect(()=>{
+  onExpectedPitch(done?null:targetPitch);
+  return()=>onExpectedPitch(null);
+ },[targetPitch,done,onExpectedPitch]);
 
  const spent=misses>=MISSES_ALLOWED;
 
@@ -101,7 +119,12 @@ export default function NoteQuest({
    <QuestScene quest={quest} at={at} done={done} missed={!!wrong}
                misses={misses} allowed={MISSES_ALLOWED}/>
 
-   <section className={`questTarget ${wrong?"missed":""} ${done?"arrived":""}`} aria-live="polite">
+   {/*
+     * beat-ambient is the same shared pulse RescueGames' untimed drills wear
+     * (see intime.css) — this card is exactly that shape, a chassis waiting
+     * for a note, so it takes the site's clock rather than inventing its own.
+     */}
+   <section className={`questTarget beat-ambient ${wrong?"missed":""} ${done?"arrived":""}`} aria-live="polite">
     {done?(
      <>
       <h2>Home, from the other side.</h2>
@@ -162,3 +185,5 @@ export default function NoteQuest({
   </div>
  );
 }
+
+export default memo(NoteQuest);

@@ -1,0 +1,138 @@
+/**
+ * How a route's content sits on the page.
+ *
+ * This replaces workstation.css, which was the shell sheet for the world
+ * before the photographic one: a rack unit, with the page as a filled
+ * faceplate, a permanent icon rail down the left, a head bar across the top,
+ * and the transport bolted to the viewport with `position:fixed`. All four of
+ * those are gone, and the last one was actively breaking this build — the
+ * transport is a strip of paper inside the dock now, and a fixed rule left
+ * behind up the cascade pulled it back out of the book and stuck it to the
+ * window.
+ *
+ * Almost everything else that file did has an owner now. Headings and section
+ * separation belong to transport.css, controls and fields to manuscript.css,
+ * the page measure and padding to book.css. What is left here is the handful
+ * of rules that are genuinely about composing a route's content, plus two
+ * defensive floors that are cheap to hold and expensive to rediscover.
+ */
+
+/* ================================================================= wells == */
+
+/*
+ * Anything that reports a quantity is cut into the page.
+ *
+ * Tables of numbers, the neck, code, tab and live readouts. These are the only
+ * recessed things in the interface, which is what keeps the recess meaning
+ * something: on paper a well is where the printing stops and the measurement
+ * starts.
+ */
+.osScreen pre,.osScreen table,.tabStage,.hfBoard,.fretboard,
+.runnerBoard,.liveEvidence,.rowTable,.neckAtlas{
+ background:var(--paper-3);
+ border-radius:var(--r-well);
+ box-shadow:var(--depth-well);
+}
+
+/* ============================================================== readouts == */
+
+/*
+ * Every number lines up in a column, everywhere, without being asked.
+ *
+ * A table of tempos or cents where the digits do not align is the cheapest
+ * possible tell that a page was assembled rather than set, and it is one
+ * declaration to fix across the whole application.
+ */
+.mono,.readout,.osScreen td,.osScreen th,time,kbd{
+ font-variant-numeric:tabular-nums lining-nums;
+}
+.mono,.osScreen td,.osScreen th,time,kbd{font-family:var(--font-label)}
+
+/*
+ * The lesson position, a readout under the heading rather than a caption above
+ * it. Stamped rather than set, because it is a coordinate and not a phrase.
+ */
+.ledePosition{
+ font-family:var(--font-label);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-label);
+ text-transform:uppercase;
+ color:var(--ink-3);
+ margin-top:var(--s3);
+}
+.ledePosition span{color:var(--ink-3)}
+
+/* The caret travels on hover, the one place a control moves rather than inks. */
+.caret{
+ display:inline-block;vertical-align:-1px;
+ transition:transform var(--m-click) var(--ease-page);
+}
+button:hover>.caret,button:hover .caret{transform:translateX(2px)}
+
+/* ========================================================= touch targets == */
+
+/*
+ * Applied by pointer capability rather than by viewport width, because a small
+ * window on a desktop is still being driven by a cursor, and a large tablet is
+ * still being driven by a thumb.
+ *
+ * Written as element and role selectors rather than as a list of classes. The
+ * enumerated version this replaces missed fifteen targets, including a 32x17
+ * switch, because a class list only ever covers the controls somebody
+ * remembered to add to it.
+ */
+@media (pointer:coarse){
+ button,
+ [role="button"],
+ [role="switch"],
+ [role="tab"],
+ select,
+ summary,
+ input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+ a[href]:not(.sr):not(.inline){
+  min-height:44px;
+ }
+ /* Icon-only controls need the width too, not just the height. */
+ button:not(:has(> :not(svg):not(i))),
+ [role="switch"]{min-width:44px}
+ /* A checkbox is small by nature, so its label carries the target instead. */
+ label:has(input[type="checkbox"]),
+ label:has(input[type="radio"]){min-height:44px;display:flex;align-items:center}
+
+ /*
+  * Two exceptions, both inside the book's own chrome.
+  *
+  * The contents list on the left page is a list of links rather than a row of
+  * buttons, so its rows carry their target through padding and would otherwise
+  * grow to 44px each and push the section off the page. The beat lamps on the
+  * transport are indicators and not controls: nothing happens when they are
+  * pressed, so a 44px target would be a 44px lie.
+  */
+ .leafItem{min-height:2.75rem}
+ .tBeat{min-width:0;min-height:0}
+}
+
+/* =============================================================== floors === */
+
+/*
+ * Floor the min-width chain at the page.
+ *
+ * A flex or grid child defaults to min-width:auto, which means "never shrink
+ * below your content's own minimum". One inline min-width deep inside a
+ * scrollable region therefore propagates all the way out and makes the whole
+ * screen wider than the phone. The page does not scroll sideways, because
+ * something up the chain hides the overflow, so the only symptom is text
+ * clipped at the right edge on every narrow screen: an expensive bug to find
+ * and a one-line fix to hold.
+ */
+.page>*,.osScreen,.osScreen>*{min-width:0}
+.page img,.page video,.page canvas{max-width:100%;height:auto}
+
+/* Nothing may scroll the document sideways. */
+html,body{overflow-x:hidden;max-width:100%}
+
+/* ============================================================ responsive == */
+
+@media (max-width:64rem){
+ :root{--context:16rem}
+}

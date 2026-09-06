@@ -38,7 +38,7 @@
  width:2.25rem;
  flex:none;
  font-size:var(--t-h3);
- color:var(--ink-4);
+ color:var(--ink-3);
  transition:color var(--t-base) var(--ease);
 }
 .row:hover .row-n{color:var(--ink-3)}

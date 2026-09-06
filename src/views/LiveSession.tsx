@@ -38,13 +38,19 @@ export default function LiveSession(
 ){
  const {ri,chordTones,color}=harmony;
  const heard=pitch?(N.indexOf(pitch.n)+12)%12:null;
+ // The mission's whole ask is "feature the colour tone" — the one note worth
+ // a visible reaction rather than a percentage read afterward.
+ const inChord=heard!==null&&chordTones.includes(heard);
+ const isColour=heard!==null&&heard===color;
 
  return (
   <div className="osScreen live">
    <div className="liveHead">
     <div>
      <h1 className="k liveTitle" data-page-heading tabIndex={-1}>Live practice · a dorian colour</h1>
-     <b className="livePitch">{pitch?pitch.n:"-"}<small>{pitch?pitch.oct:""}</small></b>
+     <b className={`livePitch ${inChord?"inside":""} ${isColour?"colour":""}`}>
+      {pitch?pitch.n:"-"}<small>{pitch?pitch.oct:""}</small>
+     </b>
      <p>{
       pitch&&heard!==null
        ? `${labelFor(heard,harmony)} · ${SHORT_NAMES[(heard-ri+12)%12]} · ${pitch.cents>=0?"+":""}${pitch.cents} cents`
@@ -73,7 +79,7 @@ export default function LiveSession(
 
    <div className="tensionMeter">
     <span>Home</span><span>Colour</span><span>Tension</span><span>Outside</span><span>Chaos</span>
-    <i className={`p${heard!==null?tensionFor(heard,harmony):0}`}/>
+    <i className={`p${heard!==null?tensionFor(heard,harmony):0} ${isColour?"hit":""}`}/>
    </div>
 
    <div className="liveGrid">

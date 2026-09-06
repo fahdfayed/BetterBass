@@ -203,7 +203,7 @@
 }
 .hfChordRail button small {
   font: var(--t-micro) var(--mono);
-  color: var(--ink-4);
+  color: var(--ink-3);
 }
 .hfChordRail button b {
   font: var(--t-lead) var(--mono);
@@ -221,7 +221,7 @@
 }
 .hfChordRail button.active {
   background: transparent;
-  color: var(--ink-4);
+  color: var(--ink-3);
   box-shadow:none;
 }
 .hfChordRail button.active small,
@@ -277,7 +277,7 @@
 .hfChordDecode dt,
 .hfNoteTutor dt {
   font: var(--t-micro) var(--mono);
-  color: var(--ink-4);
+  color: var(--ink-3);
 }
 .hfChordDecode dd,
 .hfNoteTutor dd {
@@ -393,7 +393,7 @@
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   background: transparent;
-  color: var(--ink-4);
+  color: var(--ink-3);
   text-align: left;
   font: var(--t-micro) var(--mono);
 }
@@ -404,7 +404,7 @@
   border-bottom: 0;
 }
 .hfBandMixer button i {
-  color: var(--ink-4);
+  color: var(--ink-3);
   font-style: normal;
 }
 .hfBandMixer button.active {
@@ -479,7 +479,7 @@
   display: block;
   padding-top: var(--s2);
   border-top: 1px solid var(--line);
-  color: var(--ink-4);
+  color: var(--ink-3);
   font: var(--t-micro)/1.5 var(--mono);
 }
 .hfAutoPulse {
@@ -502,9 +502,15 @@
 .hfModes {
   margin-bottom: 18px;
 }
+/*
+ * Sized by the cards, not by the viewport. Four fixed columns needed a media
+ * query for every width the band can be; auto-fit asks each card what it needs
+ * and lays out as many as fit, so the same rule gives four across the neck's
+ * full width, two in a lesson workspace and one on a phone.
+ */
 .hfModes > div {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
   gap: var(--s2);
 }
 .hfModes > div > article {
@@ -533,7 +539,7 @@
 }
 .hfModeSelect small {
   font: var(--t-micro) var(--mono);
-  color: var(--ink-4);
+  color: var(--ink-3);
 }
 .hfModeSelect b {
   min-height: 52px;
@@ -546,7 +552,7 @@
   right: 20px;
   top: 17px;
   font: var(--t-h2) var(--mono);
-  color: var(--ink-4);
+  color: var(--ink-3);
 }
 .hfModes article.active strong {
   color: var(--lime);
@@ -688,15 +694,13 @@
 .hfFretNumbers {
   height: 27px;
 }
+/* Colour retired here too -- see fretboard-workstation.css, the one place
+   this is declared now. */
 .hfFretNumbers > b,
 .hfFretNumbers > span {
   display: grid;
   place-items: center;
   font: var(--t-micro) var(--mono);
-  color: var(--ink-4);
-}
-.hfFretNumbers > span.marked {
-  color: var(--lime);
 }
 .hfString {
   position: relative;
@@ -737,9 +741,6 @@
     opacity 0.15s,
     transform 0.15s,
     background 0.15s;
-}
-.hfString button.visible:not(.role-outside) {
-  background: transparent;
 }
 .hfString button.hidden {
   opacity: 0.08;
@@ -815,7 +816,7 @@
    ground. Nothing is lost by reading it in ink: the badge states its role
    twice more, in the border and the swatch, and the neck cells have always
    worked this way. */
-:root[data-theme="cream"] .hfRoleBadge {
+.hfRoleBadge {
   color: var(--ink-2);
 }
 .hfNoteTutor article > h2 {
@@ -910,7 +911,7 @@
 }
 .hfVoiceLeading footer span {
   font: var(--t-micro) var(--mono);
-  color: var(--ink-4);
+  color: var(--ink-3);
 }
 .hfVoiceLeading footer b {
   font: var(--t-micro) var(--mono);

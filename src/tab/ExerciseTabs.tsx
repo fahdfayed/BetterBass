@@ -93,7 +93,7 @@ export default function ExerciseTabs({exercises,label}:{exercises:TabExercise[];
        aria-current={i===index?"true":undefined}
        onClick={()=>{setIndex(i);setKey(null)}}
       >
-       <i aria-hidden="true">{String(i+1).padStart(2,"0")}</i>
+       <i className="barNumber" aria-hidden="true">{String(i+1).padStart(2,"0")}</i>
        <span>{item.title}</span>
       </button>
      ))}
@@ -101,6 +101,13 @@ export default function ExerciseTabs({exercises,label}:{exercises:TabExercise[];
    )}
 
    <div className="exerciseBrief">
+    {exercise.loop&&(
+     <div className="repeatCount" aria-label="Repeat this exercise">
+      <span className="repeatGlyph" aria-hidden="true">𝄆</span>
+      <span className="times">repeat</span>
+      <span className="repeatGlyph" aria-hidden="true">𝄇</span>
+     </div>
+    )}
     <p>{exercise.brief}</p>
     <p className="dim"><span className="label">Pass</span> {exercise.pass}</p>
    </div>

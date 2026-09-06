@@ -1,11 +1,9 @@
-import {lazy,Suspense,useEffect,useMemo,useRef,useState} from "react";
+import {lazy,Suspense,useCallback,useEffect,useMemo,useRef,useState} from "react";
 import {fadeAndClose,startAudioClock,type AudioClock} from "./audio-clock";
 import AppShell from "./components/AppShell";
 import Home from "./views/Home";
-import WorldMap from "./views/WorldMap";
 const TabStudio=lazy(()=>import("./tab/TabStudio"));
 const JacoMasterclass=lazy(()=>import("./views/JacoMasterclass"));
-import ThemeToggle from "./components/ThemeToggle";
 import CourseLibrary from "./views/CourseLibrary";
 import LessonWorkspace from "./views/LessonWorkspace";
 import LessonTools,{WORKSPACE_LABELS} from "./views/LessonTools";
@@ -13,7 +11,6 @@ import PacedReader from "./views/PacedReader";
 import ChromaticGym from "./views/ChromaticGym";
 import TechniqueLab from "./views/TechniqueLab";
 import NoteQuest from "./views/NoteQuest";
-import ToolLibrary from "./views/ToolLibrary";
 import CourseProgress from "./views/CourseProgress";
 import TodaySession from "./views/TodaySession";
 import RescueGames from "./views/RescueGames";
@@ -23,12 +20,16 @@ import AdaptivePlan from "./views/AdaptivePlan";
 import BackingBand from "./views/BackingBand";
 import ListeningEngine from "./views/ListeningEngine";
 import ProgressionAnalyser from "./views/ProgressionAnalyser";
-import {territoryStates} from "./game/progression";
 import {MODES} from "./harmony-fretboard-data";
 import Formula from "./components/Formula";
 import {degreeAt,SHORT_NAMES as DEG} from "./theory/degrees";
 import {goToView,navigate,pathForView,useRoute} from "./router";
-import {autoCorrelate,centsToNote,createPitchTracker,labelFor,midiHz,NOTE_NAMES,PITCH_MAX_HZ,PITCH_MIN_HZ,PITCH_RMS_GATE,tensionFor,type Harmony,type NoteEvent} from "./pitch";
+import {autoCorrelate,createPitchTracker,labelFor,midiHz,NOTE_NAMES,PITCH_RMS_GATE,tensionFor,type Harmony,type NoteEvent} from "./pitch";
+import {
+ bassMidiFor,beatPosition,chordRootPc,computeNoteEvent,droneVoicing,forceCloseNote,
+ INITIAL_DETECTOR_STATE,noiseEnvelope,shouldClick,stepDetector,weatherLabel,
+ type ClickMode,type DetectorEffect,type DetectorState,
+} from "./synth";
 import {COURSE_LESSONS,COURSE_UNITS} from "./course-data";
 import {lessonContext} from "./course-context";
 import {LESSON_DETAILS} from "./course-details";
@@ -38,6 +39,7 @@ import VoiceControl from "./VoiceControl";
 const BeastPractice=lazy(()=>import("./BeastPractice"));
 const PerformanceCoach=lazy(()=>import("./PerformanceCoach"));
 const MaqamLab=lazy(()=>import("./MaqamLab"));
+const FretboardNeck3D=lazy(()=>import("./views/FretboardNeck3D"));
 const SlapLab=lazy(()=>import("./SlapLab"));
 const HarmonyFretboard=lazy(()=>import("./HarmonyFretboard"));
 const TheoryReference=lazy(()=>import("./TheoryReference"));
@@ -51,18 +53,18 @@ const sessions=[{m:8,t:"Ear calibration",d:"Drone degree: inside / outside → n
 const NAV_GROUPS=[
  {label:"Learn",items:[{id:"course",icon:"home",label:"Home"},{id:"roadmap",icon:"course",label:"Full course"}]},
  {label:"Practice",items:[{id:"practice",icon:"practice",label:"Practice studio"},{id:"coach",icon:"coach",label:"Live coach"}]},
- {label:"Specialties",items:[{id:"maqam",icon:"maqam",label:"Arabic maqam"},{id:"slap",icon:"slap",label:"Slap bass"}]},
+ {label:"Specialties",items:[{id:"maqam",icon:"maqam",label:"Arabic maqam"},{id:"slap",icon:"slap",label:"Slap bass"},{id:"neck3d",icon:"neck3d",label:"3D neck"}]},
  {label:"Your space",items:[{id:"tools",icon:"library",label:"Tool library"},{id:"courseProgress",icon:"progress",label:"Progress"}]},
 ];
 const VIEW_META:Record<string,{eyebrow:string,title:string}>={
  course:{eyebrow:"Your learning path",title:"Home"},courseLesson:{eyebrow:"Guided course",title:"Current lesson"},roadmap:{eyebrow:"28-LESSON CURRICULUM",title:"Full course"},
- practice:{eyebrow:"Hands-free training",title:"Practice studio"},coach:{eyebrow:"Listening + feedback",title:"Live coach"},maqam:{eyebrow:"Arabic music",title:"Maqam lab"},slap:{eyebrow:"Technique + groove",title:"Slap bass"},
- tools:{eyebrow:"All existing tools",title:"Tool library"},courseProgress:{eyebrow:"Your development",title:"Progress"},fret:{eyebrow:"Harmony tool",title:"Fretboard map"},runtime:{eyebrow:"Play with a band",title:"Backing band"},
+ practice:{eyebrow:"Hands-free training",title:"Practice studio"},coach:{eyebrow:"Listening + feedback",title:"Live coach"},maqam:{eyebrow:"Arabic music",title:"Maqam lab"},slap:{eyebrow:"Technique + groove",title:"Slap bass"},neck3d:{eyebrow:"Spatial practice",title:"3D neck"},
+ courseProgress:{eyebrow:"Your development",title:"Progress"},fret:{eyebrow:"Harmony tool",title:"Fretboard map"},runtime:{eyebrow:"Play with a band",title:"Backing band"},
  engine:{eyebrow:"Record + understand",title:"Take analysis"},advanced:{eyebrow:"Controlled tension",title:"Improvisation lab"},chromatic:{eyebrow:"Approach and arrive",title:"Chromatic gym"},technique:{eyebrow:"Before the notes",title:"The hands"},quest:{eyebrow:"Play it to pass it",title:"The long way home"},reference:{eyebrow:"Look something up",title:"Theory reference"},adaptive:{eyebrow:"Personal curriculum",title:"Adaptive plan"},
  progression:{eyebrow:"Read a progression",title:"Progression reader"},
  today:{eyebrow:"Today's training",title:"Practice plan"},live:{eyebrow:"Real-time practice",title:"Live session"},games:{eyebrow:"Ear + fretboard",title:"Training games"},
 };
-const NAV_ACTIVE:Record<string,string[]>={course:["course"],roadmap:["roadmap","courseLesson"],practice:["practice","today","live"],coach:["coach","adaptive"],maqam:["maqam"],slap:["slap"],tools:["tools","fret","runtime","engine","advanced","reference","games","progression"],courseProgress:["courseProgress"]};
+const NAV_ACTIVE:Record<string,string[]>={course:["course"],roadmap:["roadmap","courseLesson"],practice:["practice","today","live"],coach:["coach","adaptive"],maqam:["maqam"],slap:["slap"],neck3d:["neck3d"],tools:["tools","fret","runtime","engine","advanced","reference","games","progression"],courseProgress:["courseProgress"]};
 
 function ToolLoading(){return <div className="toolLoading" role="status"><i/><span>Opening your workspace…</span></div>}
 const outsideLevels=["Chromatic approach","Two-note enclosure","Chromatic passing run","½-beat side-slip","Two-beat side-slip","Outside motif","Semitone sequence","Outside pentatonic","Superimposed triad","Free controlled phrase"];
@@ -103,8 +105,7 @@ export default function BassLab(){
   setChord(ground.chord);
  },[courseIndex]);
 
- const territories=useMemo(()=>territoryStates(courseCompleted,courseIndex),[courseCompleted,courseIndex]);
- const audio=useRef<{ctx:AudioContext,stream:MediaStream,raf:number}|null>(null),eventRef=useRef<{midi:number,start:number,amp:number}|null>(null),eventsRef=useRef<NoteEvent[]>([]),recordRef=useRef(false),runtimeRef=useRef<{ctx:AudioContext,clock:AudioClock,master:GainNode}|null>(null),auditionRef=useRef<AudioContext|null>(null); const ri=root, scale=useMemo(()=>MODES[mode].s.map(x=>(x+ri)%12),[mode,ri]), color=(ri+MODES[mode].s[MODES[mode].c])%12, chordTones=useMemo(()=>[0,3,7,10].map(x=>(x+ri)%12),[ri]);
+ const audio=useRef<{ctx:AudioContext,stream:MediaStream,raf:number}|null>(null),detectorStateRef=useRef<DetectorState>(INITIAL_DETECTOR_STATE),eventsRef=useRef<NoteEvent[]>([]),recordRef=useRef(false),runtimeRef=useRef<{ctx:AudioContext,clock:AudioClock,master:GainNode}|null>(null),auditionRef=useRef<AudioContext|null>(null); const ri=root, scale=useMemo(()=>MODES[mode].s.map(x=>(x+ri)%12),[mode,ri]), color=(ri+MODES[mode].s[MODES[mode].c])%12, chordTones=useMemo(()=>[0,3,7,10].map(x=>(x+ri)%12),[ri]);
  // The microphone loop and the backing band both outlive the render that starts
  // them, so anything they read has to come from a ref. Reading the state values
  // directly would freeze them at whatever they were when playback began.
@@ -126,10 +127,25 @@ export default function BassLab(){
  const [sentToFretboard,setSentToFretboard]=useState<string[]|undefined>();
  const [fretCentre,setFretCentre]=useState<number|undefined>();
  const [heard,setHeard]=useState<{midi:number;at:number}|null>(null);
- const heardRef=useRef(-1);
  const takeStartRef=useRef(0),bpmRef=useRef(bpm),noiseRef=useRef(noise),calibrationRef=useRef<{until:number,samples:number[]}|null>(null);
  const runtimeSettingsRef=useRef({bpm,meter,style,clickMode,density,progression,ri});
  const harmonyRef=useRef<Harmony>({ri,chordTones,color,scale});
+ const expectedPitchRef=useRef<number|null>(null);
+ const onExpectedPitch=useCallback((pc:number|null)=>{expectedPitchRef.current=pc},[]);
+ /*
+  * `pitch` updates on every animation frame a note is sounding, which the
+  * live-tuner screens want (a needle driven by cents needs that granularity)
+  * but which otherwise re-renders every mounted child, games included, at up
+  * to 60fps for as long as a note rings out. The games below don't consume
+  * `pitch` at all, so they're wrapped in `memo` — which only helps if the
+  * callback props reaching them are themselves stable, hence routing
+  * `startAudio`/`audition` through a ref instead of passing their
+  * every-render closures directly.
+  */
+ const startAudioFnRef=useRef<()=>Promise<boolean>>(async()=>false);
+ const toggleListening=useCallback(()=>{void startAudioFnRef.current()},[]);
+ const auditionFnRef=useRef<(pcs:number[],hold?:number,droneRoot?:number)=>void>(()=>{});
+ const stableAudition=useCallback((pcs:number[],hold?:number,droneRoot?:number)=>{auditionFnRef.current(pcs,hold,droneRoot)},[]);
  useEffect(()=>{bpmRef.current=bpm},[bpm]);
  useEffect(()=>{noiseRef.current=noise},[noise]);
  useEffect(()=>{harmonyRef.current={ri,chordTones,color,scale}},[ri,chordTones,color,scale]);
@@ -141,20 +157,46 @@ export default function BassLab(){
  useEffect(()=>{try{const p=JSON.parse(localStorage.getItem("basslab-adaptive")||"null");if(p&&typeof p==="object"){setFreedom(numberArray(p.freedom,5,[72,89,94,86,63]));setKeyMatrix(numberArray(p.matrix,12,[78,42,69,45,75,57,41,81,44,86,48,71]));setDiag(numberArray(p.diag,5,[76,82,71,68,64]));setAdaptiveReady(true)}}catch{}},[]);
  useEffect(()=>{try{const p=JSON.parse(localStorage.getItem("basslab-course")||"null");if(p&&typeof p==="object"){const done=clampIndex(p.completed,0,COURSE_LESSONS.length);setCourseCompleted(done);setCourseIndex(clampIndex(p.index??done,0,COURSE_LESSONS.length-1));setCourseStep(clampIndex(p.step,0,5))}}catch{}},[]);
  useEffect(()=>{setJuryScores([70,70,70,70,70]);setPracticeTempo(55+COURSE_LESSONS[courseIndex].unit*5)},[courseIndex]);
- const finishEvent=(end:number)=>{const e=eventRef.current;if(!e||!recordRef.current)return;const pc=(e.midi%12+12)%12,liveBpm=bpmRef.current,elapsed=(e.start-takeStartRef.current)/1000,beatFloat=elapsed/(60/liveBpm),beat=Math.floor(beatFloat)%4+1,offset=Math.round((beatFloat-Math.round(beatFloat))*60000/liveBpm),harmony=harmonyRef.current,t=tensionFor(pc,harmony),next:NoteEvent={id:eventId(),midi:e.midi,n:N[pc],oct:Math.floor(e.midi/12)-1,start:e.start,end,dur:Math.max(30,end-e.start),amp:e.amp,beat,offset,fn:labelFor(pc,harmony),tension:t,resolution:"pending"};eventsRef.current=[...eventsRef.current,next];setEvents([...eventsRef.current]);eventRef.current=null};
- const startAudio=async()=>{if(listening){finishEvent(performance.now());if(audio.current){cancelAnimationFrame(audio.current.raf);audio.current.stream.getTracks().forEach(t=>t.stop());audio.current.ctx.close();audio.current=null}setListening(false);return false}setConnecting(true);try{const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}),ctx=new AudioContext(),src=ctx.createMediaStreamSource(stream),an=ctx.createAnalyser();/*
+ // The detector's own decisions (stable note found, note ended, silence) come
+ // back as a plain effect list from synth.ts; this is the one place that list
+ // is turned into actual state updates and, for a closed note, a scored event.
+ const applyDetectorEffects=(effects:DetectorEffect[])=>{
+  for(const effect of effects){
+   if(effect.type==="pitch")setPitch(effect.note);
+   else if(effect.type==="historyAppend")setHistory(h=>h[h.length-1]===effect.midi?h:[...h.slice(-63),effect.midi]);
+   else if(effect.type==="heard")setHeard({midi:effect.midi,at:effect.at});
+   else if(effect.type==="heardCleared")setHeard(null);
+   else if(effect.type==="noteOff"&&recordRef.current){
+    const next=computeNoteEvent(effect.note,effect.end,bpmRef.current,takeStartRef.current,harmonyRef.current,eventId());
+    eventsRef.current=[...eventsRef.current,next];
+    setEvents([...eventsRef.current]);
+   }
+  }
+ };
+ // Ending a take or toggling the mic off both need to flush a note that is
+ // still open — not just wait for the detector to notice silence on its own.
+ const flushOpenNote=(end:number)=>{
+  const{state,effects}=forceCloseNote(detectorStateRef.current,end);
+  detectorStateRef.current=state;
+  applyDetectorEffects(effects);
+ };
+ const startAudio=async()=>{if(listening){flushOpenNote(performance.now());if(audio.current){cancelAnimationFrame(audio.current.raf);audio.current.stream.getTracks().forEach(t=>t.stop());audio.current.ctx.close();audio.current=null}setListening(false);return false}setConnecting(true);try{const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}),ctx=new AudioContext(),src=ctx.createMediaStreamSource(stream),an=ctx.createAnalyser();/*
     * 8192 rather than 4096: a low B is 1555 samples long at 48 kHz, and a
     * period detector cannot see a period it does not hold several cycles of.
     */
-   an.fftSize=8192;an.smoothingTimeConstant=.15;src.connect(an);const b=new Float32Array(an.fftSize);let stable=-1,frames=0,silence=0;const tracker=createPitchTracker();const tick=()=>{an.getFloatTimeDomainData(b);let rms=0;for(const x of b)rms+=x*x;rms=Math.sqrt(rms/b.length);
+   an.fftSize=8192;an.smoothingTimeConstant=.15;src.connect(an);const b=new Float32Array(an.fftSize);detectorStateRef.current=INITIAL_DETECTOR_STATE;const tracker=createPitchTracker();const tick=()=>{an.getFloatTimeDomainData(b);let rms=0;for(const x of b)rms+=x*x;rms=Math.sqrt(rms/b.length);
   const measuring=calibrationRef.current;
   if(measuring){measuring.samples.push(rms);if(performance.now()>=measuring.until){calibrationRef.current=null;const sorted=[...measuring.samples].sort((a,z)=>a-z),floor=sorted[Math.floor(sorted.length*.9)]??0;setNoise(floor);setCalibrated(true)}if(audio.current)audio.current.raf=requestAnimationFrame(tick);return}
-  const raw=autoCorrelate(b,ctx.sampleRate);const loud=rms>Math.max(PITCH_RMS_GATE,noiseRef.current*1.8);const hz=tracker.feed(loud?raw:-1);if(hz>PITCH_MIN_HZ&&hz<PITCH_MAX_HZ){silence=0;const p=centsToNote(hz);setPitch(p);if(p.midi===stable)frames++;else{stable=p.midi;frames=1}if(frames>=2){if(eventRef.current&&eventRef.current.midi!==p.midi)finishEvent(performance.now());if(!eventRef.current)eventRef.current={midi:p.midi,start:performance.now(),amp:rms};setHistory(h=>h[h.length-1]===p.midi?h:[...h.slice(-63),p.midi]);if(heardRef.current!==p.midi){heardRef.current=p.midi;setHeard({midi:p.midi,at:performance.now()})}}}else if(++silence>5&&eventRef.current){finishEvent(performance.now());stable=-1;frames=0}if(silence>5)heardRef.current=-1;if(audio.current)audio.current.raf=requestAnimationFrame(tick)};audio.current={ctx,stream,raf:requestAnimationFrame(tick)};setAudioError("");setConnecting(false);setListening(true);return true}catch(error){setConnecting(false);setPitch(null);setListening(false);setAudioError(error instanceof DOMException&&(error.name==="NotAllowedError"||error.name==="SecurityError")?"Microphone access was blocked. Allow it for this site, then choose your audio-interface input and try again.":"The audio input could not start. Check that an input device is connected and free, then try again.");return false}};
+  const raw=autoCorrelate(b,ctx.sampleRate,expectedPitchRef.current??undefined);const loud=rms>Math.max(PITCH_RMS_GATE,noiseRef.current*1.8);const hz=tracker.feed(loud?raw:-1);
+  const{state,effects}=stepDetector(detectorStateRef.current,{hz,rms,now:performance.now()});
+  detectorStateRef.current=state;applyDetectorEffects(effects);
+  if(audio.current)audio.current.raf=requestAnimationFrame(tick)};audio.current={ctx,stream,raf:requestAnimationFrame(tick)};setAudioError("");setConnecting(false);setListening(true);return true}catch(error){setConnecting(false);setPitch(null);setListening(false);setAudioError(error instanceof DOMException&&(error.name==="NotAllowedError"||error.name==="SecurityError")?"Microphone access was blocked. Allow it for this site, then choose your audio-interface input and try again.":"The audio input could not start. Check that an input device is connected and free, then try again.");return false}};
+ startAudioFnRef.current=startAudio;
  // Measure the real noise floor from the running input. The previous fixed .006
  // sat below the detector's own gate, so calibrating changed nothing at all.
  const calibrate=async()=>{if(!listening){const started=await startAudio();if(!started)return}setCalibrated(false);calibrationRef.current={until:performance.now()+1800,samples:[]}};
  const beginTake=async()=>{eventsRef.current=[];setEvents([]);setHistory([]);takeStartRef.current=performance.now();recordRef.current=true;setRecording(true);if(!listening){const started=await startAudio();if(!started){recordRef.current=false;setRecording(false);return false}}return true};
- const endTake=()=>{finishEvent(performance.now());recordRef.current=false;setRecording(false);const ev=eventsRef.current.map((e,i,a)=>{const nxt=a[i+1],resolved=e.tension===4&&nxt&&nxt.tension<=1&&nxt.start-e.end<900?"recovered":e.tension===4?"unresolved":"-";return {...e,resolution:resolved}});eventsRef.current=ev;setEvents([...ev]);saveLearningState("basslab-last-take",JSON.stringify(ev));};
+ const endTake=()=>{flushOpenNote(performance.now());recordRef.current=false;setRecording(false);const ev=eventsRef.current.map((e,i,a)=>{const nxt=a[i+1],resolved=e.tension===4&&nxt&&nxt.tension<=1&&nxt.start-e.end<900?"recovered":e.tension===4?"unresolved":"-";return {...e,resolution:resolved}});eventsRef.current=ev;setEvents([...ev]);saveLearningState("basslab-last-take",JSON.stringify(ev));};
  // Render reads the harmony directly; only the microphone loop goes via the ref.
  const harmony:Harmony={ri,chordTones,color,scale};
  const tension=(ni:number)=>tensionFor(ni,harmony);
@@ -171,10 +213,11 @@ export default function BassLab(){
   if(ctx.state==="suspended")void ctx.resume();
   const now=ctx.currentTime+.05;
   baseDrone(ctx,now,pcs.length*hold+.45,droneRoot);
-  pcs.forEach((pc,i)=>{const midi=36+((pc+12)%12)+((pc+12)%12<4?12:0);tone(ctx,midiHz(midi),now+.18+i*hold,hold*.82,.18,"triangle")});
+  pcs.forEach((pc,i)=>tone(ctx,midiHz(bassMidiFor(pc)),now+.18+i*hold,hold*.82,.18,"triangle"));
  };
- const baseDrone=(ctx:AudioContext,when:number,dur:number,droneRoot=ri)=>{const midi=36+droneRoot+(droneRoot<4?12:0);tone(ctx,midiHz(midi),when,dur,.045,"sine");tone(ctx,midiHz(midi+7),when,dur,.018,"sine")};
- const noiseHit=(ctx:AudioContext,when:number,vol:number,out:AudioNode)=>{const len=Math.floor(ctx.sampleRate*.08),buf=ctx.createBuffer(1,len,ctx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);const s=ctx.createBufferSource(),g=ctx.createGain();s.buffer=buf;g.gain.value=vol;s.connect(g).connect(out);s.start(when)};
+ auditionFnRef.current=audition;
+ const baseDrone=(ctx:AudioContext,when:number,dur:number,droneRoot=ri)=>{const voicing=droneVoicing(droneRoot);tone(ctx,midiHz(voicing.root),when,dur,.045,"sine");tone(ctx,midiHz(voicing.fifth),when,dur,.018,"sine")};
+ const noiseHit=(ctx:AudioContext,when:number,vol:number,out:AudioNode)=>{const len=Math.floor(ctx.sampleRate*.08),buf=ctx.createBuffer(1,len,ctx.sampleRate);buf.getChannelData(0).set(noiseEnvelope(len));const s=ctx.createBufferSource(),g=ctx.createGain();s.buffer=buf;g.gain.value=vol;s.connect(g).connect(out);s.start(when)};
  const stopRuntime=()=>{const runtime=runtimeRef.current;if(runtime){runtimeRef.current=null;runtime.clock.stop();fadeAndClose(runtime.ctx,runtime.master)}setPlaying(false);setBar(1);setBeat(1);setWeather("Stable")};
  const startRuntime=()=>{
   if(playing){stopRuntime();return}
@@ -184,17 +227,16 @@ export default function BassLab(){
   // frozen into the closure until the band is stopped and restarted.
   const schedule=(step:number,when:number)=>{
    const {meter,style,clickMode,density,progression,ri,bpm}=runtimeSettingsRef.current;
-   const b=step%meter+1,ba=Math.floor(step/meter)%4+1,sec=60/bpm;
-   const rootPc=(ri+progression[ba-1]+12)%12,rootMidi=36+rootPc+(rootPc<4?12:0);
-   const shouldClick=clickMode==="Every beat"||clickMode==="2 & 4"&&(b===2||b===4)||clickMode==="Beat 4"&&b===4||clickMode==="Every 2 bars"&&ba%2===0&&b===1||clickMode==="Disappearing"&&Math.floor(step/meter)%8<4;
-   if(shouldClick)tone(ctx,b===1?1400:950,when,.045,.16,"square",master);
+   const {beat:b,bar:ba}=beatPosition(step,meter),sec=60/bpm;
+   const rootMidi=bassMidiFor(chordRootPc(ba,progression,ri));
+   if(shouldClick(clickMode as ClickMode,b,ba,step,meter))tone(ctx,b===1?1400:950,when,.045,.16,"square",master);
    if(b===1){tone(ctx,midiHz(rootMidi),when,sec*meter*.92,.08,"sine",master);[0,3,7,10].slice(0,density+1).forEach((iv,i)=>tone(ctx,midiHz(rootMidi+12+iv),when+i*.008,sec*meter*.8,.025,"triangle",master))}
    if(style!=="Ambient"){if(b===1||b===3)tone(ctx,55,when,.09,.22,"sine",master);if(b===2||b===4)noiseHit(ctx,when,.13,master);if(style==="Funk"||style==="Disco")noiseHit(ctx,when+sec/2,.045,master)}
   };
   const display=(step:number)=>{
-   const {meter}=runtimeSettingsRef.current,b=step%meter+1,ba=Math.floor(step/meter)%4+1;
+   const {beat:b,bar:ba}=beatPosition(step,runtimeSettingsRef.current.meter);
    setBeat(b);setBar(ba);
-   if(b===1)setWeather(ba===1?"Stable":ba===2?"Darkening":ba===3?"Increasing tension":"Release");
+   if(b===1)setWeather(weatherLabel(ba));
   };
   const clock=startAudioClock(ctx,()=>runtimeSettingsRef.current.bpm,{schedule,display});
   runtimeRef.current={ctx,clock,master};setPlaying(true);
@@ -202,7 +244,7 @@ export default function BassLab(){
  const randomJam=()=>{const styles=["Psychedelic","Funk","Grunge","Fusion","Ambient","Reggae","Disco"],meters=[4,4,4,5,7];setStyle(styles[Math.floor(Math.random()*styles.length)]);setMeter(meters[Math.floor(Math.random()*meters.length)]);setBpm(70+Math.floor(Math.random()*45));setRoot(Math.floor(Math.random()*12));setMode(Math.floor(Math.random()*7));setProgression([[0,0,5,0],[0,3,5,0],[0,-2,-4,0],[0,1,0,0]][Math.floor(Math.random()*4)])};
  const answerDiagnostic=(score:number)=>{const next=diag.map((v,i)=>i===diagStep?score:v);setDiag(next);if(diagStep<4)setDiagStep(diagStep+1);else{const ev=events.length?events:eventsRef.current,inside=ev.length?Math.round(ev.filter(e=>e.tension<4).length/ev.length*100):72,timing=ev.length?Math.max(35,100-Math.round(ev.reduce((a,e)=>a+Math.abs(e.offset),0)/ev.length)):68,resolution=ev.filter(e=>e.tension===4).length?Math.round(ev.filter(e=>e.resolution==="recovered").length/ev.filter(e=>e.tension===4).length*100):64,computed=[Math.round((next[0]+next[1])/2),next[2],Math.round((next[1]+inside)/2),timing,Math.round((next[3]+next[4]+resolution)/3)];setFreedom(computed);setAdaptiveReady(true);saveLearningState("basslab-adaptive",JSON.stringify({freedom:computed,matrix:keyMatrix,diag:next,date:Date.now()}))}};
  const buildAdaptiveDay=()=>{const weakest=freedom.indexOf(Math.min(...freedom)),weakKey=keyMatrix.indexOf(Math.min(...keyMatrix)),axis=["Ear","Fretboard","Theory","Execution","Creation"][weakest];const p=[{m:8,t:`${N[weakKey]} ear calibration`,d:`Identify degree, function and best resolution in ${N[weakKey]}`,tag:"Hear"},{m:10,t:"Upper-register recall",d:"Frets 12-20; random targets; two-second limit",tag:"SEE"},{m:12,t:`${axis} repair block`,d:"One constraint, three clean passes, immediate transfer",tag:"Focus"},{m:10,t:"Chromatic recovery",d:"One forced outside note every two bars",tag:"Play"},{m:15,t:"Anti-habit mission",d:antiHabit?"No beat 1, no root starts, no ascending fills":"Build one motif through inside and outside versions",tag:"Create"},{m:5,t:"Boss fight",d:"No visual help; score all five Freedom axes",tag:"Prove"}];setPlan(p);setView("today")};
- const course=COURSE_LESSONS[courseIndex],courseDetail=LESSON_DETAILS[courseIndex],courseUnit=COURSE_UNITS[course.unit-1],courseSteps=["LEARN","HEAR","MAP","PRACTICE","APPLY","PASS"],coursePct=Math.round(courseCompleted/COURSE_LESSONS.length*100),mapTargets=Array.from(new Set([0,...course.character])).slice(0,4),juryAverage=Math.round(juryScores.reduce((a,b)=>a+b,0)/juryScores.length),juryMinimum=Math.min(...juryScores),juryPassed=juryAverage>=80&&juryMinimum>=70,weakJury=["HEAR","KNOW","SEE","PLAY","CREATE"][juryScores.indexOf(juryMinimum)],toolMeta:Record<string,{name:string,desc:string}>={runtime:{name:"Backing Band",desc:"Apply the current lesson over a musical vamp."},live:{name:"Live Coach",desc:"Connect bass and receive function-aware feedback."},engine:{name:"Record & Analyze",desc:"Capture the required take and inspect every event."},fret:{name:"Fretboard Map",desc:"See the lesson’s functions across the full neck."},games:{name:"Ear & Target Games",desc:"Test interval, target and resolution recall."},advanced:{name:"Advanced Lab",desc:"Use the focused motif, enclosure or voice-leading tool."}};
+ const course=COURSE_LESSONS[courseIndex],courseDetail=LESSON_DETAILS[courseIndex],courseSteps=["LEARN","HEAR","MAP","PRACTICE","APPLY","PASS"],coursePct=Math.round(courseCompleted/COURSE_LESSONS.length*100),mapTargets=Array.from(new Set([0,...course.character])).slice(0,4),juryAverage=Math.round(juryScores.reduce((a,b)=>a+b,0)/juryScores.length),juryMinimum=Math.min(...juryScores),juryPassed=juryAverage>=80&&juryMinimum>=70,weakJury=["HEAR","KNOW","SEE","PLAY","CREATE"][juryScores.indexOf(juryMinimum)],toolMeta:Record<string,{name:string,desc:string}>={runtime:{name:"Backing Band",desc:"Apply the current lesson over a musical vamp."},live:{name:"Live Coach",desc:"Connect bass and receive function-aware feedback."},engine:{name:"Record & Analyze",desc:"Capture the required take and inspect every event."},fret:{name:"Fretboard Map",desc:"See the lesson’s functions across the full neck."},games:{name:"Ear & Target Games",desc:"Test interval, target and resolution recall."},advanced:{name:"Advanced Lab",desc:"Use the focused motif, enclosure or voice-leading tool."}};
  const courseStageGuides=[
   {title:"Understand the idea",body:"Read the core concept and put it into your own words.",finish:"You can explain it without looking."},
   {title:"Recognise the sound",body:"Listen, predict and sing before touching the bass.",finish:"You hear the colour before you play it."},
@@ -230,17 +272,11 @@ export default function BassLab(){
    <label><span className="label">Key</span><select aria-label="Key centre" value={root} onChange={e=>{setRoot(+e.target.value);setChord(`${N[+e.target.value]}m7`)}}>{N.map((n,i)=><option value={i} key={n}>{n}</option>)}</select></label>
    <label><span className="label">Sound</span><select aria-label="Home mode" value={mode} onChange={e=>setMode(+e.target.value)}>{MODES.map((m,i)=><option value={i} key={m.n}>{m.n}</option>)}</select></label>
   </div>}
-  <ThemeToggle/>
+
   <VoiceControl/>
  </>;
 
  return <AppShell
-  course={{percent:coursePct,index:courseIndex,total:COURSE_LESSONS.length,title:course.title}}
-  chart={{
-   keyName:N[root],keyIndex:root,onKey:index=>{setRoot(index);setChord(`${N[index]}m7`)},keyOptions:N,
-   sound:MODES[mode].n,soundIndex:mode,onSound:setMode,soundOptions:MODES.map(m=>m.n),
-   meter,chord,feel:style,
-  }}
   input={{listening,detail:pitch?`${pitch.n}${pitch.oct} at ${Math.round(pitch.hz)} Hz`:"Connect only when a tool asks"}}
   onToggleInput={()=>void startAudio()}
   inputBusy={connecting}
@@ -286,7 +322,7 @@ export default function BassLab(){
 
  {view==="games"&&<RescueGames root={ri}
    heard={heard} listening={listening} connecting={connecting}
-   onListen={()=>void startAudio()} audition={audition}/>}
+   onListen={toggleListening} audition={stableAudition}/>}
 
 
 
@@ -305,13 +341,6 @@ export default function BassLab(){
  {view==="tabs"&&<Suspense fallback={<ToolLoading/>}><TabStudio/></Suspense>}
  {view==="jaco"&&<Suspense fallback={<ToolLoading/>}><JacoMasterclass/></Suspense>}
 
- {view==="map"&&<WorldMap
-  territories={territories}
-  lessonTitles={COURSE_LESSONS.map(lesson=>lesson.title)}
-  currentLesson={courseIndex}
-  onOpenLesson={openCourseLesson}
- />}
-
  {view==="course"&&<Home
   percent={coursePct}
   completed={courseCompleted}
@@ -326,10 +355,9 @@ export default function BassLab(){
  {view==="chromatic"&&<ChromaticGym/>}
  {view==="technique"&&<TechniqueLab/>}
  {view==="quest"&&<NoteQuest lesson={courseIndex} heard={heard} listening={listening}
-   connecting={connecting} onListen={()=>void startAudio()}
-   onPickLesson={setCourseIndex} audition={audition}/>}
- {view==="tools"&&<ToolLibrary onOpen={setView}/>}
-
+   connecting={connecting} onListen={toggleListening}
+   onPickLesson={setCourseIndex} audition={stableAudition}
+   onExpectedPitch={onExpectedPitch}/>}
  {view==="courseLesson"&&<LessonWorkspace
   lesson={{index:courseIndex,total:COURSE_LESSONS.length,title:course.title,unit:course.unit,outcome:course.outcome,duration:course.duration}}
   stageIndex={courseStep}
@@ -420,17 +448,18 @@ export default function BassLab(){
   onOpen={openCourseLesson}
  />}
 
- {view==="practice"&&<Suspense fallback={<ToolLoading/>}><BeastPractice currentLesson={course.title} courseTools={course.tools} toolMeta={toolMeta} onOpenTool={openCourseTool}/></Suspense>} 
+ {(view==="practice"||view==="manual")&&<Suspense fallback={<ToolLoading/>}><BeastPractice surface={view==="manual"?"manual":"session"} currentLesson={course.title} courseTools={course.tools} toolMeta={toolMeta} onOpenTool={openCourseTool}/></Suspense>} 
 
  {view==="coach"&&<Suspense fallback={<ToolLoading/>}><PerformanceCoach root={root} modeName={MODES[mode].n} courseTitle={course.title} courseCompleted={courseCompleted} courseTotal={COURSE_LESSONS.length} events={events} livePitch={pitch} listening={listening} recording={recording} onStartRecording={beginTake} onStopRecording={endTake} onSetRoot={key=>{setRoot(key);setChord(`${N[key]}m7`)}} modeIntervals={MODES[mode].s} characterInterval={MODES[mode].s[MODES[mode].c]} onOpen={openCoachTool} onAudition={notes=>audition(notes,.35)}/></Suspense>} 
 
  {view==="maqam"&&<Suspense fallback={<ToolLoading/>}><MaqamLab livePitch={pitch} listening={listening} onToggleListening={startAudio}/></Suspense>} 
  {view==="slap"&&<Suspense fallback={<ToolLoading/>}><SlapLab livePitch={pitch} listening={listening} onToggleListening={startAudio} events={events}/></Suspense>} 
+ {view==="neck3d"&&<Suspense fallback={<ToolLoading/>}><FretboardNeck3D root={root} mode={mode} onSetRoot={setRoot} onSetMode={setMode} audition={stableAudition}
+  heard={heard} listening={listening} connecting={connecting} onListen={toggleListening}/></Suspense>}
 
  {view==="courseProgress"&&<CourseProgress
-  percent={coursePct} completed={courseCompleted} lessonIndex={courseIndex}
-  lessonTitle={course.title} unitNumber={course.unit} unitTitle={courseUnit.title}
-  onContinue={()=>setView("courseLesson")} onRecordTake={()=>setView("engine")}/>}
+  percent={coursePct} completed={courseCompleted}
+  onRecordTake={()=>setView("engine")}/>}
 
  {view==="reference"&&<Suspense fallback={<ToolLoading/>}><TheoryReference root={root} onSetMode={setMode} onAudition={audition}/></Suspense>}
 

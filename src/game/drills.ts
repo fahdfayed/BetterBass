@@ -1,5 +1,6 @@
 import {NOTE_NAMES} from "../pitch.ts";
 import {SHORT_NAMES} from "../theory/degrees.ts";
+import {DEVICES,QUALITIES as CHORD_QUALITIES} from "../tab/chromatic-library.ts";
 
 /**
  * The eight games, as rules rather than as screens.
@@ -66,21 +67,26 @@ const POOLS=[
 ];
 const poolFor=(level:number)=>POOLS[Math.min(level,POOLS.length-1)];
 
-/** The chord qualities the enclosure drill aims into. */
-const QUALITIES=[
- {symbol:"maj7",tones:[0,4,7,11]},
- {symbol:"m7",tones:[0,3,7,10]},
- {symbol:"7",tones:[0,4,7,10]},
- {symbol:"m7♭5",tones:[0,3,6,10]},
-];
+/**
+ * The chord qualities `rescue` and `enclosure` aim into.
+ *
+ * The Chromatic Gym's own eleven — maj7 through the altered and raised-11th
+ * colours — rather than a second, narrower copy of the same four qualities.
+ * One list means a player who has met a quality in the gym meets the same
+ * quality here, and "outside" in the rescue drill gets to mean something
+ * sharper than "not one of four familiar shapes."
+ */
+const QUALITIES=CHORD_QUALITIES;
 
-/** How a target can be surrounded. Offsets end on the target itself. */
-const APPROACHES=[
- {name:"from a semitone below",offsets:[-1,0]},
- {name:"from a semitone above",offsets:[1,0]},
- {name:"above then below",offsets:[1,-1,0]},
- {name:"below then above",offsets:[-1,1,0]},
-];
+/**
+ * How a target can be surrounded. Offsets end on the target itself.
+ *
+ * The Chromatic Gym's nine devices, not a fourth copy of the same two
+ * chromatic neighbours. `enclosure` already widens its pool once the streak
+ * proves the basics, so the harder five — the wide approaches and the
+ * four-note enclosure — only ever show up once a player has earned them.
+ */
+const APPROACHES=DEVICES;
 
 export const DRILLS:Drill[]=[
  {
@@ -168,11 +174,20 @@ export const DRILLS:Drill[]=[
   desc:"Build music before adding pitch choices.",
   timed:true,session:120,
   ask:(root,level,random)=>{
-   // A figure inside one bar. More of the bar is used as the streak grows.
-   const candidates=[[1,3],[1,2,4],[2,4],[1,3,4],[1,2,3,4]];
-   const beats=pick(candidates.slice(0,2+level),random);
+   /*
+    * A figure inside one bar. More of the bar is used as the streak grows,
+    * and the last two figures are syncopated — a target on the "and" of a
+    * beat rather than the beat itself — so the drill has somewhere to go
+    * once every on-the-beat figure has stopped being a challenge.
+    */
+   const candidates=[
+    [1,3],[2,4],[1,2,4],[1,3,4],[1,2,3],
+    [2,3,4],[1,4],[1,2,3,4],[1,2.5,3],[1,3.5,4],
+   ];
+   const beats=pick(candidates.slice(0,2+level*2),random);
+   const say=(beat:number)=>Number.isInteger(beat)?String(beat):`the & of ${Math.floor(beat)}`;
    return {
-    prompt:`Play on ${beats.join(", ")}`,
+    prompt:`Play on ${beats.map(say).join(", ")}`,
     hint:"Any pitch at all. This one only listens to when.",
     notes:[],
     beats,

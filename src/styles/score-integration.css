@@ -1,0 +1,189 @@
+/**
+ * Score language integration for the Aurora workspace.
+ *
+ * `score.css` owns the notation vocabulary. This file applies that vocabulary
+ * only where the composition explicitly asks for it. Staff lines are never
+ * inferred from sibling order: that made controls and progressive-disclosure
+ * blocks accidentally become notation systems.
+ */
+
+:root{
+ --score-divider-line:color-mix(in oklab,var(--ink) 34%,transparent);
+ --score-divider-strong:color-mix(in oklab,var(--ink) 58%,transparent);
+ --score-system-step:var(--staff);
+ --score-system-height:calc((var(--score-system-step) * 4) + var(--rastral));
+}
+
+/* ========================================================= staff systems = */
+
+/* One intentional, full-width system. Put this element in the markup exactly
+   where the musical document changes section. It cannot attach itself to a
+   button, progress control or disclosure widget because it is not a pseudo-
+   element generated from DOM adjacency. */
+.scoreStaffDivider{
+ width:100%;
+ height:var(--score-system-height);
+ flex:none;
+ margin-block:var(--s4) var(--s2);
+ background:
+  linear-gradient(to right,transparent calc(100% - 2px),var(--score-divider-strong) calc(100% - 2px)),
+  repeating-linear-gradient(
+   to bottom,
+   var(--score-divider-line) 0 var(--rastral),
+   transparent var(--rastral) var(--score-system-step)
+  );
+ pointer-events:none;
+}
+
+/* Home's top-level bands are known semantic siblings, so this is safe: unlike
+   lesson internals, a .band is always a real page section. */
+.band + .band{
+ position:relative;
+ padding-top:calc(var(--s6) + var(--score-system-height));
+ border-top:0;
+}
+.band + .band::before{
+ content:"";
+ position:absolute;
+ top:0;
+ left:0;
+ right:0;
+ height:var(--score-system-height);
+ background:
+  linear-gradient(to right,transparent calc(100% - 2px),var(--score-divider-strong) calc(100% - 2px)),
+  repeating-linear-gradient(
+   to bottom,
+   var(--score-divider-line) 0 var(--rastral),
+   transparent var(--rastral) var(--score-system-step)
+  );
+ pointer-events:none;
+}
+
+/* ====================================================== rehearsal stages = */
+
+/* The stage rail itself is one intentional score system. */
+.stageTabs{
+ position:relative;
+ border-bottom:0;
+ padding-bottom:calc(var(--s3) + var(--score-system-height));
+ background:
+  linear-gradient(to right,transparent calc(100% - 2px),var(--score-divider-strong) calc(100% - 2px)),
+  repeating-linear-gradient(
+   to bottom,
+   var(--score-divider-line) 0 var(--rastral),
+   transparent var(--rastral) var(--score-system-step)
+  );
+ background-size:100% var(--score-system-height),100% var(--score-system-height);
+ background-repeat:no-repeat;
+ background-position:left bottom;
+}
+
+.stageTab{padding-bottom:var(--s2)}
+.stageTab .rehearsalMark{
+ min-width:calc(var(--staff) * 3.25);
+ height:calc(var(--staff) * 3.25);
+ padding-inline:calc(var(--staff) * .5);
+ flex:none;
+ font-size:var(--t-micro);
+}
+.stageTab.done .rehearsalMark{border-color:var(--hairline-2);color:var(--ink-3)}
+.stageTab.active .rehearsalMark{border-color:var(--accent);color:var(--accent)}
+
+.stageScoreHeading{
+ display:flex;
+ align-items:center;
+ gap:calc(var(--staff) * 1.5);
+ margin-bottom:calc(var(--staff) * .5);
+}
+.stageScoreHeading .label{color:var(--ink-3)}
+
+/* ========================================================= final barline = */
+
+/* The move-on criterion is the end of the current rehearsal section, so it
+   receives a proper thin/thick final bar rather than another generic border. */
+.checkBar{
+ position:sticky;
+ border-top:0;
+ padding-top:calc(var(--s5) + 5px);
+}
+.checkBar::before{
+ content:"";
+ position:absolute;
+ top:0;
+ left:0;
+ right:0;
+ height:5px;
+ background:linear-gradient(
+  to bottom,
+  var(--score-divider-line) 0 1px,
+  transparent 1px 3px,
+  var(--score-divider-strong) 3px 5px
+ );
+ pointer-events:none;
+}
+
+/* =========================================================== bar / tempo = */
+
+.barBeat{
+ position:relative;
+ display:flex;
+ align-items:baseline;
+ gap:2px;
+ padding-top:calc(var(--staff) * 1.25);
+}
+.barBeat>.barNumber{
+ position:absolute;
+ top:0;
+ left:0;
+ text-transform:uppercase;
+ letter-spacing:.08em;
+}
+
+.tempoControl>.tempoMark{
+ align-self:flex-start;
+ font-size:var(--t-lead);
+ margin-top:calc(var(--staff) * -.25);
+}
+.tempoMark .tempoNote{
+ font-family:var(--smufl),var(--font);
+ font-size:1.25em;
+ line-height:1;
+ vertical-align:-.08em;
+}
+
+/* =============================================================== repeats = */
+
+.exerciseBrief .repeatCount{
+ width:100%;
+ justify-content:space-between;
+ gap:var(--staff);
+ margin-bottom:calc(var(--staff) * .75);
+ color:var(--ink-3);
+}
+.exerciseBrief .repeatGlyph{
+ font-family:var(--smufl),var(--font);
+ font-size:1.55em;
+ line-height:1;
+ color:var(--ink-2);
+}
+.exerciseBrief .repeatCount .times{
+ flex:1;
+ text-align:center;
+ font-size:var(--t-micro);
+ text-transform:uppercase;
+ letter-spacing:var(--track-label);
+}
+.exerciseChip .barNumber{font-style:normal}
+
+/* ============================================================ responsive = */
+
+@media (max-width:52rem){
+ :root{--score-system-step:.42rem}
+ .scoreStaffDivider{margin-block:var(--s3) var(--s1)}
+ .band + .band{padding-top:calc(var(--s5) + var(--score-system-height))}
+ .stageTabs{padding-bottom:calc(var(--s2) + var(--score-system-height))}
+ .stageTab .rehearsalMark{
+  min-width:calc(var(--staff) * 3);
+  height:calc(var(--staff) * 3);
+ }
+}

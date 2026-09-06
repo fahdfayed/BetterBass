@@ -1,4 +1,3 @@
-import {COURSE_UNITS} from "../course-data";
 import PracticeHistory from "./PracticeHistory";
 
 /**
@@ -23,19 +22,23 @@ type Props={
  percent:number;
  /** How many lessons have been passed outright. */
  completed:number;
- /** Position in the curriculum, zero based. */
- lessonIndex:number;
- lessonTitle:string;
- unitNumber:number;
- unitTitle:string;
- onContinue:()=>void;
  /** Open the screen that records and scores a take. */
  onRecordTake:()=>void;
 };
 
-export default function CourseProgress(
- {percent,completed,lessonIndex,lessonTitle,unitNumber,unitTitle,onContinue,onRecordTake}:Props
-){
+/**
+ * The record of the book so far, not a second copy of it.
+ *
+ * This used to also list all six units with their own completion bars —
+ * exactly what Course's own list already shows, lesson by lesson, unit by
+ * unit. Keeping both was the same mistake `/map` made: two pages answering
+ * "how far along am I" is not two features, it is one fact told twice and
+ * left free to disagree. What is left here is the one summary number, then
+ * what does not exist anywhere else — what you have actually proved, and
+ * the practice log behind it. "Continue" lives on Home; this page is the
+ * record, not the resume button.
+ */
+export default function CourseProgress({percent,completed,onRecordTake}:Props){
  return (
   <div className="osScreen courseProgressPage">
    <header>
@@ -49,31 +52,7 @@ export default function CourseProgress(
      <span>Course complete</span>
      <i><em style={{width:`${percent}%`}}/></i>
     </div>
-    <article>
-     
-     <h2>Unit {unitNumber}: {unitTitle}</h2>
-     <p>Lesson {lessonIndex+1}: {lessonTitle}</p>
-     <button onClick={onContinue}>Continue course</button>
-    </article>
    </section>
-
-   <div className="unitProgressList">
-    {COURSE_UNITS.map(unit=>{
-     const total=unit.range[1]-unit.range[0]+1;
-     const done=Math.max(0,Math.min(total,completed-unit.range[0]));
-     return (
-      <article key={unit.n}>
-       <i>{done===total?"✓":unit.n}</i>
-       <div>
-        <small>UNIT {unit.n}</small>
-        <b>{unit.title}</b>
-        <span>{done}/{total} LESSONS</span>
-        <u><em style={{width:`${done/total*100}%`}}/></u>
-       </div>
-      </article>
-     );
-    })}
-   </div>
 
    <section className="abilities">
     <span>Earned abilities</span>

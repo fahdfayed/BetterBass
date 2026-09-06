@@ -1,0 +1,520 @@
+/**
+ * Cross-site UI audit corrections.
+ *
+ * This file deliberately loads after every legacy and Aurora stylesheet. It is
+ * not a second design system: it only resolves cascade collisions and layout
+ * assumptions found while auditing the live Aurora tree.
+ */
+
+/* =============================================================== shell == */
+
+/*
+ * The shell corrections that stood here are gone with the shell they corrected.
+ *
+ * They pinned a floating nav bar back into normal flow, hid a five-link glass
+ * pill below 74rem, and re-inked the chrome wherever a photographic hero was
+ * present anywhere on the page. There is no nav bar, no pill and no hero: the
+ * sections are tabs across the head of the right page, and the page they sit
+ * on is paper.
+ *
+ * One line survives, and it is the one that was never about that shell: a
+ * heading focused on route change must not land under the tab row.
+ */
+
+[data-page-heading],.pacedBeat{scroll-margin-top:calc(var(--nav) + var(--s4))}
+
+/* ======================================================== legacy bridge == */
+
+/* legacy-views.css accidentally applied the maqam aside treatment to EVERY
+   aside in the application with !important. Reset it globally, then restore it
+   only where that historical treatment is actually intended. */
+.page aside{
+ border-left:0 !important;
+ padding-left:0 !important;
+}
+.maqamLab aside{
+ border-left:1px solid var(--rule) !important;
+ padding-left:var(--s5) !important;
+}
+
+/* The modern lesson workspace intentionally uses one vertical rule between its
+   two panes. It wins explicitly over the legacy reset above. */
+.page .lessonDo{
+ border-left:1px solid var(--rule) !important;
+ padding-left:var(--s7) !important;
+}
+.page .lessonRead aside{
+ border-left:0 !important;
+ padding-left:0 !important;
+}
+
+/* ============================================================== lesson == */
+
+/* These values used --header from the retired shell and did not reserve the
+   fixed instrument dock. The result was a sticky tool pane and completion bar
+   that could disappear behind chrome. */
+.lessonDo{
+ top:calc(var(--nav) + var(--s3));
+ max-height:calc(100dvh - var(--nav) - var(--dock) - var(--s7));
+}
+.checkBar{bottom:var(--dock)}
+
+/* The old course page put Learn into its own two-column page. Inside the new
+   half-width instruction pane that becomes a grid inside a grid. The workspace
+   already supplies the second pane, so Learn is a single reading column here. */
+.lessonRead .learnStage{
+ display:flex !important;
+ flex-direction:column;
+ gap:var(--s6);
+ grid-template-columns:none !important;
+}
+.lessonRead .learnStage>aside{
+ position:static !important;
+ top:auto !important;
+ width:auto !important;
+ max-width:none !important;
+}
+
+/* PacedReader had no composition of its own, so generic pill/button rules made
+   the Show all control become a large circular object and the three pieces
+   drift across the page. Give the reader one deliberate control row. */
+.lessonShell .pacedNext{
+ width:100%;
+ display:grid;
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+ align-items:center;
+ gap:var(--s5);
+ padding-block:var(--s6);
+ border-top:1px solid var(--hairline);
+}
+.lessonShell .pacedNext .action-primary{justify-self:end}
+.lessonShell .pacedCount{
+ justify-self:center;
+ margin:0;
+ text-align:center;
+ color:var(--ink-3);
+ font-size:var(--t-small);
+ white-space:nowrap;
+}
+.lessonShell .pacedNext .action-quiet{
+ justify-self:start;
+ width:auto;
+ min-width:0;
+ min-height:2.5rem;
+ padding:var(--s2) 0;
+ border:0;
+ border-radius:0;
+ background:none;
+ box-shadow:none;
+}
+.lessonShell .pacedNext .action-quiet:hover{background:none;color:var(--ink)}
+
+/* Half-width panes become cramped well before 68rem when a fretboard, table or
+   audio tool is on the right. Collapse while both sides can still breathe. */
+@media (max-width:84rem){
+ .lessonSplit{grid-template-columns:minmax(0,1fr) !important;gap:var(--s6)}
+ .splitter{display:none}
+ .page .lessonDo,.lessonDo{
+  position:static;
+  top:auto;
+  max-height:none;
+  padding-left:0 !important;
+  padding-top:var(--s6);
+  border-left:0 !important;
+  border-top:1px solid var(--rule);
+ }
+ .doBody{max-height:none}
+}
+
+@media (max-width:44rem){
+ .lessonShell .pacedNext{
+  grid-template-columns:minmax(0,1fr);
+  justify-items:start;
+  gap:var(--s3);
+ }
+ .lessonShell .pacedNext .action-primary,
+ .lessonShell .pacedCount,
+ .lessonShell .pacedNext .action-quiet{justify-self:start;text-align:left}
+ .lessonShell .pacedCount{white-space:normal}
+}
+
+/* ================================================================ dock == */
+
+/*
+ * The dock corrections are gone with the two-occupant dock they described.
+ *
+ * That strip carried the transport and a magnifying row of section
+ * destinations, competing for one bar, so the rules here fought over who got
+ * to scroll and who got to overflow: the bar was told not to clip, and the
+ * transport was pinned to its content width so it could push the destinations
+ * sideways.
+ *
+ * Both would break the book. The dock has one occupant now — the destinations
+ * moved to the left page — so the transport fits the width instead of
+ * overflowing it, and the strip clips again, which is what rounds the corner
+ * under the play key.
+ */
+
+/* =============================================================== home == */
+
+/*
+ * The product hero that stood here is gone, and with it every rule that
+ * measured the window instead of the page.
+ *
+ * It was full-bleed by construction — 100vw wide with margin-inline:calc(50% -
+ * 50vw) to break out of the content column, a radial wash across the whole
+ * viewport, and a neck rotated three degrees, masked, and bled off the right
+ * edge. Inside a bound spread there is no viewport to break out to: the right
+ * page is eight hundred pixels of an eleven hundred pixel window, so the
+ * escape hatch dragged the first screen of the product off its own left edge
+ * and put a horizontal scrollbar under it.
+ *
+ * The statement moved to the left page and the neck became the first thing on
+ * the working page rather than atmosphere behind the words. Both live in
+ * home-book.css now.
+ */
+
+/* ========================================================= practice == */
+
+/*
+ * The session heading, at the size its own sheet asks for.
+ *
+ * Nothing here invents a scale. `beast.css` sets the day title to
+ * `clamp(36px,4vw,58px)` and the lesson cockpit's to `--t-h1`, and both lose
+ * to `.page .osScreen h2{font-size:var(--t-h2)}` in `legacy-views.css`, which
+ * is one class more specific than either. So the practice page's designed
+ * second peak was arriving at 37px — the blanket rule for a hundred small
+ * panel headings applied to the one heading that names what you are about to
+ * spend fifty minutes doing.
+ *
+ * That is the whole reason the page reads flat. Of roughly 235 pieces of text
+ * on it, 172 are at 11px and 43 more at 14px; above that there is the manifesto
+ * h1 at 64px and almost nothing in between. Restoring this one heading gives
+ * the type scale its missing middle, and it does it with a value the design
+ * had already chosen.
+ *
+ * Both tracks take the same value rather than their two different authored
+ * ones, because they are the same block doing the same job on the same page,
+ * and because 58px sits under the 64px h1 where a second peak belongs.
+ */
+.page .osScreen .dayObjective h2,
+.page .osScreen .lessonPracticeCockpit>header h2{
+ font-size:clamp(36px,4vw,58px);
+ line-height:.95;
+ letter-spacing:var(--track-sans);
+}
+/*
+ * And the objective reads at lead size. It is the sentence that says what the
+ * session is for, and at body size it was the same weight as the hundred
+ * captions around it.
+ */
+.page .osScreen .dayObjective>div>p,
+.page .osScreen .lessonPracticeCockpit>header>p{
+ font-size:var(--t-lead);
+ line-height:1.5;
+ color:var(--ink-2);
+}
+
+/*
+ * Practice: colour by job.
+ *
+ * `beast.css` was written against a palette this project no longer has. It
+ * reaches for `var(--lime)` about forty times — for pass counts, timers, exit
+ * standards, section eyebrows, cleared tempo rungs and the finish button — and
+ * `legacy-tokens.css` maps `--lime` to the oxide, so all forty arrive as the
+ * one accent. `--amber`, `--red`, `--orange`, `--violet`, `--warn` and
+ * `--wrong` land on it too. I counted thirteen flame elements in the first
+ * viewport and not one of them was the thing to press.
+ *
+ * Rarity is what gives an accent its force, and this page had spent it on
+ * captions. So `--lime` drops to the grey ramp here, which is the correct
+ * home for a label that carries no state, and the four jobs that genuinely
+ * need colour are named below. Scoped to `.practiceEnvironment` on purpose:
+ * the same collapse exists app-wide and fixing it everywhere is a decision
+ * about every screen, not this one.
+ */
+.practiceEnvironment{
+ --lime:var(--label-ink);
+ --acid:var(--label-ink);
+ --amber:var(--caution);
+ --orange:var(--caution);
+ --red:var(--stop);
+ --warn:var(--caution);
+ --wrong:var(--stop);
+}
+
+/*
+ * Every control on a legacy screen is held at `background:none !important` and
+ * `color:var(--ink-3) !important` by `legacy-views.css`, which is why the
+ * finish button, the complete-block button and the current-day chip all render
+ * as the same grey ghost as a caption. One rule answers it, at the same
+ * (0,5,1) specificity so it wins on order, and it reads both values from
+ * custom properties — so the roles below are assignments, not another
+ * specificity argument. The defaults reproduce exactly what the blanket rule
+ * does today, so nothing that is not named changes.
+ *
+ * The class is on the screen root itself, not on a descendant of it, so this
+ * is `.osScreen.practiceEnvironment` — with a space it matches nothing.
+ */
+.page .osScreen.practiceEnvironment button:not(.action):not(.action-primary),
+.page .osScreen.slapLab button:not(.action):not(.action-primary){
+ background:var(--btn-fill,none) !important;
+ color:var(--btn-ink,var(--ink-3)) !important;
+}
+
+/*
+ * The action keeps the flame, and it is the only thing that does. One filled
+ * orange per region: finish the day, complete the block, save the log, answer
+ * the prompt.
+ */
+.practiceEnvironment .finishDay:not(:disabled),
+.practiceEnvironment .digitalLog>button,
+.practiceEnvironment .sessionRowCard>footer button,
+.practiceEnvironment .promptAnswer button:first-of-type{
+ --btn-fill:var(--flame);
+ --btn-ink:var(--on-flame);
+}
+.practiceEnvironment .coachPrompt>button{--btn-ink:var(--flame)}
+
+/*
+ * A pass is a fact you scan: the count in the rail, a cleared day, a finished
+ * block, a tempo rung that held. Every one already carries a ✓ or a word
+ * beside it, so the hue is the second code and never the only one.
+ */
+.practiceEnvironment .dayRail nav button.passed,
+.practiceEnvironment .tempoLadderBeast>div button.passed{--btn-ink:var(--pass)}
+.practiceEnvironment .dayRail>header b,
+.practiceEnvironment .sessionBlocks>button.done>i,
+.practiceEnvironment .beastBodyCheck i{color:var(--pass)}
+.practiceEnvironment .tempoLadderBeast>footer i.done{background:var(--pass)}
+
+/*
+ * The control bar's captions read `--ink-3` directly rather than through the
+ * accent, so the remap above never reached them: in cream they land at 4.46:1
+ * at 11px, four hundredths under AA. Pre-existing rather than introduced here,
+ * but it is the same caption doing the same job, so it takes the same ink.
+ */
+.page .osScreen.practiceEnvironment .practiceControlBar small,
+.page .osScreen.practiceEnvironment .practiceControlBar span{color:var(--label-ink)}
+
+/*
+ * Caution and stop, which have to be separable from the accent or a warning
+ * reads as a suggestion. The error dock's amber was being overwritten by the
+ * blanket "first span in a header is a label" rule, and the stop and danger
+ * buttons by the blanket control reset, so both are named here.
+ */
+.page .osScreen.practiceEnvironment .errorDock>span,
+.page .osScreen.practiceEnvironment .errorDock button b{color:var(--caution)}
+.practiceEnvironment .timerActions .stop,
+.practiceEnvironment .beastBodyCheck .danger{
+ --btn-fill:var(--stop);
+ --btn-ink:var(--on-flame);
+}
+
+/*
+ * Where you are, in the accent's quiet register.
+ *
+ * The current day is not something you press — you are already on it — so it
+ * takes the flame as a wash rather than as a fill, exactly the way the neck
+ * marks the note under study. One hue, two registers: a solid orange is an
+ * instruction, a washed one is a position.
+ */
+.practiceEnvironment .dayRail nav button.active,
+.practiceEnvironment .practiceControlBar>button.active,
+.practiceEnvironment .tempoLadderBeast>div button.active,
+.practiceEnvironment .beastSections button.active{
+ --btn-fill:var(--flame-wash);
+ --btn-ink:var(--ink);
+}
+/*
+ * And whatever the current control contains comes with it. `--btn-ink` reaches
+ * the button, not the caption inside it: on the tempo ladder the wash tinted
+ * the ground under an `--ink-3` caption and took it to 4.46:1 in cream, four
+ * hundredths under AA. A control marked as where-you-are should be the most
+ * readable one in its row, not the least.
+ */
+.practiceEnvironment .dayRail nav button.active :is(b,i,small,span),
+.practiceEnvironment .practiceControlBar>button.active :is(b,i,small,span),
+.practiceEnvironment .tempoLadderBeast>div button.active :is(b,i,small,span),
+.practiceEnvironment .beastSections button.active :is(b,i,small,span){
+ color:var(--ink);
+}
+
+/*
+ * The section tabs, with their padding back.
+ *
+ * `beast.css` sets `padding:17px 13px` and the blanket legacy control rule
+ * overrides it with a vertical-only padding, so the computed value on a tab
+ * was `0 0 12px`: no horizontal room at all, and the label pinned to the top
+ * edge of a 48px box. With a 24px radius and a fill behind it, the label read
+ * as floating above a detached lozenge rather than sitting inside a tab.
+ */
+.page .osScreen.practiceEnvironment .beastSections button{
+ display:grid !important;
+ place-items:center !important;
+ padding:0 var(--s4) !important;
+}
+
+/*
+ * The native option list.
+ *
+ * `color-scheme:dark` is already set and Chrome still paints the popup from
+ * the platform theme on some systems, which puts white-on-white-blue menus in
+ * the middle of a black workstation. Colouring the options themselves is the
+ * part that actually lands. Ignored on platforms that draw their own menu,
+ * which is the correct outcome there.
+ *
+ * The value has to be opaque, too: the legacy sheet gives options the same 6%
+ * white lift it gives surfaces, and 6% white over the popup's own white base
+ * is white.
+ */
+.page .osScreen.practiceEnvironment select option{
+ background-color:#0a0a0b !important;
+ color:#ffffff !important;
+}
+/* A native dropdown paints its own list. Left on the dark values it opened a
+   black panel out of an ivory page. */
+.page .osScreen.practiceEnvironment select option{
+ background-color:#ffffff !important;
+ color:#111827 !important;
+}
+
+/* ------------------------------------------------- practice: touch --- */
+
+/*
+ * The practice page on a phone.
+ *
+ * The gate is the input device, not the viewport: PRODUCT.md puts the player
+ * at the instrument with both hands occupied, and a tablet on a stand needs
+ * this exactly as much as a phone does while a 1200px window with a mouse
+ * needs none of it. The workstation stays dense where a pointer is precise.
+ *
+ * Every one of these already clears 44px vertically. It is the horizontal axis
+ * that fails, and it fails because three rows of controls are being squeezed
+ * by flex rather than allowed to keep their size and scroll — which is the
+ * actual adaptation here, not a bigger number.
+ */
+@media (pointer:coarse){
+ /*
+  * The 30-day map. At 29px these are the primary navigation of the whole
+  * course rendered smaller than a fingertip. Below 800px the rail is already
+  * full width, so at 44px the grid simply wraps to about seven per row and
+  * becomes a real calendar instead of a row of specks.
+  */
+ .practiceEnvironment .dayRail nav button{
+  min-width:44px;
+  min-height:44px;
+ }
+
+ /*
+  * The error dock and the section tabs are both single rows that overflow.
+  * Squeezing every item to fit is what produced 22px and 36px targets, so
+  * they stop shrinking and scroll instead: the row keeps its shape, the items
+  * keep their words, and the axis that was already scrollable does the work.
+  */
+ .practiceEnvironment .errorDock,
+ .practiceEnvironment .beastSections{
+  overflow-x:auto;
+  overscroll-behavior-x:contain;
+  scrollbar-width:none;
+ }
+ .practiceEnvironment .errorDock::-webkit-scrollbar,
+ .practiceEnvironment .beastSections::-webkit-scrollbar{display:none}
+ .practiceEnvironment .errorDock button,
+ .practiceEnvironment .beastSections button{
+  flex:none;
+  min-width:44px;
+  min-height:44px;
+  padding-inline:var(--s3);
+  white-space:nowrap;
+ }
+}
+
+/* ========================================================== containment == */
+
+.page,.sheet,.lessonShell,.lessonSplit,.lessonRead,.lessonDo{min-width:0}
+.page img,.page video,.page canvas{max-width:100%;height:auto}
+
+@media (max-width:900px){.sheet{padding-top:var(--s5)}}
+@media (max-width:700px){.sheet{padding-top:var(--s4)}}
+
+@media (prefers-reduced-motion:reduce){
+ .rise,.d1,.d2,.d3,.d4{animation:none !important;transform:none !important;opacity:1 !important}
+}
+
+/* ============================================================== radius === */
+
+/*
+ * Cards that happen to be buttons.
+ *
+ * `legacy-tokens.css` and `legacy-views.css` both give `.page .osScreen button`
+ * the control radius, which is right for the hundreds of small controls those
+ * sheets contain and wrong for the handful that are the size of a card. The
+ * pill token is 9999px, so a 592 by 260 tool card resolved to a 130px corner,
+ * and because the same rule sets overflow:hidden the curve ate the "Open tool"
+ * label sitting 25px from the left and 22px from the bottom. The decorative
+ * circle behind it was sheared into the loose arcs visible across the grid.
+ *
+ * The blanket rule stays: pilling every small control is the design. This names
+ * the exceptions, because a radius is only a pill while the element is the size
+ * of a control.
+ *
+ * ON THE !important. It is here to answer one, not to start one. The legacy
+ * rule is `.page .osScreen button:not(.mega):not(.action):not(.action-primary)`
+ * marked important, so no ordinary declaration can reach these cards however
+ * specific it is. The selectors below are built to the same specificity, (0,5,1),
+ * and win on order alone. Removing the important from the legacy rule instead
+ * would have re-shaped several hundred small controls it was added to fix.
+ */
+/*
+ * The per-element exceptions that used to live here are gone: with --r-control
+ * at 1.5rem they all resolved to the same value they were asking for, so the
+ * list had become six selectors restating the default. Only the neck still
+ * needs an override, and it needs the opposite of a radius.
+ */
+
+/*
+ * Fret cells are square-cornered on purpose.
+ *
+ * The neck draws its note marker as a 48px circle in a child element and keeps
+ * the cell itself a plain rectangle, which is why redesign.css sets the cell to
+ * border-radius:0. The blanket control pill overrode that zero, and because a
+ * cell is 98 by 72 the result was not a circle but a stretched oval around
+ * every note. The marker was already correct; the cell just had to stop
+ * pretending to be a control.
+ */
+.page .osScreen .hfString>button:not(.action):not(.action-primary){
+ border-radius:0 !important;
+ /*
+  * And it keeps its fret wire. The same legacy rule that pills these cells
+  * also flattens them with `border:0 !important`, which is right for a row of
+  * controls and wrong for a neck: the left border of a fret pad IS the fret.
+  * Without it the board is one undivided field, and the labels of adjacent
+  * frets — GUIDE, WRITTEN, APPROACH — run together into a single line of
+  * letters with nothing between them to say where one fret ends.
+  *
+  * Same specificity as the legacy rule, (0,5,1), so this wins on order, which
+  * is the arrangement the radius above already relies on.
+  */
+ border-left:1px solid var(--rule-strong) !important;
+ /*
+  * And its states get to fill a cell. The same legacy rule holds every legacy
+  * control at `background:none !important`, which is right for a row of ghost
+  * pills and wrong for a grid where hover, selection and "under your finger
+  * right now" are the only feedback the player has while both hands are on the
+  * instrument.
+  *
+  * One important, not three: the fill is read from a custom property, so the
+  * neck's own sheet stays the place the values live and custom properties
+  * cascade normally instead of arguing about specificity.
+  */
+ background:var(--pad-fill,none) !important;
+}
+/*
+ * Except the first fret in the row, where the nut is already the line. The
+ * string-name column draws it as a heavy rule, and a hairline a pixel to its
+ * right just reads as the nut having been printed twice.
+ */
+.page .osScreen .hfString>button:not(.action):not(.action-primary):first-of-type{
+ border-left:0 !important;
+}

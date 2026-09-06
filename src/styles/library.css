@@ -185,7 +185,7 @@
  transition:border-color var(--t-base) var(--ease);
 }
 .libSearch input:hover,.libSearch input:focus{border-color:var(--accent);background:none}
-.libFilter{border:0;background:none;padding:.35rem 0;color:var(--ink-4)}
+.libFilter{border:0;background:none;padding:.35rem 0;color:var(--ink-3)}
 .libFilter:hover{color:var(--ink-2);background:none}
 .libFilter.on{background:none;color:var(--ink)}
 .libFilters{gap:var(--s5)}
@@ -200,11 +200,11 @@
 }
 .libRow>button:hover:not(:disabled){background:var(--wash);transform:translateX(var(--s3))}
 .libRows{gap:0}
-.libMark{background:none;color:var(--ink-4);font-weight:400;font-family:var(--font-mono)}
+.libMark{background:none;color:var(--ink-3);font-weight:400;font-family:var(--font-mono)}
 .libRow.passed .libMark{background:none;color:var(--done)}
 .libRow.ready .libMark{background:none;color:var(--accent)}
 .libRow.here>button{background:none;border-color:var(--rule)}
-.libUnitHead>i{border:0;background:none;color:var(--ink-4);font-weight:300;font-family:var(--font-mono);font-size:var(--t-h3)}
-.libUnitCount{border:0;background:none;padding:0;color:var(--ink-4)}
-.libState{border:0;padding:0;min-width:0;color:var(--ink-4)}
+.libUnitHead>i{border:0;background:none;color:var(--ink-3);font-weight:300;font-family:var(--font-mono);font-size:var(--t-h3)}
+.libUnitCount{border:0;background:none;padding:0;color:var(--ink-3)}
+.libState{border:0;padding:0;min-width:0;color:var(--ink-3)}
 .libEmpty{border:0;background:none}

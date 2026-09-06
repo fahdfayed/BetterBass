@@ -1,4 +1,4 @@
-import {useMemo,useState} from "react";
+import {memo,useMemo,useState} from "react";
 import ExerciseTabs from "../tab/ExerciseTabs";
 import {TECHNIQUE_AREAS} from "../technique-data";
 import {FINGER_ORDERS,anchorDrill,crossingDrill,permutationDrill,shiftDrill}
@@ -26,7 +26,8 @@ const DRILL_SETS=[
 
 type Set=typeof DRILL_SETS[number]["id"];
 
-export default function TechniqueLab(){
+/** `memo`d against BassLab's per-frame pitch re-renders — see NoteQuest.tsx's note on the same pattern. */
+function TechniqueLab(){
  const [area,setArea]=useState(TECHNIQUE_AREAS[0].id);
  const [set,setSet]=useState<Set>("perm");
  const [orderIndex,setOrderIndex]=useState(0);
@@ -147,3 +148,5 @@ export default function TechniqueLab(){
   </div>
  );
 }
+
+export default memo(TechniqueLab);

@@ -1,20 +1,29 @@
-import {useCallback,useEffect,useMemo,useRef,useState} from "react";
-import {type Ask,type Drill,advance,onBeat} from "../game/drills";
+import {lazy,Suspense,useCallback,useEffect,useMemo,useState} from "react";
+import {type Drill} from "../game/drills";
 import {NOTE_NAMES} from "../pitch";
-import {type Heard,useHeardNote} from "../useHeardNote";
-import {startAudioClock,type AudioClock} from "../audio-clock";
+import {type Heard} from "../useHeardNote";
+import {useOutcomeFlash} from "./game-neck-target";
+import {type Outcome,useGameEngine} from "./useGameEngine";
 
 /**
- * Plays any of the eight drills.
+ * Three.js/@react-three/fiber/drei are a bigger dependency than the rest of
+ * this app combined (see the 3D neck design spec) — lazy so a player who
+ * never opens a drill never pays for them, same as BassLab does for the
+ * free-explore 3D neck screen itself. useOutcomeFlash lives in its own
+ * dependency-free module precisely so this file can use it without dragging
+ * that in eagerly too.
+ */
+const GameNeck3D=lazy(()=>import("./GameNeck3D"));
+
+/**
+ * Plays any of the seven scored drills (Boss Fight is BossFight.tsx — same
+ * question engine, a health bar instead of a streak counter).
  *
  * They used to be eight cards that set some state and opened another screen —
- * no score, no end, and nothing checking what was played. One runner keeps the
- * scoring, the clock and the listening in a single place, so a new drill is a
- * rule rather than a screen.
+ * no score, no end, and nothing checking what was played. useGameEngine keeps
+ * the asking, judging and clock in one place; this component owns only what
+ * a hit or a miss is worth here: streak, best, score, misses.
  */
-
-const TEMPO=72;
-const BEAT=60/TEMPO;
 
 type Props={
  drill:Drill;
@@ -31,144 +40,52 @@ type Props={
 export default function GameRunner({
  drill,root,heard,listening,connecting,onListen,audition,onExit,
 }:Props){
- const [ask,setAsk]=useState<Ask|null>(null);
- const [progress,setProgress]=useState(0);
  const [streak,setStreak]=useState(0);
  const [best,setBest]=useState(0);
  const [score,setScore]=useState(0);
  const [misses,setMisses]=useState(0);
  const [said,setSaid]=useState<string|null>(null);
- const [left,setLeft]=useState(drill.session);
- const [over,setOver]=useState(false);
- const [beat,setBeat]=useState(0);
+ const{lastOutcome,reportOutcome,syncAsk}=useOutcomeFlash();
 
- // The clock, for the drills that judge when as well as what.
- const clock=useRef<{ctx:AudioContext;clock:AudioClock}|null>(null);
- const mark=useRef({beat:0,at:0});
- const asked=useRef(0);
-
- const level=Math.min(4,Math.floor(streak/4));
-
- const nextAsk=useCallback(()=>{
-  const next=drill.ask(root,level,Math.random);
-  setAsk(next);setProgress(0);asked.current=performance.now();
-  if(next.reference)audition(next.reference,.8);
- },[drill,root,level,audition]);
-
- // A fresh drill is a fresh game.
- useEffect(()=>{
-  setStreak(0);setBest(0);setScore(0);setMisses(0);setSaid(null);
-  setLeft(drill.session);setOver(false);
-  const first=drill.ask(root,0,Math.random);
-  setAsk(first);setProgress(0);asked.current=performance.now();
-  if(first.reference)audition(first.reference,.8);
- },[drill,root,audition]);
-
- // The session timer, for the drills that end.
- useEffect(()=>{
-  if(!drill.session||over)return;
-  const id=window.setInterval(()=>{
-   setLeft(remaining=>{
-    if(remaining<=1){setOver(true);return 0}
-    return remaining-1;
-   });
-  },1000);
-  return ()=>window.clearInterval(id);
- },[drill.session,over]);
-
- /*
-  * The click, and a mark of where the bar is.
-  *
-  * Beat position is worked out from the audio clock rather than from
-  * performance.now(), because the click the player is hearing is on the audio
-  * clock and judging them against a different one would call good notes late.
-  */
- useEffect(()=>{
-  if(!drill.timed||over)return;
-  const ctx=new AudioContext();
-  const running=startAudioClock(ctx,()=>TEMPO,{
-   schedule:(index,time)=>{
-    const osc=ctx.createOscillator(),gain=ctx.createGain();
-    osc.frequency.setValueAtTime(index%4===0?1320:880,time);
-    gain.gain.setValueAtTime(.0001,time);
-    gain.gain.exponentialRampToValueAtTime(index%4===0?.5:.25,time+.005);
-    gain.gain.exponentialRampToValueAtTime(.0001,time+.06);
-    osc.connect(gain);gain.connect(ctx.destination);
-    osc.start(time);osc.stop(time+.08);
-    mark.current={beat:index,at:time};
-   },
-   display:index=>setBeat(index%4),
-  });
-  clock.current={ctx,clock:running};
-  return ()=>{running.stop();void ctx.close();clock.current=null};
- },[drill.timed,over]);
-
- /** Where in the bar we are, 1 to 4, at this instant. */
- const beatNow=()=>{
-  const engine=clock.current;
-  if(!engine)return 1;
-  const since=engine.ctx.currentTime-mark.current.at;
-  return ((mark.current.beat+since/BEAT)%4+4)%4+1;
- };
-
- const judge=useCallback((played:number)=>{
-  if(!ask||over)return;
-
-  // Timed drills judge the beat first: the right note in the wrong place is
-  // the mistake this drill exists to find.
-  if(ask.beats?.length){
-   const at=beatNow();
-   const wanted=ask.beats.find(want=>onBeat(at,want));
-   if(wanted===undefined){
-    setStreak(0);setMisses(count=>count+1);
-    setSaid(`That landed on ${at.toFixed(1)}, the ask was ${ask.beats.join(", ")}.`);
-    return;
-   }
-   if(ask.notes.length&&((played%12)+12)%12!==((ask.notes[0]%12)+12)%12){
-    setStreak(0);setMisses(count=>count+1);
-    setSaid(`On the beat, but that was ${NOTE_NAMES[((played%12)+12)%12]}.`);
-    return;
-   }
+ const onOutcome=useCallback((outcome:Outcome)=>{
+  reportOutcome(outcome.hit);
+  if(outcome.hit){
    setScore(total=>total+1);
    setStreak(run=>{const next=run+1;setBest(top=>Math.max(top,next));return next});
-   setSaid("On it.");
-   nextAsk();
+   setSaid(outcome.onBeat?"On it.":"Yes.");
    return;
   }
-
-  const step=advance(ask,progress,played);
-  setProgress(step.progress);
-
-  if(step.done){
-   const late=ask.limit!==undefined&&(performance.now()-asked.current)/1000>ask.limit;
-   if(late){
-    setStreak(0);setMisses(count=>count+1);
-    setSaid(`Right note, but slower than ${ask.limit?.toFixed(1)}s.`);
-   }else{
-    setScore(total=>total+1);
-    setStreak(run=>{const next=run+1;setBest(top=>Math.max(top,next));return next});
-    setSaid("Yes.");
-   }
-   nextAsk();
-   return;
-  }
-
-  if(step.hit){setSaid(null);return}
   setStreak(0);setMisses(count=>count+1);
-  setSaid(`That was ${NOTE_NAMES[((played%12)+12)%12]}.`);
- },[ask,progress,over,nextAsk]);
+  if(outcome.reason==="offBeat")
+   setSaid(`That landed on ${outcome.at.toFixed(1)}, the ask was ${outcome.wantedBeats.join(", ")}.`);
+  else if(outcome.reason==="wrongNote")
+   setSaid(`${outcome.onBeat?"On the beat, but that was ":"That was "}${NOTE_NAMES[((outcome.played%12)+12)%12]}.`);
+  else
+   setSaid(`Right note, but slower than ${outcome.limit.toFixed(1)}s.`);
+ },[reportOutcome]);
 
- useHeardNote(heard,judge,listening&&!over);
+ const{ask,progress,left,over,beat,restart}=useGameEngine(drill,root,heard,listening,audition,onOutcome);
+ syncAsk(ask,progress);
 
- const restart=()=>{
-  setStreak(0);setScore(0);setMisses(0);setSaid(null);
-  setLeft(drill.session);setOver(false);nextAsk();
- };
+ // A fresh drill is a fresh game.
+ useEffect(()=>{setStreak(0);setBest(0);setScore(0);setMisses(0);setSaid(null)},[drill]);
+ // A new question clears the last one's verdict text.
+ useEffect(()=>{setSaid(null)},[ask]);
+
+ const doRestart=()=>{setStreak(0);setScore(0);setMisses(0);setSaid(null);restart()};
 
  const clock12=useMemo(()=>[0,1,2,3],[]);
 
+ /*
+  * Landing and Rhythm run their own click and judge against it directly
+  * (see beatNow/judge in useGameEngine) — `.runnerBeats` already carries their
+  * pulse. The other six have no clock of their own, so `beat-ambient` opts
+  * them into the book's shared one instead: a beat-pulse borrowed from
+  * whatever transport the player already has running, pure CSS, nothing here
+  * to score against. NoteQuest's target card wears the same class.
+  */
  return (
-  <section className="runner">
+  <section className={`runner ${drill.timed?"runner-timed":"beat-ambient"}`}>
    <header>
     <div>
      <h2>{drill.desc}</h2>
@@ -185,6 +102,14 @@ export default function GameRunner({
     </div>
    )}
 
+   {!over&&(
+    <div className="runnerNeck">
+     <Suspense fallback={null}>
+      <GameNeck3D ask={ask} progress={progress} lastOutcome={lastOutcome}/>
+     </Suspense>
+    </div>
+   )}
+
    <div className="runnerBoard">
     <div className="runnerAsk" aria-live="polite">
      {over?(
@@ -192,7 +117,7 @@ export default function GameRunner({
        <span className="label">Time</span>
        <b>{score} in {drill.session}s</b>
        <p>Longest run of {best}. {misses} missed.</p>
-       <button type="button" className="action action-primary" onClick={restart}>Again</button>
+       <button type="button" className="action action-primary" onClick={doRestart}>Again</button>
       </>
      ):(
       <>

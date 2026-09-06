@@ -1,0 +1,199 @@
+/**
+ * Slap bass, given the fascia treatment.
+ *
+ * Same three moves as the practice session, decided against this page rather
+ * than inherited from it: colour by job, material instead of flatness, and a
+ * touch target gated on the input device.
+ *
+ * `slap.css` was written against a palette of three — `--acid`, `--orange`,
+ * `--cyan` — and `legacy-tokens.css` now resolves acid to the oxide and the
+ * other two to ink-3. So the page spends the brand's one accent nine times, on
+ * eyebrows and numerals, while the thing to press looks like everything else.
+ * That is the same collapse the practice page had, and it gets the same answer.
+ */
+
+.slapLab{
+ /* Depth on a black ground: a lit top edge, not a cast shadow. */
+ --plate:var(--lift);
+ --plate-edge:inset 0 1px 0 0 rgba(255,255,255,.09),0 1px 0 0 rgba(0,0,0,.55);
+ --well-face:var(--ground-2);
+ --well-edge:inset 0 1px 2px 0 rgba(0,0,0,.6),inset 0 -1px 0 0 rgba(255,255,255,.05);
+
+ /*
+  * The three names this sheet reaches for, pointed at the job each one is
+  * actually doing. Acid was decoration on labels and a signal on progress; it
+  * cannot be both, so the labels go to the grey ramp and progress goes to the
+  * pass colour.
+  */
+ --acid:var(--label-ink);
+ --orange:var(--caution);
+ --cyan:var(--label-ink);
+}
+/* Lit from above on paper; see practice-fascia.css. The theme gate this
+   carried is never satisfied now that there is one ground. */
+.slapLab{
+ --plate-edge:inset 0 1px 0 0 rgba(255,255,255,.9),0 1px 0 0 rgba(17,24,39,.14);
+ --well-face:rgba(17,24,39,.05);
+ --well-edge:inset 0 1px 2px 0 rgba(17,24,39,.14),inset 0 -1px 0 0 rgba(255,255,255,.7);
+}
+
+/* ====================================================== the plates == */
+
+/*
+ * Every zone is a bolted panel. `legacy-views.css` holds `.page .osScreen
+ * section` transparent with no shadow, so these are stated at (0,4,0) with the
+ * important that rule forces.
+ */
+.page .osScreen.slapLab .slapHero,
+.page .osScreen.slapLab .slapTabs,
+.page .osScreen.slapLab .slapIntro>div,
+.page .osScreen.slapLab .slapIntro aside,
+.page .osScreen.slapLab .slapNextStep,
+.page .osScreen.slapLab .drillDetail,
+.page .osScreen.slapLab .routineConsole>*,
+.page .osScreen.slapLab .grooveEngine>*,
+.page .osScreen.slapLab .proofGrid>div,
+.page .osScreen.slapLab .proofGrid aside{
+ background:var(--plate) !important;
+ box-shadow:var(--plate-edge) !important;
+ border-radius:0 !important;
+ border:0;
+}
+
+/*
+ * Wells: the things you read off rather than press. The sixteenth grid is the
+ * instrument's own display, the stroke score is a readout, and the passage
+ * blocks are set copy.
+ */
+.page .osScreen.slapLab .sixteenGrid,
+.page .osScreen.slapLab .strokeScore,
+.page .osScreen.slapLab .blockPassage pre,
+.page .osScreen.slapLab .passageLayout pre,
+.page .osScreen.slapLab .liveEvidence>div{
+ background:var(--well-face) !important;
+ box-shadow:var(--well-edge) !important;
+ border-radius:var(--r-well) !important;
+ border:0;
+}
+
+/* Controls sit proud of the plate they are on. */
+.slapLab .slapTabs button,
+.slapLab .drillPicker button,
+.slapLab .routineLengths button,
+.slapLab .tempoDial button,
+.slapLab .slapPath button{
+ --btn-fill:var(--lift);
+ box-shadow:var(--plate-edge);
+}
+.slapLab .slapTabs button:hover,
+.slapLab .drillPicker button:hover,
+.slapLab .routineLengths button:hover{--btn-fill:var(--lift-2)}
+
+/* ==================================================== colour by job == */
+
+/*
+ * Where you are. A selected tab or a selected drill is a position, not an
+ * instruction, so it takes the flame as a wash with the lit edge on the
+ * inside — the same two registers of one hue the neck and the deck use.
+ */
+.slapLab .slapTabs button.active,
+.slapLab .drillPicker button.active,
+.slapLab .routineLengths button.active,
+.slapLab .slapPath button.active,
+.slapLab .droneMission button.active,
+.slapLab .tempoLadder button.active,
+.slapLab .routineBuilder header button.active,
+.slapLab .enabled .blockToggle{
+ --btn-fill:var(--flame-wash);
+ --btn-ink:var(--ink);
+ box-shadow:inset 0 2px 0 0 var(--flame),var(--well-edge);
+}
+.slapLab .slapTabs button.active :is(b,i,small,span),
+.slapLab .drillPicker button.active :is(b,i,small,span),
+.slapLab .slapPath button.active :is(b,i,small,span){color:var(--ink)}
+
+/*
+ * The action. One filled flame per region: start the engine, run the routine,
+ * log the proof.
+ */
+.slapLab .slapHero button:not(.ghostButton),
+.slapLab .grooveEngine aside button,
+.slapLab .routineConsole .runner>button,
+.slapLab .drillDetail footer button,
+.slapLab .proofGrid button,
+.slapLab .slapNextStep button{
+ --btn-fill:var(--flame);
+ --btn-ink:var(--on-flame);
+}
+.slapLab .routineConsole button.stop,
+.slapLab .grooveEngine aside button.stop{--btn-fill:var(--stop);--btn-ink:var(--on-flame)}
+
+/*
+ * Cleared, and the evidence for it. A pass is a fact you scan; it never wears
+ * the accent.
+ */
+.slapLab .passDays b,
+.slapLab .routineMap article.done,
+.slapLab .liveEvidence .on b{color:var(--pass)}
+.slapLab .passDays i.done{border-color:var(--pass)}
+.slapLab .runnerTime em,
+.slapLab .tempoLadder footer i.done{background:var(--pass)}
+.slapLab .sixteenGrid i.now em{background:var(--flame)}
+
+/* Safety is a caution, and must not read as a suggestion. Stated at the same
+   (0,4,0) `.page .osScreen.slapLab` weight as the plates above: the generic
+   `.page .osScreen section{border-color:var(--rule)}` reset outranks a bare
+   `.slapSafety` on specificity, not source order, so a caution border loses to
+   it unless it is stated at least as heavy. */
+.page .osScreen.slapLab .slapSafety{border-color:var(--caution);background:var(--caution-wash)}
+.slapLab .slapSafety b{color:var(--caution)}
+
+/* =================================================== engraved labels == */
+
+/*
+ * The section eyebrows stop being coloured and start being engraved: always
+ * present, always the same size, naming the zone rather than shouting over it.
+ */
+.slapLab .slapHero>div>span,
+.slapLab .slapIntro>div>span,
+.slapLab .routineHead>div>span,
+.slapLab .proofGrid>div>span,
+.slapLab .gridPanel>span,
+.slapLab .drillDetail header span{
+ font-family:var(--font-display);
+ font-size:var(--t-micro);
+ letter-spacing:var(--track-legend);
+ text-transform:uppercase;
+ color:var(--label-ink);
+}
+
+/* The one caution note in the exercise picker and the repair callout: a
+   generic `.page .osScreen small{color:var(--ink-3)}` sits at the same
+   (0,2,1) weight a bare `.instructionGrid small` can't clear, so it is stated
+   at the plate's own `.page .osScreen.slapLab` weight instead. */
+.page .osScreen.slapLab .instructionGrid small,
+.page .osScreen.slapLab .drillRepair small{color:var(--caution)}
+
+/* ======================================================= touch === */
+
+/*
+ * Gated on the input device, not the viewport: this lab is used standing up
+ * with a bass on, and the tab strip and the sixteenth grid are the two things
+ * hit mid-groove.
+ */
+@media (pointer:coarse){
+ .slapLab .slapTabs button,
+ .slapLab .drillPicker button,
+ .slapLab .routineLengths button,
+ .slapLab .tempoDial button,
+ .slapLab .proofGrid button,
+ .slapLab .droneMission button{
+  min-height:44px;
+  min-width:44px;
+  padding-inline:var(--s3);
+ }
+ .slapLab .slapTabs{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+ .slapLab .slapTabs::-webkit-scrollbar{display:none}
+ .slapLab .slapTabs button{flex:none;white-space:nowrap}
+ .slapLab .sixteenGrid i{min-height:44px}
+}

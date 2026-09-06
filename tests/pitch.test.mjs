@@ -208,3 +208,63 @@ test("a weak fundamental is protected, which is the other side of that trade",()
    `a thin fundamental read as ${detected.toFixed(2)} Hz instead of 41.2`);
  }
 });
+
+const pcOf=hz=>{const midi=Math.round(69+12*Math.log2(hz/440));return ((midi%12)+12)%12};
+
+/**
+ * A caller that already knows what note it is listening for (a game with a
+ * target, not a free-running tuner) can break the exact ambiguity the tests
+ * above document as undecidable from the curve alone.
+ */
+test("a caller-supplied expected pitch class resolves the fundamental/harmonic ambiguity",()=>{
+ // A dominant 3rd harmonic over a present but weaker fundamental: the McLeod
+ // rule's own first-peak-past-threshold walk lands on the harmonic here, which
+ // is the bug "The Long Way Home" hits when a bass's tone favours that harmonic.
+ const hz=41.2,harmonics=[.1,.3,1,.15,.1];
+ const buf=signal(hz,{harmonics});
+ const fundamentalPc=pcOf(hz),harmonicPc=pcOf(hz*3);
+
+ const noHint=autoCorrelate(buf,RATE);
+ assert.ok(centsOff(noHint,hz*3)<50,
+  `expected the unhinted read to reproduce the bug (read the 3rd harmonic), got ${noHint.toFixed(2)} Hz`);
+
+ const hintedToFundamental=autoCorrelate(buf,RATE,fundamentalPc);
+ assert.ok(centsOff(hintedToFundamental,hz)<50,
+  `a hint for the true fundamental's pitch class should recover it, got ${hintedToFundamental.toFixed(2)} Hz`);
+
+ const hintedToHarmonic=autoCorrelate(buf,RATE,harmonicPc);
+ assert.ok(centsOff(hintedToHarmonic,hz*3)<50,
+  `a hint for the harmonic's own pitch class should keep the harmonic (not always prefer the low note), got ${hintedToHarmonic.toFixed(2)} Hz`);
+});
+
+test("a heavily noise-dominated residual resonance is not read as a note",()=>{
+ /*
+  * Touching or brushing a string without meaning to play it can still make
+  * it ring a little at its own pitch, mixed mostly with noise. A genuine
+  * pluck's clarity sits at .75 or higher even under real-world noise (see
+  * the tests above); this is what the incidental case looks like instead —
+  * a residual tone so thin that most of the signal is noise, not string.
+  */
+ const buf=new Float32Array(FFT);
+ let state=1;
+ const rand=()=>{state=(state*1103515245+12345)&0x7fffffff;return state/0x7fffffff*2-1};
+ for(let i=0;i<FFT;i++){
+  const t=i/RATE;
+  const tone=Math.sin(2*Math.PI*41.2*t);
+  buf[i]=.3*Math.exp(-20*t)*(tone*.3+rand()*.7);
+ }
+ assert.equal(autoCorrelate(buf,RATE),-1,
+  "a mostly-noise residual resonance should be rejected, not read as a note");
+});
+
+test("an expected pitch class does not change an unambiguous reading",()=>{
+ // No fundamental/harmonic split here (chosen===strongestLag): a hint,
+ // matching or not, must be a no-op.
+ const hz=41.2;
+ const buf=signal(hz);
+ const unhinted=autoCorrelate(buf,RATE);
+ const matchingHint=autoCorrelate(buf,RATE,pcOf(hz));
+ const mismatchedHint=autoCorrelate(buf,RATE,(pcOf(hz)+1)%12);
+ assert.equal(matchingHint,unhinted,"a matching hint changed an unambiguous reading");
+ assert.equal(mismatchedHint,unhinted,"a mismatched hint changed an unambiguous reading");
+});
