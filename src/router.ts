@@ -42,6 +42,7 @@ const ROUTES:Pattern[]=[
  {path:"/labs/quest",view:"quest"},
  {path:"/labs/games",view:"games"},
  {path:"/labs/tabs",view:"tabs"},
+ {path:"/labs/neck3d",view:"neck3d"},
  {path:"/progress",view:"courseProgress"},
 ];
 
