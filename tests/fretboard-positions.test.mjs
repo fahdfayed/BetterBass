@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {OPEN_STRINGS,TOP_FRET,positionKeys,positionsFor} from "../src/fretboard-positions.ts";
+import {OPEN_STRINGS,TOP_FRET,positionKeys,positionsFor,positionsForPitchClass} from "../src/fretboard-positions.ts";
 
 /**
  * Where a heard note is shown on the neck.
@@ -59,6 +59,24 @@ test("the keys match what the board looks up",()=>{
  assert.ok(keys.has("0:2")&&keys.has("1:7")&&keys.has("2:12")&&keys.has("3:17"));
  assert.equal(keys.size,4);
  assert.equal(positionKeys(20).size,0);
+});
+
+test("a pitch class is found on every string, every octave",()=>{
+ // G is pitch class 7: open on the G string, and one instance per string
+ // below the top fret, not just the nearest one to some reference note.
+ const places=positionsForPitchClass(7);
+ assert.ok(places.some(p=>p.string===0&&p.fret===0),"open G string");
+ for(const [string,open] of OPEN_STRINGS.entries()){
+  const onThisString=places.filter(p=>p.string===string);
+  for(const place of onThisString)
+   assert.equal(((open+place.fret)%12+12)%12,7,`string ${string} fret ${place.fret} is not a G`);
+  assert.ok(onThisString.length>=1,`string ${string} has no G within ${TOP_FRET} frets`);
+ }
+});
+
+test("positionsForPitchClass normalizes out-of-range and negative pitch classes",()=>{
+ assert.deepEqual(positionsForPitchClass(7),positionsForPitchClass(19));
+ assert.deepEqual(positionsForPitchClass(7),positionsForPitchClass(-5));
 });
 
 test("every note on the neck round-trips",()=>{

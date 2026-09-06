@@ -43,3 +43,21 @@ export function positionsFor(midi:number,tuning=OPEN_STRINGS,topFret=TOP_FRET):P
 /** The same, as `string:fret` keys, which is what a lookup in render wants. */
 export const positionKeys=(midi:number,tuning=OPEN_STRINGS,topFret=TOP_FRET)=>
  new Set(positionsFor(midi,tuning,topFret).map(place=>`${place.string}:${place.fret}`));
+
+/**
+ * Every place a pitch class (not a specific octave) sits on the neck.
+ *
+ * Where {@link positionsFor} answers "where did that exact note ring out
+ * from" for a heard pitch, this answers "where could you play a G at all" for
+ * a target the player hasn't played yet — every octave of it, not just the
+ * one nearest some reference.
+ */
+export function positionsForPitchClass(pc:number,tuning=OPEN_STRINGS,topFret=TOP_FRET):Position[]{
+ const want=((pc%12)+12)%12;
+ const places:Position[]=[];
+ tuning.forEach((open,string)=>{
+  for(let fret=0;fret<=topFret;fret++)
+   if(((open+fret)%12+12)%12===want)places.push({string,fret});
+ });
+ return places;
+}

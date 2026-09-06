@@ -273,6 +273,8 @@
  border:1px solid var(--line);padding:var(--s5);margin-bottom:var(--s5)}
 .runnerConnect p{margin:0;font-size:var(--t-micro);color:var(--ink-2);flex:1 1 320px}
 
+.runnerNeck{margin-bottom:var(--s5)}
+
 .runnerBoard{display:grid;grid-template-columns:1.7fr minmax(190px,.8fr);gap:var(--s6);align-items:start}
 .runnerAsk .label{font:var(--t-micro) var(--mono);letter-spacing:.12em;color:var(--ink-3)}
 .runnerAsk b{display:block;font-size:var(--t-h1);line-height:1.1;color:var(--lime);margin:var(--s3) 0}
