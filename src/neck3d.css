@@ -1,0 +1,7 @@
+.neck3d{display:flex;flex-direction:column;gap:var(--s4)}
+.neck3dControls{display:flex;flex-wrap:wrap;gap:var(--s4)}
+.neck3dControls .label{font:var(--t-micro) var(--mono);letter-spacing:.1em;color:var(--ink-3)}
+.neck3dCanvas{height:420px;border:1px solid var(--line);background:#1b140e}
+.neck3dLegend{display:flex;flex-wrap:wrap;gap:var(--s4)}
+.neck3dLegendItem{display:flex;align-items:center;gap:6px;font:var(--t-micro) var(--mono);letter-spacing:.06em;color:var(--ink-2)}
+.neck3dLegendItem i{width:10px;height:10px;border-radius:50%;display:inline-block}
