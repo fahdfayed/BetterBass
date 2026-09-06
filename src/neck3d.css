@@ -6,3 +6,5 @@
 .neck3dLegendItem{display:flex;align-items:center;gap:6px;font:var(--t-micro) var(--mono);letter-spacing:.06em;color:var(--ink-2)}
 .neck3dLegendItem i{width:10px;height:10px;border-radius:50%;display:inline-block}
 .neck3dFallback{color:var(--ink-3);font:var(--t-small) var(--mono);padding:var(--s4)}
+.neck3dStringLabel{font:var(--t-small) var(--mono);font-weight:600;color:#d8d4c4;white-space:nowrap;pointer-events:none;user-select:none}
+.neck3dFretLabel{font:var(--t-micro) var(--mono);color:#9c988c;white-space:nowrap;pointer-events:none;user-select:none}

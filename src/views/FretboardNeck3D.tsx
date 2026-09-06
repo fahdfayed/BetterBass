@@ -1,7 +1,7 @@
 import {useMemo,useState,Component,type ReactNode} from "react";
 import * as THREE from "three";
 import {Canvas} from "@react-three/fiber";
-import {OrbitControls} from "@react-three/drei";
+import {Html,OrbitControls} from "@react-three/drei";
 import {fretPosition,notesInMode,roleFor,type Role} from "../fretboard-neck-geometry";
 import {OPEN_STRINGS,TOP_FRET} from "../fretboard-positions";
 import {NOTE_NAMES} from "../pitch";
@@ -26,6 +26,11 @@ const STRING_SPACING=0.6;
 const ROLE_COLOR:Record<Role,string>={root:"#c4351a",colour:"#8a6206",scale:"#63701a",outside:"#6a675e"};
 const ROLE_LABEL:Record<Role,string>={root:"Root",colour:"Colour",scale:"Scale",outside:"Outside"};
 const mod=(value:number)=>((value%12)+12)%12;
+
+/** The frets a real bass marks with inlay dots — the ones a player actually reads position from. */
+const MARKER_FRETS=[3,5,7,9,12,15,17,19];
+/** G, D, A, E — same order as OPEN_STRINGS, for the labels at the nut. */
+const STRING_NAMES=["G","D","A","E"];
 
 class CanvasErrorBoundary extends Component<{children:ReactNode},{failed:boolean}>{
  state={failed:false};
@@ -99,10 +104,39 @@ export default function FretboardNeck3D({root,mode,onSetRoot,onSetMode,audition}
 
    <div className="neck3dCanvas">
     <CanvasErrorBoundary>
-     <Canvas camera={{position:[neckLength/2,9,11],fov:45}} frameloop="demand">
+     {/*
+      * Looking down the neck from the headstock end, the way a player
+      * glances at their own instrument — not a side-on view from whichever
+      * string happens to sit at one end of the string-spacing math.
+      */}
+     <Canvas camera={{position:[-4,10,boardWidth/2-1],fov:55}} frameloop="demand">
       <ambientLight intensity={.7}/>
       <directionalLight position={[10,12,8]} intensity={.9}/>
-      <OrbitControls target={[neckLength/2,0,boardWidth/2]} makeDefault/>
+      <OrbitControls target={[neckLength*.22,0,boardWidth/2]} makeDefault/>
+
+      {/*
+       * Real DOM text via drei's `<Html>`, not drei's `<Text>` (troika-three-text):
+       * troika needs an explicit local font or it phones home to a CDN this
+       * app's CSP blocks, and even a bundled font crashed the WebGL context
+       * outright in testing (its SDF-texture path chokes badly enough to lose
+       * the whole canvas, not just fail to render text). Html sidesteps all
+       * of that — it's the page's own text rendering, using the site's own
+       * fonts already, positioned to track the 3D point underneath it.
+       */}
+      {STRING_NAMES.map((name,stringIndex)=>(
+       <Html key={name} position={[-0.8,0,stringIndex*STRING_SPACING]} center>
+        <span className="neck3dStringLabel">{name}</span>
+       </Html>
+      ))}
+
+      {MARKER_FRETS.map(fret=>(
+       <Html key={fret} position={[(fretXs[fret-1]+fretXs[fret])/2,-0.3,boardWidth+0.7]} center>
+        <span className="neck3dFretLabel">{fret}</span>
+       </Html>
+      ))}
+      <Html position={[0,-0.3,boardWidth+0.7]} center>
+       <span className="neck3dFretLabel">0</span>
+      </Html>
 
       <mesh position={[neckLength/2,-0.3,boardWidth/2]}>
        <boxGeometry args={[neckLength+1,0.4,boardWidth+0.6]}/>
