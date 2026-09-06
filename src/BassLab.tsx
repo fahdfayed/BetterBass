@@ -1,4 +1,4 @@
-import {lazy,Suspense,useEffect,useMemo,useRef,useState} from "react";
+import {lazy,Suspense,useCallback,useEffect,useMemo,useRef,useState} from "react";
 import {fadeAndClose,startAudioClock,type AudioClock} from "./audio-clock";
 import AppShell from "./components/AppShell";
 import Home from "./views/Home";
@@ -130,6 +130,21 @@ export default function BassLab(){
  const runtimeSettingsRef=useRef({bpm,meter,style,clickMode,density,progression,ri});
  const harmonyRef=useRef<Harmony>({ri,chordTones,color,scale});
  const expectedPitchRef=useRef<number|null>(null);
+ const onExpectedPitch=useCallback((pc:number|null)=>{expectedPitchRef.current=pc},[]);
+ /*
+  * `pitch` updates on every animation frame a note is sounding, which the
+  * live-tuner screens want (a needle driven by cents needs that granularity)
+  * but which otherwise re-renders every mounted child, games included, at up
+  * to 60fps for as long as a note rings out. The games below don't consume
+  * `pitch` at all, so they're wrapped in `memo` — which only helps if the
+  * callback props reaching them are themselves stable, hence routing
+  * `startAudio`/`audition` through a ref instead of passing their
+  * every-render closures directly.
+  */
+ const startAudioFnRef=useRef<()=>Promise<boolean>>(async()=>false);
+ const toggleListening=useCallback(()=>{void startAudioFnRef.current()},[]);
+ const auditionFnRef=useRef<(pcs:number[],hold?:number,droneRoot?:number)=>void>(()=>{});
+ const stableAudition=useCallback((pcs:number[],hold?:number,droneRoot?:number)=>{auditionFnRef.current(pcs,hold,droneRoot)},[]);
  useEffect(()=>{bpmRef.current=bpm},[bpm]);
  useEffect(()=>{noiseRef.current=noise},[noise]);
  useEffect(()=>{harmonyRef.current={ri,chordTones,color,scale}},[ri,chordTones,color,scale]);
@@ -175,6 +190,7 @@ export default function BassLab(){
   const{state,effects}=stepDetector(detectorStateRef.current,{hz,rms,now:performance.now()});
   detectorStateRef.current=state;applyDetectorEffects(effects);
   if(audio.current)audio.current.raf=requestAnimationFrame(tick)};audio.current={ctx,stream,raf:requestAnimationFrame(tick)};setAudioError("");setConnecting(false);setListening(true);return true}catch(error){setConnecting(false);setPitch(null);setListening(false);setAudioError(error instanceof DOMException&&(error.name==="NotAllowedError"||error.name==="SecurityError")?"Microphone access was blocked. Allow it for this site, then choose your audio-interface input and try again.":"The audio input could not start. Check that an input device is connected and free, then try again.");return false}};
+ startAudioFnRef.current=startAudio;
  // Measure the real noise floor from the running input. The previous fixed .006
  // sat below the detector's own gate, so calibrating changed nothing at all.
  const calibrate=async()=>{if(!listening){const started=await startAudio();if(!started)return}setCalibrated(false);calibrationRef.current={until:performance.now()+1800,samples:[]}};
@@ -198,6 +214,7 @@ export default function BassLab(){
   baseDrone(ctx,now,pcs.length*hold+.45,droneRoot);
   pcs.forEach((pc,i)=>tone(ctx,midiHz(bassMidiFor(pc)),now+.18+i*hold,hold*.82,.18,"triangle"));
  };
+ auditionFnRef.current=audition;
  const baseDrone=(ctx:AudioContext,when:number,dur:number,droneRoot=ri)=>{const voicing=droneVoicing(droneRoot);tone(ctx,midiHz(voicing.root),when,dur,.045,"sine");tone(ctx,midiHz(voicing.fifth),when,dur,.018,"sine")};
  const noiseHit=(ctx:AudioContext,when:number,vol:number,out:AudioNode)=>{const len=Math.floor(ctx.sampleRate*.08),buf=ctx.createBuffer(1,len,ctx.sampleRate);buf.getChannelData(0).set(noiseEnvelope(len));const s=ctx.createBufferSource(),g=ctx.createGain();s.buffer=buf;g.gain.value=vol;s.connect(g).connect(out);s.start(when)};
  const stopRuntime=()=>{const runtime=runtimeRef.current;if(runtime){runtimeRef.current=null;runtime.clock.stop();fadeAndClose(runtime.ctx,runtime.master)}setPlaying(false);setBar(1);setBeat(1);setWeather("Stable")};
@@ -304,7 +321,7 @@ export default function BassLab(){
 
  {view==="games"&&<RescueGames root={ri}
    heard={heard} listening={listening} connecting={connecting}
-   onListen={()=>void startAudio()} audition={audition}/>}
+   onListen={toggleListening} audition={stableAudition}/>}
 
 
 
@@ -337,9 +354,9 @@ export default function BassLab(){
  {view==="chromatic"&&<ChromaticGym/>}
  {view==="technique"&&<TechniqueLab/>}
  {view==="quest"&&<NoteQuest lesson={courseIndex} heard={heard} listening={listening}
-   connecting={connecting} onListen={()=>void startAudio()}
-   onPickLesson={setCourseIndex} audition={audition}
-   onExpectedPitch={pc=>{expectedPitchRef.current=pc}}/>}
+   connecting={connecting} onListen={toggleListening}
+   onPickLesson={setCourseIndex} audition={stableAudition}
+   onExpectedPitch={onExpectedPitch}/>}
  {view==="courseLesson"&&<LessonWorkspace
   lesson={{index:courseIndex,total:COURSE_LESSONS.length,title:course.title,unit:course.unit,outcome:course.outcome,duration:course.duration}}
   stageIndex={courseStep}
