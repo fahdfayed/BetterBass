@@ -87,11 +87,15 @@ const PEAK_RATIO=.8;
 /**
  * The weakest peak worth reporting.
  *
- * A note buried under a subharmonic can peak as low as .28, so this sits under
- * that — the caller decides what to trust, and refusing to read a note that is
- * plainly there is worse than reading it with a caveat.
+ * A deliberately played note — even a noisy or subharmonic-obscured one —
+ * reliably clears .75 in this signal. Incidental noise that never was a note
+ * (a hand landing on the strings, an unplucked string brushed while moving
+ * between positions) sits distinctly lower, around .5-.6, because the
+ * analysis window is never purely that noise: real silence bleeds into it
+ * from before the contact started. .6 sits in the gap between the two,
+ * measured against synthetic reproductions of both.
  */
-const MIN_CLARITY=.22;
+const MIN_CLARITY=.6;
 
 // Reused across frames: this runs on every animation frame while the mic is on.
 let decimated=new Float32Array(0);

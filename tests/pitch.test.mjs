@@ -237,6 +237,26 @@ test("a caller-supplied expected pitch class resolves the fundamental/harmonic a
   `a hint for the harmonic's own pitch class should keep the harmonic (not always prefer the low note), got ${hintedToHarmonic.toFixed(2)} Hz`);
 });
 
+test("a heavily noise-dominated residual resonance is not read as a note",()=>{
+ /*
+  * Touching or brushing a string without meaning to play it can still make
+  * it ring a little at its own pitch, mixed mostly with noise. A genuine
+  * pluck's clarity sits at .75 or higher even under real-world noise (see
+  * the tests above); this is what the incidental case looks like instead —
+  * a residual tone so thin that most of the signal is noise, not string.
+  */
+ const buf=new Float32Array(FFT);
+ let state=1;
+ const rand=()=>{state=(state*1103515245+12345)&0x7fffffff;return state/0x7fffffff*2-1};
+ for(let i=0;i<FFT;i++){
+  const t=i/RATE;
+  const tone=Math.sin(2*Math.PI*41.2*t);
+  buf[i]=.3*Math.exp(-20*t)*(tone*.3+rand()*.7);
+ }
+ assert.equal(autoCorrelate(buf,RATE),-1,
+  "a mostly-noise residual resonance should be rejected, not read as a note");
+});
+
 test("an expected pitch class does not change an unambiguous reading",()=>{
  // No fundamental/harmonic split here (chosen===strongestLag): a hint,
  // matching or not, must be a no-op.
