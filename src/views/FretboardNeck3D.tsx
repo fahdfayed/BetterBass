@@ -1,4 +1,5 @@
-import {useMemo} from "react";
+import {useMemo,useState,Component,type ReactNode} from "react";
+import * as THREE from "three";
 import {Canvas} from "@react-three/fiber";
 import {OrbitControls} from "@react-three/drei";
 import {fretPosition,notesInMode,roleFor,type Role} from "../fretboard-neck-geometry";
@@ -26,7 +27,18 @@ const ROLE_COLOR:Record<Role,string>={root:"#c4351a",colour:"#8a6206",scale:"#63
 const ROLE_LABEL:Record<Role,string>={root:"Root",colour:"Colour",scale:"Scale",outside:"Outside"};
 const mod=(value:number)=>((value%12)+12)%12;
 
+class CanvasErrorBoundary extends Component<{children:ReactNode},{failed:boolean}>{
+ state={failed:false};
+ static getDerivedStateFromError(){return {failed:true}}
+ render(){
+  if(this.state.failed)return <p className="neck3dFallback">3D isn't available in this browser right now.</p>;
+  return this.props.children;
+ }
+}
+
 export default function FretboardNeck3D({root,mode,onSetRoot,onSetMode,audition}:Props){
+ const [pulsingKey,setPulsingKey]=useState<string|null>(null);
+
  const scale=useMemo(()=>notesInMode(root,mode),[root,mode]);
  const frets=useMemo(()=>Array.from({length:TOP_FRET+1},(_,index)=>index),[]);
  const fretXs=useMemo(()=>frets.map(fret=>fretPosition(fret,SCALE_LENGTH)),[frets]);
@@ -34,21 +46,44 @@ export default function FretboardNeck3D({root,mode,onSetRoot,onSetMode,audition}
  const boardWidth=(OPEN_STRINGS.length-1)*STRING_SPACING;
 
  const notes=useMemo(()=>{
-  const placed:{key:string;x:number;z:number;color:string;pc:number}[]=[];
+  const placed:{key:string;x:number;z:number;role:Role;pc:number}[]=[];
   OPEN_STRINGS.forEach((open,stringIndex)=>{
    frets.forEach(fret=>{
     const pc=mod(open+fret);
     if(!scale.includes(pc))return;
     const role=roleFor(pc,root,mode);
     const x=fret===0?0:(fretXs[fret-1]+fretXs[fret])/2;
-    placed.push({key:`${stringIndex}:${fret}`,x,z:stringIndex*STRING_SPACING,color:ROLE_COLOR[role],pc});
+    placed.push({key:`${stringIndex}:${fret}`,x,z:stringIndex*STRING_SPACING,role,pc});
    });
   });
   return placed;
  },[frets,fretXs,scale,root,mode]);
 
+ const noteGeometry=useMemo(()=>new THREE.SphereGeometry(0.18,16,16),[]);
+ const fretGeometry=useMemo(()=>new THREE.BoxGeometry(0.06,0.05,boardWidth+0.4),[boardWidth]);
+ const stringGeometry=useMemo(()=>new THREE.CylinderGeometry(0.025,0.025,neckLength+1,8),[neckLength]);
+
+ const roleMaterials=useMemo(()=>{
+  const materials:Record<Role,THREE.MeshStandardMaterial>={} as Record<Role,THREE.MeshStandardMaterial>;
+  (Object.keys(ROLE_COLOR) as Role[]).forEach(role=>{materials[role]=new THREE.MeshStandardMaterial({color:ROLE_COLOR[role]})});
+  return materials;
+ },[]);
+ const rolePulseMaterials=useMemo(()=>{
+  const materials:Record<Role,THREE.MeshStandardMaterial>={} as Record<Role,THREE.MeshStandardMaterial>;
+  (Object.keys(ROLE_COLOR) as Role[]).forEach(role=>{materials[role]=new THREE.MeshStandardMaterial({color:"#ffffff",emissive:new THREE.Color(ROLE_COLOR[role]),emissiveIntensity:.8})});
+  return materials;
+ },[]);
+ const fretMaterial=useMemo(()=>new THREE.MeshStandardMaterial({color:"#c8c2b0"}),[]);
+ const stringMaterial=useMemo(()=>new THREE.MeshStandardMaterial({color:"#d8d4c4"}),[]);
+
+ const handleNoteClick=(note:{key:string;pc:number})=>{
+  audition([note.pc]);
+  setPulsingKey(note.key);
+  window.setTimeout(()=>setPulsingKey(current=>current===note.key?null:current),250);
+ };
+
  return (
-  <div className="neck3d">
+  <div className="osScreen neck3d">
    <div className="neck3dControls">
     <label><span className="label">Root</span>
      <select value={root} onChange={event=>onSetRoot(+event.target.value)}>
@@ -63,38 +98,36 @@ export default function FretboardNeck3D({root,mode,onSetRoot,onSetMode,audition}
    </div>
 
    <div className="neck3dCanvas">
-    <Canvas camera={{position:[neckLength/2,9,11],fov:45}}>
-     <ambientLight intensity={.7}/>
-     <directionalLight position={[10,12,8]} intensity={.9}/>
-     <OrbitControls target={[neckLength/2,0,boardWidth/2]} makeDefault/>
+    <CanvasErrorBoundary>
+     <Canvas camera={{position:[neckLength/2,9,11],fov:45}} frameloop="demand">
+      <ambientLight intensity={.7}/>
+      <directionalLight position={[10,12,8]} intensity={.9}/>
+      <OrbitControls target={[neckLength/2,0,boardWidth/2]} makeDefault/>
 
-     <mesh position={[neckLength/2,-0.3,boardWidth/2]}>
-      <boxGeometry args={[neckLength+1,0.4,boardWidth+0.6]}/>
-      <meshStandardMaterial color="#3a2a1e"/>
-     </mesh>
-
-     {fretXs.map((x,index)=>(
-      <mesh key={index} position={[x,-0.08,boardWidth/2]}>
-       <boxGeometry args={[0.06,0.05,boardWidth+0.4]}/>
-       <meshStandardMaterial color="#c8c2b0"/>
+      <mesh position={[neckLength/2,-0.3,boardWidth/2]}>
+       <boxGeometry args={[neckLength+1,0.4,boardWidth+0.6]}/>
+       <meshStandardMaterial color="#3a2a1e"/>
       </mesh>
-     ))}
 
-     {OPEN_STRINGS.map((_,stringIndex)=>(
-      <mesh key={stringIndex} position={[neckLength/2,0,stringIndex*STRING_SPACING]} rotation={[0,0,Math.PI/2]}>
-       <cylinderGeometry args={[0.025,0.025,neckLength+1,8]}/>
-       <meshStandardMaterial color="#d8d4c4"/>
-      </mesh>
-     ))}
+      {fretXs.map((x,index)=>(
+       <mesh key={index} position={[x,-0.08,boardWidth/2]} geometry={fretGeometry} material={fretMaterial}/>
+      ))}
 
-     {notes.map(note=>(
-      <mesh key={note.key} position={[note.x,0.22,note.z]}
-            onClick={event=>{event.stopPropagation();audition([note.pc])}}>
-       <sphereGeometry args={[0.18,16,16]}/>
-       <meshStandardMaterial color={note.color}/>
-      </mesh>
-     ))}
-    </Canvas>
+      {OPEN_STRINGS.map((_,stringIndex)=>(
+       <mesh key={stringIndex} position={[neckLength/2,0,stringIndex*STRING_SPACING]} rotation={[0,0,Math.PI/2]}
+             geometry={stringGeometry} material={stringMaterial}/>
+      ))}
+
+      {notes.map(note=>{
+       const pulsing=pulsingKey===note.key;
+       return (
+        <mesh key={note.key} position={[note.x,0.22,note.z]} scale={pulsing?1.4:1}
+              geometry={noteGeometry} material={pulsing?rolePulseMaterials[note.role]:roleMaterials[note.role]}
+              onClick={event=>{event.stopPropagation();handleNoteClick(note)}}/>
+       );
+      })}
+     </Canvas>
+    </CanvasErrorBoundary>
    </div>
 
    <div className="neck3dLegend">
