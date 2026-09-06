@@ -1,4 +1,4 @@
-import {useEffect,useMemo,useState} from "react";
+import {memo,useEffect,useMemo,useState} from "react";
 import {MISSES_ALLOWED,questFor,startWalk,step,targetPitchOf,type Walk} from "../quest-data";
 import QuestScene from "./QuestScene";
 import {type Heard,useHeardNote} from "../useHeardNote";
@@ -36,7 +36,14 @@ type Props={
  onExpectedPitch:(pitchClass:number|null)=>void;
 };
 
-export default function NoteQuest({
+/**
+ * The mic loop that owns `heard`/`listening` re-renders on every animation
+ * frame a note rings out, whether or not it's the note this screen cares
+ * about. `memo` keeps that churn from reaching this component's own subtree,
+ * as long as every prop passed in stays referentially stable across those
+ * renders — see BassLab.tsx's toggleListening/stableAudition/onExpectedPitch.
+ */
+function NoteQuest({
  lesson,heard,listening,connecting,onListen,onPickLesson,audition,onExpectedPitch,
 }:Props){
  const quest=useMemo(()=>questFor(lesson),[lesson]);
@@ -178,3 +185,5 @@ export default function NoteQuest({
   </div>
  );
 }
+
+export default memo(NoteQuest);

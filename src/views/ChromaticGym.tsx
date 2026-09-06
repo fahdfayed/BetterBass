@@ -1,4 +1,4 @@
-import {useMemo,useState} from "react";
+import {memo,useMemo,useState} from "react";
 import ExerciseTabs from "../tab/ExerciseTabs";
 import {type Chain,DEVICES,PROGRESSIONS,QUALITIES,cycleStudy,deviceStudy,extensionStudy,
  progressionLine,targetStudy} from "../tab/chromatic-library";
@@ -33,7 +33,8 @@ const STUDY_KINDS=[
 
 type Kind=typeof STUDY_KINDS[number]["id"];
 
-export default function ChromaticGym(){
+/** `memo`d against BassLab's per-frame pitch re-renders — see NoteQuest.tsx's note on the same pattern. */
+function ChromaticGym(){
  const [deviceId,setDeviceId]=useState(DEVICES[0].id);
  const [qualityId,setQualityId]=useState(QUALITIES[0].id);
  const [kind,setKind]=useState<Kind>("chord");
@@ -180,3 +181,5 @@ export default function ChromaticGym(){
   </div>
  );
 }
+
+export default memo(ChromaticGym);
