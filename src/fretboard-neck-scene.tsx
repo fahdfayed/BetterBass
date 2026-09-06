@@ -1,4 +1,4 @@
-import {useMemo,Component,type ReactNode} from "react";
+import {useMemo,useState,Component,type ReactNode} from "react";
 import * as THREE from "three";
 import {Canvas} from "@react-three/fiber";
 import {Html,OrbitControls} from "@react-three/drei";
@@ -28,6 +28,13 @@ type Props<T extends NeckNote>={
  notes:T[];
  pulsingKeys:Set<string>;
  onNoteClick?:(note:T)=>void;
+ /**
+  * Start with drag-to-rotate off. A game screen wants this — the neck is
+  * there to show a target, not to be driven, and a stray touch while
+  * reaching for a string shouldn't spin the camera out from under it.
+  * The free-explore screen leaves this off; rotating is the point there.
+  */
+ defaultLocked?:boolean;
 };
 
 const SCALE_LENGTH=34;
@@ -47,7 +54,8 @@ class CanvasErrorBoundary extends Component<{children:ReactNode},{failed:boolean
  }
 }
 
-export default function NeckScene<T extends NeckNote>({notes,pulsingKeys,onNoteClick}:Props<T>){
+export default function NeckScene<T extends NeckNote>({notes,pulsingKeys,onNoteClick,defaultLocked=false}:Props<T>){
+ const [locked,setLocked]=useState(defaultLocked);
  const frets=useMemo(()=>Array.from({length:TOP_FRET+1},(_,index)=>index),[]);
  const fretXs=useMemo(()=>frets.map(fret=>fretPosition(fret,SCALE_LENGTH)),[frets]);
  const neckLength=fretXs[fretXs.length-1];
@@ -76,6 +84,10 @@ export default function NeckScene<T extends NeckNote>({notes,pulsingKeys,onNoteC
 
  return (
   <div className="neck3dCanvas">
+   <button type="button" className={`neck3dLockToggle${locked?" locked":""}`}
+           onClick={()=>setLocked(current=>!current)}>
+    {locked?"Locked — tap to rotate":"Lock rotation"}
+   </button>
    <CanvasErrorBoundary>
     {/*
      * Looking down the neck from the headstock end, the way a player
@@ -85,7 +97,13 @@ export default function NeckScene<T extends NeckNote>({notes,pulsingKeys,onNoteC
     <Canvas camera={{position:[-4,10,boardWidth/2-1],fov:55}} frameloop="demand">
      <ambientLight intensity={.7}/>
      <directionalLight position={[10,12,8]} intensity={.9}/>
-     <OrbitControls target={[neckLength*.22,0,boardWidth/2]} makeDefault/>
+     {/*
+      * Slower and damped: the raw defaults turn a light touch or a small
+      * mouse move into a full spin, which reads as the neck fighting the
+      * player rather than responding to them.
+      */}
+     <OrbitControls target={[neckLength*.22,0,boardWidth/2]} makeDefault enabled={!locked}
+                     enableDamping dampingFactor={.12} rotateSpeed={.5} zoomSpeed={.6} panSpeed={.5}/>
 
      {/*
       * Real DOM text via drei's `<Html>`, not drei's `<Text>` (troika-three-text):

@@ -54,7 +54,7 @@ function GameNeck3D({ask,progress,lastOutcome}:Props){
 
  const pulsingKeys=useMemo(()=>new Set(flashNotes.map(note=>note.key)),[flashNotes]);
 
- return <NeckScene notes={notes} pulsingKeys={pulsingKeys}/>;
+ return <NeckScene notes={notes} pulsingKeys={pulsingKeys} defaultLocked/>;
 }
 
 export default memo(GameNeck3D);

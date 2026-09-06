@@ -1,7 +1,13 @@
 .neck3d{display:flex;flex-direction:column;gap:var(--s4)}
 .neck3dControls{display:flex;flex-wrap:wrap;gap:var(--s4)}
 .neck3dControls .label{font:var(--t-micro) var(--mono);letter-spacing:.1em;color:var(--ink-3)}
-.neck3dCanvas{height:420px;border:1px solid var(--line);background:#1b140e}
+.neck3dCanvas{height:420px;border:1px solid var(--line);background:#1b140e;position:relative}
+.neck3dLockToggle{position:absolute;top:var(--s3);right:var(--s3);z-index:1;
+ font:var(--t-micro) var(--mono);letter-spacing:.08em;color:#d8d4c4;
+ background:rgba(0,0,0,.45);border:1px solid rgba(216,212,196,.35);
+ padding:6px 12px;cursor:pointer;transition:color .15s,border-color .15s}
+.neck3dLockToggle:hover{color:#fff;border-color:#d8d4c4}
+.neck3dLockToggle.locked{color:var(--vermillion);border-color:var(--vermillion)}
 .neck3dLegend{display:flex;flex-wrap:wrap;gap:var(--s4)}
 .neck3dLegendItem{display:flex;align-items:center;gap:6px;font:var(--t-micro) var(--mono);letter-spacing:.06em;color:var(--ink-2)}
 .neck3dLegendItem i{width:10px;height:10px;border-radius:50%;display:inline-block}

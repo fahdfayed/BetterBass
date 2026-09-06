@@ -130,6 +130,21 @@
           "src/course.css"
         ],
         "createdAt": "2026-09-05T19:41:11.922Z"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(0,0,0,.45)",
+        "createdAt": "2026-09-06T21:24:01.727Z"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#fff",
+        "createdAt": "2026-09-06T21:24:01.801Z"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#c8c2b0",
+        "createdAt": "2026-09-06T21:24:22.316Z"
       }
     ]
   }
