@@ -1,16 +1,23 @@
-import {useMemo,useState,Component,type ReactNode} from "react";
+import {useMemo,useState,memo,Component,type ReactNode} from "react";
 import * as THREE from "three";
 import {Canvas} from "@react-three/fiber";
 import {Html,OrbitControls} from "@react-three/drei";
 import {fretPosition,notesInMode,roleFor,type Role} from "../fretboard-neck-geometry";
-import {OPEN_STRINGS,TOP_FRET} from "../fretboard-positions";
+import {OPEN_STRINGS,positionKeys,TOP_FRET} from "../fretboard-positions";
 import {NOTE_NAMES} from "../pitch";
 import {MODES} from "../harmony-fretboard-data";
+import {type Heard,useHeardNote} from "../useHeardNote";
 
 /**
  * Phase 1 of the 3D neck: rotate/explore, pick a root and mode, click a
- * note to hear it. No live pitch, no backing band, no fog filter — see
+ * note to hear it. Phase A adds live mic input: a note you actually play
+ * lights up on the neck, the same way clicking one does. Still no backing
+ * band or fog filter — see
  * docs/superpowers/specs/2026-09-06-fretboard-neck-3d-design.md for why.
+ *
+ * A note outside the current mode's scale has no marker to light up at
+ * all — this screen only ever draws the scale's own notes, live-heard or
+ * not, consistent with everything else about it.
  */
 
 type Props={
@@ -19,7 +26,14 @@ type Props={
  onSetRoot:(root:number)=>void;
  onSetMode:(mode:number)=>void;
  audition:(pitchClasses:number[],hold?:number)=>void;
+ heard:Heard;
+ listening:boolean;
+ connecting:boolean;
+ onListen:()=>void;
 };
+
+/** How long a heard or clicked note stays lit — long enough to read as "that one", not a flash. */
+const PULSE_MS=600;
 
 const SCALE_LENGTH=34;
 const STRING_SPACING=0.6;
@@ -41,8 +55,14 @@ class CanvasErrorBoundary extends Component<{children:ReactNode},{failed:boolean
  }
 }
 
-export default function FretboardNeck3D({root,mode,onSetRoot,onSetMode,audition}:Props){
- const [pulsingKey,setPulsingKey]=useState<string|null>(null);
+function FretboardNeck3D({root,mode,onSetRoot,onSetMode,audition,heard,listening,connecting,onListen}:Props){
+ const [pulsingKeys,setPulsingKeys]=useState<Set<string>>(()=>new Set());
+
+ useHeardNote(heard,(_pc,midi)=>{
+  const keys=positionKeys(midi);
+  setPulsingKeys(keys);
+  window.setTimeout(()=>setPulsingKeys(current=>current===keys?new Set():current),PULSE_MS);
+ },listening);
 
  const scale=useMemo(()=>notesInMode(root,mode),[root,mode]);
  const frets=useMemo(()=>Array.from({length:TOP_FRET+1},(_,index)=>index),[]);
@@ -83,8 +103,9 @@ export default function FretboardNeck3D({root,mode,onSetRoot,onSetMode,audition}
 
  const handleNoteClick=(note:{key:string;pc:number})=>{
   audition([note.pc]);
-  setPulsingKey(note.key);
-  window.setTimeout(()=>setPulsingKey(current=>current===note.key?null:current),250);
+  const keys=new Set([note.key]);
+  setPulsingKeys(keys);
+  window.setTimeout(()=>setPulsingKeys(current=>current===keys?new Set():current),PULSE_MS);
  };
 
  return (
@@ -101,6 +122,15 @@ export default function FretboardNeck3D({root,mode,onSetRoot,onSetMode,audition}
      </select>
     </label>
    </div>
+
+   {!listening&&(
+    <div className="runnerConnect">
+     <p>Connect your bass to see the notes you play light up on the neck.</p>
+     <button type="button" className="action action-primary" onClick={onListen} aria-busy={connecting}>
+      {connecting?"Connecting…":"Connect the bass"}
+     </button>
+    </div>
+   )}
 
    <div className="neck3dCanvas">
     <CanvasErrorBoundary>
@@ -153,7 +183,7 @@ export default function FretboardNeck3D({root,mode,onSetRoot,onSetMode,audition}
       ))}
 
       {notes.map(note=>{
-       const pulsing=pulsingKey===note.key;
+       const pulsing=pulsingKeys.has(note.key);
        return (
         <mesh key={note.key} position={[note.x,0.22,note.z]} scale={pulsing?1.4:1}
               geometry={noteGeometry} material={pulsing?rolePulseMaterials[note.role]:roleMaterials[note.role]}
@@ -174,3 +204,5 @@ export default function FretboardNeck3D({root,mode,onSetRoot,onSetMode,audition}
   </div>
  );
 }
+
+export default memo(FretboardNeck3D);

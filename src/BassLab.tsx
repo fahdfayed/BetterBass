@@ -454,7 +454,8 @@ export default function BassLab(){
 
  {view==="maqam"&&<Suspense fallback={<ToolLoading/>}><MaqamLab livePitch={pitch} listening={listening} onToggleListening={startAudio}/></Suspense>} 
  {view==="slap"&&<Suspense fallback={<ToolLoading/>}><SlapLab livePitch={pitch} listening={listening} onToggleListening={startAudio} events={events}/></Suspense>} 
- {view==="neck3d"&&<Suspense fallback={<ToolLoading/>}><FretboardNeck3D root={root} mode={mode} onSetRoot={setRoot} onSetMode={setMode} audition={audition}/></Suspense>}
+ {view==="neck3d"&&<Suspense fallback={<ToolLoading/>}><FretboardNeck3D root={root} mode={mode} onSetRoot={setRoot} onSetMode={setMode} audition={stableAudition}
+  heard={heard} listening={listening} connecting={connecting} onListen={toggleListening}/></Suspense>}
 
  {view==="courseProgress"&&<CourseProgress
   percent={coursePct} completed={courseCompleted}
