@@ -1,10 +1,14 @@
-import {useCallback,useMemo,useState,useRef} from "react";
+import {lazy,Suspense,useCallback,useMemo,useState,useRef} from "react";
 import {type Drill} from "../game/drills";
 import {circularDistance,poolFor,tierFor,type Tier} from "../game/rescue";
 import {QUALITIES} from "../tab/chromatic-library";
 import {NOTE_NAMES} from "../pitch";
 import {type Heard} from "../useHeardNote";
+import {useOutcomeFlash} from "./game-neck-target";
 import {type Outcome,useGameEngine} from "./useGameEngine";
+
+/** See GameRunner.tsx's identical const for why this is lazy. */
+const GameNeck3D=lazy(()=>import("./GameNeck3D"));
 
 /**
  * The drill's own comment already said it: "the nearest ones are the
@@ -61,8 +65,10 @@ export default function WrongNoteRescue({root,heard,listening,connecting,onListe
  const [misses,setMisses]=useState(0);
  const [said,setSaid]=useState<string|null>(null);
  const [tiers,setTiers]=useState<Record<Tier,number>>({Textbook:0,Reaches:0,Distant:0});
+ const{lastOutcome,reportOutcome,syncAsk}=useOutcomeFlash();
 
  const onOutcome=useCallback((outcome:Outcome)=>{
+  reportOutcome(outcome.hit);
   if(outcome.hit){
    const distance=circularDistance(outcome.played,forcedRef.current);
    const{tier,said:message}=tierFor(distance);
@@ -73,9 +79,10 @@ export default function WrongNoteRescue({root,heard,listening,connecting,onListe
   }
   setStreak(0);setMisses(count=>count+1);
   setSaid("Not a tone of the chord.");
- },[]);
+ },[reportOutcome]);
 
- const{ask}=useGameEngine(rescueDrill,root,heard,listening,audition,onOutcome);
+ const{ask,progress}=useGameEngine(rescueDrill,root,heard,listening,audition,onOutcome);
+ syncAsk(ask,progress);
 
  const total=tiers.Textbook+tiers.Reaches+tiers.Distant;
 
@@ -94,6 +101,12 @@ export default function WrongNoteRescue({root,heard,listening,connecting,onListe
      </button>
     </div>
    )}
+
+   <div className="runnerNeck">
+    <Suspense fallback={null}>
+     <GameNeck3D ask={ask} progress={progress} lastOutcome={lastOutcome}/>
+    </Suspense>
+   </div>
 
    <div className="runnerBoard">
     <div className="runnerAsk" aria-live="polite">

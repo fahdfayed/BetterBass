@@ -1,8 +1,9 @@
-import {useCallback,useState} from "react";
+import {lazy,Suspense,useCallback,useState} from "react";
 import {type Drill} from "../game/drills";
 import {fightResult,hitDamage,missDamage,START_HP} from "../game/boss";
 import {NOTE_NAMES} from "../pitch";
 import {type Heard} from "../useHeardNote";
+import {useOutcomeFlash} from "./game-neck-target";
 import {type Outcome,useGameEngine} from "./useGameEngine";
 
 /**
@@ -12,6 +13,9 @@ import {type Outcome,useGameEngine} from "./useGameEngine";
  * costs: the boss's health instead of a streak, yours instead of a miss
  * count.
  */
+
+/** See GameRunner.tsx's identical const for why this is lazy. */
+const GameNeck3D=lazy(()=>import("./GameNeck3D"));
 
 type Props={
  drill:Drill;
@@ -31,8 +35,10 @@ export default function BossFight({
  const [playerHp,setPlayerHp]=useState(START_HP);
  const [streak,setStreak]=useState(0);
  const [said,setSaid]=useState<string|null>(null);
+ const{lastOutcome,reportOutcome,syncAsk}=useOutcomeFlash();
 
  const onOutcome=useCallback((outcome:Outcome)=>{
+  reportOutcome(outcome.hit);
   if(outcome.hit){
    setStreak(current=>{
     setBossHp(hp=>Math.max(0,hp-hitDamage(current)));
@@ -46,12 +52,13 @@ export default function BossFight({
   setSaid(outcome.reason==="wrongNote"
    ?`That was ${NOTE_NAMES[((outcome.played%12)+12)%12]}. The boss doesn't wait.`
    :"Too slow. The boss doesn't wait.");
- },[]);
+ },[reportOutcome]);
 
  // HP-defeat stops the engine's own listening immediately, rather than
  // waiting for its 180s timer — a dead boss shouldn't still be judging notes.
  const hpDefeat=bossHp<=0||playerHp<=0;
  const{ask,progress,left,restart}=useGameEngine(drill,root,heard,listening&&!hpDefeat,audition,onOutcome);
+ syncAsk(ask,progress);
 
  const result=fightResult(bossHp,playerHp,left);
  const finished=result!=="fighting";
@@ -71,6 +78,14 @@ export default function BossFight({
      <button type="button" className="action action-primary" onClick={onListen} aria-busy={connecting}>
       {connecting?"Connecting…":"Connect the bass"}
      </button>
+    </div>
+   )}
+
+   {!finished&&(
+    <div className="runnerNeck">
+     <Suspense fallback={null}>
+      <GameNeck3D ask={ask} progress={progress} lastOutcome={lastOutcome}/>
+     </Suspense>
     </div>
    )}
 

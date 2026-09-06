@@ -1,16 +1,16 @@
-import {lazy,Suspense,useCallback,useEffect,useMemo,useRef,useState} from "react";
-import {type Ask,type Drill} from "../game/drills";
+import {lazy,Suspense,useCallback,useEffect,useMemo,useState} from "react";
+import {type Drill} from "../game/drills";
 import {NOTE_NAMES} from "../pitch";
 import {type Heard} from "../useHeardNote";
-import {type LastOutcome,targetPitchClass} from "./game-neck-target";
+import {useOutcomeFlash} from "./game-neck-target";
 import {type Outcome,useGameEngine} from "./useGameEngine";
 
 /**
  * Three.js/@react-three/fiber/drei are a bigger dependency than the rest of
  * this app combined (see the 3D neck design spec) — lazy so a player who
  * never opens a drill never pays for them, same as BassLab does for the
- * free-explore 3D neck screen itself. targetPitchClass/LastOutcome live in
- * their own module precisely so this file can use them without dragging
+ * free-explore 3D neck screen itself. useOutcomeFlash lives in its own
+ * dependency-free module precisely so this file can use it without dragging
  * that in eagerly too.
  */
 const GameNeck3D=lazy(()=>import("./GameNeck3D"));
@@ -45,19 +45,10 @@ export default function GameRunner({
  const [score,setScore]=useState(0);
  const [misses,setMisses]=useState(0);
  const [said,setSaid]=useState<string|null>(null);
- const [lastOutcome,setLastOutcome]=useState<LastOutcome|null>(null);
-
- // judge() calls onOutcome before it advances to the next ask, but this
- // closure is only ever (re)read at the moment of that call — not this
- // render — so it needs the ask/progress that were on screen just now, not
- // whatever ask/progress this render closes over. Updated below, after
- // useGameEngine returns them, same freshness trick useGameEngine itself
- // uses for onOutcomeRef.
- const currentAskRef=useRef<{ask:Ask|null;progress:number}>({ask:null,progress:0});
+ const{lastOutcome,reportOutcome,syncAsk}=useOutcomeFlash();
 
  const onOutcome=useCallback((outcome:Outcome)=>{
-  const{ask:askedFor,progress:atStep}=currentAskRef.current;
-  setLastOutcome({pc:targetPitchClass(askedFor,atStep),hit:outcome.hit,at:performance.now()});
+  reportOutcome(outcome.hit);
   if(outcome.hit){
    setScore(total=>total+1);
    setStreak(run=>{const next=run+1;setBest(top=>Math.max(top,next));return next});
@@ -71,10 +62,10 @@ export default function GameRunner({
    setSaid(`${outcome.onBeat?"On the beat, but that was ":"That was "}${NOTE_NAMES[((outcome.played%12)+12)%12]}.`);
   else
    setSaid(`Right note, but slower than ${outcome.limit.toFixed(1)}s.`);
- },[]);
+ },[reportOutcome]);
 
  const{ask,progress,left,over,beat,restart}=useGameEngine(drill,root,heard,listening,audition,onOutcome);
- currentAskRef.current={ask,progress};
+ syncAsk(ask,progress);
 
  // A fresh drill is a fresh game.
  useEffect(()=>{setStreak(0);setBest(0);setScore(0);setMisses(0);setSaid(null)},[drill]);

@@ -1,9 +1,13 @@
-import {useCallback,useEffect,useMemo,useRef,useState} from "react";
+import {lazy,Suspense,useCallback,useEffect,useMemo,useRef,useState} from "react";
 import {type Drill,drillById} from "../game/drills";
 import {NOTE_NAMES} from "../pitch";
 import {SHORT_NAMES} from "../theory/degrees";
 import {type Heard} from "../useHeardNote";
+import {useOutcomeFlash} from "./game-neck-target";
 import {type Outcome,useGameEngine} from "./useGameEngine";
+
+/** See GameRunner.tsx's identical const for why this is lazy. */
+const GameNeck3D=lazy(()=>import("./GameNeck3D"));
 
 /**
  * The one drill whose name promised more than "a hint fades as your streak
@@ -71,8 +75,10 @@ export default function FogOfWar({root,heard,listening,connecting,onListen,audit
  const [score,setScore]=useState(0);
  const [misses,setMisses]=useState(0);
  const [said,setSaid]=useState<string|null>(null);
+ const{lastOutcome,reportOutcome,syncAsk}=useOutcomeFlash();
 
  const onOutcome=useCallback((outcome:Outcome)=>{
+  reportOutcome(outcome.hit);
   const degree=activeDegreeRef.current;
   if(degree!==null){
    setMet(current=>current.includes(degree)?current:[...current,degree]);
@@ -86,9 +92,10 @@ export default function FogOfWar({root,heard,listening,connecting,onListen,audit
   }
   setStreak(0);setMisses(count=>count+1);
   setSaid(outcome.reason==="wrongNote"?`That was ${NOTE_NAMES[mod(outcome.played)]}.`:"Too slow.");
- },[]);
+ },[reportOutcome]);
 
- const{ask,left,over,restart}=useGameEngine(fogDrill,root,heard,listening,audition,onOutcome);
+ const{ask,progress,left,over,restart}=useGameEngine(fogDrill,root,heard,listening,audition,onOutcome);
+ syncAsk(ask,progress);
 
  const resetGame=()=>{
   setStreak(0);setScore(0);setMisses(0);setSaid(null);setMastery({});setMet([]);restart();
@@ -110,6 +117,14 @@ export default function FogOfWar({root,heard,listening,connecting,onListen,audit
      <button type="button" className="action action-primary" onClick={onListen} aria-busy={connecting}>
       {connecting?"Connecting…":"Connect the bass"}
      </button>
+    </div>
+   )}
+
+   {!over&&(
+    <div className="runnerNeck">
+     <Suspense fallback={null}>
+      <GameNeck3D ask={ask} progress={progress} lastOutcome={lastOutcome}/>
+     </Suspense>
     </div>
    )}
 
