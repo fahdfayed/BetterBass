@@ -32,8 +32,9 @@ continuing.
 - A 3D bass neck the player can rotate/explore, matching the site's real
   4-string tuning and fret count.
 - Root and mode selectable; notes shown are the current mode's scale,
-  colored by real functional role (root/chord/colour/scale/outside) —
-  reusing the existing theory logic, not reinventing it.
+  colored by role (root/colour/scale) computed from the existing
+  `SCALE_LIBRARY`/`MODES` data — reusing existing theory data, not
+  inventing new.
 - Clicking a note plays it, through the same `audition` callback every
   other screen already uses.
 - Genuinely usable on the hardware this app is actually practiced on —
@@ -60,23 +61,24 @@ continuing.
 
 ### 1. Shared geometry data
 
-`HarmonyFretboard.tsx` currently hardcodes its string tuning and fret
-count inline:
+The tuning and fret count already exist as tested, exported data —
+`src/fretboard-positions.ts`'s `OPEN_STRINGS` (`[43,38,33,28]`, MIDI, G
+string first) and `TOP_FRET` (`20`) — used today for lighting up where a
+heard pitch could be fretted. `HarmonyFretboard.tsx` separately declares
+its own `STRINGS`/`FRETS` consts for its own purposes (pitch-class-based
+theory lookups rather than MIDI-based position-finding); that duplication
+already exists and is out of scope to unify here.
 
-```ts
-const STRINGS=[{name:"G",open:7,midi:43},{name:"D",open:2,midi:38},{name:"A",open:9,midi:33},{name:"E",open:4,midi:28}],
-      FRETS=Array.from({length:21},(_,i)=>i);
-```
+A new `src/fretboard-neck-geometry.ts` imports `OPEN_STRINGS`/`TOP_FRET`
+from `fretboard-positions.ts` rather than re-deriving them, and adds only
+what doesn't exist yet:
+- `fretPosition(fret, scaleLength)` — real fret spacing via the standard
+  12th-root-of-2 formula, since real frets are not evenly spaced and an
+  evenly-spaced neck would look and feel wrong in 3D in a way it never
+  did as a flat 2D grid.
+- `notesInMode(root, mode)` and the role classifier from section 2 below.
 
-These are physical facts about the instrument, not presentation details,
-and the 3D view needs the exact same ones. They move to a new
-`src/fretboard-geometry.ts` (`STRINGS`, `FRETS`, and a `fretPosition(fret,
-scaleLength)` helper implementing the standard 12th-root-of-2 fret-spacing
-formula, since real frets are not evenly spaced and an evenly-spaced neck
-would look and feel wrong in 3D in a way it never did as a flat 2D grid).
-`HarmonyFretboard.tsx` imports `STRINGS`/`FRETS` from there instead of
-defining its own copy — the one behavioral change this phase makes to the
-existing file, and it's a pure extraction with no change in value.
+Nothing in `HarmonyFretboard.tsx` changes in this phase.
 
 ### 2. The 3D scene
 
@@ -91,12 +93,35 @@ convenience helpers). New dependencies: `three`, `@react-three/fiber`,
 - **Frets**: thin cylinders positioned via `fretPosition`, laid across the
   neck's width.
 - **Strings**: four thin cylinders running the neck's full length, spaced
-  to match `STRINGS`'s order.
+  to match `OPEN_STRINGS`'s order.
 - **Notes**: a small sphere at each string/fret intersection whose pitch
-  class (`mod(string.open+fret)`) falls in the current mode's scale.
-  Colored by `classifyNote`'s existing role output — the same
-  root/chord/colour/scale/outside classification `HarmonyFretboard.tsx`
-  already uses, imported from `harmony-fretboard-data.ts` unchanged.
+  class (`mod(OPEN_STRINGS[string]+fret)`) falls in the current mode's
+  scale.
+
+  Colored by a 4-tier role, computed directly from the mode data that
+  already exists — **not** `classifyNote`, which turns out not to fit:
+  it requires a full `ParsedChord` (core tones, tensions, guide tones),
+  and Phase 1 has no chord, only a root and a mode. Feeding it a
+  fabricated single-note "chord" would exercise branches built for real
+  chord tensions with no real tensions behind them. The correct reuse is
+  simpler and needs no chord at all:
+  - **Root** — `iv===0`.
+  - **Colour** — `iv` is one of `SCALE_LIBRARY[mode].character` (the
+    mode's own identifying tones, already used exactly this way
+    elsewhere).
+  - **Scale** — `iv` is in `MODES[mode].s` but not root or colour.
+  - **Outside** — not in `MODES[mode].s` (already excluded from getting
+    a sphere at all, per the note above — kept as a named tier here only
+    because the legend and the shared role type describe the full
+    range).
+  This is genuinely a 4-tier scheme, not the 5-tier
+  root/chord/colour/scale/outside one `HarmonyFretboard.tsx` shows —
+  "chord" and "guide-tone" tiers describe a note's relationship to a
+  *sounding chord*, which doesn't exist until Phase 3 wires in
+  progression playback. Reusing `SCALE_LIBRARY`/`MODES` unchanged still
+  satisfies the spirit of "reuse existing theory data, don't invent
+  new" — it's `classifyNote` specifically that doesn't apply yet, not
+  the underlying data.
 - **Camera**: `OrbitControls` for drag-to-rotate and scroll-to-zoom,
   starting at an angle looking down the neck the way a player sees their
   own instrument, not a flat elevation.
@@ -125,11 +150,11 @@ replace, wrap, or get embedded into the existing "fret" view or
 ## Testing
 
 - `fretPosition`'s spacing formula is pure math — tested directly with
-  `tests/fretboard-geometry.test.mjs`, asserting known real-world fret
+  `tests/fretboard-neck-geometry.test.mjs`, asserting known real-world fret
   ratios (e.g. the 12th fret sits at exactly half the scale length).
-- The note-set-for-a-mode computation (which pitch classes are in-scale
-  for a given root+mode) is likewise pure and testable without React or
-  WebGL.
+- The note-set-for-a-mode computation and the root/colour/scale role
+  classification (section 2) are likewise pure and testable without
+  React or WebGL.
 - The 3D scene itself (React Three Fiber components, camera, meshes) is
   not unit-tested — this codebase has no precedent for testing rendered
   WebGL output, and building one for a single evaluatory screen is not
