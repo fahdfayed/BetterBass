@@ -59,7 +59,7 @@ export const NAV:NavGroup[]=[
   {view:"chromatic",label:"Chromatic gym",blurb:"Every approach, chord tone and key",icon:"outside",keywords:["chromatic","approach","enclosure","bebop","target","drill","exercises","lines","jazz"]},
   {view:"advanced",label:"Improvisation lab",blurb:"Motif, enclosure and side-slip work",icon:"outside",keywords:["outside","tension","chromatic","motif","improvisation","improv"]},
   {view:"progression",label:"Progression reader",blurb:"Type a progression and read what it is doing",icon:"course",keywords:["progression","chords","roman numerals","numerals","key","function","analyse","analyze","ii-v-i","changes","borrowed"]},
-  {view:"neck3d",label:"Dion's Fretard",blurb:"Rotate a real neck and hear what you touch",icon:"fretboard",keywords:["3d","neck","spatial","rotate","fretboard","explore"]},
+  {view:"neck3d",label:"3D neck",blurb:"Rotate a real neck and hear what you touch",icon:"fretboard",keywords:["3d","neck","spatial","rotate","fretboard","explore"]},
  ]},
  {label:"You",items:[
   {view:"courseProgress",label:"Progress",blurb:"What you have proved so far",icon:"progress",keywords:["stats","history","achievements"]},
