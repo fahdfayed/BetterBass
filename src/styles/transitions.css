@@ -29,27 +29,19 @@
 
 /* ---- the page itself ---------------------------------------------------- */
 
-::view-transition-old(root){
- animation:pageLeave 200ms var(--ease) both;
-}
-::view-transition-new(root){
- animation:pageEnter 340ms var(--ease-out) both;
-}
-
-@keyframes pageLeave{
- from{opacity:1;transform:translate3d(0,0,0) scale(1)}
- to{opacity:0;transform:translate3d(0,-8px,0) scale(.994)}
-}
-@keyframes pageEnter{
- from{opacity:0;transform:translate3d(0,14px,0) scale(.996)}
- to{opacity:1;transform:translate3d(0,0,0) scale(1)}
-}
-
-/* The old page must not sit on top of the new one while both are present. */
-::view-transition-group(root){isolation:auto}
-::view-transition-image-pair(root){isolation:auto}
-::view-transition-old(root){z-index:0}
-::view-transition-new(root){z-index:1}
+/*
+ * The route change turns a leaf, and the leaf is a real element — see
+ * page-turn.css. Nothing here animates it.
+ *
+ * The View Transitions API is still what router.ts wraps the update in, because
+ * flushing the DOM inside a transition callback is a cheap way to make the swap
+ * atomic. But it must not draw: a view transition cross-fades two snapshots of
+ * a page, and a snapshot has one side, so the best it can produce is a tilt.
+ * Worse, it aborts outright whenever the document is hidden or another is
+ * already in flight, which means anything relying on it is an animation that
+ * silently does not happen. The leaf runs either way.
+ */
+::view-transition-old(root),::view-transition-new(root){animation:none}
 
 /* ---- staggered entrance ------------------------------------------------- */
 
@@ -76,11 +68,23 @@
 
 /* ---- stage switching inside a lesson ------------------------------------ */
 
-/* Switching stage is a change of task, so the instruction re-enters while the
-   instrument pane stays where it is. */
+/* Switching stage turns the verso of the spread while the instrument pane
+   stays where it is. The turn itself is in spread.css, with the fold it
+   hinges on; this is only the fallback for a .stageSwap outside a spread. */
 .stageSwap{animation:stageIn 300ms var(--ease-out) both}
 @keyframes stageIn{
  from{opacity:0;transform:translate3d(10px,0,0)}
+ to{opacity:1;transform:translate3d(0,0,0)}
+}
+
+/* ---- paced reading ------------------------------------------------------ */
+
+/* A beat of teaching arriving on request. It enters from below rather than the
+   side, because it is being added underneath what has already been read
+   rather than replacing it. */
+.pacedBeat{animation:beatIn 320ms var(--ease-out) both}
+@keyframes beatIn{
+ from{opacity:0;transform:translate3d(0,12px,0)}
  to{opacity:1;transform:translate3d(0,0,0)}
 }
 
@@ -88,7 +92,7 @@
 
 /* A value that has just changed gets one pulse, so a score moving is noticed
    without the reader having to be watching that corner of the screen. */
-.tick{animation:tickPop 420ms var(--ease-spring) both}
+.tick{animation:tickPop 420ms var(--ease) both}
 @keyframes tickPop{
  0%{transform:scale(1)}
  40%{transform:scale(1.14)}
@@ -97,5 +101,5 @@
 
 @media (prefers-reduced-motion:reduce){
  ::view-transition-old(root),::view-transition-new(root),
- .stagger>*,.stageSwap,.tick{animation:none !important}
+ .stagger>*,.stageSwap,.tick,.pacedBeat{animation:none !important}
 }

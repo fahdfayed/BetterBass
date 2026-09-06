@@ -1,6 +1,33 @@
 export type LessonDetail={
   terms:{name:string;definition:string}[];
+  /**
+   * What the lesson stands on, drawn from earlier ones.
+   *
+   * The opening section asks the player to check these before reading. It
+   * used to show selfCheck, which is what the lesson teaches — so the
+   * Lydian lesson asked whether you could feature ♯4 over a major third
+   * before explaining either.
+   */
+  prerequisites:string[];
+  /** What the lesson should leave you able to do. Checked at the jury. */
   selfCheck:string[];
+  /**
+   * What goes wrong, why, and what to change.
+   *
+   * A single "common misconception" per lesson explains one way to be wrong
+   * about the idea. It does not help the player who has understood the idea
+   * and still cannot make it sound right, which is the more common case.
+   */
+  commonErrors:{symptom:string;cause:string;fix:string}[];
+  /**
+   * Where the sound exists in music somebody already made.
+   *
+   * A course that teaches by ear and never points at a recording asks the
+   * player to take its word for what a mode sounds like. Absent where no
+   * example is canonical enough to name — a padded list with one wrong
+   * attribution in it is worth less than a short accurate one.
+   */
+  listening?:{title:string;artist:string;hear:string}[];
   bassFocus:string;
   misconception:string;
   correction:string;
@@ -16,8 +43,22 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Gravity",definition:"The heard pull of unstable notes toward a more stable destination."},
       {name:"Harmonic floor",definition:"The low-register foundation through which bass can redefine the whole harmony."}
     ],
+    prerequisites:[
+      "Your bass is in tune and every open string speaks cleanly.",
+      "You can hold a steady pulse for eight bars against a click.",
+      "You can find any named note somewhere on the neck, even slowly."
+    ],
     selfCheck:["Can you sing A after hearing an A drone for five seconds?","Can you end a phrase on A without beginning on A?","Can you hear when E temporarily competes with A as home?"],
-    bassFocus:"A bassist does more than reinforce a written root. Register, repetition and phrase endings tell the band—and the listener—which pitch has authority.",
+    listening:[
+      {title:"So What",artist:"Miles Davis",hear:"The bass states the centre alone before the horns enter. Notice how few notes it takes, and that the root is not on every beat."},
+      {title:"Shri Moonlight",artist:"traditional Indian drone practice",hear:"Any tanpura recording: one unchanging drone, and every melodic note heard as a distance from it."}
+    ],
+    commonErrors:[
+      {symptom:"The line sounds busy but nowhere feels like home.",cause:"The root is on every beat, so nothing is heard as arrival.",fix:"Remove the root from bars 1-3 and place it only on the downbeat of bar 4."},
+      {symptom:"Home keeps shifting to the fifth.",cause:"The fifth is being held longer and landed on more often than the root.",fix:"Give the root the longest note and the last note of every phrase."},
+      {symptom:"The phrase stops rather than resolves.",cause:"It ends on a stable pitch but with no approach to it.",fix:"Approach home by step from above or below on the final beat."}
+    ],
+    bassFocus:"A bassist does more than reinforce a written root. Register, repetition and phrase endings tell the band, and the listener, which pitch has authority.",
     misconception:"Playing the root on every beat automatically creates a strong tonal centre.",
     correction:"Constant root repetition can flatten the music. Establish home, leave it, then prove its gravity by resolving back from meaningful non-root tones.",
     earCue:"Listen for finality: home should feel able to stop the phrase without asking another note to follow.",
@@ -26,25 +67,45 @@ export const LESSON_DETAILS:LessonDetail[]=[
   },
   {
     terms:[
-      {name:"Interval",definition:"The measured pitch distance—and heard relationship—between a root and another note."},
+      {name:"Interval",definition:"The measured pitch distance, and heard relationship, between a root and another note."},
       {name:"Scale degree",definition:"An interval named by its position inside a tonal collection, such as 3, 6 or ♭7."},
       {name:"Function",definition:"What a note contributes in context: stability, identity, connection or tension."}
     ],
+    prerequisites:[
+      "Hold one pitch as home for eight bars and still hear it as home.",
+      "Sing a pitch back after a drone has stopped.",
+      "Hear when a phrase has left home, without being told."
+    ],
     selfCheck:["Can you distinguish a semitone from a whole tone by ear?","Can you find the same note in at least three neck locations?","Can you name 3 and ♭7 from a random root without counting frets?"],
+    commonErrors:[
+      {symptom:"Intervals are named correctly but slowly.",cause:"You are counting frets rather than hearing distance.",fix:"Sing the interval before naming it; name it before finding it."},
+      {symptom:"The same shape is used everywhere and sometimes sounds wrong.",cause:"A shape is being memorised instead of a relationship.",fix:"Play the same interval on three different string pairs in one sitting."},
+      {symptom:"A note is called a ♭7 when the chord has changed underneath it.",cause:"Function is being read from the last root you played, not the current one.",fix:"Say the current root out loud before naming any degree."}
+    ],
     bassFocus:"Interval thinking lets one idea survive every key and neck position. The fingering changes; the sonic job of ♭3 or 6 does not.",
     misconception:"Knowing a fretboard shape means you know the interval.",
     correction:"A shape is only physical information. You know the interval when you can predict its sound, sing it, name it and choose it deliberately.",
-    earCue:"Hear every degree against the root—not only against the note immediately before it.",
+    earCue:"Hear every degree against the root, not only against the note immediately before it.",
     transfer:"Take one two-note idea through the circle of fourths while keeping its interval names constant.",
     variations:["Answer by degree before note name.","Play every answer on one string.","Alternate low and high-register answers."]
   },
   {
     terms:[
       {name:"Chord tone",definition:"A pitch contained in the sounding chord and therefore part of its structural identity."},
-      {name:"Guide tone",definition:"Usually the 3rd or 7th—the tones that most clearly reveal chord quality and direction."},
+      {name:"Guide tone",definition:"Usually the 3rd or 7th, the tones that most clearly reveal chord quality and direction."},
       {name:"Extension",definition:"A colour tone above the basic chord, heard as 9, 11 or 13 relative to the root."}
     ],
-    selfCheck:["Can you spell a minor 7 chord as 1–♭3–5–♭7?","Can you hear major versus minor from the 3rd?","Can you play a root–3rd–7th shell in three positions?"],
+    prerequisites:[
+      "Name a note's distance from the root without counting up to it.",
+      "Hear the difference between a ♭3 and a 3 over the same drone.",
+      "Say what a note is doing rather than only which fret it is on."
+    ],
+    selfCheck:["Can you spell a minor 7 chord as 1-♭3-5-♭7?","Can you hear major versus minor from the 3rd?","Can you play a root-3rd-7th shell in three positions?"],
+    commonErrors:[
+      {symptom:"The line states the root clearly but the chord quality is unclear.",cause:"Only roots and fifths are being played.",fix:"Replace every fifth in the bar with a third or a seventh."},
+      {symptom:"Thirds and sevenths are present but the harmony still sounds vague.",cause:"They are landing on weak beats and passing by too quickly.",fix:"Put the third or seventh on beat 1 and hold it for a full beat."},
+      {symptom:"Major and minor sound similar in the line.",cause:"The third is being avoided or approached chromatically every time.",fix:"Play the third alone against the chord until the quality is unmistakable."}
+    ],
     bassFocus:"Root and 5th provide weight; 3rd and 7th provide information. A pro line balances both instead of treating all chord tones as equal.",
     misconception:"Every note in the correct scale communicates the chord equally well.",
     correction:"Remove the chord tones from a line and the harmony often disappears. Build a structural skeleton first; add extensions as controlled colour.",
@@ -58,7 +119,20 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Duration",definition:"How long a pitch remains exposed before moving or resolving."},
       {name:"Articulation",definition:"The shape of the attack and release: legato, staccato, accented, ghosted or muted."}
     ],
+    prerequisites:[
+      "State a chord's quality using its root, third and seventh alone.",
+      "Land a chosen chord tone on beat 1 without rushing into it.",
+      "Play four bars without your tempo drifting."
+    ],
     selfCheck:["Can you clap 16th-note subdivisions at 60 BPM?","Can you place a note precisely on &4 then beat 1?","Can you repeat one pitch at four clearly different dynamic levels?"],
+    listening:[
+      {title:"What'd I Say",artist:"Ray Charles",hear:"Same pitches for bars at a time. Everything that changes is length, accent and placement."}
+    ],
+    commonErrors:[
+      {symptom:"The notes are right but the groove does not sit.",cause:"Every note has the same length and attack.",fix:"Play the same pitches with two lengths only. Short and long, and nothing else."},
+      {symptom:"Accents land where they were not intended.",cause:"Right-hand attack is following the strong beats automatically.",fix:"Accent beat 2 and the second half of beat 3 for eight bars."},
+      {symptom:"The line rushes as it gets busier.",cause:"Subdivision is being felt in the notes rather than underneath them.",fix:"Count subdivisions aloud while playing only on beat 1."}
+    ],
     bassFocus:"Bass notes carry more harmonic mass in the low register. A long, accented low tension can reshape the chord more strongly than a quick upper-register passing tone.",
     misconception:"Tension is determined only by which pitch you choose.",
     correction:"Beat placement, length, accent and register can make the same pitch sound like a mistake, a passing gesture or a deliberate reharmonization.",
@@ -72,7 +146,17 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Parent scale",definition:"The source collection from which relative modes can be derived."},
       {name:"Modal centre",definition:"The degree treated as home, which changes the function of every shared pitch."}
     ],
+    prerequisites:[
+      "Name every degree by its function rather than by its fret.",
+      "Hear a collection change while the root underneath stays put.",
+      "Say which note makes a chord minor rather than major."
+    ],
     selfCheck:["Can you explain why D Dorian and C Ionian share notes but not sound?","Can you hold one root while changing interval collections?","Can you name the seven major-scale modes in order?"],
+    commonErrors:[
+      {symptom:"Modes are played correctly but all sound the same.",cause:"Each one is being run as a scale from a different starting note.",fix:"Play every mode over a drone on the same root, never ascending."},
+      {symptom:"The mode collapses into major or minor after a bar.",cause:"The characteristic degree is not being reached.",fix:"Begin the phrase on the characteristic degree instead of on the root."},
+      {symptom:"The right notes are played but the centre drifts.",cause:"The parent scale's tonic is being emphasised instead of the mode's.",fix:"End every phrase on the mode's own root for a full bar."}
+    ],
     bassFocus:"Because bass establishes the low centre, holding one pedal while changing a single degree is one of the clearest ways to make a band hear modal change.",
     misconception:"Modes are just major-scale shapes that begin on different frets.",
     correction:"A starting note does not create a mode. The harmony and phrasing must make that note home, while the interval pattern supplies the environment around it.",
@@ -86,7 +170,17 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Same-root modes",definition:"Modes compared from one common tonic so their altered degrees become obvious."},
       {name:"Reorientation",definition:"The act of making a different degree feel like home without changing the pitch collection."}
     ],
+    prerequisites:[
+      "Explain why two modes can share every note and not share a sound.",
+      "Hold one root while the collection around it is replaced.",
+      "Name the seven modes in order from one parent scale."
+    ],
     selfCheck:["Can you identify C Ionian’s relative Dorian?","Can you compare C Ionian and C Dorian degree by degree?","Can you make D sound final using only white notes?"],
+    commonErrors:[
+      {symptom:"Modes can be named relatively but not recognised by ear.",cause:"Only the relative view has been practised.",fix:"Play two modes back to back on one root and name the single degree that changed."},
+      {symptom:"Transposing a mode requires recalculating the parent scale.",cause:"The mode is stored as a starting degree rather than as a formula.",fix:"Say the mode's formula in degrees before playing it in a new key."},
+      {symptom:"Two modes with the same notes are treated as interchangeable.",cause:"Relative equivalence is being heard as musical equivalence.",fix:"Play the same phrase over both roots and describe the difference in one word."}
+    ],
     bassFocus:"Relative thinking helps you spell material; same-root thinking helps you choose colour in real time. Bass improvisation needs both, but the ear should lead.",
     misconception:"If two modes contain the same notes, they are functionally interchangeable.",
     correction:"Shared notes do not create shared gravity. Chord support, bass emphasis and phrase resolution assign completely different meanings to the collection.",
@@ -100,7 +194,17 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Modal family",definition:"Major-family modes contain 3; minor-family modes contain ♭3; Locrian is diminished-minor."},
       {name:"Reference mode",definition:"Ionian or Aeolian used as a baseline so one altered degree can be heard clearly."}
     ],
+    prerequisites:[
+      "Compare two modes on the same root and say which is brighter.",
+      "Identify a mode's third and seventh by ear.",
+      "Separate a relative reading of a mode from a parallel one."
+    ],
     selfCheck:["Can you separate modes first by major 3 versus minor 3?","Can you hear ♯4 as brighter than natural 4?","Can you order Lydian through Locrian from bright to dark?"],
+    commonErrors:[
+      {symptom:"Brightness comparisons are guessed rather than heard.",cause:"The spectrum is being recalled as a list rather than as one changing degree.",fix:"Move one step along the spectrum at a time and name the note that changed."},
+      {symptom:"Lydian and Ionian are confused.",cause:"The ♯4 is present but never emphasised.",fix:"Hold the ♯4 for two beats against the root before playing anything else."},
+      {symptom:"Darker modes all sound the same.",cause:"♭2, ♭6 and ♭5 have not been separated by ear.",fix:"Compare Phrygian, Aeolian and Locrian one degree at a time over one drone."}
+    ],
     bassFocus:"Family recognition is faster onstage than calculating parent scales. First hear major or minor; then identify the degree that changes the shade.",
     misconception:"Brightness is an exact emotional ranking that dictates how music must feel.",
     correction:"Brightness describes interval content, not a mandatory mood. Tempo, timbre, harmony and rhythm can make a ‘bright’ mode feel aggressive or mysterious.",
@@ -114,7 +218,17 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Contrast pair",definition:"Two modes compared by the single important degree between them, such as Dorian 6 versus Aeolian ♭6."},
       {name:"Modal cadence",definition:"A phrase ending or chord motion that reinforces the modal centre and defining colour."}
     ],
+    prerequisites:[
+      "Group the modes by whether their third is major or minor.",
+      "Say which mode a parent scale produces from each of its degrees.",
+      "Hear which single degree separates two otherwise identical modes."
+    ],
     selfCheck:["Can you name the characteristic degree of every mode?","Can you sing Dorian 6 against a minor root?","Can you feature a colour without simply running the scale?"],
+    commonErrors:[
+      {symptom:"The mode is stated but nothing sounds characteristic.",cause:"Time is being spread evenly across all seven degrees.",fix:"Play a four-bar phrase using only the root, the characteristic tone and one other note."},
+      {symptom:"The characteristic tone sounds like a wrong note.",cause:"It is arriving unprepared and leaving immediately.",fix:"Approach it by step, hold it, and resolve it deliberately."},
+      {symptom:"Identity disappears when the tempo rises.",cause:"The characteristic tone is being passed through rather than placed.",fix:"Halve the note density and keep only the notes that define the mode."}
+    ],
     bassFocus:"A strategically placed characteristic tone can communicate the mode with four pitches. This keeps the line supportive while still harmonically specific.",
     misconception:"More uses of the characteristic note always make the mode clearer.",
     correction:"Identity needs context and contrast. Overuse turns colour into wallpaper; place it where its relationship to chord tones can be heard.",
@@ -128,7 +242,20 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Major 7th",definition:"A semitone below the root that creates leading-tone pull and Ionian’s polished stability."},
       {name:"Natural 4",definition:"An inside colour that can rub against the major 3rd when held prominently."}
     ],
+    prerequisites:[
+      "Name the one degree that gives a mode its identity.",
+      "Hold a major third clearly against a drone.",
+      "Feature a chosen tone twice in four bars without a scale run."
+    ],
     selfCheck:["Can you sing 3 and 7 above the root?","Can you resolve 7→1 in three registers?","Can you use 4 without letting it obscure the major 3rd?"],
+    listening:[
+      {title:"Here Comes the Sun",artist:"The Beatles",hear:"Unambiguous major. Listen for how stable the tonic feels and how the 4 always moves rather than rests."}
+    ],
+    commonErrors:[
+      {symptom:"Ionian lines sound like exercises.",cause:"The scale is being run in order from the root.",fix:"Build the phrase from the triad first, then add steps between its tones."},
+      {symptom:"The 4 sounds unresolved when held.",cause:"It is being treated as a stable degree; over a major chord it is not.",fix:"Use the 4 as a passing note into the third, not as a landing tone."},
+      {symptom:"Major sounds bland rather than stable.",cause:"Stability is being confused with inactivity.",fix:"Keep the harmony simple and vary rhythm and register instead."}
+    ],
     bassFocus:"Ionian basslines often sound generic when they rely only on 1 and 5. The 3 confirms major; 7 adds direction; 6 and 2 add melodic openness.",
     misconception:"Ionian has no characteristic sound because it is merely the default major scale.",
     correction:"Its natural 4 and major 7, heard against a stable major tonic, create a distinct diatonic-major environment. Familiar does not mean colourless.",
@@ -139,14 +266,29 @@ export const LESSON_DETAILS:LessonDetail[]=[
   {
     terms:[
       {name:"Natural 6",definition:"Dorian’s defining lift above a minor tonic, contrasting with Aeolian ♭6."},
-      {name:"Minor shell",definition:"Root, ♭3 and ♭7—the structural frame that must remain audible beneath modal colour."},
+      {name:"Minor shell",definition:"Root, ♭3 and ♭7, the structural frame that must remain audible beneath modal colour."},
       {name:"Dorian cadence",definition:"Motion that highlights 6 and returns to a minor chord tone or tonic."}
     ],
-    selfCheck:["Can you sing 6 after hearing 1–♭3–5?","Can you compare 6 and ♭6 without a diagram?","Can you state minor quality before introducing 6?"],
+    prerequisites:[
+      "Hear a natural 6 as a different thing from a ♭7.",
+      "Play a minor seventh arpeggio from any root.",
+      "State a mode's identity without ascending its scale."
+    ],
+    selfCheck:["Can you sing 6 after hearing 1-♭3-5?","Can you compare 6 and ♭6 without a diagram?","Can you state minor quality before introducing 6?"],
+    listening:[
+      {title:"So What",artist:"Miles Davis",hear:"The reference D Dorian recording. Sixteen bars of D Dorian, eight up a semitone in E♭, then eight back."},
+      {title:"Oye Como Va",artist:"Santana",hear:"An A Dorian vamp that never leaves. The natural 6 (F♯) is what keeps it from sounding like plain minor."},
+      {title:"Scarborough Fair",artist:"traditional",hear:"A melody whose natural 6 against a minor third is the whole reason it sounds old rather than sad."}
+    ],
+    commonErrors:[
+      {symptom:"Dorian keeps sounding like Aeolian.",cause:"The natural 6 is being passed through rather than featured.",fix:"Land on the 6 on a strong beat and hold it for a full beat."},
+      {symptom:"The 6 sounds wrong against the chord.",cause:"It is arriving without the minor third established first.",fix:"State ♭3 in the first bar, then introduce the 6 in the second."},
+      {symptom:"The mode sounds bright but not minor.",cause:"The 6 is being featured at the expense of the third.",fix:"Play ♭3 and 6 in the same phrase, with ♭3 first."}
+    ],
     bassFocus:"Dorian is especially useful for funk, fusion and modal rock because 6 adds forward lift without changing the minor 3rd and ♭7 foundation.",
     misconception:"Playing the natural 6 anywhere over a minor chord automatically sounds Dorian.",
-    correction:"The ear must first accept the minor tonic. Then 6 needs audible relationship to 5, ♭7 or a structural target—not random inclusion.",
-    earCue:"Compare 5–6–♭7 with 5–♭6–♭7. The first opens upward; the second darkens and compresses.",
+    correction:"The ear must first accept the minor tonic. Then 6 needs audible relationship to 5, ♭7 or a structural target, not random inclusion.",
+    earCue:"Compare 5-6-♭7 with 5-♭6-♭7. The first opens upward; the second darkens and compresses.",
     transfer:"Create Dorian identity in A, E♭ and B using root, ♭3, 5, 6 and ♭7 only.",
     variations:["Use 6 exactly twice.","Never ascend the full mode.","Begin on ♭3 and end on 6→5."]
   },
@@ -156,7 +298,21 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Upper neighbour",definition:"A pitch above a target that falls into it; ♭2 can act this way above 1."},
       {name:"Phrygian pedal",definition:"A sustained or repeated root beneath gestures that expose ♭2 and the minor shell."}
     ],
+    prerequisites:[
+      "Hold a minor centre while a note that sounds outside is played over it.",
+      "Hear a ♭2 as a semitone above the root rather than as a wrong note.",
+      "Keep home audible when a phrase begins away from it."
+    ],
     selfCheck:["Can you sing ♭2 without drifting to 2?","Can you maintain 5 as a stable reference?","Can you resolve ♭2→1 at three different durations?"],
+    listening:[
+      {title:"Concierto de Aranjuez",artist:"Joaquín Rodrigo",hear:"The Spanish idiom built on the semitone above the root. Hear the ♭2 lean down onto home."},
+      {title:"Wherever I May Roam",artist:"Metallica",hear:"The ♭2 used as riff material rather than as a passing tone."}
+    ],
+    commonErrors:[
+      {symptom:"The ♭2 sounds like a mistake.",cause:"It is being played below the root, where it competes for the harmony.",fix:"Play the ♭2 an octave above the root and resolve it downward."},
+      {symptom:"Phrygian sounds unstable throughout.",cause:"The ♭2 is never resolving.",fix:"Follow every ♭2 with the root within two beats."},
+      {symptom:"The mode reads as Spanish rather than Phrygian.",cause:"A major third is being borrowed from Phrygian dominant.",fix:"Check the third: Phrygian keeps ♭3, and a natural 3 changes the mode."}
+    ],
     bassFocus:"The low ♭2 is extremely exposed. Short neighbour motion can sound controlled; a long accented ♭2 can imply a different bass harmony entirely.",
     misconception:"Phrygian means repeatedly hammering ♭2 against the root.",
     correction:"The minor shell establishes context. Use ♭2 as identity, motif or controlled friction, and balance it with stable 1, ♭3 and 5.",
@@ -170,11 +326,25 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Lydian major",definition:"A major-tonic environment with ♯4 replacing Ionian’s natural 4."},
       {name:"Tritone colour",definition:"The open, suspended instability created between root and ♯4 when harmony supports it."}
     ],
+    prerequisites:[
+      "Keep a major third audible while another tone is being featured.",
+      "Hear ♯4 as a different pitch from 5, not a mistuned one.",
+      "Play a major seventh arpeggio from any root."
+    ],
     selfCheck:["Can you sing ♯4 after a major triad?","Can you distinguish ♯4 from 5?","Can you preserve major 3 while featuring ♯4?"],
+    listening:[
+      {title:"The Simpsons Theme",artist:"Danny Elfman",hear:"The opening phrase leaps to the ♯4. It is the first thing you hear and the reason the theme sounds unresolved and bright at once."},
+      {title:"Flying in a Blue Dream",artist:"Joe Satriani",hear:"A sustained Lydian tonic. The ♯4 is held long enough to stop sounding like a passing accident."}
+    ],
+    commonErrors:[
+      {symptom:"The ♯4 sounds like a ♭5.",cause:"The major third is missing, so the ear reads the chord as altered.",fix:"Play the major third before and after every ♯4."},
+      {symptom:"Lydian sounds the same as Ionian.",cause:"The ♯4 appears too briefly to register.",fix:"Give the ♯4 the longest note in the phrase."},
+      {symptom:"The line floats and never settles.",cause:"Every phrase is ending on the ♯4 or the 7.",fix:"End at least half the phrases on the root or the third."}
+    ],
     bassFocus:"Against a major pedal, ♯4 creates wide cinematic colour without forcing dominant resolution. It works well in progressive and psychedelic textures.",
     misconception:"Because ♯4 is a tritone, it is automatically an outside or wrong note.",
     correction:"Over Lydian harmony ♯4 is inside and defining. Context, not the interval’s reputation, determines whether it is structural colour or foreign tension.",
-    earCue:"Hear 3–♯4–5 as three whole-tone-connected colours, then compare natural 4 rubbing against 3.",
+    earCue:"Hear 3-♯4-5 as three whole-tone-connected colours, then compare natural 4 rubbing against 3.",
     transfer:"Build a major pedal line that reveals Lydian in C, D♭ and G without playing seven-note scales.",
     variations:["Sustain ♯4 for two beats.","Resolve ♯4 upward to 5.","Let ♯4 remain unresolved inside a repeated motif."]
   },
@@ -184,7 +354,21 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Dominant quality",definition:"A major 3rd combined with a minor 7th, producing the core sound of a dominant 7 chord."},
       {name:"Subtonic",definition:"A whole-step-below-root seventh that feels less compelled to resolve than a major 7."}
     ],
+    prerequisites:[
+      "Hear a major seventh and a ♭7 as different distances above one root.",
+      "Play a dominant seventh arpeggio from any root.",
+      "Feature one characteristic tone without running the scale."
+    ],
     selfCheck:["Can you sing 3 then ♭7 over the same root?","Can you hear ♭7 versus 7?","Can you state dominant quality with only three notes?"],
+    listening:[
+      {title:"Fire on the Mountain",artist:"Grateful Dead",hear:"A two-chord Mixolydian vamp that never resolves. The ♭7 removes any pull toward a cadence."},
+      {title:"Norwegian Wood",artist:"The Beatles",hear:"The verse sits on a major third with a ♭7 above it and simply stays there."}
+    ],
+    commonErrors:[
+      {symptom:"Mixolydian sounds like Ionian.",cause:"The ♭7 is being replaced by the leading tone out of habit.",fix:"Play the ♭7 into the root and refuse the natural 7 for a full chorus."},
+      {symptom:"The mode sounds like it needs to resolve.",cause:"The ♭7 and 3 are being treated as a dominant that must move.",fix:"Stay on one chord for sixteen bars and let the tritone sit unresolved."},
+      {symptom:"The line sounds bluesy rather than modal.",cause:"♭3 is being added alongside the major third.",fix:"Choose one third for the phrase and keep it."}
+    ],
     bassFocus:"Mixolydian supports rock, funk and dominant vamps because the major 3rd gives clarity while ♭7 supplies grit and loop-friendly stability.",
     misconception:"Every dominant 7 chord requires urgent V→I functional resolution.",
     correction:"A dominant-quality chord can be a static modal home. Listen for whether the harmony moves toward a destination or stays long enough to develop Mixolydian colour.",
@@ -195,11 +379,25 @@ export const LESSON_DETAILS:LessonDetail[]=[
   {
     terms:[
       {name:"Flat 6",definition:"Aeolian’s defining darkening degree, contrasting directly with Dorian’s natural 6."},
-      {name:"Natural minor",definition:"The interval collection 1–2–♭3–4–5–♭6–♭7."},
+      {name:"Natural minor",definition:"The interval collection 1-2-♭3-4-5-♭6-♭7."},
       {name:"Minor subtonic",definition:"The ♭7 that allows broad motion back to 1 without a leading-tone cadence."}
     ],
+    prerequisites:[
+      "Tell Dorian's natural 6 from a ♭6 by ear.",
+      "Hold a minor centre through a complete phrase.",
+      "Feature a ♭7 over a major third without the line sounding mistaken."
+    ],
     selfCheck:["Can you sing ♭6 after the minor triad?","Can you compare Aeolian and Dorian by one degree?","Can you feature ♭6 without losing the root?"],
-    bassFocus:"Aeolian’s ♭6 can define heavy, grunge and cinematic minor lines, especially through 5–♭6 or ♭6–5 gestures over a firm pedal.",
+    listening:[
+      {title:"Losing My Religion",artist:"R.E.M.",hear:"Natural minor with no leading tone. Notice that the phrase endings settle softly rather than snapping shut."},
+      {title:"Nothing Else Matters",artist:"Metallica",hear:"The ♭6 leaning down onto the fifth is what gives the opening its weight."}
+    ],
+    commonErrors:[
+      {symptom:"Aeolian happens by default rather than by choice.",cause:"No degree is being featured, so the fingers fall into natural minor.",fix:"Name the ♭6 before you play and place it deliberately twice per phrase."},
+      {symptom:"The ♭6 sounds harsh.",cause:"It is being landed on without the fifth established underneath it.",fix:"Play the fifth, then the ♭6, then back to the fifth."},
+      {symptom:"Phrases sound weak at their endings.",cause:"Aeolian has no leading tone, so cadences are soft by nature.",fix:"Approach the root from the ♭7 by whole step and accept the softer arrival, or borrow a raised 7 deliberately."}
+    ],
+    bassFocus:"Aeolian’s ♭6 can define heavy, grunge and cinematic minor lines, especially through 5-♭6 or ♭6-5 gestures over a firm pedal.",
     misconception:"Aeolian is simply ‘sad Dorian’ and should always descend.",
     correction:"The interval pattern offers colour, not a compulsory emotion or contour. Rhythm, register and chord movement determine the musical character.",
     earCue:"Place Dorian 6 and Aeolian ♭6 back to back. Hear how one opens the top of the minor sound and the other compresses it.",
@@ -209,14 +407,28 @@ export const LESSON_DETAILS:LessonDetail[]=[
   {
     terms:[
       {name:"Flat 5",definition:"Locrian’s defining diminished fifth, removing the stable perfect 5 above the tonic."},
-      {name:"Half-diminished",definition:"The chord 1–♭3–♭5–♭7, commonly written m7♭5."},
+      {name:"Half-diminished",definition:"The chord 1-♭3-♭5-♭7, commonly written m7♭5."},
       {name:"Unstable tonic",definition:"A centre that can be established even though its tonic chord contains less conventional stability."}
     ],
+    prerequisites:[
+      "Play a m7♭5 arpeggio from any root.",
+      "Hear a ♭5 as a chord tone rather than as a mistake.",
+      "Keep a tonal centre audible when the fifth above it is unstable."
+    ],
     selfCheck:["Can you spell m7♭5 in three keys?","Can you sing ♭5 without correcting it to 5?","Can you keep 1 audible despite ♭2 and ♭5 pressure?"],
+    listening:[
+      {title:"Autumn Leaves",artist:"jazz standard",hear:"Not a Locrian tune, but every minor ii-V-i in it opens on m7♭5, which is where the sound actually lives. Play Locrian over that chord and hear it as a departure, not a home."},
+      {title:"Blue Bossa",artist:"Kenny Dorham",hear:"The minor cadence near the end uses the same half-diminished chord. Locrian is what fits it."}
+    ],
+    commonErrors:[
+      {symptom:"The root will not hold as home.",cause:"The flat fifth cannot support it the way a perfect fifth does.",fix:"Assert the root by repetition, register and phrase endings instead of by the fifth."},
+      {symptom:"Locrian sounds like a diminished passing idea.",cause:"Only the ♭5 is being featured.",fix:"Feature the ♭2 as well; the two together are what state the mode."},
+      {symptom:"The mode sounds like it is in the wrong key.",cause:"It is being used as a destination rather than as a chord sound.",fix:"Play it over m7♭5 that resolves, and hear it as a ii chord going somewhere."}
+    ],
     bassFocus:"Locrian demands disciplined root placement because the perfect 5 is absent. Root, ♭3 and ♭7 establish the shell; ♭2 and ♭5 reveal the mode.",
     misconception:"Locrian cannot have a tonal centre because its tonic triad is diminished.",
     correction:"Its centre is difficult, not impossible. A pedal, repetition, register and phrase endings can establish home while the unstable chord colour remains intentional.",
-    earCue:"Hear 1–♭5 as the missing support, then add ♭2 to identify Locrian rather than a generic m7♭5 arpeggio.",
+    earCue:"Hear 1-♭5 as the missing support, then add ♭2 to identify Locrian rather than a generic m7♭5 arpeggio.",
     transfer:"Sustain B as home while building short Locrian phrases, then repeat on F and C♯.",
     variations:["Avoid ♭2 until bar 3.","Use the tonic shell only for two bars.","Resolve ♭5 to 4 instead of 5."]
   },
@@ -226,7 +438,21 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Modal anchor",definition:"A structural note or gesture that preserves home while other colours move around it."},
       {name:"Groove cell",definition:"The smallest repeatable rhythmic idea from which the bassline is developed."}
     ],
+    prerequisites:[
+      "Make any one of the seven modes recognisable inside four bars.",
+      "Control note length and accent without changing pitch.",
+      "Land a chord tone on beat 1 at a fixed tempo."
+    ],
     selfCheck:["Can you repeat a two-beat rhythm for two minutes?","Can you state chord quality with four pitches?","Can you feature one modal colour without changing the pocket?"],
+    listening:[
+      {title:"What's Going On",artist:"Marvin Gaye",hear:"James Jamerson stating a mode through a repeating figure rather than through a scale."},
+      {title:"Chameleon",artist:"Herbie Hancock",hear:"A two-bar bass figure that identifies the harmony completely and never varies."}
+    ],
+    commonErrors:[
+      {symptom:"The groove states a mode but is not memorable.",cause:"The rhythm is following the pitches rather than standing on its own.",fix:"Play the rhythm on one note until it is interesting, then add pitches."},
+      {symptom:"The mode is unclear in the groove.",cause:"The characteristic tone falls on a weak beat.",fix:"Move the characteristic tone to beat 1 or the and of 2."},
+      {symptom:"The groove falls apart when repeated.",cause:"It is too dense to reproduce identically.",fix:"Remove two notes per bar and repeat it eight times without variation."}
+    ],
     bassFocus:"A modal bass groove has two jobs: make the centre physically undeniable and leave enough harmonic space for the defining degree to matter.",
     misconception:"A modal groove is a scale reordered into a bass pattern.",
     correction:"Begin with rhythm and structural tones. Add the characteristic degree only where it strengthens identity and does not weaken the pocket.",
@@ -240,7 +466,20 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Rhythmic vocabulary",definition:"The collection of placements, durations, rests and accents that gives phrases identity."},
       {name:"Register variation",definition:"Changing octave or neck area while preserving core pitch function."}
     ],
+    prerequisites:[
+      "Build a two-bar groove that states a mode on its own.",
+      "Repeat a rhythmic idea without losing the pocket.",
+      "Name the four tones that carry a mode's identity."
+    ],
     selfCheck:["Can you improvise one minute on one note?","Can you make a phrase answer itself rhythmically?","Can you leave one full beat of silence without losing time?"],
+    listening:[
+      {title:"Kind of Blue",artist:"Miles Davis",hear:"The trumpet solos on this record are a study in choosing fewer notes and giving each one time."}
+    ],
+    commonErrors:[
+      {symptom:"Four notes run out of ideas after two bars.",cause:"Only pitch is being varied.",fix:"Hold the four pitches and vary rhythm, register, order and silence."},
+      {symptom:"The line sounds like an exercise.",cause:"The notes are being cycled in a fixed order.",fix:"Repeat one pitch three times before moving, then break the pattern."},
+      {symptom:"Time drifts during the solo.",cause:"With no pitch choices to make, unsteady pulse becomes audible.",fix:"Play the same four notes against a click at half the tempo."}
+    ],
     bassFocus:"Restricted pitch removes the illusion that more notes equal more music. It exposes whether your time, touch, space and phrase shape can carry the line.",
     misconception:"A four-note exercise is beginner work and cannot develop advanced improvisation.",
     correction:"Professional phrasing depends on control under limits. Scarcity makes every rhythmic and dynamic decision audible and measurable.",
@@ -254,10 +493,23 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Development",definition:"Creating continuity and change through repetition, displacement, sequence or altered endings."},
       {name:"Sequence",definition:"Repeating an idea from a new pitch level while preserving its internal relationships."}
     ],
+    prerequisites:[
+      "Improvise for eight bars using four pitches and stay interesting.",
+      "Keep a rhythmic identity while the pitches around it change.",
+      "Hear when a phrase has arrived home rather than merely stopped."
+    ],
     selfCheck:["Can you sing your motif after one play?","Can you repeat its rhythm exactly?","Can you change one element while preserving the rest?"],
+    listening:[
+      {title:"Fifth Symphony, first movement",artist:"Beethoven",hear:"Four notes developed for eight minutes. Every transformation keeps something recognisable."}
+    ],
+    commonErrors:[
+      {symptom:"Every phrase is a new idea.",cause:"The motif is being abandoned rather than developed.",fix:"Play the same motif four times, changing exactly one thing each time."},
+      {symptom:"The variation is unrecognisable as the original.",cause:"More than one dimension changed at once.",fix:"Hold the rhythm fixed and move only the pitches, or the reverse."},
+      {symptom:"Development sounds mechanical.",cause:"The motif is being transposed by rule rather than by ear.",fix:"Sing the variation before playing it."}
+    ],
     bassFocus:"A clear motif lets bass move from accompaniment into melodic storytelling without abandoning groove. Repetition gives the listener permission to follow variation.",
     misconception:"Development means adding more notes on every repetition.",
-    correction:"Change one variable at a time—ending, rhythm, register, direction or harmony—so the source remains perceptible.",
+    correction:"Change one variable at a time, ending, rhythm, register, direction or harmony, so the source remains perceptible.",
     earCue:"After each variation, ask what stayed constant. If the answer is ‘nothing,’ the phrase is new material, not development.",
     transfer:"Move one three-note motif through three modal contexts while preserving its rhythm and contour.",
     variations:["Alter only the last note.","Shift the rhythm by one eighth note.","Sequence the motif, then return exactly."]
@@ -268,7 +520,17 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Pickup",definition:"A note or phrase that begins before the main arrival beat and leads into it."},
       {name:"Landing",definition:"The moment a planned destination receives rhythmic and harmonic weight."}
     ],
+    prerequisites:[
+      "Develop one idea across several phrases instead of starting again.",
+      "Land a named chord tone on a named beat.",
+      "Return to the groove after leaving it, in time."
+    ],
     selfCheck:["Can you count two bars while leaving space?","Can you name the next chord tone before playing the fill?","Can you land on beat 1 without rushing the pickup?"],
+    commonErrors:[
+      {symptom:"The fill disrupts the groove.",cause:"There is no planned landing note or beat.",fix:"Name the target note and the target beat before starting the fill."},
+      {symptom:"The fill arrives late.",cause:"It began too close to the downbeat for its length.",fix:"Start the fill a beat earlier and keep it the same length."},
+      {symptom:"The fill sounds unrelated to the line.",cause:"It uses material the groove has not introduced.",fix:"Build the fill from notes already in the groove."}
+    ],
     bassFocus:"A bass fill succeeds when it connects sections and strengthens the next downbeat. Virtuosity that obscures the landing weakens the band.",
     misconception:"A fill is a free moment where harmonic responsibility temporarily stops.",
     correction:"The destination matters more during a fill, not less. Choose chord tone, beat and register first; then design the route backward.",
@@ -282,13 +544,26 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Retrieval",definition:"Recalling a note location or interval directly instead of reconstructing it by counting."},
       {name:"Transfer",definition:"Demonstrating the same musical understanding in a new key, register or physical route."}
     ],
+    prerequisites:[
+      "Play a fill and rejoin the groove without a gap.",
+      "Name any note on the E and A strings without counting from the open string.",
+      "Find a mode's characteristic tone in two registers."
+    ],
     selfCheck:["Can you sing a requested degree before touching the bass?","Can you locate one note below fret 5 and above fret 12?","Can you identify a played degree against a drone?"],
+    listening:[
+      {title:"Portrait of Tracy",artist:"Jaco Pastorius",hear:"Harmonics located precisely across the whole neck. The ear chose these pitches before the hand could have found them."}
+    ],
+    commonErrors:[
+      {symptom:"You can hear the note but cannot find it.",cause:"Only one octave of each degree has been mapped.",fix:"Locate the same degree below fret 5 and above fret 12 before playing it."},
+      {symptom:"The hand plays something the ear did not choose.",cause:"Playing is happening before singing.",fix:"Sing the phrase completely, then play it without correcting."},
+      {symptom:"Recognition works with a drone but fails in context.",cause:"Only isolated intervals have been practised.",fix:"Identify degrees inside two-bar phrases rather than one note at a time."}
+    ],
     bassFocus:"The goal is one loop: hear function → see several routes → choose the musical register → execute. Any missing link creates hesitation.",
     misconception:"Fast note naming alone proves complete fretboard knowledge.",
     correction:"Real integration includes sound, function and physical choice. A note found quickly but heard incorrectly is not usable improvisational knowledge.",
     earCue:"Do not fish. Sing first, commit to one location, then use the played note as feedback and correct consciously.",
-    transfer:"Run the sing–locate–play loop for 3, 6 and ♭7 in all 12 keys over several days.",
-    variations:["No visual fretboard.","Frets 12–20 only.","Answer on a named string."]
+    transfer:"Run the sing-locate-play loop for 3, 6 and ♭7 in all 12 keys over several days.",
+    variations:["No visual fretboard.","Frets 12-20 only.","Answer on a named string."]
   },
   {
     terms:[
@@ -296,7 +571,21 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Pedal point",definition:"A sustained or repeated pitch beneath changing or ambiguous upper harmony."},
       {name:"Harmonic rhythm",definition:"The rate at which chords or harmonic functions change."}
     ],
+    prerequisites:[
+      "Develop a motif over one chord for sixteen bars.",
+      "Play any mode's characteristic tone without hunting for it.",
+      "Hear a dominant chord pull toward the chord a fourth above it."
+    ],
     selfCheck:["Can you hear one centre through 16 bars?","Can you vary a motif without changing the harmony?","Can you distinguish static dominant colour from V→I motion?"],
+    listening:[
+      {title:"Impressions",artist:"John Coltrane",hear:"The same modal frame as So What at a much faster tempo. Interest comes from density and shape, never from the harmony."},
+      {title:"Milestones",artist:"Miles Davis",hear:"Two modes, long stretches of each. Listen for how the change of collection registers without a cadence."}
+    ],
+    commonErrors:[
+      {symptom:"Sixteen bars of one chord become boring.",cause:"Interest is being sought in pitch, which is the one thing that cannot change.",fix:"Vary density, register and silence while keeping the harmony fixed."},
+      {symptom:"The mode is unclear despite the static harmony.",cause:"The characteristic tone appears only once.",fix:"Place it at least twice per four bars, on strong beats."},
+      {symptom:"The line drifts out of the vamp.",cause:"Nothing is marking the top of the cycle.",fix:"Play a fixed figure on the first beat of every four-bar group."}
+    ],
     bassFocus:"On a long vamp, endlessly outlining the same chord gets flat. Bass can preserve the centre while using register, colour and rhythmic development to create motion.",
     misconception:"Static harmony means nothing harmonically changes, so any scale note is equally effective.",
     correction:"The chord may stay, but perceived tension changes through degree choice, metric weight, density and motif. Static is an invitation to develop, not to wander.",
@@ -310,8 +599,21 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Upper structure",definition:"A triad or chord placed above the bass root, creating selected extensions and colours."},
       {name:"Modal chord",definition:"A harmony chosen to expose the mode’s centre and characteristic degree rather than force functional cadence."}
     ],
+    prerequisites:[
+      "Name the seventh chord built on any degree of a mode.",
+      "Move through a mode without treating it as a scale.",
+      "Hear a chord's quality from its third and seventh alone."
+    ],
     selfCheck:["Can you stack thirds through a seven-note mode?","Can you spell triads without relying on shapes?","Can you name the intervals an upper triad creates over the bass root?"],
-    bassFocus:"Holding or returning to the modal root lets upper triads change colour while the bass preserves the larger centre—a powerful tool in progressive and psychedelic writing.",
+    listening:[
+      {title:"Maiden Voyage",artist:"Herbie Hancock",hear:"Suspended chords that carry a collection without stating a clear major or minor quality."}
+    ],
+    commonErrors:[
+      {symptom:"The diatonic chords are known but unusable.",cause:"They have been memorised as a list rather than heard as qualities.",fix:"Play the third and seventh of each chord and name the quality by ear."},
+      {symptom:"Chords built on the mode still sound like the parent major.",cause:"The chords containing the characteristic tone are being avoided.",fix:"Choose the chord that contains the characteristic degree and stay there."},
+      {symptom:"The bass line implies the wrong chord.",cause:"The root is being chosen from the melody rather than from the harmony.",fix:"Say the intended chord out loud before playing its root."}
+    ],
+    bassFocus:"Holding or returning to the modal root lets upper triads change colour while the bass preserves the larger centre, a powerful tool in progressive and psychedelic writing.",
     misconception:"Every diatonic chord deserves its own separate modal scale during improvisation.",
     correction:"First decide whether the chords decorate one modal home or create functional motion. Track local chord tones without abandoning the larger centre unnecessarily.",
     earCue:"Hear the bass root under each upper structure and name the resulting intervals, not only the triad’s independent chord name.",
@@ -324,7 +626,20 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Functional context",definition:"Chords heard as roles that create direction, especially dominant-to-tonic resolution."},
       {name:"Hybrid context",definition:"A larger modal centre containing local chord events with their own temporary gravity."}
     ],
-    selfCheck:["Can you identify a dominant destination?","Can you hear whether a chord is home or passing?","Can you explain why Dm7 alone differs from Dm7–G7–Cmaj7?"],
+    prerequisites:[
+      "Build the diatonic seventh chords of a mode from memory.",
+      "Hear when harmony is moving rather than sitting still.",
+      "Name a dominant chord's pull by ear."
+    ],
+    selfCheck:["Can you identify a dominant destination?","Can you hear whether a chord is home or passing?","Can you explain why Dm7 alone differs from Dm7-G7-Cmaj7?"],
+    listening:[
+      {title:"All Blues",artist:"Miles Davis",hear:"Modal in feel over a blues form. A useful test case for deciding which way to think."}
+    ],
+    commonErrors:[
+      {symptom:"Modal and functional passages are played the same way.",cause:"The rate of harmonic change is not being read.",fix:"Count how many bars each chord lasts before deciding how to play it."},
+      {symptom:"Static vamps sound restless.",cause:"Functional voice leading is being applied where nothing resolves.",fix:"Stop connecting chords and develop one idea instead."},
+      {symptom:"Cadences sound unresolved.",cause:"Modal colour is being applied over a dominant that needs to move.",fix:"On the V chord, play the third and seventh and let them resolve."}
+    ],
     bassFocus:"Choosing the wrong model causes either scale chasing or harmonic vagueness. Bass must know whether to deepen one centre or lead the band through destinations.",
     misconception:"Modal and functional thinking are competing theories; one must be correct for the entire song.",
     correction:"They are listening lenses. A piece can change lenses by section or even combine them when a stable centre contains directed local motion.",
@@ -338,12 +653,25 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Common tone",definition:"A pitch retained between chords, creating maximum continuity."},
       {name:"Destination map",definition:"A pre-heard sequence of structural landing notes across a progression."}
     ],
-    selfCheck:["Can you spell 3rds and 7ths of ii–V–I?","Can you hear semitone guide-tone movement?","Can you play the skeleton without accompaniment?"],
+    prerequisites:[
+      "Say whether a passage is modal or functional, and why.",
+      "Find the third and seventh of any chord immediately.",
+      "Play through a ii-V-I without running scales."
+    ],
+    selfCheck:["Can you spell 3rds and 7ths of ii-V-I?","Can you hear semitone guide-tone movement?","Can you play the skeleton without accompaniment?"],
+    listening:[
+      {title:"Kind of Blue",artist:"Paul Chambers",hear:"Walking bass that connects chords by the smallest available distance. Follow the thirds and sevenths rather than the roots."}
+    ],
+    commonErrors:[
+      {symptom:"The line connects smoothly but the changes are unclear.",cause:"Roots are being connected instead of guide tones.",fix:"Play only thirds and sevenths for a full chorus."},
+      {symptom:"Voice leading is correct on paper but not audible.",cause:"Connections are being made across octaves.",fix:"Keep every connection within a fourth of the previous note."},
+      {symptom:"The line runs out of room at the top or bottom.",cause:"Register was not planned across the form.",fix:"Start each chorus in a different octave and plan the direction."}
+    ],
     bassFocus:"Root motion tells where chords are; guide-tone motion tells what they are doing. Combining both makes a bassline harmonically articulate without overplaying.",
     misconception:"Smooth voice leading means always choosing the physically nearest fret.",
     correction:"Physical closeness helps, but musical function comes first. Choose the meaningful chord tone, then find the most singable physical route.",
     earCue:"Sing each line through the changes horizontally. If it sounds like a melody without chords, the voice-leading map is probably strong.",
-    transfer:"Connect ii–V–I in C, E♭ and F♯ with no leap larger than a major 3rd.",
+    transfer:"Connect ii-V-I in C, E♭ and F♯ with no leap larger than a major 3rd.",
     variations:["3rds and 7ths only.","One chromatic approach per destination.","No root on any downbeat."]
   },
   {
@@ -352,7 +680,20 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Leading motion",definition:"Semitone movement whose destination retroactively explains the tension."},
       {name:"Target beat",definition:"The exact metrical position reserved for the stable destination."}
     ],
-    selfCheck:["Can you name four chord-tone targets instantly?","Can you place &4→1 at a steady tempo?","Can you distinguish the approach from its target when listening back?"],
+    prerequisites:[
+      "Connect two chords through their nearest shared tones.",
+      "Play the guide tones of a ii-V-I without sounding its roots.",
+      "Place a note on a chosen beat while keeping time."
+    ],
+    selfCheck:["Can you name four chord-tone targets instantly?","Can you place ♭2→1 at a steady tempo?","Can you distinguish the approach from its target when listening back?"],
+    listening:[
+      {title:"Donna Lee",artist:"Charlie Parker",hear:"Bebop line construction: chromatic notes constantly, and every one of them arriving somewhere on a strong beat."}
+    ],
+    commonErrors:[
+      {symptom:"Chromatic notes sound like mistakes.",cause:"There is no defined target.",fix:"Name the chord tone and the beat it lands on before playing the approach."},
+      {symptom:"The approach draws more attention than the target.",cause:"It is too long relative to what it leads to.",fix:"Halve the approach note's length and keep the target's."},
+      {symptom:"Approaches work below the target but not above.",cause:"Direction is being chosen by habit rather than by effect.",fix:"Practise both directions into the same target and compare."}
+    ],
     bassFocus:"A chromatic pickup can drive the entire band into a downbeat. The approach gets energy; the target gets authority.",
     misconception:"Any outside note becomes valid if the following note is inside.",
     correction:"The route must be heard as directed motion. Timing, proximity, articulation and target emphasis determine whether the relationship is convincing.",
@@ -366,7 +707,20 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Connector",definition:"A chromatic or diatonic path joining two structural notes across time."},
       {name:"Skeleton",definition:"The destination-only line that remains after decorative pitches are removed."}
     ],
-    selfCheck:["Can you hear the target before its enclosure?","Can you execute upper–lower–target evenly?","Can you remove decoration and replay only the skeleton?"],
+    prerequisites:[
+      "Approach a chord tone from a semitone above and from below.",
+      "Land a target note on a strong beat.",
+      "Hear an approach note as separate from the target it leads to."
+    ],
+    selfCheck:["Can you hear the target before its enclosure?","Can you execute upper-lower-target evenly?","Can you remove decoration and replay only the skeleton?"],
+    listening:[
+      {title:"Confirmation",artist:"Charlie Parker",hear:"Enclosures into chord tones throughout. Listen backwards from each landing to hear what set it up."}
+    ],
+    commonErrors:[
+      {symptom:"The enclosure sounds like fumbling.",cause:"It is landing on a weak beat, so the arrival is not heard as arrival.",fix:"Move the target to beat 1 and count backwards to start the enclosure."},
+      {symptom:"The target is reached but sounds accidental.",cause:"The enclosure notes are the same length as the target.",fix:"Play the enclosure short and the target long."},
+      {symptom:"Enclosures are used everywhere and lose their effect.",cause:"They are being applied to passing notes as well as to structural ones.",fix:"Reserve enclosures for the strongest chord tone in the bar."}
+    ],
     bassFocus:"Enclosures work best in bass when register and density leave the target readable. Too many low chromatics can muddy harmony rather than intensify it.",
     misconception:"An enclosure is a fixed lick shape placed before any convenient note.",
     correction:"Target function and beat come first. The chosen upper and lower paths are flexible, but their job is always to focus the destination.",
@@ -380,7 +734,20 @@ export const LESSON_DETAILS:LessonDetail[]=[
       {name:"Motivic identity",definition:"The rhythm and contour that let a displaced phrase remain recognizable."},
       {name:"Return point",definition:"The planned beat and structural note where the displaced idea reconnects to home."}
     ],
+    prerequisites:[
+      "Play an enclosure into any chord tone.",
+      "Keep a motif recognisable when its pitches move.",
+      "Return from outside to a chord tone inside one beat."
+    ],
     selfCheck:["Can you repeat a motif exactly?","Can you transpose it one semitone without hesitation?","Can you count the departure length while maintaining groove?"],
+    listening:[
+      {title:"Giant Steps",artist:"John Coltrane",hear:"Ideas moved intact through keys that change faster than the ear can re-orient. The shape is what stays recognisable."}
+    ],
+    commonErrors:[
+      {symptom:"The slip sounds like wrong notes rather than displacement.",cause:"The motif was not established inside before it moved.",fix:"Play the idea twice in the key before slipping it."},
+      {symptom:"The return sounds like recovery rather than resolution.",cause:"It is arriving mid-bar.",fix:"Come back on beat 1 of the next bar, on a chord tone."},
+      {symptom:"The displaced phrase loses its identity.",cause:"Rhythm changed along with pitch.",fix:"Keep the rhythm identical and move only the pitch."}
+    ],
     bassFocus:"Side-slipping lets bass create intense colour without abandoning rhythmic responsibility. The band can follow when the groove and motif survive the displacement.",
     misconception:"Playing any chromatic run outside the key is side-slipping.",
     correction:"A side-slip preserves recognizable source material at a clearly displaced level. Without source identity and planned return, it is merely chromatic motion.",
@@ -392,9 +759,23 @@ export const LESSON_DETAILS:LessonDetail[]=[
     terms:[
       {name:"Tension arc",definition:"The planned rise, climax and release of musical pressure across a whole performance."},
       {name:"Tension budget",definition:"A deliberate limit on the amount and duration of harmonic distance used in a phrase or section."},
-      {name:"Complete resolution",definition:"A return in harmony, rhythm, register and energy—not merely landing on an inside pitch."}
+      {name:"Complete resolution",definition:"A return in harmony, rhythm, register and energy, not merely landing on an inside pitch."}
+    ],
+    prerequisites:[
+      "Displace a whole idea by a semitone and bring it back.",
+      "Shape a phrase that leaves home and arrives back deliberately.",
+      "Hold a groove while the harmonic distance from home changes."
     ],
     selfCheck:["Can you draw the intended arc before playing?","Can you sustain groove while outside?","Can you explain how register, density and silence alter tension?"],
+    listening:[
+      {title:"A Love Supreme",artist:"John Coltrane",hear:"A complete tension arc across a whole side. Register, density and harmonic distance all rise and fall together."},
+      {title:"Teen Town",artist:"Jaco Pastorius",hear:"Bass as a lead voice that still leaves the harmonic floor findable whenever the form needs it."}
+    ],
+    commonErrors:[
+      {symptom:"The solo has good moments but no shape.",cause:"Tension parameters are being changed independently and at random.",fix:"Plan one rise and one fall across the whole chorus before playing."},
+      {symptom:"The climax arrives without effect.",cause:"Register and density were already at maximum earlier.",fix:"Reserve the top of your range and the densest rhythm for the peak only."},
+      {symptom:"The ending sounds unfinished.",cause:"Harmony resolved but rhythm and register did not.",fix:"Settle all three at once: land on home, thin the rhythm, and return to the register you began in."}
+    ],
     bassFocus:"The bassist controls both harmonic floor and energy flow. A low register return, simpler rhythm and more space can release tension more fully than a root note alone.",
     misconception:"The capstone is passed by using every advanced device as often as possible.",
     correction:"Mastery is selective control. The narrative needs contrast: clear home, motivated departure, one true climax and enough time for the return to register.",

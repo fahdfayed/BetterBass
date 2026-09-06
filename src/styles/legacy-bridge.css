@@ -20,20 +20,3 @@
    own ground to stay readable. */
 .page>.osScreen>*{position:relative;z-index:1}
 
-/* Old sheets set page-level backgrounds that would paint over the aurora. */
-.courseOs{background:transparent}
-
-/* Header controls carried over from the old topbar. */
-.headerSelects{display:flex;align-items:center;gap:var(--s3)}
-.headerSelects label{display:flex;flex-direction:column;gap:2px}
-.headerSelects select{
- padding:.3rem .5rem;
- border:1px solid var(--line);
- border-radius:var(--r-control);
- background:var(--wash);
- color:var(--text);
- font-size:var(--t-small);
- cursor:pointer;
-}
-.headerSelects select:hover{border-color:var(--rule-strong)}
-@media (max-width:60rem){.headerSelects{display:none}}

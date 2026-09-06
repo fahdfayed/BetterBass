@@ -11,15 +11,7 @@
   --hf-approach: var(--red);
   --hf-outside: #4a4f46;
 }
-.headerContextLock {
-  display: inline-block;
-  margin: 0 8px;
-  padding: 9px 11px;
-  border: 1px solid #3a4035;
-  color: var(--ink-3);
-  font: max(11px,0.6875rem) var(--mono);
-  letter-spacing: 0.08em;
-}
+
 .harmonyFretboard button,
 .harmonyFretboard input,
 .harmonyFretboard select {
@@ -39,7 +31,7 @@
 .hfNeckSection > header span,
 .hfNoteTutor article > span,
 .hfVoiceLeading > header span {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   letter-spacing: 0.14em;
   color: var(--lime);
 }
@@ -67,7 +59,7 @@
 .hfIntro aside small,
 .hfIntro aside span,
 .hfIntro aside em {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfIntro aside small {
   color: var(--ink-3);
@@ -86,7 +78,7 @@
   margin-top: 22px;
   padding: 7px 9px;
   background: var(--lime);
-  color: var(--ink-4);
+  color:var(--on-accent);
   font-style: normal;
 }
 .hfBuilder,
@@ -123,7 +115,7 @@
 .hfModes header p,
 .hfNeckSection > header p,
 .hfVoiceLeading header p {
-  font-size:max(11px,0.6875rem);
+  font-size:var(--t-micro);
   line-height: 1.75;
   color: var(--ink-3);
   margin: 0;
@@ -143,7 +135,7 @@
 .hfCustomInput span,
 .hfMapControls span {
   display: block;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   letter-spacing: 0.1em;
   color: var(--ink-3);
   margin-bottom: 10px;
@@ -155,7 +147,7 @@
   background: transparent;
   color: var(--ink);
   padding: 13px;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfCustomInput {
   display: grid;
@@ -169,15 +161,15 @@
   border: 0;
   border-left: 1px solid #68773a;
   background: var(--lime);
-  color: var(--ink-4);
-  font: 700 max(11px,0.6875rem) var(--mono);
+  color:var(--on-accent);
+  font: 700 var(--t-micro) var(--mono);
 }
 .hfInputHelp,
 .hfError {
   margin: 0;
-  padding: 12px 22px;
+  padding: var(--s3) 22px;
   border-top: 1px solid var(--line);
-  font: max(11px,0.6875rem)/1.7 var(--mono);
+  font: var(--t-micro)/1.7 var(--mono);
   color: var(--ink-3);
 }
 .hfError {
@@ -210,16 +202,16 @@
   display: block;
 }
 .hfChordRail button small {
-  font: max(11px,0.6875rem) var(--mono);
-  color: var(--ink-4);
+  font: var(--t-micro) var(--mono);
+  color: var(--ink-3);
 }
 .hfChordRail button b {
-  font: 1.25rem var(--mono);
+  font: var(--t-lead) var(--mono);
   margin: 27px 0 6px;
   color: var(--ink-2);
 }
 .hfChordRail button span {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfChordRail button.next {
   background: transparent;
@@ -229,7 +221,7 @@
 }
 .hfChordRail button.active {
   background: transparent;
-  color: var(--ink-4);
+  color: var(--ink-3);
   box-shadow:none;
 }
 .hfChordRail button.active small,
@@ -253,19 +245,19 @@
   display: flex;
   align-items: end;
   gap: 20px;
-  margin: 25px 0 12px;
+  margin: 25px 0 var(--s3);
 }
 .hfChordDecode > div > b {
   font: clamp(38px, 5vw, 68px)/0.9 var(--mono);
   color: var(--lime);
 }
 .hfChordDecode > div > small {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--violet);
 }
 .hfChordDecode > p {
   max-width: 780px;
-  font-size:max(11px,0.6875rem);
+  font-size:var(--t-micro);
   line-height: 1.7;
   color: var(--ink-3);
 }
@@ -278,29 +270,29 @@
 .hfNoteTutor dl > div {
   display: grid;
   grid-template-columns: 130px 1fr;
-  gap: 12px;
+  gap: var(--s3);
   padding: 13px 0;
   border-bottom: 1px solid var(--line);
 }
 .hfChordDecode dt,
 .hfNoteTutor dt {
-  font: max(11px,0.6875rem) var(--mono);
-  color: var(--ink-4);
+  font: var(--t-micro) var(--mono);
+  color: var(--ink-3);
 }
 .hfChordDecode dd,
 .hfNoteTutor dd {
   margin: 0;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-2);
 }
 .hfChordPreview {
   width: 100%;
-  margin-top: 16px;
-  padding: 12px 15px;
+  margin-top: var(--s4);
+  padding: var(--s3) 15px;
   border: 1px solid #525b48;
   background: transparent;
   color: var(--lime);
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfChordPreview:disabled {
   cursor: not-allowed;
@@ -312,7 +304,7 @@
   background: transparent;
 }
 .hfAutoFollow h3 {
-  font-size:1.5625rem;
+  font-size:var(--t-h2);
   line-height: 1.15;
   margin: 25px 0;
 }
@@ -323,7 +315,7 @@
 }
 .hfTimingControls label {
   padding: 13px;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-3);
 }
 .hfTimingControls label + label {
@@ -333,11 +325,11 @@
 .hfTimingControls select {
   display: block;
   width: 100%;
-  margin-top: 8px;
+  margin-top: var(--s2);
   border: 0;
   background: transparent;
-  color: white;
-  font: 1.0625rem var(--mono);
+  color:var(--ink);
+  font: var(--t-body) var(--mono);
 }
 .hfTimingControls input:disabled,
 .hfTimingControls select:disabled {
@@ -347,24 +339,24 @@
   display: grid;
   grid-template-columns: 104px 1fr;
   align-items: center;
-  gap: 5px 12px;
+  gap: 5px var(--s3);
   margin-top: 11px;
   padding: 11px 13px;
   border: 1px solid var(--line);
   color: var(--ink-3);
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfBandStyle select {
   width: 100%;
   border: 0;
   background: transparent;
   color: var(--ink);
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfBandStyle small {
   grid-column: 1/-1;
   color: var(--ink-3);
-  font: max(11px,0.6875rem)/1.5 var(--mono);
+  font: var(--t-micro)/1.5 var(--mono);
 }
 .hfBandStyle select:disabled {
   opacity: 0.45;
@@ -377,10 +369,10 @@
 .hfBandMixer > header {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--s3);
   padding: 9px 11px;
   border-bottom: 1px solid var(--line);
-  font: max(11px,0.6875rem)/1.4 var(--mono);
+  font: var(--t-micro)/1.4 var(--mono);
   color: var(--ink-3);
 }
 .hfBandMixer > header b {
@@ -394,16 +386,16 @@
 .hfBandMixer button {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--s2);
   min-height: 35px;
-  padding: 8px 10px;
+  padding: var(--s2) 10px;
   border: 0;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   background: transparent;
-  color: var(--ink-4);
+  color: var(--ink-3);
   text-align: left;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfBandMixer button:nth-child(2n) {
   border-right: 0;
@@ -412,7 +404,7 @@
   border-bottom: 0;
 }
 .hfBandMixer button i {
-  color: var(--ink-4);
+  color: var(--ink-3);
   font-style: normal;
 }
 .hfBandMixer button.active {
@@ -431,8 +423,8 @@
   grid-template-columns: auto 1fr 38px;
   align-items: center;
   gap: 10px;
-  padding: 12px 0;
-  font: max(11px,0.6875rem) var(--mono);
+  padding: var(--s3) 0;
+  font: var(--t-micro) var(--mono);
   color: var(--ink-3);
 }
 .hfHarmonyLevel input {
@@ -455,40 +447,40 @@
 }
 .hfSounding small {
   color: var(--violet);
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfSounding b {
-  margin: 8px 0 6px;
+  margin: var(--s2) 0 6px;
   color: var(--ink);
-  font: max(11px,0.6875rem)/1.6 var(--mono);
+  font: var(--t-micro)/1.6 var(--mono);
 }
 .hfSounding span {
   color: var(--ink-3);
-  font: max(11px,0.6875rem)/1.55 var(--mono);
+  font: var(--t-micro)/1.55 var(--mono);
 }
 .hfAutoFollow > button {
   width: 100%;
   margin-top: 14px;
   border: 1px solid var(--lime);
   background: var(--lime);
-  color: var(--ink-4);
+  color:var(--on-accent);
   padding: 15px;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfAutoFollow > button.stop {
   border-color: var(--red);
   background: var(--red);
 }
 .hfAutoFollow > p {
-  font: max(11px,0.6875rem)/1.5 var(--mono);
+  font: var(--t-micro)/1.5 var(--mono);
   color: var(--ink-3);
 }
 .hfHeadphoneNote {
   display: block;
-  padding-top: 8px;
+  padding-top: var(--s2);
   border-top: 1px solid var(--line);
-  color: var(--ink-4);
-  font: max(11px,0.6875rem)/1.5 var(--mono);
+  color: var(--ink-3);
+  font: var(--t-micro)/1.5 var(--mono);
 }
 .hfAutoPulse {
   position: absolute;
@@ -498,8 +490,7 @@
   width: 100%;
   background: var(--lime);
   transform-origin: left;
-  animation: hfProgress linear infinite;
-}
+  animation: hfProgress linear infinite;color:var(--on-accent)}
 @keyframes hfProgress {
   from {
     transform: scaleX(0);
@@ -511,10 +502,16 @@
 .hfModes {
   margin-bottom: 18px;
 }
+/*
+ * Sized by the cards, not by the viewport. Four fixed columns needed a media
+ * query for every width the band can be; auto-fit asks each card what it needs
+ * and lays out as many as fit, so the same rule gives four across the neck's
+ * full width, two in a lesson workspace and one on a phone.
+ */
 .hfModes > div {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: var(--s2);
 }
 .hfModes > div > article {
   position: relative;
@@ -541,12 +538,12 @@
   display: block;
 }
 .hfModeSelect small {
-  font: max(11px,0.6875rem) var(--mono);
-  color: var(--ink-4);
+  font: var(--t-micro) var(--mono);
+  color: var(--ink-3);
 }
 .hfModeSelect b {
   min-height: 52px;
-  font-size:1.125rem;
+  font-size:var(--t-lead);
   line-height: 1.2;
   margin: 28px 0 0;
 }
@@ -554,8 +551,8 @@
   position: absolute;
   right: 20px;
   top: 17px;
-  font: 1.5625rem var(--mono);
-  color: var(--ink-4);
+  font: var(--t-h2) var(--mono);
+  color: var(--ink-3);
 }
 .hfModes article.active strong {
   color: var(--lime);
@@ -564,20 +561,20 @@
   margin: 18px 0;
   padding: 9px;
   background: transparent;
-  font: max(11px,0.6875rem)/1.5 var(--mono);
+  font: var(--t-micro)/1.5 var(--mono);
   color: var(--violet);
 }
 .hfModeSelect p {
-  font-size:max(11px,0.6875rem);
+  font-size:var(--t-micro);
   line-height: 1.65;
   color: var(--ink-3);
 }
 .hfModeSelect em {
-  font: max(11px,0.6875rem)/1.6 var(--mono);
+  font: var(--t-micro)/1.6 var(--mono);
   font-style: normal;
   color: var(--ink-3);
   border-top: 1px solid var(--line);
-  padding-top: 12px;
+  padding-top: var(--s3);
 }
 .hfHear {
   position: absolute;
@@ -586,7 +583,7 @@
   border: 0;
   background: transparent;
   color: var(--lime);
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
 }
 .hfMapControls {
   display: flex;
@@ -594,7 +591,7 @@
   gap: 20px;
   border: 1px solid var(--line);
   background: transparent;
-  padding: 14px 16px;
+  padding: 14px var(--s4);
 }
 .hfMapControls > div {
   display: flex;
@@ -602,19 +599,19 @@
   gap: 5px;
 }
 .hfMapControls span {
-  margin: 0 8px 0 0;
+  margin: 0 var(--s2) 0 0;
 }
 .hfMapControls button {
   border: 1px solid #353b31;
   background: transparent;
   color: var(--ink-3);
-  padding: 8px 10px;
-  font: max(11px,0.6875rem) var(--mono);
+  padding: var(--s2) 10px;
+  font: var(--t-micro) var(--mono);
 }
 .hfMapControls button.active {
   border-color: var(--lime);
   background: var(--lime);
-  color: var(--ink-4);
+  color:var(--on-accent);
 }
 .hfNeckSection {
   border: 1px solid var(--line);
@@ -623,12 +620,12 @@
 }
 .hfNeckSection > header h2 {
   font: clamp(27px, 4vw, 49px)/1 var(--mono);
-  margin: 12px 0 0;
+  margin: var(--s3) 0 0;
 }
 .hfLegend {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: var(--s4);
   padding: 13px 23px;
   border-bottom: 1px solid var(--line);
   background: transparent;
@@ -637,7 +634,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-3);
 }
 .hfLegend i,
@@ -697,15 +694,13 @@
 .hfFretNumbers {
   height: 27px;
 }
+/* Colour retired here too -- see fretboard-workstation.css, the one place
+   this is declared now. */
 .hfFretNumbers > b,
 .hfFretNumbers > span {
   display: grid;
   place-items: center;
-  font: max(11px,0.6875rem) var(--mono);
-  color: var(--ink-4);
-}
-.hfFretNumbers > span.marked {
-  color: var(--lime);
+  font: var(--t-micro) var(--mono);
 }
 .hfString {
   position: relative;
@@ -725,7 +720,7 @@
   display: grid;
   place-items: center;
   z-index: 1;
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--lime);
 }
 .hfString button {
@@ -747,9 +742,6 @@
     transform 0.15s,
     background 0.15s;
 }
-.hfString button.visible:not(.role-outside) {
-  background: transparent;
-}
 .hfString button.hidden {
   opacity: 0.08;
 }
@@ -765,11 +757,11 @@
 .hfString button > b {
   max-width: 35px;
   overflow: hidden;
-  font: max(11px,0.6875rem)/1 var(--mono);
+  font: var(--t-micro)/1 var(--mono);
   white-space: nowrap;
 }
 .hfString button > small {
-  font: max(11px,0.6875rem)/1 var(--mono);
+  font: var(--t-micro)/1 var(--mono);
   margin-top: 2px;
 }
 .hfString button > i {
@@ -807,51 +799,61 @@
   place-items: center;
   border: 1px solid var(--role);
   color: var(--role);
-  padding: 12px;
+  padding: var(--s3);
 }
 .hfRoleBadge > i {
   width: 17px;
   height: 17px;
 }
 .hfRoleBadge span {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   text-align: center;
+}
+
+/* On cream the role colour cannot also be the label. Every one of the eleven
+   lands between 1.04 and 4.34 against #f5f0e8, and this label is 11px — the
+   root role is lime, which the token sheet already rules out as text on this
+   ground. Nothing is lost by reading it in ink: the badge states its role
+   twice more, in the border and the swatch, and the neck cells have always
+   worked this way. */
+.hfRoleBadge {
+  color: var(--ink-2);
 }
 .hfNoteTutor article > h2 {
   font-size:2.1875rem;
-  margin: 10px 0 4px;
+  margin: 10px 0 var(--s1);
 }
 .hfNoteTutor h2 small {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-3);
 }
 .hfNoteTutor article > h3 {
-  font-size:0.875rem;
+  font-size:var(--t-small);
   color: var(--lime);
   margin: 7px 0;
 }
 .hfNoteTutor article > p {
-  font-size:max(11px,0.6875rem);
+  font-size:var(--t-micro);
   line-height: 1.75;
   color: var(--ink-3);
-  margin: 8px 0;
+  margin: var(--s2) 0;
 }
 .hfNoteTutor dl {
   margin-top: 13px;
 }
 .hfNoteTutor dl > div {
   grid-template-columns: 90px 1fr;
-  padding: 8px 0;
+  padding: var(--s2) 0;
 }
 .hfNoteTutor > button {
   border: 1px solid var(--lime);
   background: var(--lime);
-  color: var(--ink-4);
+  color:var(--on-accent);
   padding: 17px 14px;
-  font: max(11px,0.6875rem)/1.5 var(--mono);
+  font: var(--t-micro)/1.5 var(--mono);
 }
 .hfVoiceLeading {
-  margin-top: 48px;
+  margin-top: var(--s7);
 }
 .hfVoiceGrid {
   display: grid;
@@ -878,20 +880,20 @@
   display: block;
 }
 .hfVoiceGrid small {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   color: var(--ink-3);
 }
 .hfVoiceGrid b {
-  font: 1.375rem var(--mono);
+  font: var(--t-h3) var(--mono);
   margin: 35px 0 11px;
 }
 .hfVoiceGrid b i {
   font-style: normal;
   color: var(--lime);
-  margin: 0 8px;
+  margin: 0 var(--s2);
 }
 .hfVoiceGrid span {
-  font: max(11px,0.6875rem)/1.5 var(--mono);
+  font: var(--t-micro)/1.5 var(--mono);
   color: var(--violet);
 }
 .hfVoiceLeading > footer {
@@ -908,75 +910,18 @@
   display: block;
 }
 .hfVoiceLeading footer span {
-  font: max(11px,0.6875rem) var(--mono);
-  color: var(--ink-4);
+  font: var(--t-micro) var(--mono);
+  color: var(--ink-3);
 }
 .hfVoiceLeading footer b {
-  font: max(11px,0.6875rem) var(--mono);
+  font: var(--t-micro) var(--mono);
   margin-top: 9px;
 }
 .hfVoiceLeading footer button {
   border: 0;
   background: var(--lime);
-  font: max(11px,0.6875rem) var(--mono);
-}
-.hfArabic {
-  text-align: right;
-}
-.hfArabic .hfChordRail button,
-.hfArabic .hfModeSelect,
-.hfArabic .hfVoiceGrid button {
-  text-align: right;
-}
-.hfArabic .hfBuilderControls label {
-  border-right: 0;
-  border-left: 1px solid var(--line);
-}
-.hfArabic .hfBuilderControls label:last-child {
-  border-left: 0;
-}
-.hfArabic .hfCustomInput button {
-  border-left: 0;
-  border-right: 1px solid #68773a;
-}
-.hfArabic .hfTimingControls label + label {
-  border-left: 0;
-  border-right: 1px solid var(--line);
-}
-.hfArabic .hfBandMixer > header b,
-.hfArabic .hfHarmonyLevel b {
-  text-align: left;
-}
-.hfArabic .hfBandMixer button {
-  border-right: 0;
-  border-left: 1px solid var(--line);
-  text-align: right;
-}
-.hfArabic .hfBandMixer button:nth-child(2n) {
-  border-left: 0;
-}
-.hfArabic .hfModeSelect strong {
-  right: auto;
-  left: 20px;
-}
-.hfArabic .hfHear {
-  left: auto;
-  right: 22px;
-}
-.hfArabic .hfMapControls span {
-  margin: 0 0 0 8px;
-}
-.hfArabic .hfVoiceGrid button {
-  border-right: 0;
-  border-left: 1px solid var(--line);
-}
-.hfArabic .hfVoiceGrid button:last-child {
-  border-left: 0;
-}
-.hfArabic .hfVoiceLeading > footer > div {
-  border-right: 0;
-  border-left: 1px solid var(--line);
-}
+  font: var(--t-micro) var(--mono);color:var(--on-accent)}
+
 @media (max-width: 1100px) {
   .hfIntro,
   .hfCurrent {
@@ -1025,7 +970,7 @@
     margin-top: 0;
   }
   .hfIntro h1 {
-    font-size:3.25rem;
+    font-size:var(--t-h1);
   }
   .hfIntro > aside {
     min-height: 160px;
@@ -1086,22 +1031,59 @@
   }
   .hfChordDecode,
   .hfAutoFollow {
-    padding: 24px 19px;
+    padding: var(--s5) 19px;
   }
   .hfChordDecode dl > div {
     grid-template-columns: 90px 1fr;
   }
-  .hfArabic .hfBuilderControls label,
-  .hfArabic .hfBuilderControls label:first-child {
-    border-left: 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .hfArabic .hfVoiceGrid button {
-    border-left: 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .hfArabic .hfVoiceLeading > footer > div {
-    border-left: 0;
-    border-bottom: 1px solid var(--line);
-  }
+
 }
+
+/* The arithmetic a scale recommendation is scored on, not just its verdict. */
+.hfWorking{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px}
+.hfWorking em{
+ font-style:normal;font:var(--t-micro) var(--font-mono);
+ color:var(--ink-3);letter-spacing:.04em;
+}
+.hfWorking em.short{color:var(--wrong)}
+
+/* What the microphone is hearing, on the board it belongs to. */
+.hfLive{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s5);
+ border:1px solid var(--line);padding:var(--s4) var(--s5);margin-bottom:var(--s4);min-height:74px}
+.hfLiveIdle{font:var(--t-micro) var(--mono);letter-spacing:.08em;color:var(--ink-3)}
+.hfLiveNote b{font-size:var(--t-h1);line-height:1;color:var(--lime)}
+.hfLiveNote small{display:block;font:var(--t-micro) var(--mono);color:var(--ink-3);margin-top:var(--s1)}
+.hfTuner{position:relative;flex:1 1 260px;min-width:220px;display:flex;align-items:center;
+ justify-content:space-between;border-top:2px solid var(--line);padding-top:var(--s4)}
+/*
+ * The needle moves by transform rather than by `left`.
+ *
+ * It tracks the pitch continuously for as long as the microphone is on, and
+ * animating a layout property does that at sixty frames a second on the main
+ * thread. Container query units let a percentage of the *track* be expressed
+ * as a length, which translateX can take — a plain translateX percentage is
+ * relative to the needle's own three pixels and would go nowhere.
+ */
+.page .osScreen .hfTuner{container-type:inline-size}
+.page .osScreen .hfTuner .hfNeedle{position:absolute;top:-9px;left:0;width:3px;height:18px;
+ background:var(--ink);will-change:transform;
+ transform:translateX(calc(var(--at,50) * 1cqw));
+ transition:transform .12s linear}
+.page .osScreen .hfTuner .hfNeedle.lit{background:var(--lime)}
+.hfTuner span,.hfTuner b{font:var(--t-micro) var(--mono);color:var(--ink-3)}
+.hfTuner b.lit{color:var(--lime)}
+.hfLiveRole{display:flex;align-items:center;gap:var(--s2);font:var(--t-micro) var(--mono);letter-spacing:.1em}
+.page .osScreen .hfLiveRole .hfDot{width:10px;height:10px;border-radius:50%;background:var(--role,var(--ink-2))}
+
+/*
+ * The note under the finger, and the same note everywhere else on the neck.
+ *
+ * These cannot be told apart by colour: --lime and --violet resolve to the same
+ * value in the cream theme, so a hue for each made them identical. The one
+ * being played is filled; the others are outlined and dashed.
+ */
+.hfBoard button.sounding{outline:2px dashed var(--violet);outline-offset:-3px}
+.hfBoard button.under{outline:3px solid var(--lime);outline-offset:-3px;z-index:1}
+.hfBoard button.under b,.hfBoard button.under small{color:var(--on-accent)}
+.hfBoard button.under i{background:var(--lime)!important;opacity:1}
+@media(prefers-reduced-motion:reduce){.hfTuner .hfNeedle{transition:none}}

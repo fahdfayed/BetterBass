@@ -1,4 +1,7 @@
+import Glyph from "../components/Glyph";
+import PageLeaf from "../components/PageLeaf";
 import Icon from "../components/Icon";
+import {Fragment} from "react";
 import {goToView} from "../router";
 
 type Props={
@@ -12,6 +15,48 @@ type Props={
  onOpenUnit:(lessonIndex:number)=>void;
 };
 
+/** Rehearsal letters, as a conductor gives them. I is skipped: it reads as a 1. */
+const MARKS=["A","B","C","D","E","F","G","H","J","K","L","M"];
+
+const PREVIEW_FRETS=[5,6,7,8,9,10];
+const PREVIEW_NECK:Array<{string:string;dots:Record<number,[string,string]>}>=[
+ {string:"G",dots:{5:["C","guide"],9:["E","chord"]}},
+ {string:"D",dots:{5:["G","guide"],7:["A","root"],9:["B","colour"]}},
+ {string:"A",dots:{7:["E","chord"],10:["G","guide"]}},
+ {string:"E",dots:{5:["A","root"],7:["B","colour"]}},
+];
+
+function NeckPreview(){
+ return (
+  <div className="neckPreview">
+   <p className="neckPreviewChord"><b>Am9</b><span>going to D13</span></p>
+   <div className="neckGrid">
+    <span className="neckFretNo"/>
+    {PREVIEW_FRETS.map(fret=><span className="neckFretNo" key={fret}>{fret}</span>)}
+    {PREVIEW_NECK.map(row=>(
+     <Fragment key={row.string}>
+      <span className="neckOpen">{row.string}</span>
+      {PREVIEW_FRETS.map(fret=>{
+       const dot=row.dots[fret];
+       return (
+        <span key={fret}>
+         {dot&&<span className="neckDot" data-role={dot[1]}>{dot[0]}</span>}
+        </span>
+       );
+      })}
+     </Fragment>
+    ))}
+   </div>
+   <p className="neckKey">
+    <span><i className="is-root"/>Root</span>
+    <span><i className="is-guide"/>Guide tone</span>
+    <span><i/>Chord tone</span>
+    <span><i/>Colour</span>
+   </p>
+  </div>
+ );
+}
+
 const ELSEWHERE=[
  {view:"runtime",icon:"band",label:"Play with the band",note:"Vamps, progressions, tempo"},
  {view:"coach",icon:"coach",label:"Live coach",note:"Listen, detect, correct"},
@@ -20,60 +65,92 @@ const ELSEWHERE=[
 ] as const;
 
 /**
- * Home states one thing loudly — the next lesson — and lists everything else
- * quietly beneath it. No panels: sections are separated by air and a hairline,
- * and every secondary destination is a row that lights up under the cursor.
+ * Home is one branded product statement first, then the session underneath.
+ * The fretboard is not decoration: it demonstrates the central Outside In
+ * claim by showing what each note is doing against the harmony.
  */
-export default function Home({percent,completed,lesson,stage,flow,units,onOpenLesson,onOpenUnit}:Props){
+export default function Home({percent:_,completed,lesson,stage,flow,units,onOpenLesson,onOpenUnit}:Props){
  const here=Math.min(flow.length-1,Math.floor(stage.index/1.5));
 
  return (
   <>
-   <header className="lede-block">
-    <span className="label rise">Unit {lesson.unit} · Lesson {lesson.index+1} of {lesson.total}</span>
-    <h1 className="display rise d1" data-page-heading tabIndex={-1}>{lesson.title}</h1>
-    <p className="lead rise d2">{lesson.outcome}</p>
-
-    <div className="lede-act rise d3">
-     <button className="action-primary" onClick={onOpenLesson}>
-      {stage.index?"Continue":"Begin"} <span className="caret" aria-hidden="true">→</span>
+   {/*
+     * The statement is the left page.
+     *
+     * It was a full-bleed hero: 100vw wide, pulled out of the content column
+     * with a negative margin, a neck rotated three degrees bleeding off the
+     * right, and a radial wash behind the whole thing. That arrangement needs
+     * the viewport, and inside a bound spread it does not have one — the
+     * escape hatch measured the window rather than the page and dragged the
+     * first screen of the product a hundred and fifty pixels off its own
+     * left edge.
+     *
+     * On a book the argument goes on the facing page and the work goes on the
+     * right, which is what the rest of this section already does. The neck
+     * stays, but it stops being atmosphere behind the words and becomes the
+     * first thing on the working page: it is the demonstration, so it should
+     * be legible rather than rotated and faded under a headline.
+     */}
+   <PageLeaf>
+    <div className="homeStatement">
+     <h1 id="outside-in-title" className="homeWord" data-page-heading tabIndex={-1}>Outside <em>In</em></h1>
+     <p className="homeClaim">Progression first. Scale second.</p>
+     <hr className="redRule"/>
+     <p className="homeSupport">
+      See what every note is doing against the chord you are on and the one you are moving toward.
+     </p>
+     <button className="action-primary homeBegin" onClick={onOpenLesson}>
+      {stage.index?"Continue":"Begin"} lesson <span className="caret" aria-hidden="true">&#8594;</span>
      </button>
-     <span className="dim mono">{lesson.duration} min · {stage.names[stage.index]}</span>
     </div>
+   </PageLeaf>
 
-    <div className="lede-meter rise d4">
-     <div className="meter"><span style={{width:`${percent}%`}}/></div>
-     <span className="label">{completed} of {lesson.total} passed</span>
-    </div>
-   </header>
-
+   <section className="homeDemo" aria-label="What a note is doing">
+    <NeckPreview/>
+    <p className="annot homeDemoNote">Notes in context.</p>
+   </section>
    <section className="band reveal">
     <div className="band-head">
      <h2 className="label">Today</h2>
      <button className="action action-quiet" onClick={onOpenLesson}>
-      Open lesson <span className="caret" aria-hidden="true">→</span>
+      Open lesson <svg className="caret" viewBox="0 0 12 12" width="9" height="9" aria-hidden="true"><path d="M2 1 10 6 2 11Z" fill="currentColor"/></svg>
      </button>
     </div>
-    <ol className="rows stagger">
-     {flow.map((block,index)=>(
-      <li key={block.n}>
-       <button
-        className={`row flow-row ${index===here?"is-current":""} ${index<here?"is-done":""}`}
-        onClick={onOpenLesson}
-       >
-        <span className="figure row-n">{block.n}</span>
-        <span className="row-main">
-         <b>{block.name}</b>
-         <small className="dim">{block.task}</small>
+    <ol className="chartRows" data-register="chart">
+     {flow.map((block,index)=>{
+      const last=index===flow.length-1;
+      return (
+       <li key={block.n} className="system">
+        <span className="systemMark">
+         {last
+          ? <Glyph name="coda" label="Coda"/>
+          : <span
+             className="rehearsalMark"
+             data-current={index===here?"true":undefined}
+             data-done={index<here?"true":undefined}
+            >{MARKS[index]??block.n}</span>}
         </span>
-        <span className="row-end mono dim">{block.minutes}m</span>
-       </button>
-      </li>
-     ))}
+        <button
+         className={`systemBody chartRow ${index===here?"is-current":""} ${index<here?"is-done":""}`}
+         onClick={onOpenLesson}
+        >
+         <span className="chartRowMain">
+          <b>{block.name}</b>
+          <small className="marginNote">{block.task}</small>
+         </span>
+         <span className="repeatCount">
+          <Glyph name="repeatBoth"/>
+          <span>{block.minutes}</span>
+          <span className="times">min</span>
+         </span>
+        </button>
+       </li>
+      );
+     })}
     </ol>
    </section>
 
-   <section className="band reveal">
+   <section className="band reveal homeElsewhere">
     <h2 className="label band-head">Elsewhere</h2>
     <ol className="rows stagger">
      {ELSEWHERE.map(item=>(
@@ -91,11 +168,11 @@ export default function Home({percent,completed,lesson,stage,flow,units,onOpenLe
     </ol>
    </section>
 
-   <section className="band reveal">
+   <section className="band reveal homeCourse">
     <div className="band-head">
      <h2 className="label">The course</h2>
      <button className="action action-quiet" onClick={()=>goToView("roadmap")}>
-      All {lesson.total} lessons <span className="caret" aria-hidden="true">→</span>
+      All {lesson.total} lessons <svg className="caret" viewBox="0 0 12 12" width="9" height="9" aria-hidden="true"><path d="M2 1 10 6 2 11Z" fill="currentColor"/></svg>
      </button>
     </div>
     <ol className="rows stagger">

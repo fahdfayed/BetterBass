@@ -45,7 +45,6 @@
  font-size:var(--t-small);
  font-weight:640;
  letter-spacing:var(--track-label);
- text-transform:uppercase;
  color:var(--accent);
 }
 
@@ -63,7 +62,6 @@
  font-size:var(--t-micro);
  font-weight:640;
  letter-spacing:.09em;
- text-transform:uppercase;
  color:var(--ink-3);
 }
 .lessonRead dd{margin:0;color:var(--ink-2);font-size:var(--t-small)}
@@ -126,7 +124,6 @@
  font-size:var(--t-micro);
  font-weight:660;
  letter-spacing:.09em;
- text-transform:uppercase;
  color:var(--ink-3);
  white-space:nowrap;
 }
@@ -170,7 +167,6 @@
  font-size:var(--t-micro);
  font-weight:640;
  letter-spacing:.09em;
- text-transform:uppercase;
  color:var(--ink-3);
 }
 

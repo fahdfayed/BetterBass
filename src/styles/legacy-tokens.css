@@ -19,8 +19,13 @@
  /* globals.css and redesign.css both define --bg, and both load after the token
     file, so it has to be re-asserted here or the ground reverts to #0d0f14.
     The cream theme still wins over this: :root[data-theme="cream"] carries an
-    attribute selector and therefore outranks a bare :root. */
- --bg:#08080a;
+    attribute selector and therefore outranks a bare :root.
+
+    It follows --rack rather than carrying a literal. Written as a hex it was
+    still the previous world's blue-black long after the ground had become warm
+    charcoal, and the whole point of this file is that legacy views follow the
+    current language rather than a snapshot of an old one. */
+ --bg:var(--rack);
 
  /* Every other legacy variable is expressed in terms of the new tokens rather
     than a literal, so the whole legacy surface follows the theme. */
@@ -38,21 +43,50 @@
 
  /* The old palette had four competing accent hues. They all collapse onto the
     single accent, except where a colour genuinely carried state. */
- --lime:var(--accent);
- --violet:var(--accent);
- --blue:var(--ink-3);
- --red:var(--wrong);
+ /*
+  * These four carry text far more often than fill in the old sheets: --lime
+  * alone sets type 205 times against 89 backgrounds. Pointed at the saturated
+  * lamps they failed AA on every one of those, so they follow the text-safe
+  * variants instead. The fills come out slightly lighter, which still reads
+  * correctly with the dark ink that sits on them, and is the right side of the
+  * trade at two to one.
+  */
+ /*
+  * The four legacy accents, which finally get to mean four different things.
+  *
+  * Under the single-accent rule these all collapsed onto one orange, so in the
+  * old sheets a pass, a failure, a link and a caption were the same colour.
+  * The book has four inks, so each of these can carry its own job again:
+  * --lime marks what was measured, --red marks what failed, --blue is the
+  * margin hand, and --violet is the neck's colour-tone rank.
+  *
+  * --red in particular had to move. It read var(--alert-ink), and --alert-ink
+  * reads var(--red) one file earlier, so the pair formed a custom-property
+  * cycle: CSS resolves a cycle to guaranteed-invalid, which silently unset
+  * both of them and dropped every legacy failure marker back to inherited ink.
+  */
+ --lime:var(--moss);
+ --violet:var(--pad-colour);
+ --blue:var(--pencil);
+ --red:var(--stop);
 
- /* One radius family instead of 11px/12px/13px/14px/15px/17px/18px/24px. */
- --radius-md:.5rem;
- --radius-lg:.5rem;
- --radius-xl:.75rem;
+ /* One radius family instead of 11px/12px/13px/14px/15px/17px/18px/24px, and
+    that family is now the milled corner rather than a soft one: 8px and 12px
+    belonged to the rounded world this replaced. */
+ --radius-md:var(--r);
+ --radius-lg:var(--r-well);
+ --radius-xl:var(--r-well);
 
  /* Nothing floats, so nothing casts. */
  --shadow:none;
 
- --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
- --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+ /* Both follow the current stacks. Left as literals these silently outranked
+    the type system for every legacy view: --sans still named Inter, which the
+    design system bans outright, and --mono still named JetBrains, so ninety-four
+    elements rendered in the old monospace beside a hundred and sixty-six in the
+    new one. Two monos in one interface is not a preference, it is a bug. */
+ --sans:var(--font);
+ --mono:var(--font-label);
 }
 
 /**
@@ -99,8 +133,7 @@
  font-size:var(--t-micro);
  font-weight:500;
  letter-spacing:var(--track-label);
- text-transform:uppercase;
- color:var(--ink-4);
+ color:var(--ink-3);
 }
 
 /* Legacy buttons adopt the single action style. */
@@ -139,31 +172,54 @@
 .page .osScreen option{background:var(--bg-lift)}
 .page .osScreen input[type="range"]{accent-color:var(--accent)}
 
-/* Small inline markers: counters, pips, tally marks. */
-.page .osScreen i:not([class]),
-.page .osScreen u:not([class]),
-.page .osScreen em:not([class]){background:var(--wash);color:var(--ink-2)}
+/*
+ * Small inline markers: counters, pips, tally marks.
+ *
+ * Never inside a heading. A page title in this design puts its standing-up
+ * clause in an <em>, and this rule was painting a grey box behind it — the
+ * one visible seam left between the legacy sheets and the book.
+ */
+.page .osScreen :not(h1,h2,h3,h4,[data-page-heading])>i:not([class]),
+.page .osScreen :not(h1,h2,h3,h4,[data-page-heading])>u:not([class]),
+.page .osScreen :not(h1,h2,h3,h4,[data-page-heading])>em:not([class]){background:var(--wash);color:var(--ink-2)}
 
-/* Legacy buttons that are not the primary action sit flat until hovered. */
-.page .osScreen button:not(.mega):not(.coursePrimary):not(.primaryAction){
- background:transparent;
+/*
+ * Legacy buttons that are not the primary action sit flat until hovered.
+ *
+ * The exclusions used to name .coursePrimary and .primaryAction, which no
+ * longer exist anywhere in the source, and missed .action-primary, which is
+ * what a primary action is actually called now. So this quietly stripped the
+ * fill off every primary button inside a legacy screen — on the dark theme
+ * that left near-black ink on the near-black page, at 1:1.
+ */
+/*
+ * background-color, not background.
+ *
+ * The shorthand resets background-image too, and this rule reaches every
+ * button inside a legacy screen — including the ones the book prints on a
+ * stave. It was quietly wiping the ruling out from under every row of the
+ * labs index. It only ever meant to remove the fill, so it now says so.
+ */
+.page .osScreen button:not(.mega):not(.action):not(.action-primary){
+ background-color:transparent;
  border-color:var(--rule);
 }
-.page .osScreen button:not(.mega):not(.coursePrimary):not(.primaryAction):hover{
- background:var(--wash);
+.page .osScreen button:not(.mega):not(.action):not(.action-primary):hover{
+ background-color:var(--wash);
  border-color:var(--rule-strong);
 }
 .page .osScreen button.active,
 .page .osScreen button[aria-pressed="true"]{
- background:var(--accent-wash);
+ background-color:var(--accent-wash);
  border-color:color-mix(in oklab,var(--accent) 45%,transparent);
  color:var(--ink);
 }
 
 /* An empty class attribute still matches [class], so the earlier :not([class])
-   guard skipped markers written as <i className={...}> with a falsy value. */
-.page .osScreen i,
-.page .osScreen u{background:var(--wash);color:var(--ink-2)}
+   guard skipped markers written as <i className={...}> with a falsy value.
+   Headings are excluded here for the same reason as above. */
+.page .osScreen :not(h1,h2,h3,h4,[data-page-heading])>i,
+.page .osScreen :not(h1,h2,h3,h4,[data-page-heading])>u{background:var(--wash);color:var(--ink-2)}
 
 /* Legacy warning copy keeps its meaning but moves onto the new warn hue. */
 .page .osScreen .warn,

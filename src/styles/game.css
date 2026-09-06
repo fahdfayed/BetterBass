@@ -111,6 +111,14 @@
 .territoryScore b i{font-style:normal;font-size:var(--t-body);color:var(--ink-3)}
 
 .missionList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s2)}
+/*
+ * `color` is declared rather than inherited on purpose. `.mission` is also a
+ * class in the retired studio sheet, where the rule paints the button as a
+ * filled accent slab with `--on-accent` text. Only the fill is overridden
+ * here, so the map's list inherited near-paper ink onto paper and every
+ * mission name on the screen read at 1.07:1 -- present in the DOM, invisible
+ * on the page.
+ */
 .mission>button{
  display:flex;
  align-items:center;
@@ -120,6 +128,7 @@
  border:1px solid var(--line);
  border-radius:var(--r-control);
  background:var(--wash);
+ color:var(--ink);
  text-align:left;
  transition:background var(--t-base) var(--ease),border-color var(--t-base) var(--ease),transform var(--t-fast) var(--ease-out);
 }
@@ -138,7 +147,7 @@
  color:var(--ink-3);
 }
 .mission.passed .missionMark{background:color-mix(in oklab,var(--done) 20%,transparent);color:var(--done)}
-.mission.current .missionMark{background:var(--accent);color:var(--accent-ink)}
+.mission.current .missionMark{background:var(--accent);color:var(--accent-mark-ink)}
 .mission.current>button{border-color:color-mix(in oklab,var(--accent) 45%,transparent);background:color-mix(in oklab,var(--accent) 8%,var(--wash))}
 .missionName{flex:1;min-width:0;font-size:var(--t-body)}
 .missionState{font-size:var(--t-small);color:var(--ink-3);white-space:nowrap}
@@ -180,7 +189,7 @@
 
 /* Nodes arrive along the route, so the eye is led from the start to where it
    is currently standing rather than having six things appear at once. */
-.mapNode{animation:nodeArrive 520ms var(--ease-spring) both}
+.mapNode{animation:nodeArrive 520ms var(--ease) both}
 @keyframes nodeArrive{
  from{opacity:0;transform:translate(-50%,-50%) scale(.4)}
  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
@@ -212,7 +221,7 @@
 }
 .mission>button:hover:not(:disabled){background:var(--wash);transform:none;padding-left:var(--s5)}
 .missionList{gap:0}
-.missionMark{background:none;color:var(--ink-4);font-weight:400;font-family:var(--font-mono)}
+.missionMark{background:none;color:var(--ink-3);font-weight:400;font-family:var(--font-mono)}
 .mission.passed .missionMark{background:none;color:var(--done)}
 .mission.current .missionMark{background:none;color:var(--accent)}
 .mission.current>button{background:none;border-color:var(--rule)}

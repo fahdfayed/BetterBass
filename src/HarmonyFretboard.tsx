@@ -1,27 +1,70 @@
 "use client";
-import {useCallback,useEffect,useMemo,useRef,useState} from "react";
+import {type CSSProperties,useCallback,useEffect,useMemo,useRef,useState} from "react";
+import {positionKeys} from "./fretboard-positions";
 import {NOTE_ROLES,PITCH_NAMES,PROGRESSION_PRESETS,buildChordVoicing,classifyNote,commonTones,intervalLabel,parseChord,parseProgression,recommendScales,spellChordNote,voiceLeadingPaths,type ChordFamily,type ParsedChord} from "./harmony-fretboard-data";
+import {degreeAt} from "./theory/degrees";
 
+/**
+ * Both of these tools stand on their own route and also sit inside a lesson as
+ * a workspace pane. A page-level heading is right in the first case and wrong
+ * in the second: inside a lesson it becomes a second h1 and the document claims
+ * two top-level topics. `embedded` picks the level, and only the standalone
+ * form carries the focus target the router looks for on navigation.
+ */
 type Props={
+ /** True when rendered as a lesson workspace pane rather than its own page. */
+ embedded?:boolean;
  homeMode:number;displayMode:string;fog:number;selectedPc:number|null;
+ /**
+  * The centre to show, when something outside decides it.
+  *
+  * On its own page the board owns its centre and this is left off. Inside a
+  * lesson the lesson decides — otherwise the Lydian lesson opens its fretboard
+  * wherever the player last left one, which is what it used to do.
+  */
+ centre?:number;
+ /**
+  * What the microphone is hearing, when the page is listening.
+  *
+  * The neck is the one screen where seeing the note you are playing is the
+  * whole point, and it was the loudest of the screens that ignored the input
+  * entirely — the site asked you to connect a bass and then drew a diagram.
+  */
+ livePitch?:{midi:number;cents:number}|null;
+ listening?:boolean;
+ /**
+  * A progression handed over from somewhere else, to load and read here.
+  *
+  * The progression reader's "open this on the fretboard" set a root on the
+  * page around the board and navigated, which the board — owning its own
+  * centre and its own chords — ignored completely. Arriving on the default
+  * vamp after asking to see your own progression is the same as the button
+  * doing nothing.
+  */
+ progression?:string[];
  onSetRoot:(root:number)=>void;onSetMode:(mode:number)=>void;onSetChord:(chord:string)=>void;
  onDisplayMode:(mode:string)=>void;onFog:(level:number)=>void;onSelectPc:(pc:number|null)=>void;
  onAudition:(notes:number[],hold?:number,droneRoot?:number)=>void;
 };
-const STRINGS=[{name:"G",open:7},{name:"D",open:2},{name:"A",open:9},{name:"E",open:4}],FRETS=Array.from({length:21},(_,i)=>i),mod=(n:number)=>((n%12)+12)%12;
+/*
+ * The board works in pitch classes, but a heard note arrives as a real pitch,
+ * so each string also carries where it actually starts. That is the difference
+ * between lighting every E on the neck and lighting the one under the finger.
+ */
+const STRINGS=[{name:"G",open:7,midi:43},{name:"D",open:2,midi:38},{name:"A",open:9,midi:33},{name:"E",open:4,midi:28}],FRETS=Array.from({length:21},(_,i)=>i),mod=(n:number)=>((n%12)+12)%12;
 type NeckRange="low"|"middle"|"high"|"full";
-const HOME_FIELDS=[["Ionian / major","أيونيان / ميجور"],["Dorian","دوريان"],["Phrygian","فريجيان"],["Lydian","ليديان"],["Mixolydian","ميكسوليديان"],["Aeolian / minor","أيوليان / ماينور"],["Locrian","لوكريان"]];
-const FAMILY_NAMES:Record<ChordFamily,[string,string]>={major:["MAJOR","ميجور"],minor:["MINOR","ماينور"],"minor-major":["MINOR–MAJOR","ماينور–ميجور"],dominant:["DOMINANT","دومينانت"],suspended:["SUSPENDED","ساس / معلّق"],"half-diminished":["HALF-DIMINISHED","نص ديمينشد"],diminished:["DIMINISHED","ديمينشد"],augmented:["AUGMENTED","أوجمنتد"]};
+const HOME_FIELDS=["Ionian / major","Dorian","Phrygian","Lydian","Mixolydian","Aeolian / minor","Locrian"];
+const FAMILY_NAMES:Record<ChordFamily,string>={major:"Major",minor:"Minor","minor-major":"Minor-major",dominant:"Dominant",suspended:"Suspended","half-diminished":"Half-diminished",diminished:"Diminished",augmented:"Augmented"};
 type BandStyleId="pocket"|"funk"|"grunge"|"neo"|"fusion"|"psychedelic";
 type BandMix={drums:boolean;keys:boolean;guitar:boolean;cue:boolean};
-type BandStyle={id:BandStyleId;name:[string,string];feel:[string,string];kick:number[];snare:number[];hat:number[];openHat:number[];keys:number[];guitar:number[];swing:number;keyGate:number;guitarGate:number;bright:boolean};
+type BandStyle={id:BandStyleId;name:string;feel:string;kick:number[];snare:number[];hat:number[];openHat:number[];keys:number[];guitar:number[];swing:number;keyGate:number;guitarGate:number;bright:boolean};
 const BAND_STYLES:BandStyle[]=[
- {id:"pocket",name:["Deep pocket","جروف تقيل"],feel:["Clear backbeat, breathing keys and small offbeat answers.","باك بيت واضح وكيز بتتنفس وردود صغيرة أوف بيت."],kick:[0,6,8,11],snare:[4,12],hat:[0,2,4,6,8,10,12,14],openHat:[14],keys:[0,10],guitar:[6,14],swing:0,keyGate:3.4,guitarGate:1.1,bright:false},
- {id:"funk",name:["Syncopated funk","فانك سينكوب"],feel:["Sixteenth-note grid, short chanks and an active kick pocket.","شبكة ستاشر وشانكات قصيرة وكيك نشيط في الجروف."],kick:[0,3,6,10,14],snare:[4,12],hat:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],openHat:[7,15],keys:[0,9],guitar:[2,6,9,11,14],swing:.08,keyGate:1.8,guitarGate:.55,bright:true},
- {id:"grunge",name:["Grunge / rock","جرنج / روك"],feel:["Heavy backbeat, eighth-note drive and wide sustained harmony.","باك بيت تقيل ودفع تمنات وهارموني واسع متطوّل."],kick:[0,7,8,10],snare:[4,12],hat:[0,2,4,6,8,10,12,14],openHat:[14],keys:[0],guitar:[0,4,8,12],swing:0,keyGate:14.4,guitarGate:2.5,bright:true},
- {id:"neo",name:["Neo-soul","نيو سول"],feel:["Laid-back pocket, soft syncopation and spacious upper voicings.","جروف متأخر وناعم وسينكوب خفيف وتوزيعات عالية واسعة."],kick:[0,7,10],snare:[4,12],hat:[0,2,4,6,8,10,12,14],openHat:[15],keys:[0,10],guitar:[3,7,11,15],swing:.18,keyGate:4.8,guitarGate:1.25,bright:false},
- {id:"fusion",name:["Fusion","فيوجن"],feel:["Dense subdivision, displaced accents and precise harmonic stabs.","تقسيم كثيف وأكسنتات متحركة وضربات هارموني دقيقة."],kick:[0,3,7,10,14],snare:[4,11,12],hat:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],openHat:[6,14],keys:[0,7,12],guitar:[2,5,9,13],swing:.05,keyGate:1.6,guitarGate:.8,bright:true},
- {id:"psychedelic",name:["Psychedelic","سايكيديليك"],feel:["Open drums, long colour beds and delayed rhythm answers.","درامز مفتوحة وفرشة لون طويلة وردود إيقاعية متأخرة."],kick:[0,8,11],snare:[4,12],hat:[0,2,4,6,8,10,12,14],openHat:[6,14],keys:[0,8],guitar:[5,11,15],swing:.1,keyGate:7.2,guitarGate:2.2,bright:false},
+ {id:"pocket",name:"Deep pocket",feel:"Clear backbeat, breathing keys and small offbeat answers.",kick:[0,6,8,11],snare:[4,12],hat:[0,2,4,6,8,10,12,14],openHat:[14],keys:[0,10],guitar:[6,14],swing:0,keyGate:3.4,guitarGate:1.1,bright:false},
+ {id:"funk",name:"Syncopated funk",feel:"Sixteenth-note grid, short chanks and an active kick pocket.",kick:[0,3,6,10,14],snare:[4,12],hat:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],openHat:[7,15],keys:[0,9],guitar:[2,6,9,11,14],swing:.08,keyGate:1.8,guitarGate:.55,bright:true},
+ {id:"grunge",name:"Grunge / rock",feel:"Heavy backbeat, eighth-note drive and wide sustained harmony.",kick:[0,7,8,10],snare:[4,12],hat:[0,2,4,6,8,10,12,14],openHat:[14],keys:[0],guitar:[0,4,8,12],swing:0,keyGate:14.4,guitarGate:2.5,bright:true},
+ {id:"neo",name:"Neo-soul",feel:"Laid-back pocket, soft syncopation and spacious upper voicings.",kick:[0,7,10],snare:[4,12],hat:[0,2,4,6,8,10,12,14],openHat:[15],keys:[0,10],guitar:[3,7,11,15],swing:.18,keyGate:4.8,guitarGate:1.25,bright:false},
+ {id:"fusion",name:"Fusion",feel:"Dense subdivision, displaced accents and precise harmonic stabs.",kick:[0,3,7,10,14],snare:[4,11,12],hat:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],openHat:[6,14],keys:[0,7,12],guitar:[2,5,9,13],swing:.05,keyGate:1.6,guitarGate:.8,bright:true},
+ {id:"psychedelic",name:"Psychedelic",feel:"Open drums, long colour beds and delayed rhythm answers.",kick:[0,8,11],snare:[4,12],hat:[0,2,4,6,8,10,12,14],openHat:[6,14],keys:[0,8],guitar:[5,11,15],swing:.1,keyGate:7.2,guitarGate:2.2,bright:false},
 ];
 const PRESET_BAND_STYLE:Record<string,BandStyleId>={dorian:"pocket","major-251":"neo","minor-251":"neo","neo-soul":"neo","altered-turn":"fusion",fusion:"fusion",slash:"psychedelic",diminished:"fusion",augmented:"psychedelic",chromatic:"psychedelic"};
 type HarmonyAudioEngine={ctx:AudioContext;output:GainNode;current:GainNode|null;previousUpper:number[];noise:AudioBuffer};
@@ -65,26 +108,60 @@ function nearestTarget(pc:number,chord:ParsedChord){
  return targets.reduce((best,target)=>distance(target)<distance(best)?target:best,targets[0]);
 }
 function familyJob(family:ChordFamily){
- const jobs:Record<ChordFamily,[string,string]>={
-  major:["Stable major colour. The progression decides whether Ionian or Lydian is more truthful.","لون ميجور ثابت. البروجرشن هو اللي يحدد أيونيان ولا ليديان أصدق."],
-  minor:["Minor quality. Natural 6, ♭6 and ♭2 separate Dorian, Aeolian and Phrygian.","نوع ماينور. ٦ الطبيعية و♭٦ و♭٢ بيفرّقوا دوريان وأيوليان وفريجيان."],
-  "minor-major":["Tonic minor with major-7 gravity; hear melodic or harmonic minor as a complete sound.","تونك ماينور بجاذبية سابعة كبيرة؛ اسمع الميلوديك أو الهارمونيك ماينور كصوت كامل."],
-  dominant:["Directional tension. Alterations only make sense through their destination.","توتّر موجه. التحويلات ملهاش معنى من غير نغمة الوصول."],
-  suspended:["The 3rd is withheld. Preserve the suspension until its resolution is actually requested.","التالتة متشالة. حافظ على التعليق لحد ما القفلة تتطلبها فعلاً."],
-  "half-diminished":["Unstable minor quality with ♭5; often prepares a minor-key dominant.","نوع ماينور غير ثابت بـ♭٥؛ غالباً بيحضّر دومينانت في مفتاح ماينور."],
-  diminished:["Symmetrical connector. Any chord tone can redirect the harmony by semitone.","وصلة متماثلة. أي نغمة كورد تقدر تغيّر اتجاه الهارموني بنص تون."],
-  augmented:["Major colour without a perfect 5; whole-tone or Lydian-augmented logic can organize it.","لون ميجور من غير خامسة طبيعية؛ منطق الهول تون أو ليديان أوجمنتد ينظمه."],
+ const jobs:Record<ChordFamily,string>={
+  major:"Stable major colour. The progression decides whether Ionian or Lydian is more truthful.",
+  minor:"Minor quality. Natural 6, ♭6 and ♭2 separate Dorian, Aeolian and Phrygian.",
+  "minor-major":"Tonic minor with major-7 gravity; hear melodic or harmonic minor as a complete sound.",
+  dominant:"Directional tension. Alterations only make sense through their destination.",
+  suspended:"The 3rd is withheld. Preserve the suspension until its resolution is actually requested.",
+  "half-diminished":"Unstable minor quality with ♭5; often prepares a minor-key dominant.",
+  diminished:"Symmetrical connector. Any chord tone can redirect the harmony by semitone.",
+  augmented:"Major colour without a perfect 5; whole-tone or Lydian-augmented logic can organize it.",
  };
- return jobs[family][0];
+ return jobs[family];
 }
 
-export default function HarmonyFretboard({homeMode,displayMode,fog,selectedPc,onSetRoot,onSetMode,onSetChord,onDisplayMode,onFog,onSelectPc,onAudition}:Props){
+export default function HarmonyFretboard({embedded=false,centre:givenCentre,progression:givenProgression,livePitch,listening=false,homeMode,displayMode,fog,selectedPc,onSetRoot,onSetMode,onSetChord,onDisplayMode,onFog,onSelectPc,onAudition}:Props){
  const initial=PROGRESSION_PRESETS[0];
  const [presetId,setPresetId]=useState(initial.id),[draft,setDraft]=useState(initial.chords.join(" | ")),[applied,setApplied]=useState(initial.chords.join(" | ")),[centre,setCentre]=useState(initial.center),[lens,setLens]=useState<string>(initial.lens),[active,setActive]=useState(0),[choice,setChoice]=useState<{key:string;scale:string}|null>(null),[applyError,setApplyError]=useState(""),[autoFollow,setAutoFollow]=useState(false),[countIn,setCountIn]=useState(false),[tempo,setTempo]=useState(80),[barsPerChord,setBarsPerChord]=useState(2),[harmonyLevel,setHarmonyLevel]=useState(46),[bandStyle,setBandStyle]=useState<BandStyleId>("pocket"),[bandMix,setBandMix]=useState<BandMix>({drums:true,keys:true,guitar:true,cue:true});
  const [neckRange,setNeckRange]=useState<NeckRange>("low");
+
+ /*
+  * Every place the heard note could be fretted. A pitch sits on up to four
+  * strings, and the board cannot know which finger produced it — so all of them
+  * are marked rather than guessing one and being wrong three times in four.
+  */
+ const heardPc=livePitch?((livePitch.midi%12)+12)%12:null;
+ const heardMidi=livePitch?.midi??null;
+ /*
+  * Keyed on the note, not on `livePitch`. The detector calls setPitch from a
+  * requestAnimationFrame loop and `centsToNote` returns a fresh object every
+  * frame, so this memo never once hit: it allocated a new Set sixty times a
+  * second to describe a hand that had not moved.
+  */
+ const heardAt=useMemo(
+  ()=>heardMidi!==null&&listening?positionKeys(heardMidi):new Set<string>(),
+  [heardMidi,listening],
+ );
+
+ // A centre handed in from outside replaces the board's own, when it moves.
+ useEffect(()=>{if(givenCentre!==undefined)setCentre(givenCentre)},[givenCentre]);
+
+ /*
+  * Chords handed in replace what is loaded. Joined into the same text the
+  * board's own input produces, so it arrives through one path rather than a
+  * parallel one that could drift from it.
+  */
+ const handedOver=givenProgression?.join(" | ")??"";
+ useEffect(()=>{
+  if(!handedOver)return;
+  setDraft(handedOver);setApplied(handedOver);setPresetId("custom");
+  setActive(0);setChoice(null);setApplyError("");
+ },[handedOver]);
  const parsed=useMemo(()=>parseProgression(applied),[applied]),chords=parsed.chords,current=chords[Math.min(active,Math.max(0,chords.length-1))]||parseChord("Cmaj9"),next=chords.length>1?chords[(active+1)%chords.length]:current,currentKey=`${active}:${current.symbol}:${applied}`;
  const recommendations=useMemo(()=>recommendScales(current,next,centre,homeMode,lens),[current,next,centre,homeMode,lens]),selectedRecommendation=recommendations.find(x=>choice?.key===currentKey&&x.scale.id===choice.scale)||recommendations[0],selectedScale=selectedRecommendation.scale,paths=useMemo(()=>voiceLeadingPaths(current,next),[current,next]),shared=useMemo(()=>commonTones(current,next),[current,next]);
- const actualDisplay=displayMode==="interval"?"degree":displayMode==="function"||displayMode==="heat"?"priority":displayMode,filter=Math.min(4,fog),visibleFrets=neckRange==="low"?FRETS.slice(0,13):neckRange==="middle"?FRETS.slice(5,16):neckRange==="high"?FRETS.slice(10):FRETS;
+ const actualDisplay=displayMode==="interval"?"degree":displayMode==="function"||displayMode==="heat"?"priority":displayMode,filter=Math.min(4,fog);
+ const visibleFrets=useMemo(()=>neckRange==="low"?FRETS.slice(0,13):neckRange==="middle"?FRETS.slice(5,16):neckRange==="high"?FRETS.slice(10):FRETS,[neckRange]);
  const selected=selectedPc??current.bass,selectedRole=classifyNote(selected,current,selectedScale,next),selectedIv=mod(selected-current.root),selectedDestination=nearestTarget(selected,next),durationMs=Math.round(60000/tempo*4*barsPerChord),selectedBandStyle=BAND_STYLES.find(style=>style.id===bandStyle)||BAND_STYLES[0];
  const harmonyAudio=useRef<HarmonyAudioEngine|null>(null),countInTimer=useRef<number|null>(null),harmonyLevelRef=useRef(harmonyLevel),bandStyleRef=useRef<BandStyleId>(bandStyle),bandMixRef=useRef<BandMix>(bandMix);
 
@@ -130,7 +207,7 @@ export default function HarmonyFretboard({homeMode,displayMode,fog,selectedPc,on
  };
  const applyCustom=()=>{
   const result=parseProgression(draft),fatal=result.chords.some(x=>x.rootName==="?");
-  if(!result.chords.length||fatal){setApplyError("Enter at least one readable chord. Separate chords with | — for example Dm9 | G13 | Cmaj9.");return}
+  if(!result.chords.length||fatal){setApplyError("Enter at least one readable chord. Separate chords with |, for example Dm9 | G13 | Cmaj9.");return}
   stopPlayback();setApplied(draft);setPresetId("custom");setActive(0);setChoice(null);setApplyError(result.errors.length?"The progression loaded, but check the highlighted symbol warning.":"");onSelectPc(null);onSetRoot(centre);onSetChord(result.chords[0].symbol);
  };
  useEffect(()=>{harmonyLevelRef.current=harmonyLevel;const engine=harmonyAudio.current;if(engine&&engine.ctx.state!=="closed")engine.output.gain.setTargetAtTime(harmonyLevel/100*.56,engine.ctx.currentTime,.025)},[harmonyLevel]);
@@ -144,58 +221,184 @@ export default function HarmonyFretboard({homeMode,displayMode,fog,selectedPc,on
  },[autoFollow,active,chords,durationMs,barsPerChord,tempo,onSelectPc,onSetChord,playChordAudio]);
  useEffect(()=>()=>{if(countInTimer.current!==null)window.clearTimeout(countInTimer.current);const engine=harmonyAudio.current;if(engine&&engine.ctx.state!=="closed")void engine.ctx.close();harmonyAudio.current=null},[]);
 
- const chordFormula=current.intervals.map(iv=>intervalLabel(iv,current)),chordNotes=current.intervals.map(iv=>spellChordNote(current,iv)),selectedName=current.intervals.includes(selectedIv)?spellChordNote(current,selectedIv):PITCH_NAMES[selected],selectedDestinationName=next.intervals.includes(mod(selectedDestination-next.root))?spellChordNote(next,selectedDestination-next.root):PITCH_NAMES[selectedDestination],viewLabels:[[string,string,string],[string,string,string],[string,string,string],[string,string,string]]=[
-  ["priority","PRIORITY","الأهمية"],["degree","DEGREE","الدرجة"],["note","NOTE","النغمة"],["voice","TO NEXT","للي بعده"],
- ],filterLabels:[[number,string,string],[number,string,string],[number,string,string],[number,string,string],[number,string,string]]=[
-  [0,"ALL 12","كل الـ١٢"],[1,"MODE","المود"],[2,"RECOMMENDED","المقترح"],[3,"ESSENTIALS","الأساس"],[4,"BLIND TEST","اختبار أعمى"],
- ],rangeLabels:[[NeckRange,string,string],[NeckRange,string,string],[NeckRange,string,string],[NeckRange,string,string]]=[
-  ["low","LOW · 0–12","واطي · ٠–١٢"],["middle","MIDDLE · 5–15","وسط · ٥–١٥"],["high","HIGH · 10–20","عالي · ١٠–٢٠"],["full","FULL · 0–20","كامل · ٠–٢٠"],
+ const chordFormula=current.intervals.map(iv=>intervalLabel(iv,current)),chordNotes=current.intervals.map(iv=>spellChordNote(current,iv)),selectedName=current.intervals.includes(selectedIv)?spellChordNote(current,selectedIv):PITCH_NAMES[selected],selectedDestinationName=next.intervals.includes(mod(selectedDestination-next.root))?spellChordNote(next,selectedDestination-next.root):PITCH_NAMES[selectedDestination],viewLabels:[[string,string],[string,string],[string,string],[string,string]]=[
+  ["priority","PRIORITY"],["degree","DEGREE"],["note","NOTE"],["voice","TO NEXT"],
+ ],filterLabels:[[number,string],[number,string],[number,string],[number,string],[number,string]]=[
+  [0,"All 12"],[1,"Mode"],[2,"Recommended"],[3,"Essentials"],[4,"Blind test"],
+ ],rangeLabels:[[NeckRange,string],[NeckRange,string],[NeckRange,string],[NeckRange,string]]=[
+  ["low","Low 0-12"],["middle","Middle 5-15"],["high","High 10-20"],["full","Full 0-20"],
  ];
- const cellText=(pc:number,role:ReturnType<typeof classifyNote>)=>actualDisplay==="note"?PITCH_NAMES[pc]:actualDisplay==="degree"?intervalLabel(pc-current.root,current):actualDisplay==="voice"?`→${PITCH_NAMES[nearestTarget(pc,next)]}`:role.short.en;
+ const cellText=(pc:number,role:ReturnType<typeof classifyNote>)=>actualDisplay==="note"?PITCH_NAMES[pc]:actualDisplay==="degree"?intervalLabel(pc-current.root,current):actualDisplay==="voice"?`→${PITCH_NAMES[nearestTarget(pc,next)]}`:role.short;
  const visible=(role:ReturnType<typeof classifyNote>)=>filter===0||filter===1&&!["approach","outside"].includes(role.id)||filter===2&&role.rank<=6||filter===3&&role.rank<=3||filter===4;
 
- return <div className="osScreen harmonyFretboard">
-  <section className="hfIntro"><div><span>{"HARMONY-AWARE FRETBOARD"}</span><h1>{"See what matters now."}</h1><p>{"Choose a progression, move through its chords and watch every fret change job. The map ranks bass note, root, guide tones, written tensions, modal colour, voice-leading targets and controlled outside routes—it does not pretend one scale is the only answer."}</p></div><aside><small>{"CURRENT DECISION"}</small><b dir="ltr">{current.symbol}</b><span>{PITCH_NAMES[current.root]} {selectedScale.name}</span><em>{selectedRecommendation.score}% {"FIT"}</em></aside></section>
+ /*
+  * Everything about a fret that the harmony decides, worked out once.
+  *
+  * This is the hot path of the whole product, and it is hot for a reason that
+  * is invisible from the screen: the pitch detector runs setPitch inside a
+  * requestAnimationFrame loop while the player plays, so this component
+  * re-rendered sixty times a second against the live band. Every one of those
+  * renders classified all 52 frets and built 52 aria-label strings, 52 class
+  * strings and 52 click handlers — to change the one cell under the finger.
+  *
+  * Role, label and note name depend on the chord, the scale and the view, none
+  * of which move while a note is sounding. They are computed here and keyed on
+  * exactly those. What is left in the render below is the part that really does
+  * change per frame: which fret is under the hand, and which one is picked.
+  */
+ const boardCells=useMemo(()=>STRINGS.map((string,stringIndex)=>({
+  name:string.name,
+  stringIndex,
+  frets:visibleFrets.map((fret,col)=>{
+   const pc=mod(string.open+fret),role=classifyNote(pc,current,selectedScale,next);
+   return {
+    fret,pc,col,
+    key:`${stringIndex}:${col}`,
+    roleId:role.id,
+    shown:visible(role),
+    text:filter===4?"?":cellText(pc,role),
+    note:filter!==4&&actualDisplay!=="note"?PITCH_NAMES[pc]:null,
+    label:`${string.name} string fret ${fret}: ${PITCH_NAMES[pc]}, ${role.label}`,
+    select:()=>onSelectPc(pc),
+   };
+  }),
+ })),
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ [visibleFrets,current,next,selectedScale,filter,actualDisplay,onSelectPc]);
 
-  <section className="hfBuilder">
-   <header><div><span>{"01 · CHOOSE THE HARMONIC STORY"}</span><h2>{"Progression first. Scale second."}</h2></div><p>{"The same G7 can ask for Mixolydian, Lydian dominant, diminished or altered language depending on its spelling and destination."}</p></header>
-   <div className="hfBuilderControls">
-    <label><span>{"PROGRESSION LIBRARY"}</span><select value={presetId} onChange={e=>e.target.value!=="custom"&&applyPreset(e.target.value)}><option value="custom">{"Custom progression"}</option>{PROGRESSION_PRESETS.map(p=><option value={p.id} key={p.id}>{p.name.en}</option>)}</select></label>
-    <label><span>{"TONAL CENTRE"}</span><select value={centre} onChange={e=>{const value=+e.target.value;setCentre(value);onSetRoot(value)}}>{PITCH_NAMES.map((note,i)=><option value={i} key={note}>{note}</option>)}</select></label>
-    <label><span>{"HOME FIELD"}</span><select value={homeMode} onChange={e=>onSetMode(+e.target.value)}>{HOME_FIELDS.map(([en,ar],i)=><option value={i} key={en}>{en}</option>)}</select></label>
-    <label><span>{"DECISION LENS"}</span><select value={lens} onChange={e=>setLens(e.target.value)}><option value="functional">{"Functional / directional"}</option><option value="modal">{"Modal / one centre"}</option><option value="modern">{"Modern / colour-first"}</option></select></label>
-   </div>
-   <div className="hfCustomInput"><label><span>{"EDIT OR PASTE CHORD SYMBOLS"}</span><input dir="ltr" value={draft} onChange={e=>{setDraft(e.target.value);setPresetId("custom")}} onKeyDown={e=>e.key==="Enter"&&applyCustom()} aria-label="Chord progression"/></label><button type="button" onClick={applyCustom}>{"ANALYZE PROGRESSION →"}</button></div>
-   <p className="hfInputHelp">{"Understands: maj9 · m11 · mMaj9 · 13sus4 · 7alt · 13♭9 · m7♭5 · dim7 · maj7♯5 · slash bass. Literal extension rule: 13 includes 7, 9, 11 and 13; C(13) adds only 13. Separate up to 12 chords with |."}</p>
-   {(applyError||current.error)&&<p className="hfError">{applyError||"The main chord structure loaded, but review this symbol’s spelling."}</p>}
-   <nav className="hfChordRail" aria-label={"Chord progression"}>{chords.map((chord,i)=><button type="button" onClick={()=>activate(i)} className={active===i?"active":i===(active+1)%chords.length?"next":""} key={`${chord.symbol}-${i}`}><small>{active===i?"NOW":i===(active+1)%chords.length?"NEXT":`${i+1}`}</small><b dir="ltr">{chord.symbol}</b><span>{PITCH_NAMES[chord.bass]} {"in bass"}</span></button>)}</nav>
+ /*
+  * One tab stop for the whole neck.
+  *
+  * Fifty-two frets are fifty-two buttons, and as plain tab stops they sat
+  * between the player and every control after them: reaching the progression
+  * builder from the map controls meant fifty-two presses through a grid whose
+  * every cell is reachable in two. A grid gets one stop and arrow keys, which
+  * is also how the instrument is actually laid out — left and right along the
+  * string, up and down across them.
+  */
+ const padRefs=useRef(new Map<string,HTMLButtonElement>());
+ const [cursor,setCursor]=useState({s:0,f:0});
+ /*
+  * The handler reads the cursor from a ref, not from the render it closed
+  * over. Held arrow keys repeat faster than React commits, so two presses in
+  * one frame both saw the same starting cell and the second went nowhere.
+  */
+ const cursorRef=useRef(cursor);
+ const moveCursor=useCallback((next:{s:number;f:number})=>{cursorRef.current=next;setCursor(next)},[]);
+ // The neck area control changes how many frets exist, so the cursor is
+ // clamped rather than left pointing past the end of a shorter neck.
+ useEffect(()=>{if(cursorRef.current.f>=visibleFrets.length)moveCursor({...cursorRef.current,f:visibleFrets.length-1})},[visibleFrets,moveCursor]);
+ const onBoardKeys=useCallback((event:React.KeyboardEvent<HTMLDivElement>)=>{
+  const columns=visibleFrets.length;
+  let {s,f}=cursorRef.current;
+  switch(event.key){
+   case "ArrowLeft":f=Math.max(0,f-1);break;
+   case "ArrowRight":f=Math.min(columns-1,f+1);break;
+   case "ArrowUp":s=Math.max(0,s-1);break;
+   case "ArrowDown":s=Math.min(STRINGS.length-1,s+1);break;
+   case "Home":f=0;break;
+   case "End":f=columns-1;break;
+   default:return;
+  }
+  event.preventDefault();
+  moveCursor({s,f});
+  padRefs.current.get(`${s}:${f}`)?.focus();
+ },[moveCursor,visibleFrets]);
+
+ return <div className="osScreen harmonyFretboard">
+  <section className="hfIntro"><div>{embedded?<h2>{"See what matters now."}</h2>:<h1 data-page-heading tabIndex={-1}>{"See what matters now."}</h1>}<p>{"Choose a progression, move through its chords and watch every fret change job. The map ranks bass note, root, guide tones, written tensions, modal colour, voice-leading targets and controlled outside routes, it does not pretend one scale is the only answer."}</p></div><aside><small>{"Current decision"}</small><b dir="ltr">{current.symbol}</b><span>{PITCH_NAMES[current.root]} {selectedScale.name}</span><em>{selectedRecommendation.score}% {"FIT"}</em></aside></section>
+
+  {/*
+   * Two columns, and they are wrappers rather than a grid of siblings on
+   * purpose. Placing these sections into shared grid rows coupled their
+   * heights: the band mixer is a tall panel, and one tall cell on the right
+   * pushed the progression builder three thousand pixels down the left.
+   * Wrapped, each column flows on its own.
+   *
+   * The band mixer sits in the work column, not the context column. It is
+   * something you operate while playing, and the brief's context panel is
+   * for what is true right now: the restrictions, the recommendations, the
+   * selected note and where the line has to arrive.
+   */}
+  <div className="hfWork">
+  <section className={`hfNeckSection ${filter===4?"blind":""}`}>
+   <header><div><h2 dir="ltr">{current.symbol} → {next.symbol}</h2></div><p>{"Low register: bass/root/5. Middle register: guide tones and voice leading. Upper register: written tensions and modal colour. The same pitch class can have a different practical weight in each register."}</p></header>
+   <div className="hfLegend">{(["bass","root","guide","chord","specified","voice","colour","available","context","approach","outside"] as const).map(id=><span className={`role-${id}`} key={id}><i/>{NOTE_ROLES[id].short}</span>)}</div>
+   {listening&&<div className={`hfLive ${livePitch?"hearing":""}`} aria-live="off">
+   {livePitch?(()=>{
+    const pc=((livePitch.midi%12)+12)%12;
+    const role=classifyNote(pc,current,selectedScale,next);
+    const inTune=Math.abs(livePitch.cents)<=5;
+    return <>
+     <div className="hfLiveNote">
+      <b dir="ltr">{PITCH_NAMES[pc]}</b>
+      <small>{intervalLabel(mod(pc-current.root),current)} of {current.symbol}</small>
+     </div>
+     {/* A tuner, on the screen where the neck already is. */}
+     <div className="hfTuner">
+      <i className={`hfNeedle ${inTune?"lit":""}`}
+         style={{"--at":Math.max(2,Math.min(98,50+livePitch.cents))} as CSSProperties}/>
+      <span>♭</span>
+      <b className={inTune?"lit":""}>{inTune?"In tune":`${livePitch.cents>0?"+":""}${livePitch.cents}`}</b>
+      <span>♯</span>
+     </div>
+     <div className={`hfLiveRole role-${role.id}`}><i className="hfDot"/><span>{role.short}</span></div>
+    </>;
+   })():<span className="hfLiveIdle">Listening. Play a note and the neck will show where you are.</span>}
+  </div>}
+
+  {/*
+   * The small line under a pad names the note, so the player can read the
+   * label and still know what they are about to play. In the note view the
+   * label already IS the note name, and the pad printed it twice.
+   */}
+  <div className="hfBoardWrap"><div className="hfBoard" role="group" aria-label="Fretboard map. Use the arrow keys to move between frets and strings." onKeyDown={onBoardKeys} data-labels={actualDisplay} style={{minWidth:`calc(var(--hf-nut) + ${visibleFrets.length} * var(--hf-fret))`}}><div className="hfFretNumbers" style={{gridTemplateColumns:`var(--hf-nut) repeat(${visibleFrets.length}, minmax(var(--hf-fret), 1fr))`}}><b>{"String"}</b>{visibleFrets.map(f=><span className={[3,5,7,9,12,15,17,19].includes(f)?"marked":""} key={f}>{f}<i/></span>)}</div>{boardCells.map(row=><div className={`hfString string-${row.stringIndex}`} style={{gridTemplateColumns:`var(--hf-nut) repeat(${visibleFrets.length}, minmax(var(--hf-fret), 1fr))`}} key={row.name}><b>{row.name}<small>{"String"}</small></b>{row.frets.map(cell=>{const picked=selected===cell.pc,destination=selectedDestination===cell.pc,under=heardAt.has(cell.key),sounding=heardPc===cell.pc&&!under;return <button type="button" aria-pressed={picked} aria-label={under?`${cell.label}, playing now`:cell.label} onClick={cell.select} tabIndex={cursor.s===row.stringIndex&&cursor.f===cell.col?0:-1} onFocus={()=>{if(cursorRef.current.s!==row.stringIndex||cursorRef.current.f!==cell.col)moveCursor({s:row.stringIndex,f:cell.col})}} ref={el=>{if(el)padRefs.current.set(cell.key,el);else padRefs.current.delete(cell.key)}} className={`role-${cell.roleId} ${cell.shown?"visible":"hidden"} ${picked?"picked":""} ${destination?"destination":""} ${under?"under":""} ${sounding?"sounding":""}`} key={cell.fret}><i/><b dir="ltr">{cell.text}</b>{cell.note!==null&&<small dir="ltr">{cell.note}</small>}</button>})}</div>)}</div></div>
   </section>
 
   <section className="hfCurrent">
-   <article className="hfChordDecode"><span>{"02 · DECODE THE CURRENT CHORD"}</span><div><b dir="ltr">{current.symbol}</b><small>{FAMILY_NAMES[current.family][0]}</small></div><p>{familyJob(current.family)}</p><dl><div><dt>{"FORMULA"}</dt><dd dir="ltr">{chordFormula.join(" · ")}</dd></div><div><dt>{"NOTES"}</dt><dd dir="ltr">{chordNotes.join(" · ")}</dd></div><div><dt>{"BASS ORDER"}</dt><dd>{current.bass===current.root?`${PITCH_NAMES[current.root]} · ROOT POSITION`:`${PITCH_NAMES[current.bass]} · SLASH BASS (upper root ${PITCH_NAMES[current.root]})`}</dd></div></dl><button type="button" className="hfChordPreview" disabled={autoFollow||countIn} onClick={()=>void playChordAudio(current,1,tempo)}>▶ {"HEAR THIS COMPLETE CHORD"}</button></article>
-   <article className="hfAutoFollow"><span>{"HANDS-FREE BASS BACKING BAND"}</span><h3>{countIn?"Four beats. Get your hands ready.":autoFollow?"The band is playing. You are the bassist.":"One Start. A complete band behind you."}</h3><div className="hfTimingControls"><label>{"TEMPO"}<input type="number" min="35" max="220" disabled={autoFollow||countIn} value={tempo} onChange={e=>setTempo(Math.max(35,Math.min(220,+e.target.value||80)))}/></label><label>{"BARS / CHORD"}<select disabled={autoFollow||countIn} value={barsPerChord} onChange={e=>setBarsPerChord(+e.target.value)}><option value="1">1</option><option value="2">2</option><option value="4">4</option></select></label></div><label className="hfBandStyle"><span>{"BAND FEEL"}</span><select disabled={autoFollow||countIn} value={bandStyle} onChange={e=>setBandStyle(e.target.value as BandStyleId)}>{BAND_STYLES.map(style=><option value={style.id} key={style.id}>{style.name[0]}</option>)}</select><small>{selectedBandStyle.feel[0]}</small></label><div className="hfBandMixer"><header><span>{"BAND MIXER"}</span><b>{"NO BASSLINE — THAT IS YOUR PART"}</b></header><div>{(["drums","keys","guitar","cue"] as const).map((track,index)=>{const labels=[["DRUMS","درامز"],["KEYS / CHORDS","كيز / كوردات"],["RHYTHM GUITAR","جيتار ريذم"],["CHANGE CUE","إشارة التغيير"]][index];return <button type="button" disabled={autoFollow||countIn} aria-pressed={bandMix[track]} className={bandMix[track]?"active":""} onClick={()=>setBandMix(value=>({...value,[track]:!value[track]}))} key={track}><i>{bandMix[track]?"●":"○"}</i><span>{labels[0]}</span></button>})}</div></div><label className="hfHarmonyLevel"><span>{"BAND VOLUME"}</span><input type="range" min="0" max="100" value={harmonyLevel} onChange={e=>setHarmonyLevel(+e.target.value)}/><b>{harmonyLevel}%</b></label><div className="hfSounding"><small>{`${selectedBandStyle.name[0].toUpperCase()} · FULL VOICING NOW`}</small><b dir="ltr">{current.symbol} · {chordNotes.join(" · ")}</b><span>{`Drums hold the grid; keys state all ${current.intervals.length} written tones; rhythm guitar supplies movement. The optional change cue names ${current.bassName}, but never plays a bassline.`}</span></div><button type="button" className={autoFollow||countIn?"stop":""} onClick={()=>void toggleProgression()}>{countIn?"■ CANCEL COUNT-IN":autoFollow?"■ STOP FULL BAND":"▶ PLAY FULL BAND BACKING TRACK"}</button><p>{countIn?`Then the band enters together on ${chords[0]?.symbol||current.symbol}.`:`Next change: ${next.symbol} after ${barsPerChord} bar${barsPerChord===1?"":"s"}. Click any chord above to jump without stopping.`}</p><small className="hfHeadphoneNote">{"HEADPHONES / AUDIO INTERFACE RECOMMENDED FOR CLEAN PITCH DETECTION"}</small>{(autoFollow||countIn)&&<i className="hfAutoPulse" style={{animationDuration:`${countIn?Math.round(60000/tempo*4):durationMs}ms`}}/>}</article>
+   <article className="hfChordDecode"><span>{"02 · DECODE THE CURRENT CHORD"}</span><div><b dir="ltr">{current.symbol}</b><small>{FAMILY_NAMES[current.family]}</small></div><p>{familyJob(current.family)}</p><dl><div><dt>{"Formula"}</dt><dd dir="ltr">{chordFormula.join(" · ")}</dd></div><div><dt>{"Notes"}</dt><dd dir="ltr">{chordNotes.join(" · ")}</dd></div><div><dt>{"Bass order"}</dt><dd>{current.bass===current.root?`${PITCH_NAMES[current.root]} · ROOT POSITION`:`${PITCH_NAMES[current.bass]} · SLASH BASS (upper root ${PITCH_NAMES[current.root]})`}</dd></div></dl><button type="button" className="hfChordPreview" disabled={autoFollow||countIn} onClick={()=>void playChordAudio(current,1,tempo)}>▶ {"Hear this complete chord"}</button></article>
+   <article className="hfAutoFollow"><h3>{countIn?"Four beats. Get your hands ready.":autoFollow?"The band is playing. You are the bassist.":"One Start. A complete band behind you."}</h3><div className="hfTimingControls"><label>{"Tempo"}<input type="number" min="35" max="220" disabled={autoFollow||countIn} value={tempo} onChange={e=>setTempo(Math.max(35,Math.min(220,+e.target.value||80)))}/></label><label>{"Bars / chord"}<select disabled={autoFollow||countIn} value={barsPerChord} onChange={e=>setBarsPerChord(+e.target.value)}><option value="1">1</option><option value="2">2</option><option value="4">4</option></select></label></div><label className="hfBandStyle"><span>{"Band feel"}</span><select disabled={autoFollow||countIn} value={bandStyle} onChange={e=>setBandStyle(e.target.value as BandStyleId)}>{BAND_STYLES.map(style=><option value={style.id} key={style.id}>{style.name}</option>)}</select><small>{selectedBandStyle.feel}</small></label><div className="hfBandMixer"><header><span>{"Band mixer"}</span><b>{"NO BASSLINE, THAT IS YOUR PART"}</b></header><div>{(["drums","keys","guitar","cue"] as const).map((track,index)=>{const label=["DRUMS","KEYS / CHORDS","RHYTHM GUITAR","CHANGE CUE"][index];return <button type="button" disabled={autoFollow||countIn} aria-pressed={bandMix[track]} className={bandMix[track]?"active":""} onClick={()=>setBandMix(value=>({...value,[track]:!value[track]}))} key={track}><i>{bandMix[track]?"●":"○"}</i><span>{label}</span></button>})}</div></div><label className="hfHarmonyLevel"><span>{"Band volume"}</span><input type="range" min="0" max="100" value={harmonyLevel} onChange={e=>setHarmonyLevel(+e.target.value)}/><b>{harmonyLevel}%</b></label><div className="hfSounding"><small>{`${selectedBandStyle.name.toUpperCase()} · FULL VOICING NOW`}</small><b dir="ltr">{current.symbol} · {chordNotes.join(" · ")}</b><span>{`Drums hold the grid; keys state all ${current.intervals.length} written tones; rhythm guitar supplies movement. The optional change cue names ${current.bassName}, but never plays a bassline.`}</span></div><button type="button" className={autoFollow||countIn?"stop":""} onClick={()=>void toggleProgression()}>{countIn?"■ CANCEL COUNT-IN":autoFollow?"■ STOP FULL BAND":"▶ PLAY FULL BAND BACKING TRACK"}</button><p>{countIn?`Then the band enters together on ${chords[0]?.symbol||current.symbol}.`:`Next change: ${next.symbol} after ${barsPerChord} bar${barsPerChord===1?"":"s"}. Click any chord above to jump without stopping.`}</p><small className="hfHeadphoneNote">{"Headphones / audio interface recommended for clean pitch detection"}</small>{(autoFollow||countIn)&&<i className="hfAutoPulse" style={{animationDuration:`${countIn?Math.round(60000/tempo*4):durationMs}ms`}}/>}</article>
   </section>
+
+  <section className="hfBuilder">
+   <header><div><h2>{"Progression first. Scale second."}</h2></div><p>{"The same G7 can ask for Mixolydian, Lydian dominant, diminished or altered language depending on its spelling and destination."}</p></header>
+   <div className="hfBuilderControls">
+    <label><span>{"Progression library"}</span><select value={presetId} onChange={e=>e.target.value!=="custom"&&applyPreset(e.target.value)}><option value="custom">{"Custom progression"}</option>{PROGRESSION_PRESETS.map(p=><option value={p.id} key={p.id}>{p.name}</option>)}</select></label>
+    <label><span>{"Tonal centre"}</span><select value={centre} onChange={e=>{const value=+e.target.value;setCentre(value);onSetRoot(value)}}>{PITCH_NAMES.map((note,i)=><option value={i} key={note}>{note}</option>)}</select></label>
+    <label><span>{"Home field"}</span><select value={homeMode} onChange={e=>onSetMode(+e.target.value)}>{HOME_FIELDS.map((name,i)=><option value={i} key={name}>{name}</option>)}</select></label>
+    <label><span>{"Decision lens"}</span><select value={lens} onChange={e=>setLens(e.target.value)}><option value="functional">{"Functional / directional"}</option><option value="modal">{"Modal / one centre"}</option><option value="modern">{"Modern / colour-first"}</option></select></label>
+   </div>
+   <div className="hfCustomInput"><label><span>{"Edit or paste chord symbols"}</span><input dir="ltr" value={draft} onChange={e=>{setDraft(e.target.value);setPresetId("custom")}} onKeyDown={e=>e.key==="Enter"&&applyCustom()} aria-label="Chord progression"/></label><button type="button" onClick={applyCustom}>{"ANALYZE PROGRESSION"}</button></div>
+   <p className="hfInputHelp">{"Understands: maj9 · m11 · mMaj9 · 13sus4 · 7alt · 13♭9 · m7♭5 · dim7 · maj7♯5 · slash bass. Literal extension rule: 13 includes 7, 9, 11 and 13; C(13) adds only 13. Separate up to 12 chords with |."}</p>
+   {(applyError||current.error)&&<p className="hfError">{applyError||"The main chord structure loaded, but review this symbol’s spelling."}</p>}
+   <nav className="hfChordRail" aria-label={"Chord progression"}>{chords.map((chord,i)=><button type="button" onClick={()=>activate(i)} className={active===i?"active":i===(active+1)%chords.length?"next":""} key={`${chord.symbol}-${i}`}><small>{active===i?"NOW":i===(active+1)%chords.length?"Next":`${i+1}`}</small><b dir="ltr">{chord.symbol}</b><span>{PITCH_NAMES[chord.bass]} {"in bass"}</span></button>)}</nav>
+  </section>
+  </div>
+
+  <aside className="hfContext" aria-label="Current harmony">
+  <section className="hfMapControls"><div><span>{"Labels"}</span>{viewLabels.map(([value,label])=><button type="button" aria-pressed={actualDisplay===value} className={actualDisplay===value?"active":""} onClick={()=>onDisplayMode(value)} key={value}>{label}</button>)}</div><div><span>{"Show"}</span>{filterLabels.map(([value,label])=><button type="button" aria-pressed={filter===value} className={filter===value?"active":""} onClick={()=>onFog(value)} key={value}>{label}</button>)}</div><div><span>{"Neck area"}</span>{rangeLabels.map(([value,label])=><button type="button" aria-pressed={neckRange===value} className={neckRange===value?"active":""} onClick={()=>setNeckRange(value)} key={value}>{label}</button>)}</div></section>
 
   <section className="hfModes">
-   <header><div><span>{"03 · RANKED CHORD-SCALE OPTIONS"}</span><h2>{"Several can be correct. Their jobs are different."}</h2></div><p>{"Percentages rank literal chord fit, tonal-centre overlap and connection into the next chord. They are guidance—not a law that replaces your ear."}</p></header>
-   <div>{recommendations.map((recommendation,i)=>{const chosen=recommendation.scale.id===selectedScale.id;return <article className={chosen?"active":""} key={recommendation.scale.id}><button className="hfModeSelect" type="button" onClick={()=>setChoice({key:currentKey,scale:recommendation.scale.id})}><small>{i===0?"BEST STARTING POINT":i===1?"CONTEXT OPTION":"ALTERNATIVE COLOUR"}</small><b>{PITCH_NAMES[current.root]} {recommendation.scale.name}</b><strong>{recommendation.score}%</strong><code dir="ltr">{recommendation.scale.formula}</code><p>{recommendation.reason.en} {recommendation.scale.use.en}</p><em>{"WATCH · "}{recommendation.scale.watch.en}</em></button><button type="button" className="hfHear" onClick={()=>onAudition([...recommendation.scale.intervals.map(iv=>mod(current.root+iv)),current.root],.22,current.root)}>▶ {"HEAR"}</button></article>})}</div>
-  </section>
-
-  <section className="hfMapControls"><div><span>{"LABELS"}</span>{viewLabels.map(([value,en,ar])=><button type="button" aria-pressed={actualDisplay===value} className={actualDisplay===value?"active":""} onClick={()=>onDisplayMode(value)} key={value}>{en}</button>)}</div><div><span>{"SHOW"}</span>{filterLabels.map(([value,en,ar])=><button type="button" aria-pressed={filter===value} className={filter===value?"active":""} onClick={()=>onFog(value)} key={value}>{en}</button>)}</div><div><span>{"NECK AREA"}</span>{rangeLabels.map(([value,en,ar])=><button type="button" aria-pressed={neckRange===value} className={neckRange===value?"active":""} onClick={()=>setNeckRange(value)} key={value}>{en}</button>)}</div></section>
-
-  <section className={`hfNeckSection ${filter===4?"blind":""}`}>
-   <header><div><span>{"04 · THE NECK RE-RANKED FOR THIS MOMENT"}</span><h2 dir="ltr">{current.symbol} → {next.symbol}</h2></div><p>{"Low register: bass/root/5. Middle register: guide tones and voice leading. Upper register: written tensions and modal colour. The same pitch class can have a different practical weight in each register."}</p></header>
-   <div className="hfLegend">{(["bass","root","guide","chord","specified","voice","colour","available","context","approach","outside"] as const).map(id=><span className={`role-${id}`} key={id}><i/>{NOTE_ROLES[id].short.en}</span>)}</div>
-   <div className="hfBoardWrap"><div className="hfBoard" style={{minWidth:`${Math.max(780,visibleFrets.length*72+70)}px`}}><div className="hfFretNumbers" style={{gridTemplateColumns:`58px repeat(${visibleFrets.length}, minmax(64px, 1fr))`}}><b>{"STRING"}</b>{visibleFrets.map(f=><span className={[3,5,7,9,12,15,17,19].includes(f)?"marked":""} key={f}>{f}<i/></span>)}</div>{STRINGS.map((string,stringIndex)=><div className={`hfString string-${stringIndex}`} style={{gridTemplateColumns:`58px repeat(${visibleFrets.length}, minmax(64px, 1fr))`}} key={string.name}><b>{string.name}<small>{"STRING"}</small></b>{visibleFrets.map(fret=>{const pc=mod(string.open+fret),role=classifyNote(pc,current,selectedScale,next),show=visible(role),picked=selected===pc,destination=selectedDestination===pc;return <button type="button" aria-pressed={picked} aria-label={`${string.name} string fret ${fret}: ${PITCH_NAMES[pc]}, ${role.label.en}`} onClick={()=>onSelectPc(pc)} className={`role-${role.id} ${show?"visible":"hidden"} ${picked?"picked":""} ${destination?"destination":""}`} key={fret}><i/><b dir="ltr">{filter===4?"?":cellText(pc,role)}</b><small dir="ltr">{filter===4?"":PITCH_NAMES[pc]}</small></button>})}</div>)}</div></div>
+   <header><div><h2>{"Several can be correct. Their jobs are different."}</h2></div><p>{"Percentages rank literal chord fit, tonal-centre overlap and connection into the next chord. They are guidance, not a law that replaces your ear."}</p></header>
+   <div>{recommendations.map((recommendation,i)=>{const chosen=recommendation.scale.id===selectedScale.id;return <article className={chosen?"active":""} key={recommendation.scale.id}><button className="hfModeSelect" type="button" onClick={()=>setChoice({key:currentKey,scale:recommendation.scale.id})}><small>{i===0?"Best starting point":i===1?"Context option":"Alternative colour"}</small><b>{PITCH_NAMES[current.root]} {recommendation.scale.name}</b><strong>{recommendation.score}%</strong><code dir="ltr">{recommendation.scale.formula}</code><p>{recommendation.reason} {recommendation.scale.use}</p><span className="hfWorking">{(()=>{
+     const total=current.intervals.length,covered=total-recommendation.missing.length;
+     return <>
+      <em className={recommendation.missing.length?"short":""}>{covered}/{total} chord tones</em>
+      {recommendation.missing.length>0&&<em className="short">{"no "}{recommendation.missing.map(iv=>degreeAt(iv).names[0]).join(", ")}</em>}
+      <em>{recommendation.contextOverlap}{"/7 shared with the key"}</em>
+      {recommendation.commonNext>0&&<em>{recommendation.commonNext}{" lead into the next chord"}</em>}
+     </>;
+    })()}</span><em>{"Watch · "}{recommendation.scale.watch}</em></button><button type="button" className="hfHear" onClick={()=>onAudition([...recommendation.scale.intervals.map(iv=>mod(current.root+iv)),current.root],.22,current.root)}>▶ {"Hear"}</button></article>})}</div>
   </section>
 
   <section className="hfNoteTutor">
-   <div className={`hfRoleBadge role-${selectedRole.id}`}><i/><span>{selectedRole.short.en}</span></div>
-   <article><span>{"SELECTED NOTE"}</span><h2>{selectedName} <small dir="ltr">{intervalLabel(selectedIv,current)} {"over"} {current.symbol}</small></h2><h3>{selectedRole.label.en}</h3><p>{selectedRole.why.en}</p></article>
-   <article><span>{"BASS DECISION"}</span><p>{selectedRole.advice.en}</p><dl><div><dt>{"NEXT TARGET"}</dt><dd>{selectedDestinationName} · {intervalLabel(selectedDestination-next.root,next)} / {next.symbol}</dd></div><div><dt>{"MOVEMENT"}</dt><dd>{Math.min(mod(selectedDestination-selected),mod(selected-selectedDestination))===0?"COMMON TONE":Math.min(mod(selectedDestination-selected),mod(selected-selectedDestination))===1?"SEMITONE PULL":"DIRECTED STEP / LEAP"}</dd></div></dl></article>
+   <div className={`hfRoleBadge role-${selectedRole.id}`}><i/><span>{selectedRole.short}</span></div>
+   <article><h2>{selectedName} <small dir="ltr">{intervalLabel(selectedIv,current)} {"over"} {current.symbol}</small></h2><h3>{selectedRole.label}</h3><p>{selectedRole.why}</p></article>
+   <article><span>{"Bass decision"}</span><p>{selectedRole.advice}</p><dl><div><dt>{"Next target"}</dt><dd>{selectedDestinationName} · {intervalLabel(selectedDestination-next.root,next)} / {next.symbol}</dd></div><div><dt>{"Movement"}</dt><dd>{Math.min(mod(selectedDestination-selected),mod(selected-selectedDestination))===0?"Common tone":Math.min(mod(selectedDestination-selected),mod(selected-selectedDestination))===1?"Semitone pull":"Directed step / leap"}</dd></div></dl></article>
    <button type="button" onClick={()=>onAudition([current.root,selected,selectedDestination],.42,current.root)}>▶ {"HEAR: HOME → NOTE → NEXT TARGET"}</button>
   </section>
 
-   <section className="hfVoiceLeading"><header><div><span>{"05 · DO NOT STOP AT THE SCALE"}</span><h2>{"Make the next chord inevitable."}</h2></div><p>{"These are the smallest useful routes between bass notes, roots, 3rds and 7ths. Choose one before adding chromatic decoration."}</p></header><div className="hfVoiceGrid">{paths.map((path,i)=><button type="button" onClick={()=>onAudition([path.from,path.to],.55,current.root)} key={`${path.from}-${path.to}-${i}`}><small>{i===0?"SHORTEST ROUTE":"VOICE OPTION"}</small><b dir="ltr">{current.intervals.includes(mod(path.from-current.root))?spellChordNote(current,path.from-current.root):PITCH_NAMES[path.from]} <i>{path.distance===0?"=":path.distance>0?`+${path.distance}`:path.distance}</i> {next.intervals.includes(mod(path.to-next.root))?spellChordNote(next,path.to-next.root):PITCH_NAMES[path.to]}</b><span dir="ltr">{path.fromDegree} / {current.symbol} → {path.toDegree} / {next.symbol}</span></button>)}</div><footer><div><span>{"COMMON TONES"}</span><b>{shared.length?shared.map(pc=>PITCH_NAMES[pc]).join(" · "):"NONE — movement must be audible"}</b></div><div><span>{"PRIMARY BASS LANDING"}</span><b dir="ltr">{next.bassName} · {next.bass===next.root?"ROOT":"SLASH ORDER"}</b></div><button type="button" onClick={()=>onAudition(paths.flatMap(path=>[path.from,path.to]),.32,current.root)}>▶ {"HEAR ALL ROUTES"}</button></footer></section>
+   <section className="hfVoiceLeading"><header><div><h2>{"Make the next chord inevitable."}</h2></div><p>{"These are the smallest useful routes between bass notes, roots, 3rds and 7ths. Choose one before adding chromatic decoration."}</p></header><div className="hfVoiceGrid">{paths.map((path,i)=><button type="button" onClick={()=>onAudition([path.from,path.to],.55,current.root)} key={`${path.from}-${path.to}-${i}`}><small>{i===0?"Shortest route":"Voice option"}</small><b dir="ltr">{current.intervals.includes(mod(path.from-current.root))?spellChordNote(current,path.from-current.root):PITCH_NAMES[path.from]} <i>{path.distance===0?"=":path.distance>0?`+${path.distance}`:path.distance}</i> {next.intervals.includes(mod(path.to-next.root))?spellChordNote(next,path.to-next.root):PITCH_NAMES[path.to]}</b><span dir="ltr">{path.fromDegree} / {current.symbol} → {path.toDegree} / {next.symbol}</span></button>)}</div><footer><div><span>{"Common tones"}</span><b>{shared.length?shared.map(pc=>PITCH_NAMES[pc]).join(" · "):"NONE. Movement must be audible"}</b></div><div><span>{"Primary bass landing"}</span><b dir="ltr">{next.bassName} · {next.bass===next.root?"Root":"Slash order"}</b></div><button type="button" onClick={()=>onAudition(paths.flatMap(path=>[path.from,path.to]),.32,current.root)}>▶ {"Hear all routes"}</button></footer></section>
+  </aside>
  </div>;
 }

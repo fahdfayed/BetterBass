@@ -3,11 +3,65 @@
  <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#090a08" />
+  <meta name="theme-color" content="#101619" />
   <meta name="description" content="A complete interactive bass-learning environment for harmony, time, fretboard command, Arabic maqamat, slap technique and guided practice." />
-  <title>Outside In — Bass Lab</title>
+  <!--
+   The faces are declared in src/styles/fonts.css and served from this origin.
+   Nothing is hotlinked: a third-party font stylesheet does not arrive in this
+   project and the failure is silent, so the page keeps its layout and quietly
+   wears system-ui, which is how a design ships in the wrong face unnoticed.
+
+   Preload only what renders above the fold on the opening page: the printer's
+   serif that sets the reading, and the engraver's italic that strikes the
+   title across the head of it. Inter is stamped at label size and Caveat only
+   appears in the margins, so both can arrive a beat late. Bravura is 313K and
+   the first stave is below the fold.
+  -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="/fonts/sourceserif-var.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="/fonts/playfair-var-italic.woff2" />
+  <title>Outside In: Bass Lab</title>
  </head>
  <body>
+  <!--
+   DIRECTION CONTRACT
+
+   THESIS: This is a music book, open on a stand, with the instrument along the
+   bottom edge. It refuses the dark photographic world it replaces — the
+   picture is gone, and so is the glass floating over it — and it refuses the
+   web application both of them were wearing underneath. Paper is the ground,
+   not a theme; the stave is the grid; and the page is printed, annotated in
+   pencil, and worked from, in that order.
+
+   OWN-WORLD: Warm ivory paper on a dark stand. Ink at four steps, ruled in
+   engraver's grey, with one vermillion that marks what is live and what to
+   press. Playfair Display strikes the titles and the large numerals; Source
+   Serif prints everything read; Inter is stamped small, uppercase and tracked,
+   as the engraved plate label above every control; Caveat writes the margin in
+   pencil blue; Bravura engraves real SMuFL clefs, noteheads and time
+   signatures on real five-line staves. Boxes are ruled rectangles. Nothing is
+   a pill except a switch, because a switch is a switch.
+
+   STORY: A player opens the book to today's page, reads the standard on the
+   right, works down the list on the left, and proves it on the instrument
+   docked along the bottom.
+
+   FIRST VIEWPORT: The bound spread, edge to edge on the stand. Left page: the
+   wordmark, the section in vermillion under a red rule, the ordered list set
+   on staves with a clef per line, and the focus note pencilled at the foot.
+   Right page: the five section tabs across the head, then the title struck
+   large in Playfair italic with its one-line standard beneath. The transport
+   runs the full width along the bottom, its play key the one vermillion fill.
+
+   FORM: The music book. Pinned by the user with seven comps and confirmed in
+   words — no roll ran, and none was owed: a brief-pinned direction beats the
+   deal, always.
+
+   FINISH: unreviewed and undocumented is unfinished; this build ends with the
+   finish review, the verdict, DESIGN.md, and every shipping raster carrying
+   its provenance.
+  -->
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
  </body>

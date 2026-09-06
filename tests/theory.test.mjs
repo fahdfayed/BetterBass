@@ -1,0 +1,447 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import {DEGREE_NAMES,MODES,parseChord,PITCH_NAMES,PROGRESSION_PRESETS,SCALE_LIBRARY} from "../src/harmony-fretboard-data.ts";
+import {THEORY_DICTIONARIES,THEORY_DOMAINS} from "../src/bass-theory-data.ts";
+import {COURSE_LESSONS} from "../src/course-data.ts";
+import {JACO_EXERCISES} from "../src/tab/jaco-masterclass.ts";
+import {DEGREES,isDegreeFormula,semitonesOf,SHORT_NAMES} from "../src/theory/degrees.ts";
+import {verdict} from "../src/take-verdict.ts";
+
+/**
+ * Theory checks.
+ *
+ * The rest of the suite asks whether a tab is well-formed — that its bars add
+ * up, that its frets exist, that the pitch you wrote is the pitch that sounds.
+ * None of it asks whether the music is *right*, which is how a G minor sat
+ * inside a C major exercise for several passes. These tests read the written
+ * theory and check it against itself.
+ */
+
+/*
+ * The degree table under test is the same one the site renders from, so a
+ * formula measured here is measured exactly as a reader sees it explained.
+ */
+const parseFormula=formula=>formula.trim().split(/\s+/).map(token=>{
+ const value=semitonesOf(token);
+ assert.notEqual(value,undefined,`unknown degree "${token}" in "${formula}"`);
+ return value;
+});
+
+test("every scale's formula produces exactly the intervals it declares",()=>{
+ for(const scale of SCALE_LIBRARY){
+  assert.deepEqual(parseFormula(scale.formula),scale.intervals,
+   `${scale.id}: "${scale.formula}" does not spell [${scale.intervals}]`);
+ }
+});
+
+test("every scale is ordered, has no repeats, and owns its character tones",()=>{
+ for(const scale of SCALE_LIBRARY){
+  assert.deepEqual(scale.intervals,[...scale.intervals].sort((a,b)=>a-b),`${scale.id}: intervals out of order`);
+  assert.equal(new Set(scale.intervals).size,scale.intervals.length,`${scale.id}: duplicate interval`);
+  assert.ok(scale.character.length>0,`${scale.id}: no character tone`);
+  for(const tone of scale.character){
+   assert.ok(scale.intervals.includes(tone),`${scale.id}: character ${tone} is not in [${scale.intervals}]`);
+  }
+ }
+});
+
+test("the seven modes are the first seven scales, and stay that way",()=>{
+ // MODES is derived from SCALE_LIBRARY so the two cannot disagree; this pins
+ // the order and the identifying tone, which a reorder of the library would
+ // silently change.
+ assert.deepEqual(MODES.map(mode=>mode.n),
+  ["Ionian","Dorian","Phrygian","Lydian","Mixolydian","Aeolian","Locrian"]);
+ assert.deepEqual(MODES.map(mode=>mode.s[mode.c]),[11,9,1,6,10,8,6],
+  "the tone that identifies each mode against its neighbour");
+ for(const mode of MODES)assert.ok(mode.c>=0,`${mode.n}: character tone not found in its own scale`);
+});
+
+test("interval rows agree with the distance they name",()=>{
+ // These rows are written as prose ("7 SEMITONES · 5") and the number is also
+ // stored separately, because the reference renders a worked example from it.
+ // Two places to state the same fact is two places to get it wrong: the octave
+ // row said zero, and rendered correctly only because a pitch class repeats.
+ let checked=0;
+ for(const dictionary of THEORY_DICTIONARIES)for(const row of dictionary.rows){
+  if(row.semitones===undefined)continue;
+  const stated=/^(\d+)\s+SEMITONES?/i.exec(row.formula);
+  assert.ok(stated,`${row.name}: "${row.formula}" does not open with a semitone count`);
+  assert.equal(row.semitones,Number(stated[1]),
+   `${row.name}: formula says ${stated[1]} semitones, the field says ${row.semitones}`);
+  assert.ok(row.semitones>=0&&row.semitones<=12,`${row.name}: ${row.semitones} is outside an octave`);
+  checked++;
+ }
+ assert.equal(checked,13,`expected the thirteen intervals of the octave, found ${checked}`);
+});
+
+test("degree formulas everywhere are written in degrees the system knows",()=>{
+ // Not ordering: a chord formula names extensions above the octave ("1 3 5 7 9"
+ // puts the 9th above the 7th), and degree shorthand is deliberately
+ // octave-agnostic, so the tokens do not ascend numerically. What must hold is
+ // that every token is a degree the site can resolve, and that none repeats.
+ let checked=0;
+ for(const dictionary of THEORY_DICTIONARIES)for(const row of dictionary.rows){
+  if(!isDegreeFormula(row.formula))continue;   // alternatives and prose are not measurable
+  const tokens=row.formula.trim().split(/\s+/);
+  parseFormula(row.formula);
+  assert.equal(new Set(tokens).size,tokens.length,
+   `${dictionary.id} / ${row.name}: "${row.formula}" names a degree twice`);
+  checked++;
+ }
+ assert.ok(checked>=30,`only ${checked} degree formulas were measurable`);
+});
+
+test("every concept formula is written in degrees the system knows",()=>{
+ for(const domain of THEORY_DOMAINS)for(const concept of domain.concepts??[]){
+  if(!/^[0-9♭♯𝄫 ]+$/.test(concept.formula))continue;   // prose formulas are not degree lists
+  parseFormula(concept.formula);
+ }
+});
+
+test("degree and pitch name tables cover the octave once",()=>{
+ assert.equal(PITCH_NAMES.length,12);
+ assert.equal(DEGREE_NAMES.length,12);
+ assert.equal(new Set(PITCH_NAMES).size,12,"a pitch name is repeated");
+});
+
+test("lesson degrees are inside the octave and own their character tones",()=>{
+ COURSE_LESSONS.forEach((lesson,index)=>{
+  // The worked-example table prints one row per degree, so a repeat is a
+  // duplicated row rather than a rhythm.
+  assert.equal(new Set(lesson.intervals).size,lesson.intervals.length,
+   `lesson ${index+1} "${lesson.title}": [${lesson.intervals}] repeats a degree`);
+  for(const degree of [...lesson.intervals,...lesson.character]){
+   assert.ok(degree>=0&&degree<=11,
+    `lesson ${index+1} "${lesson.title}": degree ${degree} is outside 0-11`);
+  }
+  for(const tone of lesson.character){
+   assert.ok(lesson.intervals.includes(tone),
+    `lesson ${index+1} "${lesson.title}": character ${tone} is not among its own degrees`);
+  }
+ });
+});
+
+/* ---- the masterclass harmony, identified by shape rather than by label ---- */
+
+const NOTE=["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B"];
+const degreesOf=id=>{
+ const exercise=JACO_EXERCISES.find(x=>x.id===id);
+ assert.ok(exercise,`no exercise ${id}`);
+ return exercise.bars.flat().filter(event=>event.t==="n").map(event=>event.deg);
+};
+
+/** What chord is this, from its pitches alone? */
+function identify(three){
+ const pitches=[...new Set(three.map(d=>((d%12)+12)%12))];
+ if(pitches.length!==3)return null;
+ for(const root of pitches){
+  const shape=pitches.map(p=>(((p-root)%12)+12)%12).sort((a,b)=>a-b).join();
+  if(shape==="0,4,7")return {root,quality:"major"};
+  if(shape==="0,3,7")return {root,quality:"minor"};
+  if(shape==="0,3,6")return {root,quality:"diminished"};
+  if(shape==="0,4,8")return {root,quality:"augmented"};
+ }
+ return null;
+}
+
+test("the four triad drills really are the four triad types",()=>{
+ const want=[["jaco-tri-1","major"],["jaco-tri-2","minor"],["jaco-tri-3","augmented"],["jaco-tri-4","diminished"]];
+ for(const [id,quality] of want){
+  const found=identify(degreesOf(id).slice(0,3));
+  assert.ok(found,`${id}: not a recognisable triad`);
+  assert.equal(found.quality,quality,`${id} is ${found.quality}`);
+ }
+});
+
+test("the diatonic triads of C are major, minor and diminished in the right order",()=>{
+ // This is the check that caught a G minor written where the V of C belongs.
+ const expected=["major","minor","minor","major","major","minor","diminished"];
+ const degrees=degreesOf("jaco-dia-1");
+ expected.forEach((quality,i)=>{
+  const found=identify(degrees.slice(i*6,i*6+3));
+  assert.ok(found,`degree ${i+1}: not a recognisable triad`);
+  assert.equal(found.quality,quality,`degree ${i+1} of C major is ${found.quality}, not ${quality}`);
+ });
+});
+
+test("every tritone pair is the same quality, six semitones away",()=>{
+ for(const id of ["jaco-tt-1","jaco-tt-2"]){
+  const degrees=degreesOf(id);
+  assert.equal(degrees.length%6,0,`${id}: not built from three-note groups`);
+  assert.equal(degrees.length/6,7,`${id}: a major key has seven triads`);
+  for(let i=0;i<degrees.length;i+=6){
+   const up=identify(degrees.slice(i,i+3)),down=identify(degrees.slice(i+3,i+6));
+   const pair=`${id} pair ${i/6+1}`;
+   assert.ok(up&&down,`${pair}: not a recognisable triad`);
+   assert.equal(up.quality,down.quality,
+    `${pair}: ${NOTE[up.root]} ${up.quality} answered by ${NOTE[down.root]} ${down.quality}`);
+   assert.equal((((down.root-up.root)%12)+12)%12,6,
+    `${pair}: ${NOTE[up.root]} to ${NOTE[down.root]} is not a tritone`);
+  }
+ }
+});
+
+test("the seven diatonic sevenths of C are spelled correctly",()=>{
+ const expected=[[0,4,7,11],[2,5,9,12],[4,7,11,14],[5,9,12,16],[7,11,14,17],[9,12,16,19],[11,14,17,21]];
+ const degrees=degreesOf("jaco-7-1");
+ expected.forEach((chord,i)=>{
+  assert.deepEqual(degrees.slice(i*8,i*8+4),chord,`seventh chord on degree ${i+1}`);
+ });
+});
+
+test("only real harmonic nodes are written as harmonics",()=>{
+ // A fret that is not a node does not fail loudly — the renderer quietly sounds
+ // an octave instead, which is how a chord that was supposed to be a dominant
+ // ninth turned out to be a major triad.
+ const NODES=new Set([2,3,4,5,7,9,12,16,17,19,24]);
+ for(const exercise of JACO_EXERCISES){
+  for(const event of exercise.bars.flat()){
+   if(event.t!=="f"||event.harmonic!=="natural")continue;
+   assert.ok(NODES.has(event.fret),
+    `${exercise.id}: fret ${event.fret} is not a natural-harmonic node`);
+  }
+ }
+});
+
+test("the degree glossary covers the octave without collisions",()=>{
+ // This table is both what the site shows a reader and what every formula on
+ // the site is measured against, so a wrong entry is a wrong explanation and a
+ // wrong measurement at the same time.
+ assert.equal(DEGREES.length,13,"twelve semitones plus the octave");
+ assert.deepEqual(DEGREES.map(d=>d.semitones),[0,1,2,3,4,5,6,7,8,9,10,11,12]);
+
+ const seen=new Map();
+ for(const degree of DEGREES){
+  assert.ok(degree.label&&degree.meaning,`${degree.names[0]}: missing label or meaning`);
+  assert.ok(degree.meaning.length>25,`${degree.names[0]}: meaning is too thin to help`);
+  for(const name of degree.names){
+   assert.equal(seen.get(name),undefined,`"${name}" names two different distances`);
+   seen.set(name,degree.semitones);
+  }
+ }
+
+ // The spellings a reader actually meets in the site's own formulas.
+ assert.equal(semitonesOf("♭7"),10,"a flat seventh is ten semitones above the root");
+ assert.equal(semitonesOf("♯9"),semitonesOf("♭3"),"the same distance, named for its context");
+ assert.equal(semitonesOf("♯11"),semitonesOf("♭5"));
+ assert.equal(semitonesOf("not-a-degree"),undefined);
+});
+
+test("every scale formula on the site can be explained to a reader",()=>{
+ // The glossary is only useful if it recognises the shorthand actually used.
+ for(const scale of SCALE_LIBRARY){
+  assert.ok(isDegreeFormula(scale.formula),
+   `${scale.id}: "${scale.formula}" contains a symbol the glossary cannot explain`);
+ }
+});
+
+test("the compact degree labels agree with the glossary they come from",()=>{
+ // The fretboard, the games and the coach all label a distance the same way,
+ // and all three read it from the glossary rather than keeping a copy. Three
+ // copies is how one of them ends up disagreeing about a note.
+ assert.equal(SHORT_NAMES.length,12,"one label per semitone of the octave");
+
+ SHORT_NAMES.forEach((label,semitones)=>{
+  const degree=DEGREES[semitones];
+  for(const spelling of label.split("/")){
+   assert.ok(degree.names.includes(spelling),
+    `"${label}" offers ${spelling}, which is not a name for ${degree.label}`);
+   assert.equal(semitonesOf(spelling),semitones,
+    `${spelling} should be ${semitones} semitones above the root`);
+  }
+ });
+
+ // The tritone is the one distance with no single accepted spelling, so it is
+ // the one label that names both.
+ assert.equal(SHORT_NAMES.filter(l=>l.includes("/")).length,1);
+ assert.equal(SHORT_NAMES[6],"♯4/♭5");
+});
+
+test("the coach names the first thing that is actually wrong with a take",()=>{
+ // The verdict used to be a nested ternary written out twice, once for the
+ // heading and once for the advice, so the two could drift apart. It is one
+ // function now, and the order it tests in is the point: an unresolved
+ // departure is worth saying before a thin modal identity, and both are worth
+ // saying before "that was fine".
+ const note=(over)=>({id:1,midi:57,n:"A",oct:2,start:0,end:1,dur:400,amp:.1,
+                      beat:1,offset:0,fn:"ROOT",tension:0,resolution:"—",...over});
+
+ const dorian=1,characteristic=6;   // F♯, the major 6th above A
+
+ const stranded=verdict([note({tension:4,resolution:"unresolved"}),
+                         note({midi:54}),note({midi:54})],dorian,characteristic);
+ assert.match(stranded.heading,/The return was not always clear/,
+  "an unresolved departure outranks everything else, even with the colour present");
+
+ const colourless=verdict([note(),note({midi:55})],dorian,characteristic);
+ assert.equal(colourless.heading,
+  "Technically inside, but Dorian identity is weak: its 6 barely appears.");
+ assert.equal(colourless.advice,
+  "Feature the major 6th (F♯) twice, including once on beat 1 or 3. Avoid adding more notes.");
+
+ // Two uses of the characteristic tone is the threshold, not three.
+ const heard=verdict([note({midi:54}),note({midi:66})],dorian,characteristic);
+ assert.equal(heard.heading,"Harmonic intention is readable.");
+ assert.match(heard.advice,/25% more silence/);
+
+ // An empty take has no departure and no colour, so it lands on the middle case
+ // rather than congratulating a player who has not played.
+ assert.match(verdict([],dorian,characteristic).heading,/identity is weak/);
+});
+
+test("chord symbols are spelled the way a reader would spell them",()=>{
+ /*
+  * parseChord is what turns "Am9" into notes on the neck, so every claim the
+  * fretboard makes about a chord rests on it. These are the spellings that are
+  * not in dispute: if one of them ever changes, something upstream broke.
+  */
+ const SPELLINGS={
+  C:[0,4,7],Cm:[0,3,7],Cmaj7:[0,4,7,11],Cm7:[0,3,7,10],C7:[0,4,7,10],
+  "Cm7b5":[0,3,6,10],Cdim7:[0,3,6,9],Cdim:[0,3,6],Caug:[0,4,8],"C+":[0,4,8],
+  Csus2:[0,2,7],Csus4:[0,5,7],C6:[0,4,7,9],Cm6:[0,3,7,9],"C6/9":[0,2,4,7,9],
+  C9:[0,2,4,7,10],Cmaj9:[0,2,4,7,11],Cm9:[0,2,3,7,10],
+  C11:[0,2,4,5,7,10],C13:[0,2,4,5,7,9,10],"Cmaj7#11":[0,4,6,7,11],
+  "C7b9":[0,1,4,7,10],"C7#9":[0,3,4,7,10],"C7#5":[0,4,8,10],
+  CmMaj7:[0,3,7,11],Cadd9:[0,2,4,7],
+ };
+ for(const [symbol,expected] of Object.entries(SPELLINGS)){
+  const chord=parseChord(symbol);
+  assert.equal(chord.error,undefined,`${symbol} should be readable`);
+  const got=[...new Set(chord.intervals.map(iv=>((iv%12)+12)%12))].sort((a,b)=>a-b);
+  assert.deepEqual(got,[...expected].sort((a,b)=>a-b),
+   `${symbol} should be ${expected.join(" ")} above the root`);
+ }
+
+ // A slash chord keeps its own root; only the bass moves.
+ for(const [symbol,root,bass] of [["C/E",0,4],["Dm7/G",2,7],["Fmaj7/A",5,9]]){
+  const chord=parseChord(symbol);
+  assert.equal(chord.root,root,`${symbol} is rooted on its own letter`);
+  assert.equal(chord.bass,bass,`${symbol} puts the slash note in the bass`);
+ }
+
+ // Something unreadable says so rather than quietly becoming a C major triad,
+ // which is what it falls back to.
+ for(const bad of ["H7","xyz"]) assert.ok(parseChord(bad).error,`${bad} should report an error`);
+});
+
+test("every progression preset agrees with the key it declares",()=>{
+ for(const preset of PROGRESSION_PRESETS){
+  const chords=preset.chords.map(symbol=>{
+   const chord=parseChord(symbol);
+   assert.equal(chord.error,undefined,
+    `${preset.id}: "${symbol}" does not parse, so the whole preset is guesswork`);
+   return chord;
+  });
+
+  // The declared centre has to be a chord in the progression, or the preset
+  // names a home the player never actually arrives at.
+  const roots=chords.map(chord=>chord.root);
+  assert.ok(roots.includes(preset.center),
+   `${preset.id}: centre ${PITCH_NAMES[preset.center]} is not the root of any of `
+   +`${preset.chords.join(", ")}`);
+
+  // And the chord on that centre has to be the quality the home field claims.
+  const mode=MODES[preset.homeMode];
+  const modeThird=mode.s[2];
+  const tonic=chords[roots.indexOf(preset.center)];
+  const tonicThird=tonic.intervals.map(iv=>((iv%12)+12)%12).find(iv=>iv===3||iv===4);
+  assert.equal(tonicThird,modeThird,
+   `${preset.id}: ${tonic.symbol} is ${tonicThird===3?"minor":"major"} but `
+   +`${mode.n} has a ${modeThird===3?"minor":"major"} third`);
+
+  // A preset that says it is modal is claiming one field explains everything.
+  if(preset.lens==="modal"){
+   const field=new Set(mode.s.map(iv=>(preset.center+iv)%12));
+   for(const chord of chords){
+    const outside=chord.pcs.map(pc=>((pc%12)+12)%12).filter(pc=>!field.has(pc));
+    assert.deepEqual(outside,[],
+     `${preset.id} is modal, but ${chord.symbol} leaves `
+     +`${PITCH_NAMES[preset.center]} ${mode.n} on ${outside.map(pc=>PITCH_NAMES[pc]).join(" ")}`);
+   }
+  }
+ }
+});
+
+test("the scale dictionary explains every scale the fretboard offers",()=>{
+ const dictionary=THEORY_DICTIONARIES.find(d=>/scale/i.test(d.title));
+ assert.ok(dictionary,"there should be a scale dictionary to look scales up in");
+
+ // A row that names a scale the fretboard can select has to agree with it.
+ // Three rows once carried a description where the formula belongs — "H–W
+ // REPEATING" — which reads fine and cannot be checked, explained or heard.
+ for(const row of dictionary.rows){
+  assert.ok(isDegreeFormula(row.formula),
+   `"${row.name}" is written as "${row.formula}", which the glossary cannot explain`);
+ }
+
+ const spell=formula=>formula.split(/\s+/).map(token=>semitonesOf(token)).join(",");
+ for(const row of dictionary.rows){
+  const scale=SCALE_LIBRARY.find(s=>s.name.toLowerCase()===row.name.toLowerCase());
+  if(!scale)continue;
+  assert.equal(spell(row.formula),spell(scale.formula),
+   `${row.name}: the dictionary says "${row.formula}" and the fretboard plays "${scale.formula}"`);
+ }
+
+ // Any scale a player can pick has somewhere to read about it.
+ const explained=new Set(dictionary.rows.map(r=>r.name.toLowerCase()));
+ const named=name=>[...explained].some(row=>row===name||row.split(" / ").includes(name));
+ for(const scale of SCALE_LIBRARY){
+  const lower=scale.name.toLowerCase();
+  assert.ok(named(lower)||[...explained].some(row=>row.includes(lower)),
+   `${scale.name} can be chosen on the fretboard but is in no dictionary`);
+ }
+});
+
+test("the chord dictionary describes what the fretboard actually sounds",()=>{
+ const dictionary=THEORY_DICTIONARIES.find(d=>/chord/i.test(d.title));
+ assert.ok(dictionary,"there should be a chord dictionary");
+
+ /*
+  * A row and the chord reader have to agree, or a player reads one thing and
+  * hears another. The mapping is written out here rather than derived, so the
+  * test states the expectation instead of restating the data.
+  */
+ const EXAMPLES={
+  "Major triad":"C","Minor triad":"Cm","Diminished triad":"Cdim","Augmented triad":"Caug",
+  "Major 6":"C6","Minor 6":"Cm6","Major 7":"Cmaj7","Dominant 7":"C7","Minor 7":"Cm7",
+  "Minor-major 7":"CmMaj7","Half-diminished 7":"Cm7b5","Diminished 7":"Cdim7",
+  "Major 9":"Cmaj9","Dominant 9":"C9","Minor 9":"Cm9",
+  "Major 7 ♯11":"Cmaj7#11","Major 7 ♯5":"Cmaj7#5","Minor 11":"Cm11",
+  "Dominant 7sus4":"C7sus4","Minor 6/9":"Cm6/9",
+ };
+ // Rows deliberately not mapped: "Sus2 / Sus4" and "11 / Sus dominant" name two
+ // chords in one row, and "Altered dominant" and "Slash chord" name a family
+ // rather than a spelling. "13" is checked separately, just below.
+
+ const pitchesOf=intervals=>[...new Set(intervals.map(iv=>((iv%12)+12)%12))].sort((a,b)=>a-b).join(",");
+
+ let checked=0;
+ for(const row of dictionary.rows){
+  const symbol=EXAMPLES[row.name];
+  if(!symbol)continue;
+  checked++;
+  assert.ok(isDegreeFormula(row.formula),
+   `"${row.name}" is written as "${row.formula}", which the glossary cannot explain`);
+  const fromFormula=[...new Set(row.formula.split(/\s+/).map(t=>semitonesOf(t)))].sort((a,b)=>a-b).join(",");
+  const chord=parseChord(symbol);
+  assert.equal(chord.error,undefined,`${symbol} should be readable`);
+  assert.equal(fromFormula,pitchesOf(chord.intervals),
+   `${row.name}: the dictionary says "${row.formula}" but ${symbol} sounds different`);
+ }
+ assert.ok(checked>=20,`only ${checked} chord rows were cross-checked against the reader`);
+
+ /*
+  * The one place the two disagree on purpose. The reader stacks a 13 chord in
+  * full, eleventh included; the dictionary leaves the eleventh out and says so,
+  * because over a dominant with a major third it is an avoid note rather than
+  * a chord tone. Both are defensible and they are not the same claim, so the
+  * difference is written down here instead of being quietly averaged away.
+  */
+ const thirteenth=dictionary.rows.find(row=>row.name==="13");
+ const stated=[...new Set(thirteenth.formula.split(/\s+/).map(t=>semitonesOf(t)))].sort((a,b)=>a-b);
+ const sounded=pitchesOf(parseChord("C13").intervals).split(",").map(Number);
+ assert.deepEqual(stated,[0,2,4,7,9,10],"the dictionary's 13 omits the eleventh");
+ assert.deepEqual(sounded,[0,2,4,5,7,9,10],"the reader's 13 includes the eleventh");
+ assert.deepEqual(sounded.filter(iv=>!stated.includes(iv)),[5],
+  "the eleventh is the only thing they differ about");
+});

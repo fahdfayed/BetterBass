@@ -28,7 +28,43 @@ export async function createBassLabApp({dataFile=resolve(projectRoot,".data/lear
  // asynchronous crash on the first request that happens to touch the store.
  await store.ready;
  app.disable("x-powered-by");if(trustProxy)app.set("trust proxy",1);
- app.use((req,res,next)=>{res.set({"X-Content-Type-Options":"nosniff","Referrer-Policy":"strict-origin-when-cross-origin","Permissions-Policy":"microphone=(self), camera=(), geolocation=()"});next()});
+ /*
+  * Content-Security-Policy.
+  *
+  * Everything the client needs is served from this origin, so the default is
+  * to allow nothing else. The exceptions are all things the app genuinely
+  * does: the tab renderer builds its worker and audio worklet from blobs and
+  * decodes fonts and soundfonts it fetched itself, and vite injects an inline
+  * module and opens a websocket for hot reload while developing.
+  *
+  * frame-ancestors 'none' is the modern replacement for X-Frame-Options; the
+  * older header is sent as well for browsers that predate it.
+  */
+ const csp=[
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "img-src 'self' data: blob:",
+  "font-src 'self' data:",
+  "media-src 'self' blob: data:",
+  // alphaTab compiles its worker and worklet at runtime from blob URLs.
+  "worker-src 'self' blob:",
+  "child-src 'self' blob:",
+  `script-src 'self' blob:${dev?" 'unsafe-inline' 'unsafe-eval'":""}`,
+  // Styles are authored in stylesheets, but React sets a handful inline.
+  "style-src 'self' 'unsafe-inline'",
+  `connect-src 'self' blob: data:${dev?" ws: wss:":""}`,
+ ].join("; ");
+
+ app.use((req,res,next)=>{res.set({
+  "Content-Security-Policy":csp,
+  "X-Frame-Options":"DENY",
+  "X-Content-Type-Options":"nosniff",
+  "Referrer-Policy":"strict-origin-when-cross-origin",
+  "Permissions-Policy":"microphone=(self), camera=(), geolocation=()",
+ });next()});
  app.use("/api",createRateLimiter(rateLimit));
  app.use(express.json({limit:"3mb",type:["application/json","application/*+json"]}));
 

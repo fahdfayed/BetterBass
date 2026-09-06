@@ -76,7 +76,7 @@ export function speakCoach(message:string,options:SpeakOptions={}){
  const id=++requestId,interrupt=options.interrupt??true;
  return (async()=>{
   const synth=window.speechSynthesis,lang="en-US";
-  const text=message.replace(/[–—]/g," ").replace(/\s+/g," ").trim();
+  const text=message.replace(/[-, ]/g," ").replace(/\s+/g," ").trim();
   const voices=await loadedVoices(synth);
   if(id!==requestId)return false;
   if(interrupt){synth.cancel();await new Promise(resolve=>window.setTimeout(resolve,55));if(id!==requestId)return false}
