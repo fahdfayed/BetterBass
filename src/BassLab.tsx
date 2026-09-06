@@ -453,7 +453,7 @@ export default function BassLab(){
  {view==="coach"&&<Suspense fallback={<ToolLoading/>}><PerformanceCoach root={root} modeName={MODES[mode].n} courseTitle={course.title} courseCompleted={courseCompleted} courseTotal={COURSE_LESSONS.length} events={events} livePitch={pitch} listening={listening} recording={recording} onStartRecording={beginTake} onStopRecording={endTake} onSetRoot={key=>{setRoot(key);setChord(`${N[key]}m7`)}} modeIntervals={MODES[mode].s} characterInterval={MODES[mode].s[MODES[mode].c]} onOpen={openCoachTool} onAudition={notes=>audition(notes,.35)}/></Suspense>} 
 
  {view==="maqam"&&<Suspense fallback={<ToolLoading/>}><MaqamLab livePitch={pitch} listening={listening} onToggleListening={startAudio}/></Suspense>} 
- {view==="slap"&&<Suspense fallback={<ToolLoading/>}><SlapLab livePitch={pitch} listening={listening} onToggleListening={startAudio} events={events}/></Suspense>}
+ {view==="slap"&&<Suspense fallback={<ToolLoading/>}><SlapLab livePitch={pitch} listening={listening} onToggleListening={startAudio} events={events}/></Suspense>} 
  {view==="neck3d"&&<Suspense fallback={<ToolLoading/>}><FretboardNeck3D root={root} mode={mode} onSetRoot={setRoot} onSetMode={setMode} audition={audition}/></Suspense>}
 
  {view==="courseProgress"&&<CourseProgress
