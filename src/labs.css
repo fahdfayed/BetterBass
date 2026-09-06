@@ -307,3 +307,43 @@
 .runnerScore small{display:block;font:var(--t-micro) var(--mono);letter-spacing:.1em;
  color:var(--ink-3);margin-top:var(--s1)}
 @media(max-width:800px){.runnerBoard{grid-template-columns:1fr}}
+
+/*
+ * Boss Fight wears the same runner chassis, plus two health bars where the
+ * others have none. Boss is --red (the threat), you are --lime (a reading
+ * taken off the player, same colour the tuner and the take scorer use for
+ * exactly that).
+ */
+.bossBars{display:flex;flex-direction:column;gap:var(--s3);margin-bottom:var(--s5)}
+.hpRow{display:grid;grid-template-columns:44px 1fr 40px;align-items:center;gap:var(--s3)}
+.hpRow .label{font:var(--t-micro) var(--mono);letter-spacing:.1em;color:var(--ink-3)}
+.hpRow b{font:var(--t-micro) var(--mono);text-align:right;color:var(--ink-2)}
+.hpBar{height:10px;border:1px solid var(--line);background:transparent;overflow:hidden}
+.hpFill{height:100%;width:100%;transform-origin:left;transition:transform .25s ease-out}
+.hpRow.boss .hpFill{background:var(--red)}
+.hpRow.player .hpFill{background:var(--lime)}
+
+/*
+ * Fog of War's map: one tile per degree the round pool has already
+ * introduced. Foggy tiles are dim and still owe the reference tone; clear
+ * tiles have held for two answers running and lit up in --lime, the same
+ * "measured off the player" colour Boss Fight's own HP bar uses.
+ */
+.fogMap{display:flex;flex-wrap:wrap;gap:var(--s2);margin-bottom:var(--s5)}
+.fogTile{font:var(--t-micro) var(--mono);letter-spacing:.06em;border:1px solid var(--line);
+ padding:6px 10px;color:var(--ink-4);transition:color .2s,border-color .2s}
+.fogTile.clear{color:var(--lime);border-color:var(--lime)}
+
+/*
+ * Wrong Note Rescue's tier breakdown: how the accepted resolutions actually
+ * broke down, not just how many. Textbook (a semitone away, the strongest
+ * pull) reuses --lime; Reaches is the drill's own --violet label colour;
+ * Distant stays neutral ink -- a bold rescue isn't a worse one.
+ */
+.rescueTiers{display:flex;flex-wrap:wrap;gap:var(--s4);margin-top:var(--s4)}
+.tierRow{display:flex;flex-direction:column}
+.tierRow b{font-size:var(--t-h3);line-height:1}
+.tierRow small{display:block;font:var(--t-micro) var(--mono);letter-spacing:.1em;color:var(--ink-3);margin-top:var(--s1)}
+.tierRow.textbook b{color:var(--lime)}
+.tierRow.reaches b{color:var(--violet)}
+.tierRow.distant b{color:var(--ink-2)}
